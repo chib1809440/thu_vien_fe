@@ -198,26 +198,26 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
 
                     <Box sx={{ mt: 2 }}>
                         <AnimateButton>
-                                    {!isCountdown ?
-                                        <LoadingButton loading={isSubmitting} color="secondary" onClick={handleLogin} disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained">
-                                            Đăng Nhập
-                                        </LoadingButton>
-                                        :
-                                        <Button color="secondary" onClick={handleLogin} disabled fullWidth size="large" type="submit" variant="contained">
-                                            {timeLeft}
-                                        </Button>
-                                    }
-                                {/* :
+                            {!isCountdown ?
+                                <LoadingButton loading={isSubmitting} color="secondary" onClick={handleLogin} disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained">
+                                    Đăng Nhập
+                                </LoadingButton>
+                                :
+                                <Button color="secondary" onClick={handleLogin} disabled fullWidth size="large" type="submit" variant="contained">
+                                    {timeLeft}
+                                </Button>
+                            }
+                            {/* :
                                 <Button endIcon={<CircularProgress />} color="secondary" disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained">
                                     Đăng Nhập
                                 </Button> */}
                         </AnimateButton>
                     </Box>
                     {isCountdown &&
-                    <>
-                        <FormHelperText error>{`Bạn đã đăng nhập sai quá nhiều lần`} </FormHelperText>
-                        <FormHelperText error>{`Vui lòng chờ ${timeLeft} giây để đăng nhập lại`} </FormHelperText>
-                    </>
+                        <>
+                            <FormHelperText error>{`Bạn đã đăng nhập sai quá nhiều lần`} </FormHelperText>
+                            <FormHelperText error>{`Vui lòng chờ ${timeLeft} giây để đăng nhập lại`} </FormHelperText>
+                        </>
                     }
                     {errors.submit && (
                         <Box sx={{ mt: 3 }}>

@@ -47,11 +47,7 @@ const chartData: Props = {
             labels: {
                 useSeriesColors: false
             },
-            // markers: {
-            //     width: 16,
-            //     height: 16,
-            //     radius: 5
-            // },
+           
             itemMargin: {
                 horizontal: 15,
                 vertical: 8
@@ -74,10 +70,10 @@ const chartData: Props = {
             offsetY: 0,
             floating: false,
             style: {
-                fontSize: '14px',
-                fontWeight: 'bold',
-                fontFamily: undefined,
-                color: '#263238'
+              fontSize:  '14px',
+              fontWeight:  'bold',
+              fontFamily:  undefined,
+              color:  '#263238'
             },
         }
     },

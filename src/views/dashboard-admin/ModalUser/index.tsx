@@ -102,20 +102,7 @@ export default function ModalUserRoot(props: {
     const { allAccount } = useSelector((state) => state.getAllAccount);
     const { getSupplies } = useSelector((state) => state.getSupplies);
 
-    React.useEffect(() => {
-        setDataLoanSlip(getLoanSlip);
-        setDataSupplies(getSupplies);
-    }, [getLoanSlip, allAccount, getSupplies]);
-    React.useEffect(() => {
-        dispatch(getLoanSlipWaiting());
-        dispatch(getAllAccountWaiting());
-        dispatch(getSuppliesWaiting());
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    React.useEffect(() => {
-        setDataAccount(allAccount?.filter((items) => items.userID === barcodeScan || items.userID === props.userID));
-    }, [allAccount, barcodeScan, props.userID]);
+  
 
     useScanDetection({
         onComplete: (code: any) => {

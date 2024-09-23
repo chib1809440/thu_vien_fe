@@ -92,10 +92,12 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
         const response = await axios.post(AUTH_API.SignIn, { username, password });
         localStorage.setItem('userID', response?.data.userID);
         localStorage.setItem('dataUser', JSON.stringify(response?.data));
-        if (response.status === 201 && response?.data?.role === 2) {
+        if (response.status === 201) {
             // const user = response.data;
             // setValueUser(user)
-            setSession(response?.data.access_token);
+            console.log('respone', response);
+
+            setSession(response?.data.data.accessToken);
             dispatch({
                 type: LOGIN,
                 payload: {

@@ -1,0 +1,296 @@
+// color variants
+@import 'themes-vars.module.scss';
+
+// third-party
+@import '~react-perfect-scrollbar/dist/css/styles.css';
+@import '~slick-carousel/slick/slick.css';
+@import '~slick-carousel/slick/slick-theme.css';
+
+// ==============================|| LIGHT BOX ||============================== //
+.slick-arrow:before {
+    color: $grey500;
+}
+
+// ==============================|| LIGHT BOX ||============================== //
+.fullscreen .react-images__blanket {
+    z-index: 1200;
+}
+
+// ==============================|| APEXCHART ||============================== //
+
+.apexcharts-legend-series .apexcharts-legend-marker {
+    margin-right: 8px;
+}
+
+// ==============================|| PERFECT SCROLLBAR ||============================== //
+
+.scrollbar-container {
+    .ps__rail-y {
+
+        &:hover>.ps__thumb-y,
+        &:focus>.ps__thumb-y,
+        &.ps--clicking .ps__thumb-y {
+            background-color: $grey500;
+            width: 5px;
+        }
+    }
+
+    .ps__thumb-y {
+        background-color: $grey500;
+        border-radius: 6px;
+        width: 5px;
+        right: 0;
+    }
+}
+
+.scrollbar-container.ps,
+.scrollbar-container>.ps {
+    &.ps--active-y>.ps__rail-y {
+        width: 5px;
+        background-color: transparent !important;
+        z-index: 999;
+
+        &:hover,
+        &.ps--clicking {
+            width: 5px;
+            background-color: transparent;
+        }
+    }
+
+    &.ps--scrolling-y>.ps__rail-y,
+    &.ps--scrolling-x>.ps__rail-x {
+        opacity: 0.4;
+        background-color: transparent;
+    }
+}
+
+// ==============================|| ANIMATION KEYFRAMES ||============================== //
+
+@keyframes wings {
+    50% {
+        transform: translateY(-40px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    53%,
+    to {
+        animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+        transform: translateZ(0);
+    }
+
+    40%,
+    43% {
+        animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+        transform: translate3d(0, -5px, 0);
+    }
+
+    70% {
+        animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+        transform: translate3d(0, -7px, 0);
+    }
+
+    80% {
+        transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+        transform: translateZ(0);
+    }
+
+    90% {
+        transform: translate3d(0, -2px, 0);
+    }
+}
+
+@keyframes slideY {
+
+    0%,
+    50%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    25% {
+        transform: translateY(-10px);
+    }
+
+    75% {
+        transform: translateY(10px);
+    }
+}
+
+@keyframes slideX {
+
+    0%,
+    50%,
+    100% {
+        transform: translateX(0px);
+    }
+
+    25% {
+        transform: translateX(-10px);
+    }
+
+    75% {
+        transform: translateX(10px);
+    }
+}
+
+.css-ut1i3-MuiPaper-root-MuiDialog-paper {
+    max-width: 705px !important;
+    // height: auto !important;
+}
+
+// body{
+//     cursor: url(../icons8-eggplant-50.png), auto;
+// }
+
+// #outlined-adornment-numberPhone {
+//   -webkit-appearance: none;
+//   margin: 0;
+//   -moz-appearance: textfield;
+
+// }
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button,
+#outlined-adornment-numberPhone {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.loader,
+.loader:before {
+    display: inline-block;
+    border: 20px double transparent;
+    border-top-color: #000;
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+.loader {
+    padding: 8px;
+    animation: wifiLoading 1s ease-in infinite;
+    height: 100px;
+
+}
+
+.loader:before {
+    content: '';
+    width: 0;
+    height: 0;
+}
+
+@keyframes wifiLoading {
+    0% {
+        border-style: none
+    }
+
+    100% {
+        border-style: double
+    }
+}
+
+
+.loaderLibraryConnection {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    border: 3px solid;
+    border-color: #2196F2 #2196F2 transparent transparent;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+.loaderLibraryConnection::after,
+.loaderLibraryConnection::before {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    border: 3px solid;
+    border-color: transparent transparent #FF3D00 #FF3D00;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-sizing: border-box;
+    animation: rotationBack 0.5s linear infinite;
+    transform-origin: center center;
+}
+
+.loaderLibraryConnection::before {
+    width: 32px;
+    height: 32px;
+    border-color: #2182F1 #EE6363 transparent transparent;
+    animation: rotation 1.5s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes rotationBack {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(-360deg);
+    }
+}
+
+a {
+    text-decoration: none;
+}
+
+iframe {
+    border: none;
+    overflow: hidden;
+}
+
+img {
+    border-radius: '5px';
+}
+
+.example::-webkit-scrollbar {
+    display: none;
+}
+
+.example {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}

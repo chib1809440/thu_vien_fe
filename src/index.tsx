@@ -19,7 +19,7 @@ import ReactDOM from 'react-dom/client';
 //sentry
 import * as Sentry from "@sentry/react";
 import { BrowserTracing } from "@sentry/tracing";
-
+import { QueryClient, QueryClientProvider } from "react-query";
 // Sentry.init({
 //     dsn: process.env.REACT_APP_DNS_SENTRY,
 //     integrations: [new BrowserTracing()],
@@ -32,13 +32,15 @@ import { BrowserTracing } from "@sentry/tracing";
 
 // ==============================|| REACT DOM RENDER  ||============================== //
 const root = ReactDOM.createRoot(document.getElementById('root')!);
-
+const queryClient = new QueryClient();
 root.render(
     <Provider store={store}>
         <PersistGate loading={null} persistor={persister}>
             <ConfigProvider>
                 <BrowserRouter basename={BASE_PATH}>
-                    <App />
+                    <QueryClientProvider client={queryClient}>
+                        <App />
+                    </QueryClientProvider>,
                 </BrowserRouter>
             </ConfigProvider>
         </PersistGate>

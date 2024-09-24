@@ -1,0 +1,33 @@
+export interface Meta {
+    page: number;
+    take: number;
+    itemCount: number;
+    pageCount: number;
+    hasPreviousPage: boolean;
+    hasNextPage: boolean;
+}
+
+export interface EntityData<T> {
+    data: T;
+    meta?: Meta;
+}
+
+export interface EntityResponse<T> {
+    statusCode: number;
+    success: boolean;
+    message?: string | string[];
+    data: EntityData<T>;
+}
+export interface SingleRecordResponse<T> {
+    statusCode: number;
+    success: boolean;
+    message?: string | string[];
+    data: T;
+}
+export interface AbstractEntity {
+    id?: number;
+    createdAt?: string;
+    updatedAt?: string;
+    uuid?: string;
+    status?: number;
+}

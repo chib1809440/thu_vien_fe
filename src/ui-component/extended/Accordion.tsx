@@ -54,7 +54,7 @@ const Accordion = ({ data, defaultExpandedId = null, expandIcon, square, toggle 
                         onChange={handleChange(item.id)}
                     >
                         <MuiAccordionSummary
-                            expandIcon={expandIcon || expandIcon === false ? expandIcon : <ExpandMoreIcon />}
+                            expandIcon={expandIcon !== undefined && expandIcon !== null ? expandIcon : <ExpandMoreIcon />}
                             sx={{ color: theme.palette.mode === 'dark' ? 'grey.500' : 'grey.800', fontWeight: 500 }}
                         >
                             {item.title}

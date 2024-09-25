@@ -31,48 +31,48 @@ interface MainStyleProps {
 }
 
 // styles
-const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
-  ({ theme, open }: MainStyleProps) => ({
+const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<MainStyleProps>(
+  ({ theme, open }) => ({
     ...theme.typography.mainContent,
     ...(!open && {
       borderBottomLeftRadius: 0,
       borderBottomRightRadius: 0,
       transition: theme.transitions.create('margin', {
         easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.shorter
+        duration: theme.transitions.duration.shorter,
       }),
       [theme.breakpoints.up('md')]: {
         marginLeft: -(drawerWidth - 20),
-        width: `calc(100% - ${drawerWidth}px)`
+        width: `calc(100% - ${drawerWidth}px)`,
       },
       [theme.breakpoints.down('md')]: {
         marginLeft: '20px',
         width: `calc(100% - ${drawerWidth}px)`,
-        padding: '16px'
+        padding: '16px',
       },
       [theme.breakpoints.down('sm')]: {
         marginLeft: '10px',
         width: `calc(100% - ${drawerWidth}px)`,
         padding: '16px',
-        marginRight: '10px'
-      }
+        marginRight: '10px',
+      },
     }),
     ...(open && {
       transition: theme.transitions.create('margin', {
         easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.shorter
+        duration: theme.transitions.duration.shorter,
       }),
       marginLeft: 0,
       borderBottomLeftRadius: 0,
       borderBottomRightRadius: 0,
       width: `calc(100% - ${drawerWidth}px)`,
       [theme.breakpoints.down('md')]: {
-        marginLeft: '20px'
+        marginLeft: '20px',
       },
       [theme.breakpoints.down('sm')]: {
-        marginLeft: '10px'
-      }
-    })
+        marginLeft: '10px',
+      },
+    }),
   })
 );
 
@@ -85,7 +85,7 @@ const MainLayout = () => {
   const dispatch = useDispatch();
   const { drawerOpen } = useSelector((state) => state.menu);
   const barcode = useSelector((state) => state.barcode);
-  const {userID, openBC } = barcode;
+  const { userID, openBC } = barcode;
   const { container } = useConfig();
 
   React.useEffect(() => {
@@ -140,7 +140,7 @@ const MainLayout = () => {
           )}
         </Main>
         {/* {openBC && <ModalUser isOpen={openBC} userID={userID}/>} */}
-        <ModalUser isOpen={openBC} userID={userID}/>
+        <ModalUser isOpen={openBC} userID={userID} />
       </>
       {/* <Customization /> */}
       {/* <ModalTraSach isOpen={isOpenV2} userID={props.userID} isClose={(newIs) => setOpenV2(newIs)} /> */}

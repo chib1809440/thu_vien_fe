@@ -1,6 +1,6 @@
 export interface Meta {
     page: number;
-    take: number;
+    limit: number;
     itemCount: number;
     pageCount: number;
     hasPreviousPage: boolean;
@@ -8,7 +8,7 @@ export interface Meta {
 }
 
 export interface EntityData<T> {
-    data: T;
+    result: T;
     meta?: Meta;
 }
 
@@ -25,7 +25,7 @@ export interface SingleRecordResponse<T> {
     data: T;
 }
 export interface AbstractEntity {
-    id?: number;
+    _id?: number;
     createdAt?: string;
     updatedAt?: string;
     uuid?: string;

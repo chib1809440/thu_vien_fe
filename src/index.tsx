@@ -15,11 +15,11 @@ import { persister, store } from './store';
 // style + assets
 import './assets/scss/style.scss';
 import ReactDOM from 'react-dom/client';
-
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 //sentry
 import * as Sentry from "@sentry/react";
 import { BrowserTracing } from "@sentry/tracing";
-import { QueryClient, QueryClientProvider } from "react-query";
 // Sentry.init({
 //     dsn: process.env.REACT_APP_DNS_SENTRY,
 //     integrations: [new BrowserTracing()],
@@ -32,7 +32,11 @@ import { QueryClient, QueryClientProvider } from "react-query";
 
 // ==============================|| REACT DOM RENDER  ||============================== //
 const root = ReactDOM.createRoot(document.getElementById('root')!);
-const queryClient = new QueryClient();
+
+
+const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: 5, retryDelay: 1000 } },
+});
 root.render(
     <Provider store={store}>
         <PersistGate loading={null} persistor={persister}>

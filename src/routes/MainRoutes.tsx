@@ -8,6 +8,9 @@ import AuthGuardV2 from "../utils/route-guard/AuthGuardV2";
 const HomePage = Loadable(
   lazy(() => import("../views/dashboard-admin/HomePage"))
 );
+const ExamplePage = Loadable(
+  lazy(() => import("../views/dashboard-admin/ExamplePage"))
+);
 const ContactPage = Loadable(
   lazy(() => import("../views/dashboard-admin/Contact"))
 );
@@ -131,13 +134,17 @@ const MainRoutes = {
   path: "/",
   element: (
     <AuthGuard>
-        <MainLayout />
+      <MainLayout />
     </AuthGuard>
   ),
   children: [
     {
       path: "/trang-chu",
       element: <HomePage />,
+    },
+    {
+      path: "/vi-du",
+      element: <ExamplePage />,
     },
     {
       path: "/thong-tin",
@@ -258,7 +265,7 @@ export const MainRoutesV2 = {
   path: "/",
   element: (
     <AuthGuardV2>
-        <MainLayoutV2 />
+      <MainLayoutV2 />
     </AuthGuardV2>
   ),
   children: [

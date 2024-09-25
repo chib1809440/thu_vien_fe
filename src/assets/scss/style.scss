@@ -294,3 +294,24 @@ img {
     scrollbar-width: none;
     /* Firefox */
 }
+/* Tùy chỉnh toàn bộ thanh cuộn */
+::-webkit-scrollbar {
+  width: 8px; /* Độ rộng của thanh cuộn dọc */
+  height: 8px; /* Độ cao của thanh cuộn ngang */
+}
+
+/* Tùy chỉnh phần track (nền của thanh cuộn) */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Màu nền của thanh cuộn */
+}
+
+/* Tùy chỉnh thanh kéo (thumb) */
+::-webkit-scrollbar-thumb {
+  background: #1e88e5; /* Màu của thanh kéo */
+  border-radius: 10px; /* Bo tròn thanh kéo */
+}
+
+/* Tùy chỉnh thanh kéo khi hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #1e88e5; /* Màu của thanh kéo khi hover */
+}

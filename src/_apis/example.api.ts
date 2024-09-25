@@ -11,11 +11,11 @@ export const createExample = async (example: CreateExampleModel): Promise<Entity
 };
 
 // Read all
-export const getAllExamples = async (page?: number, take?: number, search?: string, order: string = "ASC"): Promise<EntityResponse<Example[]>> => {
+export const getAllExamples = async (page?: number, limit?: number, search?: string, order: string = "ASC"): Promise<EntityResponse<Example[]>> => {
     let url = `${Example_API}?order=${order}`;
 
-    if (page !== undefined && take !== undefined) {
-        url += `&page=${page}&take=${take}`;
+    if (page !== undefined && limit !== undefined) {
+        url += `&page=${page}&limit=${limit}`;
     }
     const response = await axios.get<EntityResponse<Example[]>>(url);
     return response.data;

@@ -13,7 +13,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { EntityResponse } from "../../../../interfaces/entityResponse";
 import { Example } from "../../../../interfaces/example";
 import { DataType, HeadCell, Order } from "../../../../components/custom/table/type";
-import useDebounce from "../../../../hooks/useDebounce";
+import useDebounce, { searchDelay } from "../../../../hooks/useDebounce";
 import { deleteExample, getAllExamples } from "../../../../_apis/example.api";
 import { ContainerTable, StyledTableCell, StyledTableRow } from "../../../../components/custom/table/style";
 import { SearchAndFilter } from "../../../../components/custom/table/TableSearchAndFilter";
@@ -22,6 +22,8 @@ import GradientCircularProgressLoading from "../../../../components/default/load
 import { CsFlexRowBetween } from "../../../../components/default/flex";
 import CustomInput from "../../../../components/default/input/CustomInput";
 import AlertConfirmDialog from "../../../../components/default/alert/confirmAlertDialog";
+import { useDeleteExample, useExampleList } from "../../../../hooks/react-query/exampleData";
+import ExampleDialog from "../../../../components/default/dialog/ExamDialog";
 // function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 //     if (b[orderBy] < a[orderBy]) {
 //         return -1;
@@ -84,14 +86,18 @@ function TableExampleList<T extends DataType>({
     const [isOpenUpdateDilog, setIsOpenUpdateDialog] = useState<boolean>(false);
     const [isOpenConfirmDialog, setIsOpenConfirmDialog] = useState(false);
     const [isOpenConfirmDeleteSelectedDialog, setIsOpenConfirmDeleteSelectedDialog] = useState(false);
-    const [selectedDeleteID, setSelectedDeleteID] = useState<number>()
-    const debouncedSearch = useDebounce<string>(contentSearch, 1000);
-    const [checked, setChecked] = useState<number[]>([]);
+    const [selectedDeleteID, setSelectedDeleteID] = useState<string>()
+    const debouncedSearch = useDebounce<string>(contentSearch, searchDelay);
+    const [checked, setChecked] = useState<string[]>([]);
     const [checkedAll, setCheckedAll] = useState<boolean>(false);
+    const { data: examples, isPending, error, isError, isPlaceholderData, isFetching, refetch } =
+        useExampleList(page, rowsPerPage, debouncedSearch);
+    const { mutate: deleteExample, isPending: isPendingUpdate } = useDeleteExample();
+
     const handleCheckedAll = async () => {
         const newCheckedAll = !checkedAll;
         setCheckedAll(newCheckedAll);
-        const allIdsOnPage = schools?.data?.result.map(item => item._id) || [];
+        const allIdsOnPage = examples?.data?.result.map(item => item._id) || [];
         if (newCheckedAll) {
             // Select all items on the current page and add them to the existing checked items
             setChecked(prev => {
@@ -114,40 +120,52 @@ function TableExampleList<T extends DataType>({
             setCheckedAll(false);
         }
     };
-    const fetchExamples = async () => {
-        try {
-            setIsLoading(true);
-            const response = await getAllExamples(page, rowsPerPage, debouncedSearch);
-            if (response.statusCode === 200) {
-                if (response?.data?.result.length > 0) {
-                    const ids = response.data.result.map(item => item._id);
-                    const allChecked = ids.every(id => checked.includes(id));
-                    if (allChecked) {
-                        setCheckedAll(true); // Set checkedAll to true if all students are already checked
-                    } else {
-                        setCheckedAll(false); // Otherwise, set checkedAll to false
-                    }
-                }
-                setExamples(response);
-            } else {
-                // Handle error
-                console.error(response.message);
-            }
-            setIsLoading(false);
-        } catch (error) {
-            // Handle error
-            setIsLoading(false);
-            console.error(error);
-        }
-    };
-    useEffect(() => {
-        fetchExamples();
-    }, [page, rowsPerPage, debouncedSearch]);
+
+    // const fetchExamples = async () => {
+    //     try {
+    //         setIsLoading(true);
+    //         const response = await getAllExamples(page, rowsPerPage, debouncedSearch);
+    //         if (response.statusCode === 200) {
+    //             if (response?.data?.result.length > 0) {
+    //                 const ids = response.data.result.map(item => item._id);
+    //                 const allChecked = ids.every(id => checked.includes(id));
+    //                 if (allChecked) {
+    //                     setCheckedAll(true); // Set checkedAll to true if all students are already checked
+    //                 } else {
+    //                     setCheckedAll(false); // Otherwise, set checkedAll to false
+    //                 }
+    //             }
+    //             setExamples(response);
+    //         } else {
+    //             // Handle error
+    //             console.error(response.message);
+    //         }
+    //         setIsLoading(false);
+    //     } catch (error) {
+    //         // Handle error
+    //         setIsLoading(false);
+    //         console.error(error);
+    //     }
+    // };
+    // useEffect(() => {
+    //     fetchExamples();
+    // }, [page, rowsPerPage, debouncedSearch]);
     useEffect(() => {
         // Update URL parameters when page, rowsPerPage, or contentSearch changes
-        setSearchParams({ page: page.toString(), limit: rowsPerPage.toString(), search: contentSearch });
+        setSearchParams({ page: page.toString(), limit: rowsPerPage.toString(), search: contentSearch }, { replace: true });
     }, [page, rowsPerPage, contentSearch]);
+    useEffect(() => {
+        if (examples?.data?.result) { // Kiểm tra nếu examples.data.result có giá trị
+            const ids = examples.data.result.map(item => item._id); // Lấy danh sách _id
+            const allChecked = ids.every(id => checked.includes(id)); // Kiểm tra nếu tất cả ids đều có trong checked
 
+            if (allChecked) {
+                setCheckedAll(true); // Nếu tất cả ids đều được chọn, set checkedAll thành true
+            } else {
+                setCheckedAll(false); // Nếu không, set checkedAll thành false
+            }
+        }
+    }, [examples, checked, setCheckedAll]);
     // const visibleRows = useMemo(
     //     () =>
     //         stableSort(schools.data, getComparator(order, orderBy)).slice(
@@ -156,6 +174,7 @@ function TableExampleList<T extends DataType>({
     //         ),
     //     [order, orderBy, page, rowsPerPage],
     // );
+
 
     const handleRequestSort = (
         event: React.MouseEvent<unknown>,
@@ -170,20 +189,29 @@ function TableExampleList<T extends DataType>({
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
     };
-
+    const handleRefetchTable = () => {
+        refetch();
+    };
+    useEffect(() => {
+        if (debouncedSearch) {
+            setPage(1);
+        }
+    }, [debouncedSearch])
     const handleChangeRowsPerPage = (event: SelectChangeEvent) => {
         setRowsPerPage(Number(event.target.value));
         setPage(1)
     };
-    const handleClickUpdate = (id: number) => {
-        let school: Example = schools.data.result.find(x => x._id === id)
-        setExample(school)
+    const handleClickUpdate = (id: string) => {
+        let example: Example = examples.data.result.find(x => x._id === id)
+        console.log(id);
+        setExample(example)
         setIsOpenUpdateDialog(true)
     }
-    const [school, setExample] = useState<Example>();
+    const [example, setExample] = useState<Example>();
     const pageCount = useMemo(() => {
-        return Math.ceil((schools?.data.meta.itemCount || 0) / rowsPerPage);
-    }, [schools, rowsPerPage]);
+        return Math.ceil((examples?.data?.meta?.itemCount || 0) / rowsPerPage);
+    }, [examples, page, rowsPerPage]);
+
     const handleDeleteItem = (e: React.MouseEventHandler<HTMLTableRowElement> | undefined, id: any) => {
         setIsOpenConfirmDialog(true);
         setSelectedDeleteID(id);
@@ -194,17 +222,14 @@ function TableExampleList<T extends DataType>({
     const handleConfirmDeleteItem = async () => {
         if (selectedDeleteID)
             try {
-                let response = await deleteExample(selectedDeleteID);
-                if (response.statusCode === 200) {
-                    setSelectedDeleteID(undefined);
-                    if (page !== 1) {
-                        setPage(1);
-                    } else {
-                        fetchExamples();
-                    }
-                    setIsOpenConfirmDialog(false);
-                    toast.success("Xóa dữ liệu thành công", {});
+                deleteExample(selectedDeleteID);
+                setSelectedDeleteID(undefined);
+                if (page !== 1 && examples.data.result.length === 1) {
+                    setPage(page - 1);
                 }
+
+                setIsOpenConfirmDialog(false);
+                toast.success("Xóa dữ liệu thành công", {});
             } catch (error) {
                 toast.error(error.message);
             }
@@ -222,21 +247,15 @@ function TableExampleList<T extends DataType>({
     };
     const handleConfirmDeleteItemSelected = async () => {
         try {
-            const deleteRequests = checked.map(async (id) => {
+            checked.map(async (id) => {
                 const response = await deleteExample(id);
                 return response;
             });
-            const responses = await Promise.all(deleteRequests);
-            const successfulDeletes = responses.filter(response => response.statusCode === 200);
-            if (successfulDeletes.length > 0) {
-                toast.success(`${successfulDeletes.length} dữ liệu đã xóa thành công`, {});
-            }
             setChecked([]);
-            if (page !== 1) {
-                setPage(1);
-            } else {
-                fetchExamples();
+            if (page !== 1 && examples.data.result.length === checked.length) {
+                setPage(page - 1)
             }
+            toast.success(`Xóa dữ liệu  thành công`, {});
             setIsOpenConfirmDeleteSelectedDialog(false);
 
         } catch (error) {
@@ -247,13 +266,10 @@ function TableExampleList<T extends DataType>({
     const handleClearSelected = async () => {
         setChecked([]);
     };
-    console.log(checked);
+
     return (
         <>
-            <SearchAndFilter onHandleDeleteSelectedItem={handleDeleteItemSelected} actionDeleteSelectedItem={true} contentSearch={contentSearch} handleContentSearch={(newSearchValue: string) => {
-                setContentSearch(newSearchValue); // Update the search value
-                setPage(1); // Reset the page to 1 when the search value changes
-            }} />
+            <SearchAndFilter onHandleDeleteSelectedItem={handleDeleteItemSelected} actionDeleteSelectedItem={true} contentSearch={contentSearch} handleContentSearch={setContentSearch} />
             {/* Table */}
             <Box p={4} pt={0}>
                 {
@@ -279,12 +295,11 @@ function TableExampleList<T extends DataType>({
                             onSelectAllClick={handleCheckedAll}
                         />
                         <TableBody>
-
                             {
-                                isLoading === false ? (
-                                    schools?.data?.result?.length > 0 ? (
+                                isPending === false ? (
+                                    examples?.data?.result?.length > 0 ? (
                                         <>
-                                            {schools.data.result.map((row, index) => {
+                                            {examples.data.result.map((row, index) => {
                                                 const labelId = `enhanced-table-checkbox-${index}`;
                                                 return (
                                                     <StyledTableRow
@@ -324,7 +339,7 @@ function TableExampleList<T extends DataType>({
                                                                 alignItems: "center",
                                                                 gap: 1
                                                             }}>
-                                                                <IconPencil onClick={() => handleClickUpdate(Number(row?._id))} size={20} stroke={1.5} />
+                                                                <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
                                                                 <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
                                                             </Box>
                                                         </StyledTableCell>
@@ -405,25 +420,24 @@ function TableExampleList<T extends DataType>({
                         showLastButton
                     />
                 </CsFlexRowBetween>
-                {/* {
+                {
                     isOpenAddDilog === true && <ExampleDialog
-                        fetchData={fetchExamples}
-                        title={"Thêm trường học"}
+                        title={"Thêm ví dụ"}
                         open={isOpenAddDilog}
                         handleOpen={setIsOpenAddDialog}
                     />
-                } */}
+                }
             </Box>
-            {/* {
-                isOpenUpdateDilog && school && <ExampleDialog
-                    id={school.id}
-                    title={"Cập nhật trường học"}
+
+            {
+                isOpenUpdateDilog && example && <ExampleDialog
+                    id={example._id}
+                    title={"Cập nhật ví dụ"}
                     open={isOpenUpdateDilog}
-                    school={school}
+                    example={example}
                     handleOpen={setIsOpenUpdateDialog}
-                    fetchData={fetchExamples}
                 />
-            } */}
+            }
             {
                 isOpenConfirmDialog && <AlertConfirmDialog title="Xác nhận xóa dữ liệu?" message="Dữ liệu đã xóa thì không khôi khục được" onHandleConfirm={handleConfirmDeleteItem} openConfirm={isOpenConfirmDialog} handleOpenConfirmDialog={setIsOpenConfirmDialog} />
             }

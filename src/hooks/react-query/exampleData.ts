@@ -93,14 +93,16 @@ import { CreateExampleModel, Example } from "../../interfaces/example";
 //         }
 //     );
 // };
-export function useExampleList(page: number) {
+export function useExampleList(page?: number, limit?: number, search?: string) {
+
     return useQuery({
-        queryKey: [RQ_EXAMPLELIST, { page }],
-        queryFn: () => getAllExamples(page),
-        placeholderData: keepPreviousData,
+        queryKey: [RQ_EXAMPLELIST, { page, limit, search }],
+        queryFn: () => getAllExamples(page, limit, search),
+        placeholderData: keepPreviousData,  // Sử dụng dữ liệu trước đó để tránh loading
     });
 }
-export function useCreateExample() {
+
+export function useCreateExample(onSuccess) {
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -113,8 +115,9 @@ export function useCreateExample() {
             console.log("error");
         },
 
-        onSuccess: () => {
-            console.log("success");
+        onSuccess: (data) => {
+            onSuccess(data)
+
         },
         onSettled: async (_, error) => {
             console.log("settled");
@@ -130,12 +133,7 @@ export function useDeleteExample() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (id: number) => deleteExample(id),
-
-        onSuccess: () => {
-            console.log("deleted successfully");
-        },
-
+        mutationFn: (id: string) => deleteExample(id),
         onSettled: async (_, error) => {
             if (error) {
                 console.log(error);
@@ -145,12 +143,15 @@ export function useDeleteExample() {
         },
     });
 }
-export function useUpdateExample() {
+export function useUpdateExample(onSuccess) {
     const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: (data: Example) => updateExample(data._id, data),
+        onSuccess: (data) => {
+            onSuccess(data)
 
+        },
         onSettled: async (_, error, variables) => {
             if (error) {
                 console.log(error);
@@ -164,7 +165,7 @@ export function useUpdateExample() {
     });
 }
 
-export function useExample(ids: (number | undefined)[] | undefined) {
+export function useExample(ids: (string | undefined)[] | undefined) {
     return useQueries({
         queries: (ids ?? []).map((id) => {
             return {

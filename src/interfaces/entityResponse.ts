@@ -25,7 +25,7 @@ export interface SingleRecordResponse<T> {
     data: T;
 }
 export interface AbstractEntity {
-    _id?: number;
+    _id?: string;
     createdAt?: string;
     updatedAt?: string;
     uuid?: string;

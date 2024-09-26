@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Box, Button, Grid, Menu, MenuItem, Tooltip } from "@mui/material";
+import { Box, Button, Grid, Menu, MenuItem, TextField, Tooltip } from "@mui/material";
 import { IconBookUpload, IconDownload, IconFileImport, IconFilter, IconPrinter, IconSettings, IconTransformFilled, IconTrashXFilled } from "@tabler/icons-react";
 import SearchNoButtonSection from "../search/SearchNoButton";
 import StyledButton from "../../default/button/StyledButton";
+import { AccountCircle } from "@mui/icons-material";
+import { IconSearch } from "@tabler/icons";
 interface PropSearch {
     contentSearch: string,
     placeholderText?: string,

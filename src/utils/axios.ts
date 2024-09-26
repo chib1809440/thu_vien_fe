@@ -5,14 +5,14 @@ const axiosServices = axios.create({
 });
 
 axiosServices.interceptors.response.use(response => {
-	return response;
+	return response.data;
 }, error => {
 	const { pathname } = window.location;
 	if (error.response.status === 401 && pathname !== '/login') {
 		localStorage.removeItem("serviceToken");
 		window.location.href = "/login";		
 	}
-	return error.response;
+	return Promise.reject(error);
 });
 
 export default axiosServices;

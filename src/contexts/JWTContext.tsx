@@ -89,15 +89,13 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
     }, []);
 
     const login = async (username: string, password: string) => {
-        const response = await axios.post(AUTH_API.SignIn, { username, password });
-        localStorage.setItem('userID', response?.data.userID);
-        localStorage.setItem('dataUser', JSON.stringify(response?.data));
-        if (response.status === 201) {
-            // const user = response.data;
-            // setValueUser(user)
-            console.log('respone', response);
+        try {
+            const response = await axios.post(AUTH_API.SignIn, { username, password });
+            localStorage.setItem('userID', response?.data.userID);
+            localStorage.setItem('dataUser', JSON.stringify(response?.data));
 
-            setSession(response?.data.data.accessToken);
+
+            setSession(response.data.accessToken);
             dispatch({
                 type: LOGIN,
                 payload: {
@@ -105,8 +103,8 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
                     user: response.data
                 }
             });
-        } else {
-            throw new Error('Lỗi hệ thống')
+        } catch (error) {
+            throw error;
         }
 
     };

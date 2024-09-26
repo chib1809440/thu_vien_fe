@@ -62,6 +62,14 @@ const dashboardAdmin = {
             breadcrumbs: false
         },
         {
+            id: 'quan-ly-nhom',
+            title: "Nhóm",
+            type: 'item',
+            url: '/quan-ly-nhom',
+            icon: icons.IconDeviceAnalytics,
+            breadcrumbs: false
+        },
+        {
             id: 'quan-ly-tai-khoan',
             title: "Tài khoản",
             type: 'item',

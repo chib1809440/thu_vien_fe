@@ -1,58 +1,38 @@
-
-import { Box, Stack } from '@mui/system';
-import { IconPlus } from '@tabler/icons';
-import { useMemo, useState } from 'react';
-import { HeadCell } from '../../../components/custom/table/type';
-import StyledButton from '../../../components/default/button/StyledButton';
-import { CsFlexRowBetween } from '../../../components/default/flex';
-import { useAddGroup, useDeleteGroup, useEditGroup } from '../../../hooks/services/group/group-mutation';
-import { useFetchGroup, useReFetchGroup } from '../../../hooks/services/group/group-query';
-import { TGroup, TGroupCreate } from '../../../types/models/group.type';
-import IBreadcrumsCustom from '../../../ui-component/breadcrums';
-import MainCard from '../../../ui-component/cards/MainCard';
-import FormAddEditGroup from './ui-components/FormAddEditGroup';
-import TableGroupList from './ui-components/TableGroupList';
-
-const headCells: HeadCell[] = [
-    {
-        id: 'name',
-        numeric: false,
-        disablePadding: true,
-        label: 'Tên nhóm',
-    },
-    {
-        id: 'mainLibrary',
-        numeric: false,
-        disablePadding: true,
-        label: 'Thư viện',
-    },
-    {
-        id: 'isPublic',
-        numeric: false,
-        disablePadding: true,
-        label: 'Hiển thị',
-    },
-    {
-        id: 'action',
-        numeric: false,
-        disablePadding: true,
-        label: 'Hành động',
-    },
-];
+import { Switch } from "@mui/material";
+import { Box, Stack } from "@mui/system";
+import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
+import { useMemo, useState } from "react";
+import StyledButton from "../../../components/default/button/StyledButton";
+import { CsFlexRowBetween } from "../../../components/default/flex";
+import { useAddGroup, useEditGroup } from "../../../hooks/services/group/group-mutation";
+import { useFetchGroup, useReFetchGroup } from "../../../hooks/services/group/group-query";
+import { TColumn } from "../../../types/common/table";
+import { TGroup, TGroupCreate } from "../../../types/models/group.type";
+import IBreadcrumsCustom from "../../../ui-component/breadcrums";
+import MainCard from "../../../ui-component/cards/MainCard";
+import FormAddEditGroup from "./ui-components/FormAddEditGroup";
+import useQueryString from "../../../hooks/services/useQueryString";
+import TableList from "../../../components/custom/table-list/TableList";
+import { toast } from "react-toastify";
+import ActionsForm from "../../../components/custom/form/ActionForm";
 
 const GroupPage = () => {
-    const { data } = useFetchGroup();
+    const queryString = useQueryString();
+    const page = queryString?.page ?? 1;
+    const limit = queryString?.limit ?? 5;
+    const search = queryString?.q ?? "";
+
+    const { data, isLoading } = useFetchGroup({ limit, page, search });
     const mutationAdd = useAddGroup();
     const mutationEdit = useEditGroup();
     const revalidate = useReFetchGroup();
 
-    console.log(`data`, data);
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TGroup | null>(null);
 
     const addGroup = () => {
         setOpenAddEdit(true);
-    }
+    };
 
     const handleEditGroup = (row: TGroup) => {
         setSelectedEdit(row);
@@ -64,54 +44,139 @@ const GroupPage = () => {
         setSelectedEdit(null);
     };
 
-    const handleSubmit = (values: TGroupCreate) => {
-        console.log(values);
-
-        if (selectedEdit) {
-            mutationEdit.mutate({ ...values, _id: selectedEdit._id }, {
-                onSuccess: () => {
+    const handleChangePublic = (row: TGroup, checked: boolean) => {
+        // TODO: update
+        mutationEdit.mutate(
+            { isPublic: checked, _id: row._id },
+            {
+                onSuccess: (data) => {
                     revalidate();
-                    alert("Chỉnh sửa thành công");
-                    handleClose();
+                    toast.success('Cập nhật hiển thị thành công.');
                 },
+            }
+        );
+        return;
+    };
 
-                onError: (error: any) => {
-                    alert("Lỗi khi chỉnh sửa: " + (error?.response?.data?.message));
+    const handleSubmit = (values: TGroupCreate) => {
+        if (selectedEdit) {
+            mutationEdit.mutate(
+                { ...values, _id: selectedEdit._id },
+                {
+                    onSuccess: () => {
+                        revalidate();
+                        toast.success('Chỉnh sửa thành công.');
+                        handleClose();
+                    },
+
+                    onError: (error: any) => {
+                        toast.error('Chỉnh sửa thất bại');
+                        // alert("Lỗi khi chỉnh sửa: " + error?.response?.data?.message);
+                    },
                 }
-            });
+            );
         }
-
 
         mutationAdd.mutate(values, {
             onSuccess: (data) => {
                 revalidate();
-                alert("Thêm thành công");
+                toast.success('Thêm thành công.');
                 setOpenAddEdit(false);
             },
         });
-    }
+    };
+
+    const columns: TColumn<TGroup>[] = useMemo(
+        () => [
+            {
+                id: "name",
+                disablePadding: "none",
+                label: "Tên nhóm",
+                align: "left",
+                // sxRow: { paddingRight: 4 },
+            },
+            {
+                id: "mainLibrary",
+                disablePadding: "none",
+                label: "Thư viện",
+                sxRow: { paddingRight: 4 },
+                render: (row) => {
+                    return (
+                        <span>
+                            {row.mainLibrary ? row.mainLibrary.name : "Chưa có thư viện"}
+                        </span>
+                    );
+                },
+            },
+            {
+                id: "isPublic",
+                disablePadding: "none",
+                label: "Hiển thị",
+                sxRow: { paddingRight: 4 },
+                render: (row) => {
+                    return (
+                        <Switch
+                            checked={row?.isPublic}
+                            value={row?.isPublic}
+                            onChange={(event) => handleChangePublic(row, event.target.checked)}
+                        />
+                    );
+                },
+            },
+            {
+                id: "action",
+                disablePadding: "none",
+                align: "center",
+                label: "Hành động",
+                render: (row) => {
+                    return (
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                gap: 1,
+                            }}
+                        >
+                            <IconPencil
+                                onClick={() => handleEditGroup(row)}
+                                size={20}
+                                stroke={1.5}
+                            />
+                            <IconTrash
+                                size={20}
+                                stroke={1.5}
+                            // onClick={(e: any) => handleDeleteItem(e, row._id)}
+                            />
+                        </Box>
+                    );
+                },
+            },
+        ],
+        [handleChangePublic, handleEditGroup]
+    );
 
     const initialValues = useMemo((): TGroupCreate => {
         if (selectedEdit) {
             return {
                 isPublic: selectedEdit.isPublic,
-                mainLibrary: selectedEdit.mainLibrary,
                 name: selectedEdit.name,
             };
         }
+
         return {
             isPublic: false,
-            mainLibrary: "",
             name: "",
         };
     }, [selectedEdit]);
 
-    const [isOpenAddDilog, setIsOpenAddDialog] = useState<boolean>(false);
-    const [selected, setSelected] = useState<number[]>([]);
-
     return (
         <div>
-            <IBreadcrumsCustom profile="QUẢN LÝ NHÓM" mainProfile="QUẢN LÝ NHÓM THƯ VIỆN" link="/quan-ly-nhom" />
+            <IBreadcrumsCustom
+                profile="Quản lý nhóm"
+                mainProfile="Danh sách nhóm"
+                link="/quan-ly-nhom"
+            />
 
             {openAddEdit && (
                 <FormAddEditGroup
@@ -123,14 +188,12 @@ const GroupPage = () => {
                 />
             )}
 
-
-
-            <MainCard >
+            <MainCard>
                 <Stack spacing={2}>
                     <CsFlexRowBetween>
-                        <Box sx={{ ml: 4, mb:2 }}>
+                        <Box sx={{ ml: 4, mb: 2 }}>
                             <StyledButton
-                                color='primary'
+                                color="primary"
                                 size="small"
                                 startIcon={<IconPlus stroke={2} />}
                                 variant="contained"
@@ -139,22 +202,20 @@ const GroupPage = () => {
                                 Thêm mới
                             </StyledButton>
                         </Box>
-
                     </CsFlexRowBetween>
-
                 </Stack>
 
-                <TableGroupList<TGroup>
-                    orderByKey={"name"}
-                    headCells={headCells}
-                    selected={selected}
-                    handleSelected={setSelected}
-                    isOpenAddDilog={isOpenAddDilog}
-                    setIsOpenAddDialog={setIsOpenAddDialog}
+                <ActionsForm />
+
+                <TableList
+                    columns={columns}
+                    rows={data?.data?.result || []}
+                    isLoading={isLoading}
+                    keyChecked="_id"
+                    pagination={data?.data?.meta}
                 />
             </MainCard>
-
         </div>
     );
-}
+};
 export default GroupPage;

@@ -1,0 +1,2 @@
+export const GET_MATERIALS = "GET_MATERIALS";
+export const GET_MATERIAL_ID = "GET_MATERIAL_ID";

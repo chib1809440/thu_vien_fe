@@ -14,6 +14,9 @@ const ExamplePage = Loadable(
 const GroupPage = Loadable(
   lazy(() => import("../views/dashboard-admin/GroupPage"))
 );
+const LibraryPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/LibraryPage"))
+);
 const ContactPage = Loadable(
   lazy(() => import("../views/dashboard-admin/Contact"))
 );
@@ -152,6 +155,10 @@ const MainRoutes = {
     {
       path: "/quan-ly-nhom",
       element: <GroupPage />,
+    },
+    {
+      path: "/quan-ly-thu-vien",
+      element: <LibraryPage />,
     },
     {
       path: "/thong-tin",

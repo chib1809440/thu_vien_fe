@@ -1,8 +1,10 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Switch, TextField } from '@mui/material';
-import { Form, FormikProvider, useFormik } from 'formik';
-import { FC } from 'react';
-import * as yup from 'yup';
-import { TGroupCreate } from '../../../../types/models/group.type';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Form, FormikProvider, useFormik } from "formik";
+import { FC, useMemo } from "react";
+import * as yup from "yup";
+import { TGroupCreate } from "../../../../types/models/group.type";
+import InputForm from "../../../../components/custom/form/InputForm";
+import SwitchForm from "../../../../components/custom/form/SwitchForm";
 
 type Props = {
     open: boolean;
@@ -11,13 +13,13 @@ type Props = {
     isFetching?: boolean;
     initialValues: TGroupCreate;
     isEditMode?: boolean;
+    
 };
 
 const schema = yup.object().shape({
-    createBy: yup.string(),
-    isPublic: yup.boolean(),
-    name: yup.string(),
-    mainLibrary: yup.string(),
+    isPublic: yup.boolean().required("Vui lòng chọn"),
+    name: yup.string().required("Vui lòng nhập tên"),
+    mainLibrary: yup.string().required("Vui lòng nhập tên"),
 });
 
 const FormAddEditGroup: FC<Props> = ({
@@ -27,7 +29,6 @@ const FormAddEditGroup: FC<Props> = ({
     initialValues = {
         isPublic: false,
         name: "",
-        mainLibrary: "",
     },
     isFetching = false,
     isEditMode = false,
@@ -38,14 +39,15 @@ const FormAddEditGroup: FC<Props> = ({
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
             if (onSubmit) {
-                console.log("submit", values);
-                
                 onSubmit(values, resetForm);
             }
         },
     });
 
-    const { errors, touched, values, setFieldValue, handleSubmit, getFieldProps } = formik;
+    const { errors, touched, values, setFieldValue, handleSubmit, getFieldProps } = useMemo(
+        () => formik,
+        [formik]
+    );
 
     return (
         <FormikProvider value={formik}>
@@ -54,55 +56,56 @@ const FormAddEditGroup: FC<Props> = ({
                 fullWidth
                 open={open}
                 onClose={(event, reason) => {
-                    if (reason !== 'backdropClick') {
+                    if (reason !== "backdropClick") {
                         // Ngăn tắt khi bấm ra ngoài
                         onClose();
                     }
                 }}
                 disableEscapeKeyDown
             >
-                <DialogTitle>{isEditMode ? 'Sửa thông tin nhóm' : 'Thêm thông tin nhóm mới'}</DialogTitle>
+                <DialogTitle>
+                    {isEditMode ? "Sửa thông tin nhóm" : "Thêm thông tin nhóm mới"}
+                </DialogTitle>
 
                 <DialogContent>
                     <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
-                        <TextField
-                            autoFocus
-                            margin="dense"
+                        <InputForm
                             label="Tên nhóm"
-                            fullWidth
-                            {...getFieldProps('name')}
+                            placeholder="Nhập tên nhóm"
+                            required
                             error={touched.name && Boolean(errors.name)}
                             helperText={touched.name && errors.name}
+                            {...getFieldProps("name")}
                         />
 
-                        <TextField
-                            margin="dense"
+                        {/* <SelectForm
                             label="Thư viện"
-                            fullWidth
-                            {...getFieldProps('mainLibrary')}
+                            required
+                            {...getFieldProps("mainLibrary")}
                             error={touched.mainLibrary && Boolean(errors.mainLibrary)}
                             helperText={touched.mainLibrary && errors.mainLibrary}
+                            options={[{ label: "Test", value: 1 }]}
+                        /> */}
+
+                        <SwitchForm
+                            value={values?.isPublic ?? false}
+                            onChange={(checked) => setFieldValue("isPublic", checked)}
+                            label="Hiển thị"
                         />
                     </Form>
-
-                    <FormControlLabel
-                        control={
-                            <Switch
-                                value={values?.isPublic ?? false}
-                                checked={values?.isPublic ?? false}
-                                onChange={(e) => setFieldValue("isPublic", e.target.checked)}
-                            />
-                        }
-                        label="Hien thi"
-                    />
                 </DialogContent>
 
                 <DialogActions>
                     <Button disabled={isFetching} onClick={onClose}>
                         Huỷ
                     </Button>
-                    <Button disabled={isFetching} onClick={handleSubmit as () => void} variant="contained" color="primary">
-                        {isFetching ? 'Đang thêm...' : isEditMode ? 'Cập nhật' : 'Thêm mới'}
+                    <Button
+                        disabled={isFetching}
+                        onClick={handleSubmit as () => void}
+                        variant="contained"
+                        color="primary"
+                    >
+                        {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
                     </Button>
                 </DialogActions>
             </Dialog>

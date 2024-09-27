@@ -70,6 +70,14 @@ const dashboardAdmin = {
             breadcrumbs: false
         },
         {
+            id: 'quan-ly-thu-vien',
+            title: "Thư viện",
+            type: 'item',
+            url: '/quan-ly-thu-vien',
+            icon: icons.IconDeviceAnalytics,
+            breadcrumbs: false
+        },
+        {
             id: 'quan-ly-tai-khoan',
             title: "Tài khoản",
             type: 'item',

@@ -13,9 +13,7 @@ export const createExample = async (example: CreateExampleModel): Promise<Entity
 // Read all
 export const getAllExamples = async (page?: number, limit?: number, search?: string, order: string = "ASC"): Promise<EntityResponse<Example[]>> => {
     let url = `${Example_API}?order=${order}`;
-    if (search && page != 1) {
-        return;
-    }
+  
     if (page !== undefined && limit !== undefined) {
         url += `&page=${page}&limit=${limit}`;
     }

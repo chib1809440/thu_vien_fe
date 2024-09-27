@@ -60,6 +60,8 @@ function TableExampleList<T extends DataType>({
     const [checkedAll, setCheckedAll] = useState<boolean>(false);
     const { data: examples, isPending, error, isError, isPlaceholderData, isFetching, refetch } =
         useExampleList(page, rowsPerPage, debouncedSearch);
+
+
     const { mutate: deleteExample, isPending: isPendingUpdate } = useDeleteExample();
     const { mutate: deleteExampleSelected } = useDeleteExampleSelected();
 
@@ -219,7 +221,7 @@ function TableExampleList<T extends DataType>({
                         />
                         <TableBody>
                             {
-                                isPending === false ? (
+                                isPending === false && isFetching === false ? (
                                     examples?.data?.result?.length > 0 ? (
                                         <>
                                             {examples.data.result.map((row, index) => {

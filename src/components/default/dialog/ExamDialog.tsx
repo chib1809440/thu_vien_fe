@@ -46,7 +46,7 @@ import { Entity } from "draft-js";
 import { EntityResponse } from "../../../interfaces/entityResponse";
 export const validationUtilizedObjectSchema = yup.object({
     name: yup.string().required("Vui lòng nhập tên ví dụ"),
-    description: yup.string().required("Vui lòng nhập tên ví dụ"),
+    description: yup.string().required("Vui lòng nhập miêu tả"),
 });
 interface DialogProps {
     id?: string,
@@ -63,9 +63,10 @@ export default function ExampleDialog({ title, maxWidth, id, content, action, fu
     const [formData, setFormData] = useState<Example>();
     const [loading, setLoading] = useState<boolean>(false);
     const [entityError, setEntityError] = useState<string | string[]>(null);
-    const onSuccess = (data: EntityResponse<Example> | ErrorResponse) => {
+    const onSuccess = (data: EntityResponse<Example>) => {
         if (data.statusCode) {
             const { statusCode, message } = data;
+            console.log('dsds', data);
             if (statusCode === 200 || statusCode === 201) {
                 handleOpen(false);
                 if (!id) {
@@ -75,6 +76,8 @@ export default function ExampleDialog({ title, maxWidth, id, content, action, fu
                 }
                 toast.success("Cập nhật dữ liệu thành công", {});
             } else {
+                console.log('dsds', message);
+
                 setEntityError(message);
             }
         } else {
@@ -82,8 +85,19 @@ export default function ExampleDialog({ title, maxWidth, id, content, action, fu
 
         }
     };
-    const { mutate: createExample, isPending: isPendingInsert, isSuccess } = useCreateExample(onSuccess);
-    const { mutate: updateExample, isPending: isPendingUpdate } = useUpdateExample(onSuccess);
+    const OnError = (data: ErrorResponse) => {
+        console.log('toi day', data);
+        if (data.statusCode) {
+            const { statusCode, message } = data;
+
+            setEntityError(message);
+        } else {
+            toast.error("Lỗi hệ thống vui lòng thử lại trong giây lát", {});
+
+        }
+    };
+    const { mutate: createExample, isPending: isPendingInsert, isSuccess } = useCreateExample(onSuccess, OnError);
+    const { mutate: updateExample, isPending: isPendingUpdate } = useUpdateExample(onSuccess, OnError);
 
     const formik = useFormik({
         initialValues: {
@@ -102,15 +116,6 @@ export default function ExampleDialog({ title, maxWidth, id, content, action, fu
                     };
                     createExample(data);
 
-                    // const response = await createExample(data);
-                    // console.log("khe khe", response);
-                    // if (response.statusCode === 201) {
-                    //     fetchData();
-                    //     handleOpen(false);
-                    //     formik.resetForm();
-                    //     setLoading(false);
-                    //     toast.success("Thêm dữ liệu thành công", {});
-                    // }
                 } else {
                     const data: Example = {
                         ...example,

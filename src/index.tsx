@@ -35,7 +35,7 @@ const root = ReactDOM.createRoot(document.getElementById('root')!);
 
 
 const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: 5, retryDelay: 1000 } },
+    defaultOptions: { queries: { retry: 5, retryDelay: 3000, refetchOnWindowFocus: false, } },
 });
 root.render(
     <QueryClientProvider client={queryClient}>

@@ -15,6 +15,7 @@ import axios from '../utils/axios';
 import { KeyedObject } from '../types';
 import { InitialLoginContextProps, JWTContextType } from '../types/auth';
 import { AUTH_API } from '../_apis/api-endpoint';
+import { getAllExamples } from '../_apis/example.api';
 
 // constant
 const initialState: InitialLoginContextProps = {
@@ -34,9 +35,10 @@ const verifyToken: (st: string) => boolean = (serviceToken) => {
     return decoded.exp > Date.now() / 1000;
 };
 
-const setSession = (serviceToken?: string | null) => {
+const setSession = (serviceToken?: string | null, refreshToken?: string | null) => {
     if (serviceToken) {
         localStorage.setItem('serviceToken', serviceToken);
+
         axios.defaults.headers.common.Authorization = `Bearer ${serviceToken}`;
         axios.defaults.headers.post['Content-Type'] = "*/*";
         axios.defaults.headers.post['Accept'] = "*/*";
@@ -46,6 +48,13 @@ const setSession = (serviceToken?: string | null) => {
     } else {
         localStorage.removeItem('serviceToken');
         delete axios.defaults.headers.common.Authorization;
+    }
+    if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+
+    } else {
+        localStorage.removeItem('refreshToken');
+
     }
 };
 
@@ -59,12 +68,13 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
         const init = async () => {
             try {
                 const serviceToken = window.localStorage.getItem('serviceToken');
+                const refreshToken = window.localStorage.getItem('refreshToken');
                 // const dataUser = window.localStorage.getItem('dataUser');
                 const userString: any = localStorage.getItem('dataUser');
                 const userObject = JSON.parse(userString)
 
                 if (serviceToken && verifyToken(serviceToken)) {
-                    setSession(serviceToken);
+                    setSession(serviceToken, refreshToken);
                     dispatch({
                         type: LOGIN,
                         payload: {
@@ -73,9 +83,16 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
                         }
                     });
                 } else {
-                    dispatch({
-                        type: LOGOUT
-                    });
+                    const response = await getAllExamples(1, 10)
+                    if (response.statusCode === 200 || response.statusCode === 201) {
+                        dispatch({
+                            type: LOGIN,
+                            payload: {
+                                isLoggedIn: true,
+                                user: userObject // Giả sử API trả về thông tin user
+                            }
+                        });
+                    }
                 }
             } catch (err) {
                 console.error(err);
@@ -94,8 +111,7 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
             localStorage.setItem('userID', response?.data.userID);
             localStorage.setItem('dataUser', JSON.stringify(response?.data));
 
-
-            setSession(response.data.accessToken);
+            setSession(response?.data.data.accessToken, response?.data.data.refreshToken);
             dispatch({
                 type: LOGIN,
                 payload: {
@@ -139,6 +155,9 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
     const logout = () => {
         setSession(null);
         dispatch({ type: LOGOUT });
+        localStorage.removeItem('dataUser');
+        localStorage.removeItem('serviceToken');
+        localStorage.removeItem('refreshToken');
         localStorage.removeItem('serviceTokenLT')
     };
 

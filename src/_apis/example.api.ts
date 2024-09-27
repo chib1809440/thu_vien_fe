@@ -43,3 +43,9 @@ export const deleteExample = async (id: string): Promise<EntityResponse<Example>
     const response = await axios.delete<EntityResponse<Example>>(`${Example_API}/${id}`);
     return response.data;
 };
+export const deleteExampleSelected = async (ids: string[]): Promise<EntityResponse<Example>> => {
+    const response = await axios.delete<EntityResponse<Example>>(`${Example_API}/selected`, {
+        data: ids,  // Use `data` to send the body with axios.delete
+    });
+    return response.data;
+};

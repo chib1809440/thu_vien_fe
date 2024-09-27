@@ -5,7 +5,7 @@
 // import { ErrorResponse } from 'react-router-dom';
 
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createExample, deleteExample, getAllExamples, getExampleById, updateExample } from "../../_apis/example.api";
+import { createExample, deleteExample, deleteExampleSelected, getAllExamples, getExampleById, updateExample } from "../../_apis/example.api";
 import { RQ_EXAMPLE, RQ_EXAMPLELIST } from "./constants_react_query";
 import { CreateExampleModel, Example } from "../../interfaces/example";
 
@@ -173,5 +173,19 @@ export function useExample(ids: (string | undefined)[] | undefined) {
                 queryFn: () => getExampleById(id),
             };
         }),
+    });
+}
+export function useDeleteExampleSelected() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (ids: string[]) => deleteExampleSelected(ids),
+        onSettled: async (_, error) => {
+            if (error) {
+                console.log(error);
+            } else {
+                await queryClient.invalidateQueries({ queryKey: [RQ_EXAMPLELIST] });
+            }
+        },
     });
 }

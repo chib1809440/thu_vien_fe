@@ -22,41 +22,9 @@ import GradientCircularProgressLoading from "../../../../components/default/load
 import { CsFlexRowBetween } from "../../../../components/default/flex";
 import CustomInput from "../../../../components/default/input/CustomInput";
 import AlertConfirmDialog from "../../../../components/default/alert/confirmAlertDialog";
-import { useDeleteExample, useExampleList } from "../../../../hooks/react-query/exampleData";
+import { useDeleteExample, useDeleteExampleSelected, useExampleList } from "../../../../hooks/react-query/exampleData";
 import ExampleDialog from "../../../../components/default/dialog/ExamDialog";
-// function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-//     if (b[orderBy] < a[orderBy]) {
-//         return -1;
-//     }
-//     if (b[orderBy] > a[orderBy]) {
-//         return 1;
-//     }
-//     return 0;
-// }
 
-// function getComparator<Key extends keyof any>(
-//     order: Order,
-//     orderBy: Key,
-// ): (
-//     a: { [key in Key]: number | string },
-//     b: { [key in Key]: number | string },
-// ) => number {
-//     return order === 'desc'
-//         ? (a, b) => descendingComparator(a, b, orderBy)
-//         : (a, b) => -descendingComparator(a, b, orderBy);
-// }
-
-// function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
-//     const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-//     stabilizedThis.sort((a, b) => {
-//         const order = comparator(a[0], b[0]);
-//         if (order !== 0) {
-//             return order;
-//         }
-//         return a[1] - b[1];
-//     });
-//     return stabilizedThis.map((el) => el[0]);
-// }
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
     headCells: HeadCell[],
@@ -93,6 +61,7 @@ function TableExampleList<T extends DataType>({
     const { data: examples, isPending, error, isError, isPlaceholderData, isFetching, refetch } =
         useExampleList(page, rowsPerPage, debouncedSearch);
     const { mutate: deleteExample, isPending: isPendingUpdate } = useDeleteExample();
+    const { mutate: deleteExampleSelected } = useDeleteExampleSelected();
 
     const handleCheckedAll = async () => {
         const newCheckedAll = !checkedAll;
@@ -121,35 +90,6 @@ function TableExampleList<T extends DataType>({
         }
     };
 
-    // const fetchExamples = async () => {
-    //     try {
-    //         setIsLoading(true);
-    //         const response = await getAllExamples(page, rowsPerPage, debouncedSearch);
-    //         if (response.statusCode === 200) {
-    //             if (response?.data?.result.length > 0) {
-    //                 const ids = response.data.result.map(item => item._id);
-    //                 const allChecked = ids.every(id => checked.includes(id));
-    //                 if (allChecked) {
-    //                     setCheckedAll(true); // Set checkedAll to true if all students are already checked
-    //                 } else {
-    //                     setCheckedAll(false); // Otherwise, set checkedAll to false
-    //                 }
-    //             }
-    //             setExamples(response);
-    //         } else {
-    //             // Handle error
-    //             console.error(response.message);
-    //         }
-    //         setIsLoading(false);
-    //     } catch (error) {
-    //         // Handle error
-    //         setIsLoading(false);
-    //         console.error(error);
-    //     }
-    // };
-    // useEffect(() => {
-    //     fetchExamples();
-    // }, [page, rowsPerPage, debouncedSearch]);
     useEffect(() => {
         // Update URL parameters when page, rowsPerPage, or contentSearch changes
         setSearchParams({ page: page.toString(), limit: rowsPerPage.toString(), search: contentSearch }, { replace: true });
@@ -166,15 +106,6 @@ function TableExampleList<T extends DataType>({
             }
         }
     }, [examples, checked, setCheckedAll]);
-    // const visibleRows = useMemo(
-    //     () =>
-    //         stableSort(schools.data, getComparator(order, orderBy)).slice(
-    //             (page - 1) * rowsPerPage,
-    //             (page - 1) * rowsPerPage + rowsPerPage,
-    //         ),
-    //     [order, orderBy, page, rowsPerPage],
-    // );
-
 
     const handleRequestSort = (
         event: React.MouseEvent<unknown>,
@@ -227,7 +158,6 @@ function TableExampleList<T extends DataType>({
                 if (page !== 1 && examples.data.result.length === 1) {
                     setPage(page - 1);
                 }
-
                 setIsOpenConfirmDialog(false);
                 toast.success("Xóa dữ liệu thành công", {});
             } catch (error) {
@@ -247,10 +177,7 @@ function TableExampleList<T extends DataType>({
     };
     const handleConfirmDeleteItemSelected = async () => {
         try {
-            checked.map(async (id) => {
-                const response = await deleteExample(id);
-                return response;
-            });
+            deleteExampleSelected(checked)
             setChecked([]);
             if (page !== 1 && examples.data.result.length === checked.length) {
                 setPage(page - 1)
@@ -263,10 +190,6 @@ function TableExampleList<T extends DataType>({
             toast.error(error.message);
         }
     };
-    const handleClearSelected = async () => {
-        setChecked([]);
-    };
-
     return (
         <>
             <SearchAndFilter onHandleDeleteSelectedItem={handleDeleteItemSelected} actionDeleteSelectedItem={true} contentSearch={contentSearch} handleContentSearch={setContentSearch} />

@@ -46,7 +46,7 @@ import { Entity } from "draft-js";
 import { EntityResponse } from "../../../interfaces/entityResponse";
 export const validationUtilizedObjectSchema = yup.object({
     name: yup.string().required("Vui lòng nhập tên ví dụ"),
-    description: yup.string().required("Vui lòng nhập tên ví dụ"),
+    description: yup.string().required("Vui lòng nhập miêu tả"),
 });
 interface DialogProps {
     id?: string,
@@ -101,16 +101,7 @@ export default function ExampleDialog({ title, maxWidth, id, content, action, fu
 
                     };
                     createExample(data);
-
-                    // const response = await createExample(data);
-                    // console.log("khe khe", response);
-                    // if (response.statusCode === 201) {
-                    //     fetchData();
-                    //     handleOpen(false);
-                    //     formik.resetForm();
-                    //     setLoading(false);
-                    //     toast.success("Thêm dữ liệu thành công", {});
-                    // }
+               
                 } else {
                     const data: Example = {
                         ...example,

@@ -49,30 +49,8 @@ export function EnhancedTableHead(props: EnhancedTableProps) {
                         sortDirection={orderBy === headCell.id ? order : false}
 
                     >
-                        {headCell.id === "action" ?
-                            headCell.label
-                            :
-                            <TableSortLabel
-                                active={orderBy === headCell.id}
-                                direction={orderBy === headCell.id ? order : 'asc'}
-                                //  onClick={createSortHandler(headCell.id)}
-                                sx={{
-                                    '& .MuiTableSortLabel-icon': {
-                                        display: 'none', // Ẩn icon,
-                                    },
-                                }}
-                            >
-                                {headCell.label}
+                        {headCell.label}
 
-                                {orderBy === headCell.id ? (
-                                    <Box sx={visuallyHidden} >
-                                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                    </Box>
-                                ) : null
-                                }
-
-                            </TableSortLabel>
-                        }
                     </StyledTableCell>
                 ))}
             </TableRow>

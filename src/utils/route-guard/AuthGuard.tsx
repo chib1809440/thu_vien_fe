@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 
 // project imports
 import useAuth from '../../hooks/useAuth';
-import { GuardProps }  from '../../types';
+import { GuardProps } from '../../types';
 import { useEffect } from 'react';
 
 // ==============================|| AUTH GUARD ||============================== //

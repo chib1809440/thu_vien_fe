@@ -102,7 +102,7 @@ export function useExampleList(page?: number, limit?: number, search?: string) {
     });
 }
 
-export function useCreateExample(onSuccess) {
+export function useCreateExample(onSuccess, onError) {
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -111,8 +111,8 @@ export function useCreateExample(onSuccess) {
             console.log("mutate");
         },
 
-        onError: () => {
-            console.log("error");
+        onError: (data) => {
+            onError(data)
         },
 
         onSuccess: (data) => {
@@ -143,7 +143,7 @@ export function useDeleteExample() {
         },
     });
 }
-export function useUpdateExample(onSuccess) {
+export function useUpdateExample(onSuccess, onError) {
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -151,6 +151,9 @@ export function useUpdateExample(onSuccess) {
         onSuccess: (data) => {
             onSuccess(data)
 
+        },
+        onError: (data) => {
+            onError(data)
         },
         onSettled: async (_, error, variables) => {
             if (error) {

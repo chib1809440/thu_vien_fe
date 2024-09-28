@@ -318,3 +318,28 @@ img {
 .required_text{
   color:#d32f2f;
 }
+.react-datepicker-wrapper,
+.react-datepicker__input-container,
+.react-datepicker__input-container input {
+  width: 100%;
+}
+
+.react-datepicker__input-container input {
+  padding: 20px;
+  font-size: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  border-radius: 4px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.react-datepicker__input-container input:hover {
+  border-color: rgba(0, 0, 0, 0.87);
+}
+
+.react-datepicker__input-container input:focus {
+  border-color: #3f51b5;
+  box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.2);
+}

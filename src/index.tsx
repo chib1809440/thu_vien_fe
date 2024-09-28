@@ -16,6 +16,7 @@ import { persister, store } from './store';
 import './assets/scss/style.scss';
 import ReactDOM from 'react-dom/client';
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import "react-datepicker/dist/react-datepicker.css";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 //sentry
 import * as Sentry from "@sentry/react";

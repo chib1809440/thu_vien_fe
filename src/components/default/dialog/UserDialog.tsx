@@ -28,8 +28,9 @@ import {
     StepLabel,
     Stepper,
     TextField,
-    TextareaAutosize,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
 import { useTheme } from "@mui/material/styles";
 import { LoadingButton } from "@mui/lab";
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
@@ -44,11 +45,19 @@ import { Entity } from "draft-js";
 import { EntityResponse } from "../../../interfaces/entityResponse";
 import { CreateUserModel, User } from "../../../interfaces/user";
 import { useCreateUser, useUpdateUser } from "../../../hooks/react-query/userData";
+import { vi } from "date-fns/locale";
+import DatePicker from "react-datepicker";
 export const validationUtilizedObjectSchema = yup.object({
     fullname: yup.string().required("Vui lòng nhập họ và tên"),
     email: yup.string().email("Vui lòng nhập đúng định dạng email"),
     username: yup.string().required("Vui lòng nhập tên đăng nhập"),
-    phoneNumber: yup.string().required("Vui lòng nhập tên đăng nhập"),
+    phoneNumber: yup
+        .string()
+        .required("Vui lòng nhập số điện thoại")
+        .matches(
+            /^(\+84|0[3|5|7|8|9])+([0-9]{8})$/,
+            "Số điện thoại không hợp lệ, vui lòng nhập số hợp lệ"
+        ),
     address: yup.string().required("Vui lòng nhập địa chỉ"),
     avatar: yup.string().required("Vui lòng nhập ảnh"),
     birthday: yup.string().required("Vui lòng nhập ngày sinh"),
@@ -69,6 +78,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
     const [formData, setFormData] = useState<User>();
     const [loading, setLoading] = useState<boolean>(false);
     const [entityError, setEntityError] = useState<string | string[]>(null);
+    const [birthday, setBirthday] = useState(new Date());
     const onSuccess = (data: EntityResponse<User>) => {
         if (data.statusCode) {
             const { statusCode, message } = data;
@@ -81,7 +91,6 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                 }
                 toast.success("Cập nhật dữ liệu thành công", {});
             } else {
-                console.log('dsds', message);
 
                 setEntityError(message);
             }
@@ -178,7 +187,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <DialogTitle sx={{ m: 0, pt: 3, pb: 0 }} id="customized-dialog-title">
+                <DialogTitle sx={{ m: 0, pb: 2 }} id="customized-dialog-title">
                     <Typography variant="h4">{title}</Typography>
                 </DialogTitle>
                 <IconButton
@@ -225,7 +234,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                         <Grid item md={12}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                                    Họ và tên <span className="required_text">(*)</span>{" "}
+                                                    Họ và tên <span className="required_text">(*)</span>{""}
                                                 </Typography>
                                                 <TextField
                                                     variant="outlined"
@@ -246,37 +255,6 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                                             {" "}
                                                             {formik.errors.fullname
                                                                 ? formik.errors.fullname.toString()
-                                                                : ""}
-                                                        </FormHelperText>
-                                                    )}
-                                            </Box>
-                                        </Grid>
-                                    </Grid>
-                                    <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={12}>
-                                            <Box style={{ width: "100%" }}>
-                                                <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                                    Tên đăng nhập <span className="required_text">(*)</span>{""}
-                                                </Typography>
-                                                <TextField
-                                                    variant="outlined"
-                                                    fullWidth
-                                                    id="username"
-                                                    name="username"
-                                                    value={formik.values.username}
-                                                    onChange={formik.handleChange}
-                                                    onBlur={formik.handleBlur}
-                                                    error={
-                                                        formik.touched.username &&
-                                                        Boolean(formik.errors.username)
-                                                    }
-                                                />
-                                                {formik.touched.username &&
-                                                    Boolean(formik.errors.username) && (
-                                                        <FormHelperText className="required_text">
-                                                            {" "}
-                                                            {formik.errors.username
-                                                                ? formik.errors.username.toString()
                                                                 : ""}
                                                         </FormHelperText>
                                                     )}
@@ -318,6 +296,176 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                         <Grid item md={12}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
+                                                    Email <span className="required_text">(*)</span>{""}
+                                                </Typography>
+                                                <TextField
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    id="email"
+                                                    name="email"
+                                                    value={formik.values.email}
+                                                    onChange={formik.handleChange}
+                                                    onBlur={formik.handleBlur}
+                                                    error={
+                                                        formik.touched.email &&
+                                                        Boolean(formik.errors.email)
+                                                    }
+                                                />
+                                                {formik.touched.email &&
+                                                    Boolean(formik.errors.email) && (
+                                                        <FormHelperText className="required_text">
+                                                            {" "}
+                                                            {formik.errors.email
+                                                                ? formik.errors.email.toString()
+                                                                : ""}
+                                                        </FormHelperText>
+                                                    )}
+                                            </Box>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container spacing={3} sx={{ mb: 1.5 }}>
+                                        <Grid item md={12}>
+                                            <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
+                                                Giới tính  <span className="required_text">(*)</span>{" "}
+                                            </Typography>
+                                            <FormControl fullWidth>
+                                                <Select
+                                                    labelId="demo-simple-select-label"
+                                                    id="gender"
+                                                    name="gender"
+                                                    type="gender"
+                                                    value={formik.values.gender}
+                                                    onChange={formik.handleChange}
+                                                    onBlur={formik.handleBlur}
+                                                    error={
+                                                        formik.touched.gender &&
+                                                        Boolean(formik.errors.gender)
+                                                    }
+                                                >
+                                                    <MenuItem
+                                                        key={0}
+                                                        value="Nữ"
+                                                    >
+                                                        Nữ
+                                                    </MenuItem>
+                                                    <MenuItem
+                                                        key={1}
+                                                        value="Nam"
+                                                    >
+                                                        Nam
+                                                    </MenuItem>
+                                                </Select>
+                                            </FormControl>
+                                            {formik.touched.gender &&
+                                                Boolean(formik.errors.gender) && (
+                                                    <FormHelperText className="required_text">
+                                                        {" "}
+                                                        {formik.errors.gender
+                                                            ? formik.errors.gender.toString()
+                                                            : ""}
+                                                    </FormHelperText>
+                                                )}
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container spacing={3} sx={{ mb: 1.5 }}>
+                                        <Grid item md={12}>
+                                            <Box style={{ width: "100%" }}>
+                                                <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
+                                                    Ngày sinh <span className="required_text">(*)</span>{" "}
+                                                </Typography>
+                                                <DatePicker
+                                                    locale={vi}
+                                                    className="react-date-picker"
+                                                    selected={birthday}
+                                                    onChange={(date: Date) => {
+                                                        setBirthday(date);
+                                                        formik.setFieldValue("birthday", date);
+                                                    }}
+                                                    onYearChange={(date: Date) => {
+                                                        setBirthday(date);
+                                                        formik.setFieldValue("birthday", date);
+                                                    }}
+                                                    onMonthChange={(date: Date) => {
+                                                        setBirthday(date);
+                                                        formik.setFieldValue("birthday", date);
+                                                    }}
+                                                    dateFormat="dd/MM/yyyy" // Định dạng ngày tháng năm
+                                                    showMonthDropdown // Hiển thị dropdown chọn tháng
+                                                    scrollYearDropDown
+                                                    scrollableMonthYearDropdown
+                                                    showYearDropdown // Hiển thị dropdown chọn năm
+                                                />
+                                                {formik.touched.birthday &&
+                                                    Boolean(formik.errors.birthday) && (
+                                                        <FormHelperText className="required_text">
+                                                            {" "}
+                                                            {formik.errors.birthday
+                                                                ? formik.errors.birthday.toString()
+                                                                : ""}
+                                                        </FormHelperText>
+                                                    )}
+                                            </Box>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container spacing={3} sx={{ mb: 1.5 }}>
+                                        <Grid item md={12}>
+                                            <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
+                                                Địa chỉ    <span className="required_text">(*)</span>
+                                            </Typography>
+                                            <TextareaAutosize
+                                                id="address"
+                                                name="address"
+                                                value={formik.values.address}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                minRows={4}
+                                            />
+                                            {formik.touched.address &&
+                                                Boolean(formik.errors.address) && (
+                                                    <FormHelperText className="required_text">
+                                                        {" "}
+                                                        {formik.errors.address
+                                                            ? formik.errors.address.toString()
+                                                            : ""}
+                                                    </FormHelperText>
+                                                )}
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container spacing={3} sx={{ mb: 1.5 }}>
+                                        <Grid item md={12}>
+                                            <Box style={{ width: "100%" }}>
+                                                <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
+                                                    Tên đăng nhập <span className="required_text">(*)</span>{""}
+                                                </Typography>
+                                                <TextField
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    id="username"
+                                                    name="username"
+                                                    value={formik.values.username}
+                                                    onChange={formik.handleChange}
+                                                    onBlur={formik.handleBlur}
+                                                    error={
+                                                        formik.touched.username &&
+                                                        Boolean(formik.errors.username)
+                                                    }
+                                                />
+                                                {formik.touched.username &&
+                                                    Boolean(formik.errors.username) && (
+                                                        <FormHelperText className="required_text">
+                                                            {" "}
+                                                            {formik.errors.username
+                                                                ? formik.errors.username.toString()
+                                                                : ""}
+                                                        </FormHelperText>
+                                                    )}
+                                            </Box>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container spacing={3} sx={{ mb: 1.5 }}>
+                                        <Grid item md={12}>
+                                            <Box style={{ width: "100%" }}>
+                                                <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Mật khẩu <span className="required_text">(*)</span>{""}
                                                 </Typography>
                                                 <TextField
@@ -328,6 +476,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                                     value={formik.values.password}
                                                     onChange={formik.handleChange}
                                                     onBlur={formik.handleBlur}
+                                                    type="password"
                                                     error={
                                                         formik.touched.password &&
                                                         Boolean(formik.errors.password)
@@ -366,3 +515,55 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
         </>
     );
 }
+const blue = {
+    100: '#DAECFF',
+    200: '#b6daff',
+    400: '#3399FF',
+    500: '#007FFF',
+    600: '#0072E5',
+    900: '#003A75',
+};
+
+const grey = {
+    50: '#F3F6F9',
+    100: '#E5EAF2',
+    200: '#DAE2ED',
+    300: '#C7D0DD',
+    400: '#B0B8C4',
+    500: '#9DA8B7',
+    600: '#6B7A90',
+    700: '#434D5B',
+    800: '#303740',
+    900: '#1C2025',
+};
+
+const TextareaAutosize = styled(BaseTextareaAutosize)(
+    ({ theme }) => `
+  box-sizing: border-box;
+  width: 100%;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
+  background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
+  border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[400]};
+  box-shadow: 0px 2px 2px ${theme.palette.mode === 'dark' ? grey[900] : grey[50]};
+
+  &:hover {
+    border-color: ${blue[400]};
+  }
+
+  &:focus {
+    border-color: ${blue[400]};
+    box-shadow: 0 0 0 3px ${theme.palette.mode === 'dark' ? blue[600] : blue[200]};
+  }
+
+  // firefox
+  &:focus-visible {
+    outline: 0;
+  }
+`,
+);

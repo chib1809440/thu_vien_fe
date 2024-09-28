@@ -1,2 +1,4 @@
 export const RQ_EXAMPLELIST = 'exampleList'
 export const RQ_EXAMPLE = 'example'
+export const RQ_USERLIST = 'userList'
+export const RQ_USER = 'user'

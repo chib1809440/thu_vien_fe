@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { TCategory, TCategoryCreate, TCategoryEdit } from "../../../types/models/category";
 import categoryService from "../../../_apis/services/category.service";
+import { toast } from "react-toastify";
 
 export const useAddCategory = () => {
     return useMutation({
@@ -8,7 +9,7 @@ export const useAddCategory = () => {
             return await categoryService.create<TCategoryCreate, TCategory>(data)
         },
         onError: (error: any) => {
-            alert("Loi kia " + error?.response?.data?.message || error.message);
+            toast.error(error?.response?.data?.message || error.message);
         },
     })
 }
@@ -19,7 +20,7 @@ export const useEditCategory = () => {
             return await categoryService.update<TCategoryEdit, TCategory>(data, data._id);
         },
         onError: (error: any) => {
-            alert("Loi kia " + error?.response?.data?.message || error.message);
+            toast.error(error?.response?.data?.message || error.message);
         },
     })
 }
@@ -30,7 +31,7 @@ export const useDeleteCategory = () => {
             return await categoryService.delete<TCategory>(_id)
         },
         onError: (error: any) => {
-            alert("Loi kia " + error?.response?.data?.message || error.message);
+            toast.error(error?.response?.data?.message || error.message);
         },
     })
 }

@@ -3,10 +3,11 @@ import categoryService from "../../../_apis/services/category.service";
 import { TCategory } from "../../../types/models/category";
 import { TFilter } from "../../../types/models/entity-common.type";
 import { GET_CATEGORIES, GET_CATEGORY_ID } from "./category-key";
+import { getQueryKeys } from "../../../utils/object";
 
 export const useFetchCategory = (params?:TFilter)=>{
     return useQuery({
-        queryKey:[GET_CATEGORIES, params],
+        queryKey: getQueryKeys({ key: GET_CATEGORIES, ...params }),
         queryFn: async()=>{
             return await categoryService.getAll<TCategory>(params);
         },
@@ -19,7 +20,7 @@ export const useReFetchCategory = ()=>{
 
     const revalidate = (params?:TFilter)=>{
         queryClient.invalidateQueries({
-            queryKey:[GET_CATEGORIES, params]
+            queryKey: getQueryKeys({ key: GET_CATEGORIES, ...params }),
         })
     }
 
@@ -28,7 +29,7 @@ export const useReFetchCategory = ()=>{
 
 export const useFetchCategoryById = (_id: string)=>{
     return useQuery({
-        queryKey:[GET_CATEGORY_ID, _id],
+        queryKey: getQueryKeys({ key: GET_CATEGORY_ID, _id }),
         queryFn: async()=>{
             return await categoryService.getById<TCategory>(_id);
         },

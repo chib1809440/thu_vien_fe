@@ -2,19 +2,20 @@ import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
+import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
 import { CsFlexRowBetween } from "../../../components/default/flex";
-import { useAddLibrary, useEditLibrary } from "../../../hooks/services/library/library-mutation";
+import { useAddLibrary, useDeleteLibrary, useEditLibrary } from "../../../hooks/services/library/library-mutation";
 import { useFetchLibrary, useReFetchLibrary } from "../../../hooks/services/library/library-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn } from "../../../types/common/table";
-import { TGroupCreate } from "../../../types/models/group.type";
 import { TLibrary, TLibraryCreate } from "../../../types/models/library.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditLibrary from "./ui-components/FormAddEditLibrary";
-import ActionsForm from "../../../components/custom/form/ActionForm";
+
 
 const LibraryPage = () => {
     const queryString = useQueryString();
@@ -25,10 +26,15 @@ const LibraryPage = () => {
     const { data, isLoading } = useFetchLibrary({ limit, page, search });
     const mutationAdd = useAddLibrary();
     const mutationEdit = useEditLibrary();
+    const mutationDelete = useDeleteLibrary();
     const revalidate = useReFetchLibrary();
 
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TLibrary | null>(null);
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const [libraryToDelete, setLibraryToDelete] = useState<TLibrary | null>(null);
+    console.log(libraryToDelete);
+    
 
     const addLibrary = () => {
         setOpenAddEdit(true);
@@ -44,7 +50,7 @@ const LibraryPage = () => {
         setSelectedEdit(null);
     };
 
-    const handleSubmit = (values: TGroupCreate) => {
+    const handleSubmit = (values: TLibraryCreate) => {
         if (selectedEdit) {
             mutationEdit.mutate(
                 { ...values, _id: selectedEdit._id },
@@ -56,6 +62,7 @@ const LibraryPage = () => {
                     },
                 }
             );
+            return;
         }
 
         mutationAdd.mutate(values, {
@@ -65,6 +72,30 @@ const LibraryPage = () => {
                 setOpenAddEdit(false);
             },
         });
+    };
+
+    const handleOpenConfirmDialog = (row: TLibrary) => {
+        setLibraryToDelete(row);
+        setOpenConfirmDialog(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (libraryToDelete) {
+            mutationDelete.mutate(libraryToDelete._id, {
+                onSuccess: () => {
+                    toast.success('Xóa thư viện thành công.');
+                    revalidate();
+                    setOpenConfirmDialog(false);
+                },
+                onError: () => {
+                    toast.error('Xóa thư viện thất bại.');
+                },
+            });
+        }
+    };
+
+    const handleCloseConfirmDialog = () => {
+        setOpenConfirmDialog(false);
     };
 
     const columns: TColumn<TLibrary>[] = useMemo(
@@ -121,14 +152,14 @@ const LibraryPage = () => {
                             <IconTrash
                                 size={20}
                                 stroke={1.5}
-                            // onClick={(e: any) => handleDeleteItem(e, row._id)}
+                                onClick={() => handleOpenConfirmDialog(row)} 
                             />
                         </Box>
                     );
                 },
             },
         ],
-        [handleEditLibrary]
+        [handleEditLibrary, handleOpenConfirmDialog]
     );
 
     const initialValues = useMemo((): TLibraryCreate => {
@@ -158,7 +189,7 @@ const LibraryPage = () => {
             <IBreadcrumsCustom
                 profile="Quản lý thư viện"
                 mainProfile="Danh sách thư viện"
-                link="/quan-ly-thu-vien"
+                link="/he-thong/quan-ly-thu-vien"
             />
 
             {openAddEdit && (
@@ -196,6 +227,14 @@ const LibraryPage = () => {
                     isLoading={isLoading}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
+                />
+
+                <ConfirmDeleteDialog
+                    open={openConfirmDialog}
+                    onClose={handleCloseConfirmDialog}
+                    onConfirm={handleConfirmDelete}
+                    title="Xác nhận xóa thư viện"
+                    description={`Bạn có chắc chắn muốn xóa "${libraryToDelete?.name}" ? Hành động này không thể hoàn tác.`}
                 />
             </MainCard>
         </div>

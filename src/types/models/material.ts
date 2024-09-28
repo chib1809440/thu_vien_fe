@@ -10,5 +10,5 @@ export type TMaterial = TEntityAbstract & {
     description: string;
 };
 
-export type TMaterialCreate = Partial<Pick<TMaterial,  "name" | "description" >>;
-export type TMaterialEdit = Partial<Pick<TMaterial,  "name" | "description" >> & {_id:string};
+export type TMaterialCreate = Partial<Pick<TMaterial, "isPublic" | "name" | "description" >>;
+export type TMaterialEdit = Partial<Pick<TMaterial, "isPublic" | "name" | "description" >> & {_id:string};

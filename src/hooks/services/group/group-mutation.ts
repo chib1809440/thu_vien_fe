@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query"
 import groupService from "../../../_apis/services/group.service"
 import { TGroup, TGroupCreate, TGroupEdit } from "../../../types/models/group.type";
+import { toast } from "react-toastify";
 
 export const useAddGroup = () => {
     return useMutation({
@@ -8,7 +9,7 @@ export const useAddGroup = () => {
             return await groupService.create<TGroupCreate, TGroup>(data);
         },
         onError: (error: any) => {
-            alert("Loi kia " + error?.response?.data?.message || error.message);
+            toast.error(error?.response?.data?.message || error.message);
         },
     })
 }
@@ -19,7 +20,7 @@ export const useEditGroup = () => {
             return await groupService.update<TGroupEdit, TGroup>(data, data._id)
         },
         onError: (error: any) => {
-            alert("Loi kia " + error?.response?.data?.message || error.message);
+            toast.error(error?.response?.data?.message || error.message);
         },
     })
 }

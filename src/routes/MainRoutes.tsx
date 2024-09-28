@@ -11,11 +11,18 @@ const HomePage = Loadable(
 const ExamplePage = Loadable(
   lazy(() => import("../views/dashboard-admin/ExamplePage"))
 );
+
+// hệ thống
 const GroupPage = Loadable(
   lazy(() => import("../views/dashboard-admin/GroupPage"))
 );
 const LibraryPage = Loadable(
   lazy(() => import("../views/dashboard-admin/LibraryPage"))
+);
+
+// danh mục
+const MaterialPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/MaterialPage"))
 );
 const ContactPage = Loadable(
   lazy(() => import("../views/dashboard-admin/Contact"))
@@ -153,11 +160,11 @@ const MainRoutes = {
       element: <ExamplePage />,
     },
     {
-      path: "/quan-ly-nhom",
+      path: "/he-thong/quan-ly-nhom",
       element: <GroupPage />,
     },
     {
-      path: "/quan-ly-thu-vien",
+      path: "/he-thong/quan-ly-thu-vien",
       element: <LibraryPage />,
     },
     {
@@ -176,9 +183,13 @@ const MainRoutes = {
       path: "/quan-ly-danh-muc/tu-ke",
       element: <SlideProductPage />,
     },
+    // {
+    //   path: "quan-ly-danh-muc/dang-hoc-lieu",
+    //   element: <TypeProductPage />,
+    // },
     {
       path: "quan-ly-danh-muc/dang-hoc-lieu",
-      element: <TypeProductPage />,
+      element: <MaterialPage />,
     },
     {
       path: "/quan-ly-danh-muc/linh-vuc",

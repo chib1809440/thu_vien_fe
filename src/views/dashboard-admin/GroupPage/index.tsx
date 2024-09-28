@@ -50,8 +50,8 @@ const GroupPage = () => {
             { isPublic: checked, _id: row._id },
             {
                 onSuccess: (data) => {
-                    revalidate();
                     toast.success('Cập nhật hiển thị thành công.');
+                    revalidate();
                 },
             }
         );
@@ -64,23 +64,21 @@ const GroupPage = () => {
                 { ...values, _id: selectedEdit._id },
                 {
                     onSuccess: () => {
-                        revalidate();
                         toast.success('Chỉnh sửa thành công.');
+                        revalidate();
                         handleClose();
-                    },
-
-                    onError: (error: any) => {
-                        toast.error('Chỉnh sửa thất bại');
-                        // alert("Lỗi khi chỉnh sửa: " + error?.response?.data?.message);
                     },
                 }
             );
+
+            return;
+
         }
 
         mutationAdd.mutate(values, {
             onSuccess: (data) => {
-                revalidate();
                 toast.success('Thêm thành công.');
+                revalidate();
                 setOpenAddEdit(false);
             },
         });
@@ -93,7 +91,6 @@ const GroupPage = () => {
                 disablePadding: "none",
                 label: "Tên nhóm",
                 align: "left",
-                // sxRow: { paddingRight: 4 },
             },
             {
                 id: "mainLibrary",
@@ -175,7 +172,7 @@ const GroupPage = () => {
             <IBreadcrumsCustom
                 profile="Quản lý nhóm"
                 mainProfile="Danh sách nhóm"
-                link="/quan-ly-nhom"
+                link="/he-thong/quan-ly-nhom"
             />
 
             {openAddEdit && (

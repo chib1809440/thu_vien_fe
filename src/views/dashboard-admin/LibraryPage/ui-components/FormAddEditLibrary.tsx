@@ -117,7 +117,7 @@ const FormAddEditLibrary: FC<Props> = ({
                 </DialogContent>
 
                 <DialogActions>
-                    <Button disabled={isFetching} onClick={onClose}>
+                    <Button disabled={isFetching} onClick={onClose} color="error">
                         Huỷ
                     </Button>
                     <Button

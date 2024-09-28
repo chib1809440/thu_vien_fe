@@ -3,10 +3,11 @@ import { TFilter } from "../../../types/models/entity-common.type";
 import { TMaterial } from "../../../types/models/material";
 import { GET_MATERIAL_ID, GET_MATERIALS } from "./material-key";
 import materialService from "../../../_apis/services/material.service";
+import { getQueryKeys } from "../../../utils/object";
 
 export const useFetchMaterial = (params?:TFilter)=>{
     return useQuery({
-        queryKey:[GET_MATERIALS, params],
+        queryKey: getQueryKeys({ key: GET_MATERIALS, ...params }),
         queryFn: async()=>{
             return await materialService.getAll<TMaterial>(params);
         },
@@ -19,7 +20,7 @@ export const useReFetchMaterial = ()=>{
 
     const revalidate = (params?:TFilter)=>{
         queryClient.invalidateQueries({
-            queryKey:[GET_MATERIALS, params]
+            queryKey: getQueryKeys({ key: GET_MATERIALS, ...params }),
         })
     }
 
@@ -28,7 +29,7 @@ export const useReFetchMaterial = ()=>{
 
 export const useFetchMaterialById = (_id: string)=>{
     return useQuery({
-        queryKey:[GET_MATERIAL_ID, _id],
+        queryKey: getQueryKeys({ key: GET_MATERIAL_ID, _id }),
         queryFn: async()=>{
             return await materialService.getById<TMaterial>(_id);
         },

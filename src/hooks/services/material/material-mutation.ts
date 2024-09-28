@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import materialService from "../../../_apis/services/material.service";
 import { TMaterial, TMaterialCreate, TMaterialEdit } from "../../../types/models/material";
+import { toast } from "react-toastify";
 
 export const useAddMaterial = () => {
     return useMutation({
@@ -8,7 +9,7 @@ export const useAddMaterial = () => {
             return await materialService.create<TMaterialCreate, TMaterial>(data)
         },
         onError: (error: any) => {
-            alert("Loi kia " + error?.response?.data?.message || error.message);
+            toast.error(error?.response?.data?.message || error.message);
         },
     })
 }
@@ -19,7 +20,7 @@ export const useEditMaterial = () => {
             return await materialService.update<TMaterialEdit, TMaterial>(data, data._id);
         },
         onError: (error: any) => {
-            alert("Loi kia " + error?.response?.data?.message || error.message);
+            toast.error(error?.response?.data?.message || error.message);
         },
     })
 }
@@ -30,7 +31,7 @@ export const useDeleteMaterial = () => {
             return await materialService.delete<TMaterial>(_id)
         },
         onError: (error: any) => {
-            alert("Loi kia " + error?.response?.data?.message || error.message);
+            toast.error(error?.response?.data?.message || error.message);
         },
     })
 }

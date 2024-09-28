@@ -1,7 +1,9 @@
 import { AxiosInstance } from "axios";
 import { TApiModifyRecord, TApiMultipleRecords } from "../../types/api/api.type";
-import axiosClient from "./axiosConfig";
 import { TFilter } from "../../types/models/entity-common.type";
+import axiosServices from "../../utils/axios";
+
+axiosServices.interceptors.response.use((response) => response.data);
 
 class BaseApi {
     private _endpoint: string = "";
@@ -9,7 +11,7 @@ class BaseApi {
 
     constructor(endpoint: string) {
         this._endpoint = endpoint;
-        this.httpClient = axiosClient;
+        this.httpClient = axiosServices;
     }
 
     // Methods

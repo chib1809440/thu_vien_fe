@@ -62,20 +62,30 @@ const dashboardAdmin = {
             breadcrumbs: false
         },
         {
-            id: 'quan-ly-nhom',
-            title: "Nhóm",
-            type: 'item',
-            url: '/quan-ly-nhom',
-            icon: icons.IconDeviceAnalytics,
-            breadcrumbs: false
-        },
-        {
-            id: 'quan-ly-thu-vien',
-            title: "Thư viện",
-            type: 'item',
-            url: '/quan-ly-thu-vien',
-            icon: icons.IconDeviceAnalytics,
-            breadcrumbs: false
+            id: 'thu-vien',
+            title: "Hệ thống",
+            type: 'collapse',
+            // url: '/he-thong',
+            icon: icons.IconBrowser,
+            breadcrumbs: false,
+            children: [
+                {
+                    id: 'quan-ly-nhom',
+                    title: "Nhóm",
+                    type: 'item',
+                    url: '/he-thong/quan-ly-nhom',
+                    icon: icons.IconDeviceAnalytics,
+                    breadcrumbs: false
+                },
+                {
+                    id: 'quan-ly-thu-vien',
+                    title: "Thư viện",
+                    type: 'item',
+                    url: '/he-thong/quan-ly-thu-vien',
+                    icon: icons.IconDeviceAnalytics,
+                    breadcrumbs: false
+                },
+            ]
         },
         {
             id: 'quan-ly-tai-khoan',

@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import libraryService from "../../../_apis/services/library.service";
 import { TLibrary, TLibraryCreate, TLibraryEdit } from "../../../types/models/library.type";
+import { toast } from "react-toastify";
 
 export const useAddLibrary = () => {
     return useMutation({
@@ -8,7 +9,7 @@ export const useAddLibrary = () => {
             return await libraryService.create<TLibraryCreate, TLibrary>(data)
         },
         onError: (error: any) => {
-            alert("Loi kia " + error?.response?.data?.message || error.message);
+            toast.error(error?.response?.data?.message || error.message);
         },
     })
 }
@@ -19,7 +20,7 @@ export const useEditLibrary = () => {
             return await libraryService.update<TLibraryEdit, TLibrary>(data, data._id);
         },
         onError: (error: any) => {
-            alert("Loi kia " + error?.response?.data?.message || error.message);
+            toast.error(error?.response?.data?.message || error.message);
         },
     })
 }
@@ -30,7 +31,7 @@ export const useDeleteLibrary = () => {
             return await libraryService.delete<TLibrary>(_id)
         },
         onError: (error: any) => {
-            alert("Loi kia " + error?.response?.data?.message || error.message);
+            toast.error(error?.response?.data?.message || error.message);
         },
     })
 }

@@ -36,7 +36,7 @@ const root = ReactDOM.createRoot(document.getElementById('root')!);
 
 
 const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: 5, retryDelay: 3000, refetchOnWindowFocus: false, } },
+    defaultOptions: { queries: { retry: 3, retryDelay: 3000, refetchOnWindowFocus: false, } },
 });
 root.render(
     <Provider store={store}>

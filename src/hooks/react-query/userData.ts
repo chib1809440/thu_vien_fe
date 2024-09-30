@@ -106,7 +106,7 @@ export function useCreateUser(onSuccess, onError) {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: CreateUserModel) => createUser(data),
+        mutationFn: (data: FormData) => createUser(data),
         onMutate: () => {
             console.log("mutate");
         },
@@ -143,25 +143,25 @@ export function useDeleteUser() {
         },
     });
 }
+// Hook để cập nhật người dùng
 export function useUpdateUser(onSuccess, onError) {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: User) => updateUser(data._id, data),
+        mutationFn: ({ id, data }: { id: string; data: FormData }) => updateUser(id, data),
         onSuccess: (data) => {
-            onSuccess(data)
-
+            onSuccess(data);
         },
-        onError: (data) => {
-            onError(data)
+        onError: (error) => {
+            onError(error);
         },
         onSettled: async (_, error, variables) => {
             if (error) {
-                console.log(error);
+                console.error("Update error:", error);
             } else {
                 await queryClient.invalidateQueries({ queryKey: [RQ_USERLIST] });
                 await queryClient.invalidateQueries({
-                    queryKey: [RQ_USER, { id: variables._id }],
+                    queryKey: [RQ_USER, { id: variables.id }],
                 });
             }
         },

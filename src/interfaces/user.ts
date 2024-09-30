@@ -1,4 +1,5 @@
 import { AbstractEntity } from "./entityResponse";
+import { Role } from "./role";
 
 export interface User extends AbstractEntity {
     email: string;
@@ -9,15 +10,15 @@ export interface User extends AbstractEntity {
     birthday: string;
     avatar: string;
     gender: string;
+    roleId: Role;
 }
 export interface CreateUserModel {
     email: string;
-    password: string;
-    username: string;
     fullname: string;
     phoneNumber: string;
     address: string;
     birthday: string;
-    avatar: string;
+    avatar?: File;
     gender: string;
+    roleId: string;
 }

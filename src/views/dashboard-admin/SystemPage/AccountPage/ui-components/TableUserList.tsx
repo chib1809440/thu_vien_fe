@@ -23,6 +23,7 @@ import { CsFlexRowBetween } from "../../../../../components/default/flex";
 import CustomInput from "../../../../../components/default/input/CustomInput";
 import AlertConfirmDialog from "../../../../../components/default/alert/confirmAlertDialog";
 import UserDialog from "../../../../../components/default/dialog/UserDialog";
+import { formatDate } from "../../../../../helpers/formatDate";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -256,6 +257,9 @@ function TableUserList<T extends DataType>({
                                                             {(page - 1) * rowsPerPage + index + 1}
                                                         </StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.fullname}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.phoneNumber}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.gender}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{formatDate(row?.birthday)}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center">
                                                             <Box sx={{
                                                                 display: "flex",

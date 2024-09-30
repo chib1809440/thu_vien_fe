@@ -13,7 +13,25 @@ const headCells: HeadCell[] = [
         id: 'example_name',
         numeric: false,
         disablePadding: true,
-        label: 'Tên ví dụ',
+        label: 'Tên tài khoản',
+    },
+    {
+        id: 'example_phoneNumber',
+        numeric: false,
+        disablePadding: true,
+        label: 'Số điện thoại',
+    },
+    {
+        id: 'example_gender',
+        numeric: false,
+        disablePadding: true,
+        label: 'Giới tính',
+    },
+    {
+        id: 'example_birthday',
+        numeric: false,
+        disablePadding: true,
+        label: 'Ngày sinh',
     },
     {
         id: 'action',
@@ -23,7 +41,7 @@ const headCells: HeadCell[] = [
     },
 ];
 
-export default function ExamPage() {
+export default function AccountPage() {
 
     const [isOpenAddDilog, setIsOpenAddDialog] = useState<boolean>(false);
     const [selected, setSelected] = useState<number[]>([]);

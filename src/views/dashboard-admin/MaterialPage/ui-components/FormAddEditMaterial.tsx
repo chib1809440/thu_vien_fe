@@ -3,8 +3,8 @@ import { Form, FormikProvider, useFormik } from "formik";
 import { FC, useMemo } from "react";
 import * as yup from "yup";
 import InputForm from "../../../../components/custom/form/InputForm";
-import { TMaterialCreate } from "../../../../types/models/material";
 import SwitchForm from "../../../../components/custom/form/SwitchForm";
+import { TMaterialCreate } from "../../../../types/models/material";
 
 type Props = {
     open: boolean;

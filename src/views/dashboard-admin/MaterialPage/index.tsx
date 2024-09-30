@@ -1,3 +1,4 @@
+import { Switch } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { useMemo, useState } from "react";
@@ -15,7 +16,6 @@ import { TMaterial, TMaterialCreate } from "../../../types/models/material";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditMaterial from "./ui-components/FormAddEditMaterial";
-import { Switch } from "@mui/material";
 
 
 const MaterialPage = () => {
@@ -105,7 +105,7 @@ const MaterialPage = () => {
             {
                 onSuccess: (data) => {
                     revalidate();
-                    toast.success('Cập nhật hiển thị thành công.');
+                    toast.success('Cập nhật trạng thái thành công.');
                 },
             }
         );
@@ -117,7 +117,7 @@ const MaterialPage = () => {
             {
                 id: "name",
                 disablePadding: "none",
-                label: "Tên dạng",
+                label: "Tên dạng học liệu",
                 align: "left",
             },
             {
@@ -197,7 +197,7 @@ const MaterialPage = () => {
             <IBreadcrumsCustom
                 profile="Quản lý dạng học liệu"
                 mainProfile="Danh sách dạng học liệu"
-                link="/quan-ly-danh-muc/quan-ly-hoc-lieu"
+                link="/quan-ly-danh-muc/dang-hoc-lieu"
             />
 
             {openAddEdit && (
@@ -241,8 +241,8 @@ const MaterialPage = () => {
                     open={openConfirmDialog}
                     onClose={handleCloseConfirmDialog}
                     onConfirm={handleConfirmDelete}
-                    title="Xác nhận xóa thư viện"
-                    description={`Bạn có chắc chắn muốn xóa "${materialToDelete?.name}" ? Hành động này không thể hoàn tác.`}
+                    title="Xác nhận xóa"
+                    description={`Bạn có chắc chắn muốn xóa "${materialToDelete?.name}" ?`}
                 />
             </MainCard>
         </div>

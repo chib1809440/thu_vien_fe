@@ -24,6 +24,23 @@ const LibraryPage = Loadable(
 const MaterialPage = Loadable(
   lazy(() => import("../views/dashboard-admin/MaterialPage"))
 );
+
+const CategoryPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/CategoryPage"))
+);
+
+const AuthorPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/AuthorPage"))
+);
+
+// const PublisherPage = Loadable(
+//   lazy(() => import("../views/dashboard-admin/PublisherPage"))
+// );
+
+// const ShelfPage = Loadable(
+//   lazy(() => import("../views/dashboard-admin/ShelfPage"))
+// );
+
 const ContactPage = Loadable(
   lazy(() => import("../views/dashboard-admin/Contact"))
 );
@@ -49,9 +66,9 @@ const TypeSupplyPage = Loadable(
 const SlideProductPage = Loadable(
   lazy(() => import("../views/dashboard-admin/Directory/sildeProduct"))
 );
-const AuthorPage = Loadable(
-  lazy(() => import("../views/dashboard-admin/Directory/Author"))
-);
+// const AuthorPage = Loadable(
+//   lazy(() => import("../views/dashboard-admin/Directory/Author"))
+// );
 const ProducerPage = Loadable(
   lazy(() => import("../views/dashboard-admin/Directory/Producer"))
 );
@@ -179,30 +196,43 @@ const MainRoutes = {
       path: "/quan-ly-thanh-vien",
       element: <UserProfilePage />,
     },
-    {
-      path: "/quan-ly-danh-muc/tu-ke",
-      element: <SlideProductPage />,
-    },
+    // {
+    //   path: "/quan-ly-danh-muc/tu-ke",
+    //   element: <SlideProductPage />,
+    // },
     // {
     //   path: "quan-ly-danh-muc/dang-hoc-lieu",
     //   element: <TypeProductPage />,
     // },
+    // {
+    //   path: "/quan-ly-danh-muc/linh-vuc",
+    //   element: <TypeSupplyPage />,
+    // },
+    // {
+    //   path: "/quan-ly-danh-muc/nha-san-xuat",
+    //   element: <ProducerPage />,
+    // },
+
     {
       path: "quan-ly-danh-muc/dang-hoc-lieu",
       element: <MaterialPage />,
     },
     {
-      path: "/quan-ly-danh-muc/linh-vuc",
-      element: <TypeSupplyPage />,
+      path: "quan-ly-danh-muc/linh-vuc",
+      element: <CategoryPage />,
     },
     {
       path: "/quan-ly-danh-muc/tac-gia",
       element: <AuthorPage />,
     },
-    {
-      path: "/quan-ly-danh-muc/nha-san-xuat",
-      element: <ProducerPage />,
-    },
+    // {
+    //   path: "/quan-ly-danh-muc/nha-san-xuat",
+    //   element: <PublisherPage />,
+    // },
+    // {
+    //   path: "/quan-ly-danh-muc/tu-ke",
+    //   element: <ShelfPage />,
+    // },
     {
       path: "/quan-ly-danh-muc/loai-hoc-lieu",
       element: <PrintedMatterPage />,

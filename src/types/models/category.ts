@@ -10,5 +10,5 @@ export type TCategory = TEntityAbstract & {
     description: string;
 };
 
-export type TCategoryCreate = Partial<Pick<TCategory,  "name" | "description" >>;
-export type TCategoryEdit = Partial<Pick<TCategory,  "name" | "description" >> & {_id:string};
+export type TCategoryCreate = Partial<Pick<TCategory, "isPublic" | "name" | "description" >>;
+export type TCategoryEdit = Partial<Pick<TCategory,  "isPublic" |"name" | "description" >> & {_id:string};

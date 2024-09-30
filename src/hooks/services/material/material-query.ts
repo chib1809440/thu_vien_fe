@@ -1,9 +1,9 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import materialService from "../../../_apis/services/material.service";
 import { TFilter } from "../../../types/models/entity-common.type";
 import { TMaterial } from "../../../types/models/material";
-import { GET_MATERIAL_ID, GET_MATERIALS } from "./material-key";
-import materialService from "../../../_apis/services/material.service";
 import { getQueryKeys } from "../../../utils/object";
+import { GET_MATERIAL_ID, GET_MATERIALS } from "./material-key";
 
 export const useFetchMaterial = (params?:TFilter)=>{
     return useQuery({

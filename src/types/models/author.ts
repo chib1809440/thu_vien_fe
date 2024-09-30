@@ -10,5 +10,5 @@ export type TAuthor = TEntityAbstract & {
     description: string;
 };
 
-export type TAuthorCreate = Partial<Pick<TAuthor,  "name" | "description" >>;
-export type TAuthorEdit = Partial<Pick<TAuthor,  "name" | "description" >> & {_id:string};
+export type TAuthorCreate = Partial<Pick<TAuthor, "isPublic" | "name" | "description" >>;
+export type TAuthorEdit = Partial<Pick<TAuthor,  "isPublic" | "name" | "description" >> & {_id:string};

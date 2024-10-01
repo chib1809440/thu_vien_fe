@@ -9,7 +9,7 @@ export const useAddCategory = () => {
             return await categoryService.create<TCategoryCreate, TCategory>(data)
         },
         onError: (error: any) => {
-            toast.error(error?.response?.data?.message || error.message);
+            toast.error(error.message);
         },
     })
 }
@@ -20,7 +20,7 @@ export const useEditCategory = () => {
             return await categoryService.update<TCategoryEdit, TCategory>(data, data._id);
         },
         onError: (error: any) => {
-            toast.error(error?.response?.data?.message || error.message);
+            toast.error(error.message);
         },
     })
 }
@@ -31,7 +31,53 @@ export const useDeleteCategory = () => {
             return await categoryService.delete<TCategory>(_id)
         },
         onError: (error: any) => {
-            toast.error(error?.response?.data?.message || error.message);
+            toast.error(error.message);
         },
     })
 }
+
+export const useDeleteManyCategory = () => {
+    return useMutation({
+        mutationFn: async (ids: string[]) => {
+            return await categoryService.deleteMultiple<TCategory>(ids);
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    });
+};
+
+// xóa mềm
+export const useDeleteSoftCategory = () => {
+    return useMutation({
+        mutationFn: async (_id: string) => {
+            return await categoryService.softDelete<TCategory>(_id)
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+};
+
+export const useDeleteSoftManyCategory = () => {
+    return useMutation({
+        mutationFn: async (ids: string[]) => {
+            return await categoryService.softDeleteMultiple<TCategory>(ids)
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+};
+
+// restore
+export const useRestoreManyCategory = () => {
+    return useMutation({
+        mutationFn: async (ids: string[]) => {
+            return await categoryService.restoreMany<TCategory>(ids)
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+};

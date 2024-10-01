@@ -10,3 +10,9 @@ export type TColumn<Data> = {
     sxColumn?: SxProps<Theme>;
     sxRow?: SxProps<Theme>;
 };
+
+export type TMenuOption = {
+    label: string;
+    icon: React.ReactNode | React.JSX.Element;
+    onClick: () => void;
+};

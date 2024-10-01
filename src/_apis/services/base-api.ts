@@ -1,9 +1,7 @@
 import { AxiosInstance } from "axios";
-import { TApiModifyRecord, TApiMultipleRecords } from "../../types/api/api.type";
+import { TApiModifyRecord, TApiMultipleRecords, TApiOneRecord } from "../../types/api/api.type";
 import { TFilter } from "../../types/models/entity-common.type";
 import axiosServices from "../../utils/axios";
-
-axiosServices.interceptors.response.use((response) => response.data);
 
 class BaseApi {
     private _endpoint: string = "";
@@ -15,40 +13,80 @@ class BaseApi {
     }
 
     // Methods
-    public getAll<DynamicType>(params?: TFilter) {
-        return this.httpClient.get<
-            TApiMultipleRecords<DynamicType>,
-            TApiMultipleRecords<DynamicType>
-        >(this.endpoint, {
+    public async getAll<DynamicType>(params?: TFilter) {
+        const response = await this.httpClient.get(this.endpoint, {
             params,
         });
+        return response.data as TApiMultipleRecords<DynamicType>;
     }
 
-    public getById<DynamicType>(id: string | number, params?: TFilter) {
-        return this.httpClient.get<
-            TApiMultipleRecords<DynamicType>,
-            TApiMultipleRecords<DynamicType>
-        >(`${this.endpoint}/${id}`, { params });
+    public async getById<DynamicType>(id: string | number, params?: TFilter) {
+        const response = await this.httpClient.get(`${this.endpoint}/${id}`, { params });
+        return response.data as TApiOneRecord<DynamicType>;
     }
 
-    public create<DynamicPayload, DynamicResponse>(payload: DynamicPayload) {
-        return this.httpClient.post<
-            TApiModifyRecord<DynamicResponse>,
-            TApiModifyRecord<DynamicResponse>
-        >(this.endpoint, payload);
+    public async create<DynamicPayload, DynamicResponse>(payload: DynamicPayload) {
+        const response = await this.httpClient.post(this.endpoint, payload);
+        return response.data as TApiModifyRecord<DynamicResponse>;
     }
 
-    public delete<DynamicType>(id: string | number) {
-        return this.httpClient.delete<TApiModifyRecord<DynamicType>, TApiModifyRecord<DynamicType>>(
-            `${this.endpoint}/${id}`
-        );
+    public async delete<DynamicType>(id: string | number) {
+        const response = await this.httpClient.delete(`${this.endpoint}/${id}`);
+        return response.data as TApiModifyRecord<DynamicType>;
     }
 
-    public update<DynamicPayload, DynamicResponse>(payload: DynamicPayload, id: string | number) {
-        return this.httpClient.patch<
-            TApiModifyRecord<DynamicResponse>,
-            TApiModifyRecord<DynamicResponse>
-        >(`${this.endpoint}/${id}`, payload);
+    public async update<DynamicPayload, DynamicResponse>(
+        payload: DynamicPayload,
+        id: string | number
+    ) {
+        const response = await this.httpClient.patch(`${this.endpoint}/${id}`, payload);
+        return response.data as TApiModifyRecord<DynamicResponse>;
+    }
+
+    public async deleteMultiple<DynamicType>(ids: string[]) {
+        const response = await this.httpClient.delete(`${this.endpoint}/selected`, {
+            data: ids,
+        });
+        return response.data as TApiModifyRecord<DynamicType>;
+    }
+
+    // soft delete methods
+    public async getAllDeleted<DynamicType>(params?: TFilter) {
+        const response = await this.httpClient.get(`${this.endpoint}/deleted`, {
+            params,
+        });
+        return response.data as TApiMultipleRecords<DynamicType>;
+    }
+
+    public async getByIdDeleted<DynamicType>(id: string | number, params?: TFilter) {
+        const response = await this.httpClient.get(`${this.endpoint}/deleted/${id}`, { params });
+        return response.data as TApiOneRecord<DynamicType>;
+    }
+
+    public async softDelete<DynamicType>(id: string | number) {
+        const response = await this.httpClient.delete(`${this.endpoint}/soft/${id}`);
+        return response.data as TApiModifyRecord<DynamicType>;
+    }
+
+    public async softDeleteMultiple<DynamicType>(ids: string[]) {
+        const response = await this.httpClient.delete(`${this.endpoint}/soft/selected`, {
+            data: ids,
+        });
+        return response.data as TApiModifyRecord<DynamicType>;
+    }
+
+    public async restore<DynamicPayload, DynamicResponse>(
+        payload: DynamicPayload,
+        id: string | number
+    ) {
+        const response = await this.httpClient.patch(`${this.endpoint}/restore/${id}`, payload);
+        return response.data as TApiModifyRecord<DynamicResponse>;
+    }
+
+    public async restoreMany<DynamicType>(ids: string[]) {
+        const response = await this.httpClient.patch(`${this.endpoint}/restore`, ids);
+
+        return response.data as TApiModifyRecord<DynamicType>;
     }
 
     // Setter and Getter

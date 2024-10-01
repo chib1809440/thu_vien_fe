@@ -33,6 +33,10 @@ const AuthorPage = Loadable(
   lazy(() => import("../views/dashboard-admin/AuthorPage"))
 );
 
+const AuthorDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/AuthorPage/AuthorDeleteListPage"))
+);
+
 // const PublisherPage = Loadable(
 //   lazy(() => import("../views/dashboard-admin/PublisherPage"))
 // );
@@ -224,6 +228,10 @@ const MainRoutes = {
     {
       path: "/quan-ly-danh-muc/tac-gia",
       element: <AuthorPage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/danh-sach-xoa-tac-gia",
+      element: <AuthorDeleteListPage />,
     },
     // {
     //   path: "/quan-ly-danh-muc/nha-san-xuat",

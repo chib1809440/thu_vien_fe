@@ -1,10 +1,12 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
-import { FC, useMemo } from "react";
+import { FC, useMemo, useState } from "react";
 import * as yup from "yup";
-import { TGroupCreate } from "../../../../types/models/group.type";
+import AutocompleteForm from "../../../../components/custom/form/AutoCompleteForm";
 import InputForm from "../../../../components/custom/form/InputForm";
 import SwitchForm from "../../../../components/custom/form/SwitchForm";
+import { TGroupCreate } from "../../../../types/models/group.type";
+import { TLibrary } from "../../../../types/models/library.type";
 
 type Props = {
     open: boolean;
@@ -13,7 +15,9 @@ type Props = {
     isFetching?: boolean;
     initialValues: TGroupCreate;
     isEditMode?: boolean;
-    
+    libOptions?: TLibrary[];
+    selectedLib?: TLibrary[];
+    onSelectedLibs?: (value: TLibrary[]) => void;
 };
 
 const schema = yup.object().shape({
@@ -26,6 +30,9 @@ const FormAddEditGroup: FC<Props> = ({
     open,
     onClose,
     onSubmit,
+    libOptions,
+    selectedLib,
+    onSelectedLibs,
     initialValues = {
         isPublic: false,
         name: "",
@@ -33,6 +40,7 @@ const FormAddEditGroup: FC<Props> = ({
     isFetching = false,
     isEditMode = false,
 }) => {
+
     const formik = useFormik<TGroupCreate>({
         initialValues,
         validationSchema: schema,
@@ -78,14 +86,14 @@ const FormAddEditGroup: FC<Props> = ({
                             {...getFieldProps("name")}
                         />
 
-                        {/* <SelectForm
+                        <AutocompleteForm
                             label="Thư viện"
                             required
-                            {...getFieldProps("mainLibrary")}
-                            error={touched.mainLibrary && Boolean(errors.mainLibrary)}
-                            helperText={touched.mainLibrary && errors.mainLibrary}
-                            options={[{ label: "Test", value: 1 }]}
-                        /> */}
+                            value={selectedLib ?? []}
+                            options={libOptions}
+                            keyLabel={"name"}
+                            onChange={(value) => onSelectedLibs?.(value)}
+                        />
 
                         <SwitchForm
                             value={values?.isPublic ?? false}

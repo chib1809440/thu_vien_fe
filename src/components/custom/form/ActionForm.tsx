@@ -1,14 +1,17 @@
-import { Box, Grid, Menu } from "@mui/material";
+import { Box, Grid, Menu, MenuItem } from "@mui/material";
 import { IconSettings } from "@tabler/icons";
 import { FC, MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import useDebounce from "../../../hooks/useDebounce";
 import SearchNoButtonSection from "../search/SearchNoButton";
 import StyledButton from "../../default/button/StyledButton";
+import { TMenuOption } from "../../../types/common/table";
 
-type Props = {};
+type Props = {
+    actions?: TMenuOption[];
+};
 
-const ActionsForm: FC<Props> = () => {
+const ActionsForm: FC<Props> = ({ actions = [] }) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const querySearch = searchParams.get("q") || "";
 
@@ -22,6 +25,10 @@ const ActionsForm: FC<Props> = () => {
             searchParams.delete("q");
             setSearchParams(searchParams);
             return;
+        }
+
+        if (searchParams.get("page")) {
+            searchParams.set("page", "1");
         }
 
         searchParams.set("q", debounceSearch);
@@ -50,39 +57,54 @@ const ActionsForm: FC<Props> = () => {
                 />
             </Grid>
 
-            <Grid item xs={12} sm={6} md={9} lg={8} marginBottom={4}>
-                <Box
-                    sx={{
-                        display: "flex",
-                        justifyContent: { xs: "space-between", sm: "flex-end" },
-                        alignItems: "center",
-                        gap: 1,
-                    }}
-                >
-                    <StyledButton
-                        size="small"
-                        variant="outlined"
-                        color="default"
-                        aria-controls={open ? "basic-menu" : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={open ? "true" : undefined}
-                        onClick={handleClickAction}
-                        startIcon={<IconSettings size={20} stroke={1.5} />}
-                    >
-                        Thao tác
-                    </StyledButton>
-
-                    <Menu
-                        id="basic-menu"
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleClose}
-                        MenuListProps={{
-                            "aria-labelledby": "basic-button",
+            {actions.length > 0 && (
+                <Grid item xs={12} sm={6} md={9} lg={8} marginBottom={4}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: { xs: "space-between", sm: "flex-end" },
+                            alignItems: "center",
+                            gap: 1,
                         }}
-                    ></Menu>
-                </Box>
-            </Grid>
+                    >
+                        <StyledButton
+                            size="small"
+                            variant="outlined"
+                            color="default"
+                            aria-controls={open ? "basic-menu" : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={open ? "true" : undefined}
+                            onClick={handleClickAction}
+                            startIcon={<IconSettings size={20} stroke={1.5} />}
+                        >
+                            Thao tác
+                        </StyledButton>
+
+                        <Menu
+                            id="basic-menu"
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                            MenuListProps={{
+                                "aria-labelledby": "basic-button",
+                            }}
+                        >
+                            {actions.map((action, idx) => (
+                                <MenuItem
+                                    key={idx}
+                                    sx={{ fontSize: "0.875rem" }}
+                                    onClick={action.onClick}
+                                >
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        {action.icon}
+                                        <Box sx={{ ml: 1 }}>{action.label}</Box>
+                                    </Box>
+                                </MenuItem>
+                            ))}
+                        </Menu>
+                    </Box>
+                </Grid>
+            )}
         </Grid>
     );
 };

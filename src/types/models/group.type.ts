@@ -9,7 +9,7 @@ export type TGroup = TEntityAbstract & {
     isActive: true;
     name: string;
     mainLibrary?: TLibrary | null;
-    librarys?: TLibrary[] | null;
+    libraries?: TLibrary[] | null;
 };
 
 export type TGroupCreate = Partial<Pick<TGroup, "isPublic" | "name">>;

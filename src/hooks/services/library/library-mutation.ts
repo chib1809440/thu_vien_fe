@@ -9,7 +9,7 @@ export const useAddLibrary = () => {
             return await libraryService.create<TLibraryCreate, TLibrary>(data)
         },
         onError: (error: any) => {
-            toast.error(error?.response?.data?.message || error.message);
+            toast.error(error.message);
         },
     })
 }
@@ -20,7 +20,7 @@ export const useEditLibrary = () => {
             return await libraryService.update<TLibraryEdit, TLibrary>(data, data._id);
         },
         onError: (error: any) => {
-            toast.error(error?.response?.data?.message || error.message);
+            toast.error(error.message);
         },
     })
 }
@@ -31,7 +31,52 @@ export const useDeleteLibrary = () => {
             return await libraryService.delete<TLibrary>(_id)
         },
         onError: (error: any) => {
-            toast.error(error?.response?.data?.message || error.message);
+            toast.error(error.message);
+        },
+    });
+};
+export const useDeleteManyLibrary = () => {
+    return useMutation({
+        mutationFn: async (ids: string[]) => {
+            return await libraryService.deleteMultiple<TLibrary>(ids);
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    });
+};
+
+// xóa mềm
+export const useDeleteSoftLibrary = () => {
+    return useMutation({
+        mutationFn: async (_id: string) => {
+            return await libraryService.softDelete<TLibrary>(_id)
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
         },
     })
-}
+};
+
+export const useDeleteSoftManyLibrary = () => {
+    return useMutation({
+        mutationFn: async (ids: string[]) => {
+            return await libraryService.softDeleteMultiple<TLibrary>(ids)
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+};
+
+// restore
+export const useRestoreManyLibrary = () => {
+    return useMutation({
+        mutationFn: async (ids: string[]) => {
+            return await libraryService.restoreMany<TLibrary>(ids)
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+};

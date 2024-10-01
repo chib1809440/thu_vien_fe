@@ -9,7 +9,7 @@ export const useAddAuthor = () => {
             return await authorService.create<TAuthorCreate, TAuthor>(data)
         },
         onError: (error: any) => {
-            toast.error(error?.response?.data?.message || error.message);
+            toast.error(error.message);
         },
     })
 }
@@ -20,7 +20,7 @@ export const useEditAuthor = () => {
             return await authorService.update<TAuthorEdit, TAuthor>(data, data._id);
         },
         onError: (error: any) => {
-            toast.error(error?.response?.data?.message || error.message);
+            toast.error(error.message);
         },
     })
 }
@@ -31,7 +31,53 @@ export const useDeleteAuthor = () => {
             return await authorService.delete<TAuthor>(_id)
         },
         onError: (error: any) => {
-            toast.error(error?.response?.data?.message || error.message);
+            toast.error(error.message);
         },
     })
 }
+
+export const useDeleteManyAuthor = () => {
+    return useMutation({
+        mutationFn: async (ids: string[]) => {
+            return await authorService.deleteMultiple<TAuthor>(ids);
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    });
+};
+
+// xóa mềm
+export const useDeleteSoftAuthor = () => {
+    return useMutation({
+        mutationFn: async (_id: string) => {
+            return await authorService.softDelete<TAuthor>(_id)
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+};
+
+export const useDeleteSoftManyAuthor = () => {
+    return useMutation({
+        mutationFn: async (ids: string[]) => {
+            return await authorService.softDeleteMultiple<TAuthor>(ids)
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+};
+
+// restore
+export const useRestoreManyAuthor = () => {
+    return useMutation({
+        mutationFn: async (ids: string[]) => {
+            return await authorService.restoreMany<TAuthor>(ids)
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+};

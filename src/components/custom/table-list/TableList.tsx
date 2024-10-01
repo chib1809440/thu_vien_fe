@@ -21,7 +21,9 @@ type Props<T> = {
     pagination?: TMeta;
     isLoading?: boolean;
     checked?: any[];
-    onChecked?: (row: T) => void;
+    checkedAll?: boolean;
+    onChecked?: (row: T, checked: boolean) => void;
+    onToggleCheckedAll?: (checked: boolean) => void;
     keyChecked?: Extract<keyof T, string>;
 };
 
@@ -32,7 +34,9 @@ function TableList<T>({
     columns = [],
     isLoading = false,
     pagination,
+    checkedAll= false,
     onChecked,
+    onToggleCheckedAll,
 }: Props<T>) {
     const theme = useTheme();
 
@@ -50,7 +54,7 @@ function TableList<T>({
 
             <TableContainer>
                 <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={"medium"}>
-                    <TableColumn columns={columns} />
+                    <TableColumn checkedAll={checkedAll} onSelectAllClick={(event) => onToggleCheckedAll?.(event.target.checked)} columns={columns} />
 
                     <TableBody>
                         {!isLoading ? (
@@ -73,7 +77,9 @@ function TableList<T>({
                                                             ? checked.includes(row?.[keyChecked])
                                                             : false
                                                     }
-                                                    onChange={() => onChecked(row)}
+                                                    onChange={(event) =>
+                                                        onChecked?.(row, event.target.checked)
+                                                    }
                                                     inputProps={{
                                                         "aria-labelledby": labelId,
                                                     }}
@@ -87,10 +93,10 @@ function TableList<T>({
                                                 const cellProps: any =
                                                     idxColumn === 0
                                                         ? {
-                                                              component: "th",
-                                                              scope: "row",
-                                                              padding: "none",
-                                                          }
+                                                            component: "th",
+                                                            scope: "row",
+                                                            padding: "none",
+                                                        }
                                                         : {};
 
                                                 if (!Object.keys(row).includes(column.id)) {
@@ -103,8 +109,8 @@ function TableList<T>({
                                                                 ...(idxColumn === 0
                                                                     ? { paddingLeft: 2 }
                                                                     : old.length === idxColumn - 1
-                                                                    ? { paddingLeft: 0 }
-                                                                    : {}),
+                                                                        ? { paddingLeft: 0 }
+                                                                        : {}),
                                                             }}
                                                             {...cellProps}
                                                         >

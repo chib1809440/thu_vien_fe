@@ -9,7 +9,7 @@ export const useAddMaterial = () => {
             return await materialService.create<TMaterialCreate, TMaterial>(data)
         },
         onError: (error: any) => {
-            toast.error(error?.response?.data?.message || error.message);
+            toast.error(error.message);
         },
     })
 }
@@ -20,7 +20,7 @@ export const useEditMaterial = () => {
             return await materialService.update<TMaterialEdit, TMaterial>(data, data._id);
         },
         onError: (error: any) => {
-            toast.error(error?.response?.data?.message || error.message);
+            toast.error(error.message);
         },
     })
 }
@@ -31,7 +31,53 @@ export const useDeleteMaterial = () => {
             return await materialService.delete<TMaterial>(_id)
         },
         onError: (error: any) => {
-            toast.error(error?.response?.data?.message || error.message);
+            toast.error(error.message);
         },
     })
 }
+
+export const useDeleteManyMaterial = () => {
+    return useMutation({
+        mutationFn: async (ids: string[]) => {
+            return await materialService.deleteMultiple<TMaterial>(ids);
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    });
+};
+
+// xóa mềm
+export const useDeleteSoftMaterial = () => {
+    return useMutation({
+        mutationFn: async (_id: string) => {
+            return await materialService.softDelete<TMaterial>(_id)
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+};
+
+export const useDeleteSoftManyMaterial = () => {
+    return useMutation({
+        mutationFn: async (ids: string[]) => {
+            return await materialService.softDeleteMultiple<TMaterial>(ids)
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+};
+
+// restore
+export const useRestoreManyMaterial = () => {
+    return useMutation({
+        mutationFn: async (ids: string[]) => {
+            return await materialService.restoreMany<TMaterial>(ids)
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+};

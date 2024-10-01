@@ -34,7 +34,7 @@ const ConfirmDeleteDialog: FC<ConfirmDeleteDialogProps> = ({
                     Hủy
                 </Button>
                 <Button onClick={onConfirm} color="error" autoFocus>
-                    Xóa
+                    Xác nhận
                 </Button>
             </DialogActions>
         </Dialog>

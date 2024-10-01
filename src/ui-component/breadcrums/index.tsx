@@ -21,7 +21,7 @@ export default function IBreadcrumsCustom({ mainProfile, profile, link, ...props
                 padding: '3px 25px',
                 borderRadius: '12px',
             }}>
-                <Link underline="hover" color="inherit" href="#">
+                <Link underline="hover" color="inherit" href="/trang-chu">
                     <HomeIcon />
                 </Link>
                 <CustomLink underline="hover" color="inherit" href={link}>

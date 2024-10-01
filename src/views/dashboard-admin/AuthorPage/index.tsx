@@ -1,17 +1,19 @@
 import { Switch } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
-import { useMemo, useState } from "react";
+import { IconTrashXFilled } from "@tabler/icons-react";
+import { useCallback, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
 import { CsFlexRowBetween } from "../../../components/default/flex";
-import { useAddAuthor, useDeleteAuthor, useEditAuthor } from "../../../hooks/services/author/author-mutation";
+import { useAddAuthor, useDeleteSoftAuthor, useDeleteSoftManyAuthor, useEditAuthor } from "../../../hooks/services/author/author-mutation";
 import { useFetchAuthor, useReFetchAuthor } from "../../../hooks/services/author/author-query";
 import useQueryString from "../../../hooks/services/useQueryString";
-import { TColumn } from "../../../types/common/table";
+import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TAuthor, TAuthorCreate } from "../../../types/models/author";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
@@ -27,14 +29,17 @@ const AuthorPage = () => {
     const { data, isLoading } = useFetchAuthor({ limit, page, search });
     const mutationAdd = useAddAuthor();
     const mutationEdit = useEditAuthor();
-    const mutationDelete = useDeleteAuthor();
+    const mutationSoftDelete = useDeleteSoftAuthor();
+    const mutationSoftDeleteMany = useDeleteSoftManyAuthor();
     const revalidate = useReFetchAuthor();
 
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TAuthor | null>(null);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [authorToDelete, setAuthorToDelete] = useState<TAuthor | null>(null);
-    
+
+    const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
+    const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
 
     const addAuthor = () => {
         setOpenAddEdit(true);
@@ -81,14 +86,11 @@ const AuthorPage = () => {
 
     const handleConfirmDelete = () => {
         if (authorToDelete) {
-            mutationDelete.mutate(authorToDelete._id, {
+            mutationSoftDelete.mutate(authorToDelete._id, {
                 onSuccess: () => {
                     toast.success('Xóa tác giả thành công.');
                     revalidate();
                     setOpenConfirmDialog(false);
-                },
-                onError: () => {
-                    toast.error('Xóa tác giả thất bại.');
                 },
             });
         }
@@ -130,7 +132,7 @@ const AuthorPage = () => {
             {
                 id: "isPublic",
                 disablePadding: "none",
-                label: "Chia sẽ liên thông",
+                label: "Chia sẻ liên thông",
                 sxRow: { paddingRight: 4 },
                 render: (row) => {
                     return (
@@ -142,7 +144,7 @@ const AuthorPage = () => {
                     );
                 },
             },
-           
+
             {
                 id: "action",
                 disablePadding: "none",
@@ -166,15 +168,70 @@ const AuthorPage = () => {
                             <IconTrash
                                 size={20}
                                 stroke={1.5}
-                                onClick={() => handleOpenConfirmDialog(row)} 
+                                onClick={() => handleOpenConfirmDialog(row)}
                             />
+
                         </Box>
                     );
                 },
             },
         ],
-        [handleEditAuthor, handleOpenConfirmDialog]
+        [handleEditAuthor, handleOpenConfirmDialog, handleChangePublic]
     );
+
+    const handleCheckedDelete = useCallback((row: TAuthor, checked: boolean) => {
+        setCheckedDelete((prev) => {
+            if (prev.includes(row._id)) {
+                return prev.filter((t) => t !== row._id);
+            }
+            return [...prev, row._id];
+        });
+    }, []);
+
+    const handleCheckedDeleteAll = useCallback(
+        (checked: boolean) => {
+            if (data?.data?.result?.length === 0) return;
+            setCheckedDelete((prev) => (checked ? data?.data?.result.map((t) => t._id) : []));
+        },
+        [data]
+    );
+
+    const checkedAll = useMemo(() => {
+        if (data?.data?.result?.length === 0 || checkedDelete.length === 0) return false;
+        return data.data.result.some((t) => checkedDelete.includes(t._id));
+    }, [checkedDelete, data]);
+
+    const handleDeleteMultiple = useCallback(() => {
+        console.log(checkedDelete);
+        
+        if (checkedDelete.length === 0) {
+            toast.error("Vui lòng chọn dữ liệu để xóa");
+            return;
+        }
+        setOpenConfirmSoftDeleteMultiple(true);
+    }, [checkedDelete]);
+
+    const handleConfirmSoftDeleteMultiple = useCallback(() => {
+        if (checkedDelete.length === 0) return;
+        mutationSoftDeleteMany.mutate(checkedDelete, {
+            onSuccess: () => {
+                toast.success("Xóa các mục đã chọn thành công.");
+                revalidate();
+                setOpenConfirmSoftDeleteMultiple(false);
+                setCheckedDelete([]);
+            },
+        });
+    }, [checkedDelete]);
+
+    const actionMenus = useMemo((): TMenuOption[] => {
+        return [
+            {
+                label: "Xóa các dữ liệu vào thùng rác",
+                icon: <IconTrashXFilled size={20} stroke={1.5} />,
+                onClick: handleDeleteMultiple,
+            },
+        ];
+    }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TAuthorCreate => {
         if (selectedEdit) {
@@ -211,9 +268,9 @@ const AuthorPage = () => {
             )}
 
             <MainCard>
-                <Stack spacing={2}>
-                    <CsFlexRowBetween>
-                        <Box sx={{ ml: 4, mb: 2 }}>
+                <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
+                    <Box display="flex" flexWrap="wrap">
+                        <Box>
                             <StyledButton
                                 color="primary"
                                 size="small"
@@ -224,25 +281,51 @@ const AuthorPage = () => {
                                 Thêm mới
                             </StyledButton>
                         </Box>
-                    </CsFlexRowBetween>
+
+                        <Box>
+                            <Link to="/quan-ly-danh-muc/danh-sach-xoa-tac-gia" style={{ textDecoration: 'none' }}>
+                                <StyledButton
+                                    sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                    size="small"
+                                    startIcon={<IconTrash stroke={2} />}
+                                    variant="contained"
+                                >
+                                    Thùng rác
+                                </StyledButton>
+                            </Link>
+                        </Box>
+                    </Box>
                 </Stack>
 
-                <ActionsForm />
+                <ActionsForm actions={actionMenus} />
 
                 <TableList
+                    checked={checkedDelete}
                     columns={columns}
                     rows={data?.data?.result || []}
+                    onChecked={handleCheckedDelete}
+                    onToggleCheckedAll={handleCheckedDeleteAll}
+                    checkedAll={checkedAll}
                     isLoading={isLoading}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />
 
                 <ConfirmDeleteDialog
+                    key={"delete"}
                     open={openConfirmDialog}
                     onClose={handleCloseConfirmDialog}
                     onConfirm={handleConfirmDelete}
                     title="Xác nhận xóa"
                     description={`Bạn có chắc chắn muốn xóa "${authorToDelete?.name}" ?`}
+                />
+                <ConfirmDeleteDialog
+                    key={"deleteMultiple"}
+                    open={openConfirmSoftDeleteMultiple}
+                    onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
+                    onConfirm={handleConfirmSoftDeleteMultiple}
+                    title="Xác nhận xóa các mục đã chọn"
+                    description={`Bạn có chắc chắn muốn xóa?`}
                 />
             </MainCard>
         </div>

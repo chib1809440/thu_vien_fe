@@ -63,7 +63,7 @@ export const validationUtilizedObjectSchema = yup.object({
         ),
     roleId: yup
         .string()
-        .required("Vui lòng chọn vai trò"),
+        .required("Vui lòng chọn vai trò").notOneOf(['0'], "Vui lòng chọn vai trò"),
     address: yup.string().required("Vui lòng nhập địa chỉ"),
 
     birthday: yup.string().required("Vui lòng nhập ngày sinh"),
@@ -148,7 +148,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
             phoneNumber: user?.phoneNumber ?? "",
             address: user?.address ?? "",
             gender: user?.gender ?? "",
-            roleId: user?.roleId?._id ?? '',
+            roleId: user?.roleId?._id ?? '0',
             birthday: (new Date().toDateString())
 
         },
@@ -191,7 +191,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                 address: user?.address ?? "",
                 birthday: user?.birthday ?? "",
                 gender: user?.gender ?? "",
-                roleId: user?.roleId?._id ?? '',
+                roleId: user?.roleId?._id ?? '0',
             });
         }
     }, [user]);
@@ -487,7 +487,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                                             Boolean(formik.errors.roleId)
                                                         }
                                                     >
-                                                        <MenuItem value='' disabled>
+                                                        <MenuItem value='0' disabled>
                                                             Chọn vai trò
                                                         </MenuItem>
                                                         {roles?.data?.result?.length > 0 ? (
@@ -497,7 +497,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                                                 </MenuItem>
                                                             ))
                                                         ) : (
-                                                            <MenuItem value="" disabled>
+                                                            <MenuItem value="0" disabled>
                                                                 Chọn vai trò
                                                             </MenuItem>
                                                         )}

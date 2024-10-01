@@ -70,6 +70,14 @@ const dashboardAdmin = {
             breadcrumbs: false
         },
         {
+            id: 'vai-tro',
+            title: "Vai trò",
+            type: 'item',
+            url: '/vai-tro',
+            icon: icons.IconBrowserPlus,
+            breadcrumbs: false
+        },
+        {
             id: 'quan-ly-thanh-vien',
             title: "Thành viên",
             type: 'item',

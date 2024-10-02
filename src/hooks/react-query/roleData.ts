@@ -5,9 +5,9 @@
 // import { ErrorResponse } from 'react-router-dom';
 
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createRole, deleteRole, deleteRoleSelected, getAllRoles, getRoleById, updateRole } from "../../_apis/role.api";
+import { addPermissionToRole, createRole, deleteRole, deleteRoleSelected, getAllRoles, getRoleById, updateRole } from "../../_apis/role.api";
 import { RQ_ROLE, RQ_ROLELIST } from "./constants_react_query";
-import { CreateRoleModel, Role } from "../../interfaces/role";
+import { AddPermissionToRoleModel, CreateRoleModel, Role } from "../../interfaces/role";
 
 // // useRolesData Hook
 // export const useRolesData = (
@@ -107,6 +107,32 @@ export function useCreateRole(onSuccess, onError) {
 
     return useMutation({
         mutationFn: (data: CreateRoleModel) => createRole(data),
+        onMutate: () => {
+            console.log("mutate");
+        },
+
+        onError: (data) => {
+            onError(data)
+        },
+
+        onSuccess: (data) => {
+            onSuccess(data)
+
+        },
+        onSettled: async (_, error) => {
+            console.log("settled");
+            if (error) {
+                console.log(error);
+            } else {
+                await queryClient.invalidateQueries({ queryKey: [RQ_ROLELIST] });
+            }
+        },
+    });
+}
+export function useAddPermissionToRole(onSuccess, onError) {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (data: AddPermissionToRoleModel) => addPermissionToRole(data),
         onMutate: () => {
             console.log("mutate");
         },

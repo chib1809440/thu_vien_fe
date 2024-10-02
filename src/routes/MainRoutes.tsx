@@ -11,6 +11,9 @@ const HomePage = Loadable(
 const ExamplePage = Loadable(
   lazy(() => import("../views/dashboard-admin/ExamplePage"))
 );
+const AssetPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/AssetPage"))
+);
 const ContactPage = Loadable(
   lazy(() => import("../views/dashboard-admin/Contact"))
 );
@@ -30,43 +33,7 @@ const ControlPower = Loadable(
   lazy(() => import("../views/dashboard-admin/SystemPage/ControlPower"))
 );
 // 
-const TypeProductPage = Loadable(
-  lazy(() => import("../views/dashboard-admin/Directory/TypeProduct"))
-);
-const TypeSupplyPage = Loadable(
-  lazy(() => import("../views/dashboard-admin/Directory/TypeSupply"))
-);
-const SlideProductPage = Loadable(
-  lazy(() => import("../views/dashboard-admin/Directory/sildeProduct"))
-);
-const AuthorPage = Loadable(
-  lazy(() => import("../views/dashboard-admin/Directory/Author"))
-);
-const ProducerPage = Loadable(
-  lazy(() => import("../views/dashboard-admin/Directory/Producer"))
-);
-const PrintedMatterPage = Loadable(
-  lazy(() => import("../views/dashboard-admin/Directory/PrintedMatter"))
-);
-const ArchiveProductPage = Loadable(
-  lazy(() => import("../views/dashboard-admin/Directory/ArchiveProduct"))
-);
-const CabinProductPage = Loadable(
-  lazy(() => import("../views/dashboard-admin/Directory/CabinProduct"))
-);
-const StateOfBookPage = Loadable(
-  lazy(() => import("../views/dashboard-admin/Directory/StateOfBook"))
-);
-const AssetLib = Loadable(
-  lazy(() => import("../views/dashboard-admin/Directory/AssetLib"))
-);
-// PublicationsPage
-const PublicationsPage = Loadable(
-  lazy(() => import("../views/dashboard-admin/PublicationsPage"))
-);
-const PublicationsPageV2 = Loadable(
-  lazy(() => import("../views/dashboard-admin/PublicationsPageV2"))
-);
+
 const DetailsPublicationsPage = Loadable(
   lazy(() => import("../views/dashboard-admin/DetailsPublications"))
 );
@@ -162,37 +129,14 @@ const MainRoutes = {
       element: <RolePage />,
     },
     {
+      path: "/tai-san-thu-vien",
+      element: <AssetPage />,
+    },
+    {
       path: "/quan-ly-thanh-vien",
       element: <UserProfilePage />,
     },
-    {
-      path: "/quan-ly-danh-muc/tu-ke",
-      element: <SlideProductPage />,
-    },
-    {
-      path: "quan-ly-danh-muc/dang-hoc-lieu",
-      element: <TypeProductPage />,
-    },
-    {
-      path: "/quan-ly-danh-muc/linh-vuc",
-      element: <TypeSupplyPage />,
-    },
-    {
-      path: "/quan-ly-danh-muc/tac-gia",
-      element: <AuthorPage />,
-    },
-    {
-      path: "/quan-ly-danh-muc/nha-san-xuat",
-      element: <ProducerPage />,
-    },
-    {
-      path: "/quan-ly-danh-muc/loai-hoc-lieu",
-      element: <PrintedMatterPage />,
-    },
-    {
-      path: "/tai-san-thu-vien",
-      element: <AssetLib />,
-    },
+
     {
       path: "/nhom-phan-quyen",
       element: <DistributionOfPowers />,
@@ -201,14 +145,7 @@ const MainRoutes = {
       path: "/phan-quyen",
       element: <ControlPower />,
     },
-    {
-      path: "/thu-vien/an-pham",
-      element: <PublicationsPage />,
-    },
-    {
-      path: "/thu-vien/hoc-lieu",
-      element: <PublicationsPageV2 />,
-    },
+
     {
       path: "/chi-tiet-hoc-lieu",
       element: <DetailsPublicationsPage />,
@@ -217,18 +154,7 @@ const MainRoutes = {
       path: "/chi-tiet-danh-muc",
       element: <DetailsDirectoryPage />,
     },
-    {
-      path: "/quan-ly-kho/tu-ke",
-      element: <ArchiveProductPage />,
-    },
-    {
-      path: "/quan-ly-kho/kho",
-      element: <CabinProductPage />,
-    },
-    {
-      path: "/quan-ly-kho/thanh-ly-hu-hong",
-      element: <StateOfBookPage />,
-    },
+
     {
       path: "/quan-ly-muon-tra/phieu-muon",
       element: <BorrowPage />,

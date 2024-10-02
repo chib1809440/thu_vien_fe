@@ -1,5 +1,5 @@
 import { EntityResponse } from '../interfaces/entityResponse';
-import { CreateRoleModel, Role } from '../interfaces/role';
+import { AddPermissionToRoleModel, CreateRoleModel, Role } from '../interfaces/role';
 import axios from '../utils/axios';
 
 const ROLE_API = '/role';
@@ -9,7 +9,11 @@ export const createRole = async (role: CreateRoleModel): Promise<EntityResponse<
     const response = await axios.post<EntityResponse<Role>>(ROLE_API, role);
     return response.data;
 };
-
+// Create
+export const addPermissionToRole = async (role: AddPermissionToRoleModel): Promise<EntityResponse<Role>> => {
+    const response = await axios.post<EntityResponse<Role>>(`${ROLE_API}/add-permission`, role);
+    return response.data;
+};
 // Read all
 export const getAllRoles = async (page?: number, limit?: number, search?: string, order: string = "ASC"): Promise<EntityResponse<Role[]>> => {
     let url = `${ROLE_API}?order=${order}`;

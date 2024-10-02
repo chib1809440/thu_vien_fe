@@ -233,7 +233,7 @@ const dashboardAdmin = {
             breadcrumbs: false
         },
         {
-            id: 'quan-ly-tai-san',
+            id: 'tai-san-thu-vien ',
             title: "Quản lý tài sản",
             type: 'item',
             url: '/tai-san-thu-vien',

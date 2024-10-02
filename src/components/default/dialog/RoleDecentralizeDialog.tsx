@@ -48,7 +48,8 @@ import { useCreateExample, useExampleList, useUpdateExample } from "../../../hoo
 import { Entity } from "draft-js";
 import { EntityResponse } from "../../../interfaces/entityResponse";
 import { usePermissionList, useResourceList } from "../../../hooks/react-query/authData";
-import { Role } from "../../../interfaces/role";
+import { AddPermissionToRoleModel, Role } from "../../../interfaces/role";
+import { useAddPermissionToRole } from "../../../hooks/react-query/roleData";
 
 interface DialogProps {
     id?: string,
@@ -62,18 +63,54 @@ interface DialogProps {
     maxWidth?: "xs" | "sm" | "md" | "lg" | "xl"
 }
 export default function RoleDecentralizeDialog({ title, maxWidth, id, content, action, fullScreen, open, role, handleOpen }: DialogProps) {
-    const [checkedPermissions, setCheckedPermissions] = useState<{ resource: string, permission: string }[]>([]);
+    const [checkedPermissions, setCheckedPermissions] = useState<{ resource: string, action: string }[]>([]);
     const { data: resources, isPending: isPendingResources } = useResourceList();
     const { data: permissions, isPending: isPendingPermissions } = usePermissionList();
+    const [entityError, setEntityError] = useState<string | string[]>(null);
+    useEffect(() => {
+        setCheckedPermissions(role.permissions)
+    }, [role])
+    const onSuccess = (data: EntityResponse<Example>) => {
+        if (data.statusCode) {
+            const { statusCode, message } = data;
+            console.log('dsds', data);
+            if (statusCode === 200 || statusCode === 201) {
+                // handleOpen(false);
+                if (!id) {
+                    toast.success("Thêm dữ liệu thành công", {});
+                    return;
+                }
+                toast.success("Cập nhật dữ liệu thành công", {});
+            } else {
+                console.log('dsds', message);
 
+                setEntityError(message);
+            }
+        } else {
+            toast.error("Lỗi hệ thống vui lòng thử lại trong giây lát", {});
+
+        }
+    };
+    const OnError = (data: ErrorResponse) => {
+        console.log('toi day', data);
+        if (data.statusCode) {
+            const { statusCode, message } = data;
+
+            setEntityError(message);
+        } else {
+            toast.error("Lỗi hệ thống vui lòng thử lại trong giây lát", {});
+
+        }
+    };
+    const { mutate: addPermissionToRole, isPending: isPendingInsert, isSuccess } = useAddPermissionToRole(onSuccess, OnError);
     const onHandleClose = () => {
         handleOpen(false);
         setCheckedPermissions([]); // Reset the checked permissions when closing the dialog
     };
 
-    const handleCheckboxChange = (resource: string, permission: string) => {
+    const handleCheckboxChange = (resource: string, action: string) => {
         const currentIndex = checkedPermissions.findIndex(
-            (item) => item.resource === resource && item.permission === permission
+            (item) => item.resource === resource && item.action === action
         );
 
         const newCheckedPermissions = [...checkedPermissions];
@@ -82,9 +119,9 @@ export default function RoleDecentralizeDialog({ title, maxWidth, id, content, a
             // Nếu checkbox chưa được chọn, thêm permission vào
             const permissions = checkedPermissions.filter(x => x.resource === resource)
             if (permissions.length === 3) {
-                newCheckedPermissions.push({ resource, permission: 'manage' });
+                newCheckedPermissions.push({ resource, action: 'manage' });
             }
-            newCheckedPermissions.push({ resource, permission });
+            newCheckedPermissions.push({ resource, action });
         } else {
             // Nếu checkbox đã được chọn, bỏ permission đó ra
 
@@ -92,28 +129,28 @@ export default function RoleDecentralizeDialog({ title, maxWidth, id, content, a
             // Nếu có 4 permission, bỏ chọn 'manage'
             const permissions = checkedPermissions.filter(x => x.resource === resource)
             if (permissions.length === 4) {
-                newCheckedPermissions.push({ resource, permission: 'manage' });
+                newCheckedPermissions.push({ resource, action: 'manage' });
             }
-            const manageIndex = newCheckedPermissions.findIndex(item => item.resource === resource && item.permission === 'manage');
+            const manageIndex = newCheckedPermissions.findIndex(item => item.resource === resource && item.action === 'manage');
             if (manageIndex !== -1) {
                 newCheckedPermissions.splice(manageIndex, 1); // Bỏ chọn 'manage'
             }
         }
         // Nếu 'manage' được chọn, chọn tất cả permissions cho resource đó
-        if (permission === 'manage' && currentIndex === -1) {
+        if (action === 'manage' && currentIndex === -1) {
             // Nếu chọn 'manage', thêm tất cả permissions khác cho resource này
             permissions?.data?.result.forEach((perm) => {
                 if (perm !== 'manage') {
-                    const existingIndex = checkedPermissions.findIndex(item => item.resource === resource && item.permission === perm);
+                    const existingIndex = checkedPermissions.findIndex(item => item.resource === resource && item.action === perm);
                     if (existingIndex === -1) {
-                        newCheckedPermissions.push({ resource, permission: perm }); // Chỉ thêm nếu chưa có permission này
+                        newCheckedPermissions.push({ resource, action: perm }); // Chỉ thêm nếu chưa có permission này
                     }
                 }
             });
         }
 
         // Nếu 'manage' bị bỏ chọn, bỏ tất cả permissions khác cho resource đó
-        if (permission === 'manage' && currentIndex !== -1) {
+        if (action === 'manage' && currentIndex !== -1) {
             // Lọc bỏ tất cả permissions liên quan đến resource này
             const filteredPermissions = newCheckedPermissions.filter(item => item.resource !== resource);
             setCheckedPermissions(filteredPermissions);
@@ -123,11 +160,16 @@ export default function RoleDecentralizeDialog({ title, maxWidth, id, content, a
         setCheckedPermissions(newCheckedPermissions);
     };
 
-    console.log(checkedPermissions);
     const isChecked = (resource: string, permission: string) => {
-        return checkedPermissions.some(item => item.resource === resource && item.permission === permission);
+        return checkedPermissions.some(item => item.resource === resource && item.action === permission);
     };
-
+    const handleSubmit = () => {
+        const data: AddPermissionToRoleModel = {
+            roleId: role._id,
+            permissions: checkedPermissions
+        }
+        addPermissionToRole(data);
+    };
     if (isPendingResources || isPendingPermissions) {
         return <>Loading.....</>
     }
@@ -189,6 +231,7 @@ export default function RoleDecentralizeDialog({ title, maxWidth, id, content, a
                     <LoadingButton
                         sx={{ p: "12px 24px" }}
                         type="submit"
+                        onClick={() => handleSubmit()}
                         loading={false}
                         variant="contained"
                         size="large"

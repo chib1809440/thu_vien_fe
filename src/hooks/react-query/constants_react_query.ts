@@ -6,3 +6,7 @@ export const RQ_ROLELIST = 'roleList'
 export const RQ_ROLE = 'role'
 export const RQ_RESOURCELIST = 'resourceList'
 export const RQ_PERMISSIONLIST = 'permissionList'
+
+
+export const RQ_ASSETLIST = 'assetList'
+export const RQ_ASSET = 'asset'

@@ -158,6 +158,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
             try {
                 setLoading(true);
                 const formData = new FormData();
+                console.log(values);
                 formData.append("fullname", values.fullname);
                 formData.append("email", values.email); // Thêm email nếu cần
                 formData.append("phoneNumber", values.phoneNumber); // Thêm số điện thoại nếu cần

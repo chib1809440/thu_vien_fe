@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import groupService from "../../../_apis/services/group.service";
 import { GET_GROUP_DELETED, GET_GROUP_DELETED_ID, GET_GROUP_ID, GET_GROUPS } from "./group-key";
 import { TFilter } from "../../../types/models/entity-common.type";
@@ -11,7 +11,7 @@ export const useFetchGroup = (params?: TFilter) => {
         queryFn: async () => {
             return await groupService.getAll<TGroup>(params);
         },
-        staleTime: 1000 * 60 * 10, // 10 minutes
+         placeholderData: keepPreviousData,
     });
 };
 
@@ -33,7 +33,7 @@ export const useFetchGroupById = (_id: string) => {
         queryFn: async () => {
             return await groupService.getById<TGroup>(_id);
         },
-        staleTime: 1000 * 60 * 10, // 10 minutes
+         placeholderData: keepPreviousData,
     });
 };
 
@@ -44,7 +44,7 @@ export const useFetchGroupDeleteList = (params?:TFilter)=>{
         queryFn: async()=>{
             return await groupService.getAllDeleted<TGroup>(params);
         },
-        staleTime: 1000 * 60 * 10,
+        placeholderData: keepPreviousData,
     })
 }
 
@@ -66,6 +66,6 @@ export const useFetchGroupDeleteListById = (_id: string)=>{
         queryFn: async()=>{
             return await groupService.getByIdDeleted<TGroup>(_id);
         },
-        staleTime: 1000 * 60 * 10,
+        placeholderData: keepPreviousData,
     })
 }

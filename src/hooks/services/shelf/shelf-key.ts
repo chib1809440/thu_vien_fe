@@ -1,0 +1,4 @@
+export const GET_SHELVES = "GET_SHELVES";
+export const GET_SHELF_ID = "GET_SHELF_ID";
+export const GET_SHELF_DELETED = "GET_SHELF_DELETED";
+export const GET_SHELF_DELETED_ID = "GET_SHELF_DELETED_ID";

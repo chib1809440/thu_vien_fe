@@ -1,5 +1,6 @@
 import { Box, Stack } from "@mui/system";
-import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
+import { IconPencil, IconPlus } from "@tabler/icons";
+import { IconTrashXFilled } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
@@ -15,7 +16,6 @@ import { TLibrary, TLibraryCreate } from "../../../types/models/library.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditLibrary from "./ui-components/FormAddEditLibrary";
-import { IconTrashXFilled } from "@tabler/icons-react";
 
 
 const LibraryPage = () => {
@@ -60,8 +60,8 @@ const LibraryPage = () => {
                 { ...values, _id: selectedEdit._id },
                 {
                     onSuccess: () => {
-                        toast.success('Chỉnh sửa thành công.');
                         revalidate();
+                        toast.success('Chỉnh sửa thành công.');
                         handleClose();
                     },
                 }
@@ -71,8 +71,8 @@ const LibraryPage = () => {
 
         mutationAdd.mutate(values, {
             onSuccess: (data) => {
-                toast.success('Thêm thành công.');
                 revalidate();
+                toast.success('Thêm thành công.');
                 setOpenAddEdit(false);
             },
         });
@@ -87,8 +87,8 @@ const LibraryPage = () => {
         if (libraryToDelete) {
             mutationDelete.mutate(libraryToDelete._id, {
                 onSuccess: () => {
-                    toast.success('Xóa thư viện thành công.');
                     revalidate();
+                    toast.success('Xóa thư viện thành công.');
                     setOpenConfirmDialog(false);
                 },
             });
@@ -146,11 +146,11 @@ const LibraryPage = () => {
                                 size={20}
                                 stroke={1.5}
                             />
-                            <IconTrash
+                            {/* <IconTrash
                                 size={20}
                                 stroke={1.5}
                                 onClick={() => handleOpenConfirmDialog(row)}
-                            />
+                            /> */}
                         </Box>
                     );
                 },
@@ -178,7 +178,7 @@ const LibraryPage = () => {
 
     const checkedAll = useMemo(() => {
         if (data?.data?.result?.length === 0 || checkedDelete.length === 0) return false;
-        return data.data.result.some((t) => checkedDelete.includes(t._id));
+        return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
     }, [checkedDelete, data]);
 
     const handleDeleteMultiple = useCallback(() => {
@@ -193,8 +193,8 @@ const LibraryPage = () => {
         if (checkedDelete.length === 0) return;
         mutationDeleteMany.mutate(checkedDelete, {
             onSuccess: () => {
-                toast.success("Xóa các mục đã chọn thành công.");
                 revalidate();
+                toast.success("Xóa các mục đã chọn thành công.");
                 setOpenConfirmDeleteMultiple(false);
                 setCheckedDelete([]);
             },

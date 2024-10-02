@@ -1,10 +1,10 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
-import { FC, useMemo, useState } from "react";
+import { FC, useCallback, useMemo } from "react";
 import * as yup from "yup";
 import AutocompleteForm from "../../../../components/custom/form/AutoCompleteForm";
 import InputForm from "../../../../components/custom/form/InputForm";
-import SwitchForm from "../../../../components/custom/form/SwitchForm";
+import SelectForm from "../../../../components/custom/form/SelectForm";
 import { TGroupCreate } from "../../../../types/models/group.type";
 import { TLibrary } from "../../../../types/models/library.type";
 
@@ -16,14 +16,16 @@ type Props = {
     initialValues: TGroupCreate;
     isEditMode?: boolean;
     libOptions?: TLibrary[];
-    selectedLib?: TLibrary[];
-    onSelectedLibs?: (value: TLibrary[]) => void;
 };
 
 const schema = yup.object().shape({
-    isPublic: yup.boolean().required("Vui lòng chọn"),
     name: yup.string().required("Vui lòng nhập tên"),
-    mainLibrary: yup.string().required("Vui lòng nhập tên"),
+    mainLibrary: yup.string().required("Vui lòng chọn trưởng nhóm thư viện").nullable(),
+    libraries: yup
+        .array()
+        .min(1, "Vui lòng chọn một thư viện")
+        .required("Vui lòng chọn một thư viện")
+        .nullable(),
 });
 
 const FormAddEditGroup: FC<Props> = ({
@@ -31,11 +33,10 @@ const FormAddEditGroup: FC<Props> = ({
     onClose,
     onSubmit,
     libOptions,
-    selectedLib,
-    onSelectedLibs,
     initialValues = {
-        isPublic: false,
+        mainLibrary: null,
         name: "",
+        libraries: [],
     },
     isFetching = false,
     isEditMode = false,
@@ -56,6 +57,13 @@ const FormAddEditGroup: FC<Props> = ({
         () => formik,
         [formik]
     );
+
+    const handleChangedLibs = useCallback((value: TLibrary[]) => {
+        setFieldValue?.("libraries", value);
+        if (value.length === 0) {
+            setFieldValue("mainLibrary", "");
+        }
+    }, []);
 
     return (
         <FormikProvider value={formik}>
@@ -89,16 +97,25 @@ const FormAddEditGroup: FC<Props> = ({
                         <AutocompleteForm
                             label="Thư viện"
                             required
-                            value={selectedLib ?? []}
+                            value={(values.libraries as unknown as TLibrary[]) || []}
                             options={libOptions}
                             keyLabel={"name"}
-                            onChange={(value) => onSelectedLibs?.(value)}
+                            onChange={handleChangedLibs}
+                            error={touched.libraries && Boolean(errors.libraries)}
+                            helperText={touched.libraries && errors.libraries}
                         />
 
-                        <SwitchForm
-                            value={values?.isPublic ?? false}
-                            onChange={(checked) => setFieldValue("isPublic", checked)}
-                            label="Hiển thị"
+                        <SelectForm
+                            label="Trưởng nhóm thư viện"
+                            options={((values.libraries as unknown as TLibrary[]) || [])?.map(
+                                (item) => ({
+                                    value: item._id,
+                                    label: item.name,
+                                })
+                            )}
+                            {...getFieldProps("mainLibrary")}
+                            error={touched.mainLibrary && Boolean(errors.mainLibrary)}
+                            helperText={touched.mainLibrary && errors.mainLibrary}
                         />
                     </Form>
                 </DialogContent>

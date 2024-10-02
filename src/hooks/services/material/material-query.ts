@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import materialService from "../../../_apis/services/material.service";
 import { TFilter } from "../../../types/models/entity-common.type";
 import { TMaterial } from "../../../types/models/material";
@@ -11,7 +11,7 @@ export const useFetchMaterial = (params?:TFilter)=>{
         queryFn: async()=>{
             return await materialService.getAll<TMaterial>(params);
         },
-        staleTime: 1000 * 60 * 10,
+         placeholderData: keepPreviousData,
     })
 }
 
@@ -33,7 +33,7 @@ export const useFetchMaterialById = (_id: string)=>{
         queryFn: async()=>{
             return await materialService.getById<TMaterial>(_id);
         },
-        staleTime: 1000 * 60 * 10,
+         placeholderData: keepPreviousData,
     })
 }
 
@@ -44,7 +44,7 @@ export const useFetchMaterialDeleteList = (params?:TFilter)=>{
         queryFn: async()=>{
             return await materialService.getAllDeleted<TMaterial>(params);
         },
-        staleTime: 1000 * 60 * 10,
+         placeholderData: keepPreviousData,
     })
 }
 
@@ -66,6 +66,6 @@ export const useFetchMaterialDeleteListById = (_id: string)=>{
         queryFn: async()=>{
             return await materialService.getByIdDeleted<TMaterial>(_id);
         },
-        staleTime: 1000 * 60 * 10,
+         placeholderData: keepPreviousData,
     })
 }

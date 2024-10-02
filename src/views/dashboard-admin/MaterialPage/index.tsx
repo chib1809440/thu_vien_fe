@@ -1,14 +1,15 @@
 import { Switch } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
+import { IconTrashXFilled } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
-import { CsFlexRowBetween } from "../../../components/default/flex";
-import { useAddMaterial, useDeleteManyMaterial, useDeleteMaterial, useEditMaterial } from "../../../hooks/services/material/material-mutation";
+import { useAddMaterial, useDeleteSoftManyMaterial, useDeleteSoftMaterial, useEditMaterial } from "../../../hooks/services/material/material-mutation";
 import { useFetchMaterial, useReFetchMaterial } from "../../../hooks/services/material/material-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
@@ -16,7 +17,6 @@ import { TMaterial, TMaterialCreate } from "../../../types/models/material";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditMaterial from "./ui-components/FormAddEditMaterial";
-import { IconTrashXFilled } from "@tabler/icons-react";
 
 
 const MaterialPage = () => {
@@ -28,8 +28,8 @@ const MaterialPage = () => {
     const { data, isLoading } = useFetchMaterial({ limit, page, search });
     const mutationAdd = useAddMaterial();
     const mutationEdit = useEditMaterial();
-    const mutationDelete = useDeleteMaterial();
-    const mutationDeleteMany = useDeleteManyMaterial();
+    const mutationSoftDelete = useDeleteSoftMaterial();
+    const mutationSoftDeleteMany = useDeleteSoftManyMaterial();
     const revalidate = useReFetchMaterial();
 
     const [openAddEdit, setOpenAddEdit] = useState(false);
@@ -61,8 +61,8 @@ const MaterialPage = () => {
                 { ...values, _id: selectedEdit._id },
                 {
                     onSuccess: () => {
-                        toast.success('Chỉnh sửa thành công.');
                         revalidate();
+                        toast.success('Chỉnh sửa thành công.');
                         handleClose();
                     },
                 }
@@ -72,8 +72,8 @@ const MaterialPage = () => {
 
         mutationAdd.mutate(values, {
             onSuccess: (data) => {
-                toast.success('Thêm thành công.');
                 revalidate();
+                toast.success('Thêm thành công.');
                 setOpenAddEdit(false);
             },
         });
@@ -86,10 +86,10 @@ const MaterialPage = () => {
 
     const handleConfirmDelete = () => {
         if (materialToDelete) {
-            mutationDelete.mutate(materialToDelete._id, {
+            mutationSoftDelete.mutate(materialToDelete._id, {
                 onSuccess: () => {
-                    toast.success('Xóa dạng học liệu thành công.');
                     revalidate();
+                    toast.success('Xóa dạng học liệu thành công.');
                     setOpenConfirmDialog(false);
                 },
                 onError: () => {
@@ -200,7 +200,7 @@ const MaterialPage = () => {
 
     const checkedAll = useMemo(() => {
         if (data?.data?.result?.length === 0 || checkedDelete.length === 0) return false;
-        return data.data.result.some((t) => checkedDelete.includes(t._id));
+        return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
     }, [checkedDelete, data]);
 
     const handleDeleteMultiple = useCallback(() => {
@@ -213,10 +213,10 @@ const MaterialPage = () => {
 
     const handleConfirmDeleteMultiple = useCallback(() => {
         if (checkedDelete.length === 0) return;
-        mutationDeleteMany.mutate(checkedDelete, {
+        mutationSoftDeleteMany.mutate(checkedDelete, {
             onSuccess: () => {
-                toast.success("Xóa các mục đã chọn thành công.");
                 revalidate();
+                toast.success("Xóa các mục đã chọn thành công.");
                 setOpenConfirmDeleteMultiple(false);
                 setCheckedDelete([]);
             },
@@ -268,9 +268,9 @@ const MaterialPage = () => {
             )}
 
             <MainCard>
-                <Stack spacing={2}>
-                    <CsFlexRowBetween>
-                        <Box sx={{ ml: 4, mb: 2 }}>
+            <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
+                    <Box display="flex" flexWrap="wrap">
+                        <Box>
                             <StyledButton
                                 color="primary"
                                 size="small"
@@ -281,7 +281,20 @@ const MaterialPage = () => {
                                 Thêm mới
                             </StyledButton>
                         </Box>
-                    </CsFlexRowBetween>
+
+                        <Box>
+                            <Link to="/quan-ly-danh-muc/danh-sach-xoa-dang-hoc-lieu" style={{ textDecoration: 'none' }}>
+                                <StyledButton
+                                    sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                    size="small"
+                                    startIcon={<IconTrash stroke={2} />}
+                                    variant="contained"
+                                >
+                                    Thùng rác
+                                </StyledButton>
+                            </Link>
+                        </Box>
+                    </Box>
                 </Stack>
 
                 <ActionsForm actions={actionMenus} />

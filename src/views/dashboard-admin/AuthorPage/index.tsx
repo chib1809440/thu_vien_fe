@@ -9,7 +9,6 @@ import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
-import { CsFlexRowBetween } from "../../../components/default/flex";
 import { useAddAuthor, useDeleteSoftAuthor, useDeleteSoftManyAuthor, useEditAuthor } from "../../../hooks/services/author/author-mutation";
 import { useFetchAuthor, useReFetchAuthor } from "../../../hooks/services/author/author-query";
 import useQueryString from "../../../hooks/services/useQueryString";
@@ -61,8 +60,8 @@ const AuthorPage = () => {
                 { ...values, _id: selectedEdit._id },
                 {
                     onSuccess: () => {
-                        toast.success('Chỉnh sửa thành công.');
                         revalidate();
+                        toast.success('Chỉnh sửa thành công.');
                         handleClose();
                     },
                 }
@@ -72,8 +71,8 @@ const AuthorPage = () => {
 
         mutationAdd.mutate(values, {
             onSuccess: (data) => {
-                toast.success('Thêm thành công.');
                 revalidate();
+                toast.success('Thêm thành công.');
                 setOpenAddEdit(false);
             },
         });
@@ -88,8 +87,8 @@ const AuthorPage = () => {
         if (authorToDelete) {
             mutationSoftDelete.mutate(authorToDelete._id, {
                 onSuccess: () => {
-                    toast.success('Xóa tác giả thành công.');
                     revalidate();
+                    toast.success('Xóa tác giả thành công.');
                     setOpenConfirmDialog(false);
                 },
             });
@@ -198,12 +197,10 @@ const AuthorPage = () => {
 
     const checkedAll = useMemo(() => {
         if (data?.data?.result?.length === 0 || checkedDelete.length === 0) return false;
-        return data.data.result.some((t) => checkedDelete.includes(t._id));
+        return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
     }, [checkedDelete, data]);
 
     const handleDeleteMultiple = useCallback(() => {
-        console.log(checkedDelete);
-        
         if (checkedDelete.length === 0) {
             toast.error("Vui lòng chọn dữ liệu để xóa");
             return;
@@ -215,8 +212,8 @@ const AuthorPage = () => {
         if (checkedDelete.length === 0) return;
         mutationSoftDeleteMany.mutate(checkedDelete, {
             onSuccess: () => {
-                toast.success("Xóa các mục đã chọn thành công.");
                 revalidate();
+                toast.success("Xóa các mục đã chọn thành công.");
                 setOpenConfirmSoftDeleteMultiple(false);
                 setCheckedDelete([]);
             },
@@ -316,7 +313,7 @@ const AuthorPage = () => {
                     open={openConfirmDialog}
                     onClose={handleCloseConfirmDialog}
                     onConfirm={handleConfirmDelete}
-                    title="Xác nhận xóa"
+                    title="Xác nhận xóa?"
                     description={`Bạn có chắc chắn muốn xóa "${authorToDelete?.name}" ?`}
                 />
                 <ConfirmDeleteDialog
@@ -324,7 +321,7 @@ const AuthorPage = () => {
                     open={openConfirmSoftDeleteMultiple}
                     onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
                     onConfirm={handleConfirmSoftDeleteMultiple}
-                    title="Xác nhận xóa các mục đã chọn"
+                    title="Xác nhận xóa các mục đã chọn?"
                     description={`Bạn có chắc chắn muốn xóa?`}
                 />
             </MainCard>

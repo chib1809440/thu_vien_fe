@@ -1,14 +1,15 @@
 import { Switch } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
+import { IconTrashXFilled } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
-import { CsFlexRowBetween } from "../../../components/default/flex";
-import { useAddCategory, useDeleteCategory, useDeleteManyCategory, useEditCategory } from "../../../hooks/services/category/category-mutation";
+import { useAddCategory, useDeleteSoftCategory, useDeleteSoftManyCategory, useEditCategory } from "../../../hooks/services/category/category-mutation";
 import { useFetchCategory, useReFetchCategory } from "../../../hooks/services/category/category-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
@@ -16,8 +17,6 @@ import { TCategory, TCategoryCreate } from "../../../types/models/category";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditCategory from "./ui-components/FormAddEditCategory";
-import { TLibrary } from "../../../types/models/library.type";
-import { IconTrashXFilled } from "@tabler/icons-react";
 
 
 const CategoryPage = () => {
@@ -29,8 +28,8 @@ const CategoryPage = () => {
     const { data, isLoading } = useFetchCategory({ limit, page, search });
     const mutationAdd = useAddCategory();
     const mutationEdit = useEditCategory();
-    const mutationDelete = useDeleteCategory();
-    const mutationDeleteMany = useDeleteManyCategory();
+    const mutationSoftDelete = useDeleteSoftCategory();
+    const mutationSoftDeleteMany = useDeleteSoftManyCategory();
     const revalidate = useReFetchCategory();
 
     const [openAddEdit, setOpenAddEdit] = useState(false);
@@ -62,8 +61,8 @@ const CategoryPage = () => {
                 { ...values, _id: selectedEdit._id },
                 {
                     onSuccess: () => {
-                        toast.success('Chỉnh sửa thành công.');
                         revalidate();
+                        toast.success('Chỉnh sửa thành công.');
                         handleClose();
                     },
                 }
@@ -73,8 +72,8 @@ const CategoryPage = () => {
 
         mutationAdd.mutate(values, {
             onSuccess: (data) => {
-                toast.success('Thêm thành công.');
                 revalidate();
+                toast.success('Thêm thành công.');
                 setOpenAddEdit(false);
             },
         });
@@ -87,10 +86,10 @@ const CategoryPage = () => {
 
     const handleConfirmDelete = () => {
         if (categoryToDelete) {
-            mutationDelete.mutate(categoryToDelete._id, {
+            mutationSoftDelete.mutate(categoryToDelete._id, {
                 onSuccess: () => {
-                    toast.success('Xóa lĩnh vực thành công.');
                     revalidate();
+                    toast.success('Xóa lĩnh vực thành công.');
                     setOpenConfirmDialog(false);
                 },
             });
@@ -198,7 +197,7 @@ const CategoryPage = () => {
 
     const checkedAll = useMemo(() => {
         if (data?.data?.result?.length === 0 || checkedDelete.length === 0) return false;
-        return data.data.result.some((t) => checkedDelete.includes(t._id));
+        return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
     }, [checkedDelete, data]);
 
     const handleDeleteMultiple = useCallback(() => {
@@ -211,10 +210,10 @@ const CategoryPage = () => {
 
     const handleConfirmDeleteMultiple = useCallback(() => {
         if (checkedDelete.length === 0) return;
-        mutationDeleteMany.mutate(checkedDelete, {
+        mutationSoftDeleteMany.mutate(checkedDelete, {
             onSuccess: () => {
-                toast.success("Xóa các mục đã chọn thành công.");
                 revalidate();
+                toast.success("Xóa các mục đã chọn thành công.");
                 setOpenConfirmDeleteMultiple(false);
                 setCheckedDelete([]);
             },
@@ -224,7 +223,7 @@ const CategoryPage = () => {
     const actionMenus = useMemo((): TMenuOption[] => {
         return [
             {
-                label: "Xóa các dữ liệu đã chọn",
+                label: "Xóa các dữ liệu vào thùng rác",
                 icon: <IconTrashXFilled size={20} stroke={1.5} />,
                 onClick: handleDeleteMultiple,
             },
@@ -266,9 +265,9 @@ const CategoryPage = () => {
             )}
 
             <MainCard>
-                <Stack spacing={2}>
-                    <CsFlexRowBetween>
-                        <Box sx={{ ml: 4, mb: 2 }}>
+                <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
+                    <Box display="flex" flexWrap="wrap">
+                        <Box>
                             <StyledButton
                                 color="primary"
                                 size="small"
@@ -279,7 +278,20 @@ const CategoryPage = () => {
                                 Thêm mới
                             </StyledButton>
                         </Box>
-                    </CsFlexRowBetween>
+
+                        <Box>
+                            <Link to="/quan-ly-danh-muc/danh-sach-xoa-linh-vuc" style={{ textDecoration: 'none' }}>
+                                <StyledButton
+                                    sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                    size="small"
+                                    startIcon={<IconTrash stroke={2} />}
+                                    variant="contained"
+                                >
+                                    Thùng rác
+                                </StyledButton>
+                            </Link>
+                        </Box>
+                    </Box>
                 </Stack>
 
                 <ActionsForm actions={actionMenus} />

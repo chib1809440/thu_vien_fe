@@ -6,7 +6,8 @@ export type TShelves = TEntityAbstract & {
     libraryId: string | null;
     name: string;
     description: string;
+    note: string;
 };
 
-export type TShelvesCreate = Partial<Pick<TShelves,  "name" | "description" >>;
-export type TShelvesEdit = Partial<Pick<TShelves,  "name" | "description" >> & {_id:string};
+export type TShelvesCreate = Partial<Pick<TShelves,  "name" | "description" | "note" >>;
+export type TShelvesEdit = Partial<Pick<TShelves,  "name" | "description" | "note" >> & {_id:string};

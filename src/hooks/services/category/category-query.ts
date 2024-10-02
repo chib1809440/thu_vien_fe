@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import categoryService from "../../../_apis/services/category.service";
 import { TCategory } from "../../../types/models/category";
 import { TFilter } from "../../../types/models/entity-common.type";
@@ -11,7 +11,7 @@ export const useFetchCategory = (params?:TFilter)=>{
         queryFn: async()=>{
             return await categoryService.getAll<TCategory>(params);
         },
-        staleTime: 1000 * 60 * 10,
+        placeholderData: keepPreviousData,
     })
 }
 
@@ -33,7 +33,7 @@ export const useFetchCategoryById = (_id: string)=>{
         queryFn: async()=>{
             return await categoryService.getById<TCategory>(_id);
         },
-        staleTime: 1000 * 60 * 10,
+        placeholderData: keepPreviousData,
     })
 }
 
@@ -44,7 +44,7 @@ export const useFetchCategoryDeleteList = (params?:TFilter)=>{
         queryFn: async()=>{
             return await categoryService.getAllDeleted<TCategory>(params);
         },
-        staleTime: 1000 * 60 * 10,
+        placeholderData: keepPreviousData,
     })
 }
 
@@ -66,6 +66,6 @@ export const useFetchCategoryDeleteListById = (_id: string)=>{
         queryFn: async()=>{
             return await categoryService.getByIdDeleted<TCategory>(_id);
         },
-        staleTime: 1000 * 60 * 10,
+        placeholderData: keepPreviousData,
     })
 }

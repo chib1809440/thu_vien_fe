@@ -13,8 +13,8 @@ const ConfirmDeleteDialog: FC<ConfirmDeleteDialogProps> = ({
     open,
     onClose,
     onConfirm,
-    title = "Xác nhận xóa",
-    description = "Bạn có chắc chắn muốn xóa? Hành động này không thể hoàn tác."
+    title = "Xác nhận xóa?",
+    description = "Bạn có chắc chắn muốn xóa?"
 }) => {
     return (
         <Dialog
@@ -25,16 +25,17 @@ const ConfirmDeleteDialog: FC<ConfirmDeleteDialogProps> = ({
         >
             <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
             <DialogContent>
-                <DialogContentText id="alert-dialog-description">
+                <DialogContentText sx={{ color: "black" }} id="alert-dialog-description">
                     {description}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} color="primary">
-                    Hủy
-                </Button>
+               
                 <Button onClick={onConfirm} color="error" autoFocus>
                     Xác nhận
+                </Button>
+                <Button onClick={onClose} sx={{ color: 'black' }}>
+                    Đóng
                 </Button>
             </DialogActions>
         </Dialog>

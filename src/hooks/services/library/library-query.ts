@@ -1,9 +1,9 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import libraryService from "../../../_apis/services/library.service";
 import { TFilter } from "../../../types/models/entity-common.type";
 import { TLibrary } from "../../../types/models/library.type";
 import { getQueryKeys } from "../../../utils/object";
-import { GET_LIBRARY, GET_LIBRARY_DELETED, GET_LIBRARY_DELETED_ID, GET_LIBRARY_ID } from "./library-key";
+import { GET_LIBRARY, GET_LIBRARY_DELETED, GET_LIBRARY_DELETED_ID, GET_LIBRARY_ID, GET_LIBRARY_NOT_GROUP } from "./library-key";
 
 export const useFetchLibrary = (params?: TFilter) => {
     return useQuery({
@@ -11,7 +11,7 @@ export const useFetchLibrary = (params?: TFilter) => {
         queryFn: async () => {
             return await libraryService.getAll<TLibrary>(params);
         },
-        staleTime: 1000 * 60 * 10,
+         placeholderData: keepPreviousData,
     });
 };
 
@@ -33,7 +33,7 @@ export const useFetchLibraryById = (_id: string) => {
         queryFn: async () => {
             return await libraryService.getById<TLibrary>(_id);
         },
-        staleTime: 1000 * 60 * 10,
+         placeholderData: keepPreviousData,
     });
 };
 
@@ -44,7 +44,7 @@ export const useFetchLibraryDeleteList = (params?:TFilter)=>{
         queryFn: async()=>{
             return await libraryService.getAllDeleted<TLibrary>(params);
         },
-        staleTime: 1000 * 60 * 10,
+         placeholderData: keepPreviousData,
     })
 }
 
@@ -66,6 +66,6 @@ export const useFetchLibraryDeleteListById = (_id: string)=>{
         queryFn: async()=>{
             return await libraryService.getByIdDeleted<TLibrary>(_id);
         },
-        staleTime: 1000 * 60 * 10,
+         placeholderData: keepPreviousData,
     })
 }

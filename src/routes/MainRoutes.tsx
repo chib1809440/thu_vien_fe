@@ -37,13 +37,32 @@ const AuthorDeleteListPage = Loadable(
   lazy(() => import("../views/dashboard-admin/AuthorPage/AuthorDeleteListPage"))
 );
 
-// const PublisherPage = Loadable(
-//   lazy(() => import("../views/dashboard-admin/PublisherPage"))
-// );
+const CategoryDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/CategoryPage/CategoryDeleteListPage"))
+);
 
-// const ShelfPage = Loadable(
-//   lazy(() => import("../views/dashboard-admin/ShelfPage"))
-// );
+const PublisherPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/PublisherPage"))
+);
+
+const PublisherDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/PublisherPage/PublisherDeleteListPage"))
+);
+
+const MaterialDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/MaterialPage/MaterialDeleteListPage"))
+);
+
+const ShelfPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/ShelfPage"))
+);
+
+const ShelfDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/ShelfPage/ShelfDeleteListPage"))
+);
+
+
+
 
 const ContactPage = Loadable(
   lazy(() => import("../views/dashboard-admin/Contact"))
@@ -233,14 +252,30 @@ const MainRoutes = {
       path: "/quan-ly-danh-muc/danh-sach-xoa-tac-gia",
       element: <AuthorDeleteListPage />,
     },
-    // {
-    //   path: "/quan-ly-danh-muc/nha-san-xuat",
-    //   element: <PublisherPage />,
-    // },
-    // {
-    //   path: "/quan-ly-danh-muc/tu-ke",
-    //   element: <ShelfPage />,
-    // },
+    {
+      path: "/quan-ly-danh-muc/danh-sach-xoa-linh-vuc",
+      element: <CategoryDeleteListPage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/nha-san-xuat",
+      element: <PublisherPage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/danh-sach-xoa-nha-san-xuat",
+      element: <PublisherDeleteListPage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/danh-sach-xoa-dang-hoc-lieu",
+      element: <MaterialDeleteListPage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/tu-ke",
+      element: <ShelfPage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/danh-sach-xoa-tu-ke",
+      element: <ShelfDeleteListPage />,
+    },
     {
       path: "/quan-ly-danh-muc/loai-hoc-lieu",
       element: <PrintedMatterPage />,

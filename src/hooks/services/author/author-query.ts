@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import authorService from "../../../_apis/services/author.service";
 import { TAuthor } from "../../../types/models/author";
 import { TFilter } from "../../../types/models/entity-common.type";
@@ -11,7 +11,7 @@ export const useFetchAuthor = (params?:TFilter)=>{
         queryFn: async()=>{
             return await authorService.getAll<TAuthor>(params);
         },
-        staleTime: 1000 * 60 * 10,
+        placeholderData: keepPreviousData,
     })
 }
 
@@ -33,7 +33,7 @@ export const useFetchAuthorById = (_id: string)=>{
         queryFn: async()=>{
             return await authorService.getById<TAuthor>(_id);
         },
-        staleTime: 1000 * 60 * 10,
+        placeholderData: keepPreviousData,
     })
 }
 // get danh sách xóa mềm
@@ -43,7 +43,7 @@ export const useFetchAuthorDeleteList = (params?:TFilter)=>{
         queryFn: async()=>{
             return await authorService.getAllDeleted<TAuthor>(params);
         },
-        staleTime: 1000 * 60 * 10,
+        placeholderData: keepPreviousData,
     })
 }
 
@@ -65,6 +65,6 @@ export const useFetchAuthorDeleteListById = (_id: string)=>{
         queryFn: async()=>{
             return await authorService.getByIdDeleted<TAuthor>(_id);
         },
-        staleTime: 1000 * 60 * 10,
+        placeholderData: keepPreviousData,
     })
 }

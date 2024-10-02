@@ -17,7 +17,9 @@ type Props = {
 };
 
 const schema = yup.object().shape({
-    name: yup.string().required("Vui lòng nhập tên"),
+    name: yup
+        .string()
+        .required("Vui lòng nhập tên")
 });
 
 const FormAddEditAuthor: FC<Props> = ({
@@ -83,7 +85,7 @@ const FormAddEditAuthor: FC<Props> = ({
                             helperText={touched.description && errors.description}
                             {...getFieldProps("description")}
                         />
-                         <SwitchForm
+                        <SwitchForm
                             value={values?.isPublic ?? false}
                             onChange={(checked) => setFieldValue("isPublic", checked)}
                             label="Hiển thị"

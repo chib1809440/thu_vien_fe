@@ -8,7 +8,8 @@ export type TPublisher = TEntityAbstract & {
     libraryId: string | null;
     name: string;
     description: string;
+    note: string;
 };
 
-export type TPublisherCreate = Partial<Pick<TPublisher,  "name" | "description" >>;
-export type TPublisherEdit = Partial<Pick<TPublisher,  "name" | "description" >> & {_id:string};
+export type TPublisherCreate = Partial<Pick<TPublisher,  "isPublic" | "name" | "description" | "note"  >>;
+export type TPublisherEdit = Partial<Pick<TPublisher, "isPublic" | "name" | "description" | "note"  >> & {_id:string};

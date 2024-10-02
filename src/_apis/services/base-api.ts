@@ -75,12 +75,9 @@ class BaseApi {
         return response.data as TApiModifyRecord<DynamicType>;
     }
 
-    public async restore<DynamicPayload, DynamicResponse>(
-        payload: DynamicPayload,
-        id: string | number
-    ) {
-        const response = await this.httpClient.patch(`${this.endpoint}/restore/${id}`, payload);
-        return response.data as TApiModifyRecord<DynamicResponse>;
+    public async restore<DynamicType>(id: string | number) {
+        const response = await this.httpClient.patch(`${this.endpoint}/restore/${id}`);
+        return response.data as TApiModifyRecord<DynamicType>;
     }
 
     public async restoreMany<DynamicType>(ids: string[]) {

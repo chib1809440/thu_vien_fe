@@ -12,7 +12,12 @@ export type TGroup = TEntityAbstract & {
     libraries?: TLibrary[] | null;
 };
 
-export type TGroupCreate = Partial<Pick<TGroup, "isPublic" | "name">>;
-export type TGroupEdit = Partial<Pick<TGroup, "isPublic" | "name">> & {
+export type TGroupCreate = Partial<Pick<TGroup, "name">> & {
+    mainLibrary: string | null;
+    libraries?: string[] | TLibrary[] | null;
+};
+export type TGroupEdit = Partial<Pick<TGroup, "name">> & {
     _id: string;
+    mainLibrary?: string | null;
+    libraries?: string[] | TLibrary[] | null;
 };

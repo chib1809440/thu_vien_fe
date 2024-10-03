@@ -100,10 +100,10 @@ const CategoryPage = () => {
         setOpenConfirmDialog(false);
     };
 
-    const handleChangePublic = (row: TCategory, checked: boolean) => {
+    const handleChangeShareConnect = (row: TCategory, checked: boolean) => {
         // TODO: update
         mutationEdit.mutate(
-            { isPublic: checked, _id: row._id },
+            { isLink: checked, _id: row._id },
             {
                 onSuccess: (data) => {
                     revalidate();
@@ -121,25 +121,27 @@ const CategoryPage = () => {
                 disablePadding: "none",
                 label: "Tên lĩnh vực",
                 align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
                 id: "description",
                 disablePadding: "none",
                 label: "Mô tả",
                 align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
             },
 
             {
-                id: "isPublic",
+                id: "isLink",
                 disablePadding: "none",
                 label: "Chia sẻ liên thông",
                 sxRow: { paddingRight: 4 },
                 render: (row) => {
                     return (
                         <Switch
-                            checked={row?.isPublic}
-                            value={row?.isPublic}
-                            onChange={(event) => handleChangePublic(row, event.target.checked)}
+                            checked={row?.isLink}
+                            value={row?.isLink}
+                            onChange={(event) => handleChangeShareConnect(row, event.target.checked)}
                         />
                     );
                 },
@@ -175,7 +177,7 @@ const CategoryPage = () => {
                 },
             },
         ],
-        [handleEditCategory, handleOpenConfirmDialog, handleChangePublic]
+        [handleEditCategory, handleOpenConfirmDialog, handleChangeShareConnect]
     );
 
     const handleCheckedDelete = useCallback((row: TCategory, checked: boolean) => {
@@ -235,14 +237,14 @@ const CategoryPage = () => {
             return {
                 name: selectedEdit.name,
                 description: selectedEdit.description,
-                isPublic: selectedEdit.isPublic,
+                isLink: selectedEdit.isLink,
             };
         }
 
         return {
             name: "",
             description: "",
-            isPublic: false,
+            isLink: false,
         };
     }, [selectedEdit]);
 

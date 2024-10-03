@@ -103,10 +103,10 @@ const MaterialPage = () => {
         setOpenConfirmDialog(false);
     };
 
-    const handleChangePublic = (row: TMaterial, checked: boolean) => {
+    const handleChangeShareConnect = (row: TMaterial, checked: boolean) => {
         // TODO: update
         mutationEdit.mutate(
-            { isPublic: checked, _id: row._id },
+            { isLink: checked, _id: row._id },
             {
                 onSuccess: (data) => {
                     revalidate();
@@ -124,25 +124,27 @@ const MaterialPage = () => {
                 disablePadding: "none",
                 label: "Tên dạng học liệu",
                 align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
                 id: "description",
                 disablePadding: "none",
                 label: "Mô tả",
                 align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
             },
 
             {
-                id: "isPublic",
+                id: "isLink",
                 disablePadding: "none",
                 label: "Hiển thị",
                 sxRow: { paddingRight: 4 },
                 render: (row) => {
                     return (
                         <Switch
-                            checked={row?.isPublic}
-                            value={row?.isPublic}
-                            onChange={(event) => handleChangePublic(row, event.target.checked)}
+                            checked={row?.isLink}
+                            value={row?.isLink}
+                            onChange={(event) => handleChangeShareConnect(row, event.target.checked)}
                         />
                     );
                 },
@@ -178,7 +180,7 @@ const MaterialPage = () => {
                 },
             },
         ],
-        [handleEditMaterial, handleOpenConfirmDialog, handleChangePublic]
+        [handleEditMaterial, handleOpenConfirmDialog, handleChangeShareConnect]
     );
 
     const handleCheckedDelete = useCallback((row: TMaterial, checked: boolean) => {
@@ -238,14 +240,14 @@ const MaterialPage = () => {
             return {
                 name: selectedEdit.name,
                 description: selectedEdit.description,
-                isPublic: selectedEdit.isPublic,
+                isLink: selectedEdit.isLink,
             };
         }
 
         return {
             name: "",
             description: "",
-            isPublic: false,
+            isLink: false,
         };
     }, [selectedEdit]);
 

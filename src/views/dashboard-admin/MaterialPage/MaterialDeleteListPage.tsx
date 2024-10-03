@@ -92,24 +92,26 @@ const MaterialDeleteListPage = () => {
                 disablePadding: "none",
                 label: "Tên dạng học liệu",
                 align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
                 id: "description",
                 disablePadding: "none",
                 label: "Mô tả",
                 align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
             },
 
             {
-                id: "isPublic",
+                id: "isLink",
                 disablePadding: "none",
                 label: "Chia sẻ liên thông",
                 sxRow: { paddingRight: 4 },
                 render: (row) => {
                     return (
                         <Switch
-                            checked={row?.isPublic}
-                            value={row?.isPublic}
+                            checked={row?.isLink}
+                            value={row?.isLink}
                             disabled
                         />
                     );

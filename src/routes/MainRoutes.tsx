@@ -61,8 +61,13 @@ const ShelfDeleteListPage = Loadable(
   lazy(() => import("../views/dashboard-admin/ShelfPage/ShelfDeleteListPage"))
 );
 
-
-
+// sách
+const PublicationsPageV3 = Loadable(
+  lazy(() => import("../views/dashboard-admin/PublicationsPageV3"))
+);
+const PublicationsDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/PublicationsPageV3/PublicationsDeleteListPage"))
+);
 
 const ContactPage = Loadable(
   lazy(() => import("../views/dashboard-admin/Contact"))
@@ -276,6 +281,17 @@ const MainRoutes = {
       path: "/quan-ly-danh-muc/danh-sach-xoa-tu-ke",
       element: <ShelfDeleteListPage />,
     },
+
+    // sách
+    {
+      path: "/thu-vien/an-pham",
+      element: <PublicationsPageV3 />,
+    },
+    {
+      path: "/thu-vien/danh-sach-xoa-an-pham",
+      element: <PublicationsDeleteListPage />,
+    },
+
     {
       path: "/quan-ly-danh-muc/loai-hoc-lieu",
       element: <PrintedMatterPage />,
@@ -292,10 +308,10 @@ const MainRoutes = {
       path: "/phan-quyen",
       element: <ControlPower />,
     },
-    {
-      path: "/thu-vien/an-pham",
-      element: <PublicationsPage />,
-    },
+    // {
+    //   path: "/thu-vien/an-pham",
+    //   element: <PublicationsPage />,
+    // },
     {
       path: "/thu-vien/hoc-lieu",
       element: <PublicationsPageV2 />,

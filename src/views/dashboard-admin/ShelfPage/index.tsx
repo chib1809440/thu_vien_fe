@@ -105,18 +105,21 @@ const ShelfPage = () => {
                 disablePadding: "none",
                 label: "Tên tủ kệ",
                 align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
                 id: "description",
                 disablePadding: "none",
                 label: "Mô tả",
                 align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
                 id: "note",
                 disablePadding: "none",
                 label: "Ghi chú",
                 align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
             },
 
             {

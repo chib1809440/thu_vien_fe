@@ -101,15 +101,15 @@ const CategoryDeleteListPage = () => {
             },
 
             {
-                id: "isPublic",
+                id: "isLink",
                 disablePadding: "none",
                 label: "Chia sẻ liên thông",
                 sxRow: { paddingRight: 4 },
                 render: (row) => {
                     return (
                         <Switch
-                            checked={row?.isPublic}
-                            value={row?.isPublic}
+                            checked={row?.isLink}
+                            value={row?.isLink}
                             disabled
                         />
                     );

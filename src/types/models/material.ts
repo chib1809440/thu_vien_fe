@@ -5,10 +5,11 @@ export type TMaterial = TEntityAbstract & {
     createBy: string | null;
     groupId: string | null;
     isPublic: boolean;
+    isLink: boolean;
     libraryId: string | null;
     name: string;
     description: string;
 };
 
-export type TMaterialCreate = Partial<Pick<TMaterial, "isPublic" | "name" | "description" >>;
-export type TMaterialEdit = Partial<Pick<TMaterial, "isPublic" | "name" | "description" >> & {_id:string};
+export type TMaterialCreate = Partial<Pick<TMaterial, "isLink" | "name" | "description" >>;
+export type TMaterialEdit = Partial<Pick<TMaterial, "isLink" | "name" | "description" >> & {_id:string};

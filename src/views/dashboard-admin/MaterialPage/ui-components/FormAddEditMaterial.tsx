@@ -27,7 +27,7 @@ const FormAddEditMaterial: FC<Props> = ({
     initialValues = {
         name: "",
         description: "",
-        isPublic: false,
+        isLink: false,
     },
     isFetching = false,
     isEditMode = false,
@@ -84,9 +84,9 @@ const FormAddEditMaterial: FC<Props> = ({
                             {...getFieldProps("description")}
                         />
                          <SwitchForm
-                            value={values?.isPublic ?? false}
-                            onChange={(checked) => setFieldValue("isPublic", checked)}
-                            label="Hiển thị"
+                            value={values?.isLink ?? false}
+                            onChange={(checked) => setFieldValue("isLink", checked)}
+                            label="Chia sẻ liên thông"
                         />
                     </Form>
                 </DialogContent>

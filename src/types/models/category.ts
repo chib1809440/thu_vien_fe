@@ -5,10 +5,11 @@ export type TCategory = TEntityAbstract & {
     createBy: string | null;
     groupId: string | null;
     isPublic: boolean;
+    isLink: boolean;
     libraryId: string | null;
     name: string;
     description: string;
 };
 
-export type TCategoryCreate = Partial<Pick<TCategory, "isPublic" | "name" | "description" >>;
-export type TCategoryEdit = Partial<Pick<TCategory,  "isPublic" |"name" | "description" >> & {_id:string};
+export type TCategoryCreate = Partial<Pick<TCategory, "isLink" | "name" | "description" >>;
+export type TCategoryEdit = Partial<Pick<TCategory,  "isLink" |"name" | "description" >> & {_id:string};

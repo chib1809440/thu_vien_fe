@@ -99,10 +99,10 @@ const AuthorPage = () => {
         setOpenConfirmDialog(false);
     };
 
-    const handleChangePublic = (row: TAuthor, checked: boolean) => {
+    const handleChangeShareConnect = (row: TAuthor, checked: boolean) => {
         // TODO: update
         mutationEdit.mutate(
-            { isPublic: checked, _id: row._id },
+            { isLink: checked, _id: row._id },
             {
                 onSuccess: (data) => {
                     revalidate();
@@ -120,25 +120,27 @@ const AuthorPage = () => {
                 disablePadding: "none",
                 label: "Tên tác giả",
                 align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
                 id: "description",
                 disablePadding: "none",
                 label: "Mô tả",
                 align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
             },
 
             {
-                id: "isPublic",
+                id: "isLink",
                 disablePadding: "none",
                 label: "Chia sẻ liên thông",
                 sxRow: { paddingRight: 4 },
                 render: (row) => {
                     return (
                         <Switch
-                            checked={row?.isPublic}
-                            value={row?.isPublic}
-                            onChange={(event) => handleChangePublic(row, event.target.checked)}
+                            checked={row?.isLink}
+                            value={row?.isLink}
+                            onChange={(event) => handleChangeShareConnect(row, event.target.checked)}
                         />
                     );
                 },
@@ -175,7 +177,7 @@ const AuthorPage = () => {
                 },
             },
         ],
-        [handleEditAuthor, handleOpenConfirmDialog, handleChangePublic]
+        [handleEditAuthor, handleOpenConfirmDialog, handleChangeShareConnect]
     );
 
     const handleCheckedDelete = useCallback((row: TAuthor, checked: boolean) => {
@@ -231,18 +233,19 @@ const AuthorPage = () => {
     }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TAuthorCreate => {
+        
         if (selectedEdit) {
             return {
                 name: selectedEdit.name,
                 description: selectedEdit.description,
-                isPublic: selectedEdit.isPublic,
+                isLink: selectedEdit.isLink,
             };
         }
 
         return {
             name: "",
             description: "",
-            isPublic: false,
+            isLink: false,
         };
     }, [selectedEdit]);
 

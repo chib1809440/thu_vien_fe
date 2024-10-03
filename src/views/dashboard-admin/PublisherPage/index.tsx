@@ -99,10 +99,10 @@ const PublisherPage = () => {
         setOpenConfirmDialog(false);
     };
 
-    const handleChangePublic = (row: TPublisher, checked: boolean) => {
+    const handleChangeShareConnect = (row: TPublisher, checked: boolean) => {
         // TODO: update
         mutationEdit.mutate(
-            { isPublic: checked, _id: row._id },
+            { isLink: checked, _id: row._id },
             {
                 onSuccess: (data) => {
                     revalidate();
@@ -120,25 +120,27 @@ const PublisherPage = () => {
                 disablePadding: "none",
                 label: "Tên nhà sản xuất",
                 align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
                 id: "description",
                 disablePadding: "none",
                 label: "Mô tả",
                 align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
             },
 
             {
-                id: "isPublic",
+                id: "isLink",
                 disablePadding: "none",
                 label: "Chia sẻ liên thông",
                 sxRow: { paddingRight: 4 },
                 render: (row) => {
                     return (
                         <Switch
-                            checked={row?.isPublic}
-                            value={row?.isPublic}
-                            onChange={(event) => handleChangePublic(row, event.target.checked)}
+                            checked={row?.isLink}
+                            value={row?.isLink}
+                            onChange={(event) => handleChangeShareConnect(row, event.target.checked)}
                         />
                     );
                 },
@@ -175,7 +177,7 @@ const PublisherPage = () => {
                 },
             },
         ],
-        [handleEditPublisher, handleOpenConfirmDialog, handleChangePublic]
+        [handleEditPublisher, handleOpenConfirmDialog, handleChangeShareConnect]
     );
 
     const handleCheckedDelete = useCallback((row: TPublisher, checked: boolean) => {
@@ -236,7 +238,7 @@ const PublisherPage = () => {
                 name: selectedEdit.name,
                 description: selectedEdit.description,
                 note: selectedEdit.note,
-                isPublic: selectedEdit.isPublic,
+                isLink: selectedEdit.isLink,
             };
         }
 
@@ -244,7 +246,7 @@ const PublisherPage = () => {
             name: "",
             description: "",
             note: "",
-            isPublic: false,
+            isLink: false,
         };
     }, [selectedEdit]);
 

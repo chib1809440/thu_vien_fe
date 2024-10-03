@@ -1,5 +1,5 @@
 import { Box, Stack } from "@mui/system";
-import { IconPencil, IconPlus } from "@tabler/icons";
+import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconTrashXFilled } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
@@ -106,12 +106,14 @@ const LibraryPage = () => {
                 disablePadding: "none",
                 label: "Tên thư viện",
                 align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
                 id: "address",
                 disablePadding: "none",
                 label: "Địa chỉ",
                 align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 150 },
             },
             {
                 id: "phoneNumber",
@@ -124,6 +126,7 @@ const LibraryPage = () => {
                 disablePadding: "none",
                 label: "Email",
                 align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 150 },
             },
 
             {
@@ -146,11 +149,11 @@ const LibraryPage = () => {
                                 size={20}
                                 stroke={1.5}
                             />
-                            {/* <IconTrash
+                            <IconTrash
                                 size={20}
                                 stroke={1.5}
                                 onClick={() => handleOpenConfirmDialog(row)}
-                            /> */}
+                            />
                         </Box>
                     );
                 },

@@ -1,6 +1,6 @@
-import { Box, Stack } from "@mui/system";
+import { bgcolor, Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
-import { IconTrashXFilled } from "@tabler/icons-react";
+import { IconEye, IconTrashXFilled } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
@@ -17,6 +17,8 @@ import { TGroup, TGroupCreate } from "../../../types/models/group.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditGroup from "./ui-components/FormAddEditGroup";
+import { Chip } from "@mui/material";
+import GroupDetailsDialog from "./ui-components/GroupDetailsDialog";
 
 const GroupPage = () => {
     const queryString = useQueryString();
@@ -41,6 +43,8 @@ const GroupPage = () => {
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmDeleteMultiple, setOpenConfirmDeleteMultiple] = useState(false);
+    const [openViewDetails, setOpenViewDetails] = useState(false);
+    const [groupDetails, setGroupDetails] = useState<TGroup | null>(null);
 
     const addGroup = () => {
         setOpenAddEdit(true);
@@ -108,6 +112,16 @@ const GroupPage = () => {
         setOpenConfirmDialog(false);
     };
 
+    const handleViewDetails = (row: TGroup) => {
+        setGroupDetails(row);
+        setOpenViewDetails(true);
+    };
+
+    const handleCloseViewDetails = () => {
+        setOpenViewDetails(false);
+        setGroupDetails(null);
+    };
+
     const columns: TColumn<TGroup>[] = useMemo(
         () => [
             {
@@ -115,20 +129,75 @@ const GroupPage = () => {
                 disablePadding: "none",
                 label: "Tên nhóm",
                 align: "left",
+                sxRow: { paddingRight: 4, maxWidth: 200 },
             },
             {
                 id: "mainLibrary",
                 disablePadding: "none",
-                label: "Thư viện",
-                sxRow: { paddingRight: 4 },
+                label: "Trưởng nhóm",
+                sxRow: { paddingRight: 4, maxWidth: 200 },
                 render: (row) => {
                     return (
-                        <span>
-                            {row.mainLibrary ? row.mainLibrary.name : "Chưa có thư viện"}
-                        </span>
+                        <Box
+                            component="span"
+                            sx={{
+                                display: "block",
+                                whiteSpace: "normal",
+                                wordWrap: "break-word",
+                                maxWidth: "100%",
+                                overflow: "hidden",
+                            }}
+                        >
+                            {row.mainLibrary ? row.mainLibrary.name : "Chưa có trưởng có trưởng nhóm"}
+                        </Box>
                     );
                 },
             },
+            {
+                id: "libraries",
+                disablePadding: "none",
+                label: "Thư viện",
+                sxRow: { paddingRight: 4, maxWidth: 200 },
+                render: (row) => {
+                    return (
+                        <Box
+                            component="span"
+                            sx={{
+                                display: "block",
+                                whiteSpace: "normal",
+                                wordWrap: "break-word",
+                                maxWidth: "100%",
+                                overflow: "hidden",
+                            }}
+                        >
+                            {
+                                row.libraries && row.libraries.length > 0
+                                    ? (
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                            {row.libraries.slice(0, 2).map((lib) => (
+                                                <Chip
+                                                    key={lib._id}
+                                                    label={lib.name}
+                                                    variant="outlined"
+                                                    color="primary"
+                                                />
+                                            ))}
+                                            {row.libraries.length > 2 && (
+                                                <Chip
+                                                    label={`+${row.libraries.length - 2} thư viện khác`}
+                                                    variant="outlined"
+                                                    color="primary"
+                                                />
+                                            )}
+                                        </Box>
+                                    )
+                                    : "Chưa có thư viện"
+                            }
+                        </Box>
+                    );
+                },
+            },
+
             {
                 id: "action",
                 disablePadding: "none",
@@ -144,6 +213,11 @@ const GroupPage = () => {
                                 gap: 1,
                             }}
                         >
+                            <IconEye
+                                size={20}
+                                stroke={1.5}
+                                onClick={() => handleViewDetails(row)}
+                            />
                             <IconPencil
                                 onClick={() => handleEditGroup(row)}
                                 size={20}
@@ -216,17 +290,25 @@ const GroupPage = () => {
 
     const initialValues = useMemo((): TGroupCreate => {
         if (selectedEdit) {
+            const libraries = [];
+
+            if (selectedEdit?.libraries?.length === 0 && selectedEdit?.mainLibrary) {
+                libraries.push(selectedEdit?.mainLibrary);
+            } else {
+                libraries.push(...selectedEdit?.libraries);
+            }
+
             return {
                 mainLibrary: selectedEdit.mainLibrary?._id || null,
                 name: selectedEdit.name,
-                libraries: selectedEdit?.libraries || [],
+                libraries,
             };
         }
 
         return {
-            name: "",
             mainLibrary: "",
-            libraries: []
+            name: "",
+            libraries: [],
         };
     }, [selectedEdit]);
 
@@ -295,6 +377,12 @@ const GroupPage = () => {
                     onConfirm={handleConfirmDeleteMultiple}
                     title="Xác nhận xóa các mục đã chọn"
                     description={`Bạn có chắc chắn muốn xóa?`}
+                />
+
+                <GroupDetailsDialog
+                    open={openViewDetails}
+                    onClose={handleCloseViewDetails}
+                    group={groupDetails}
                 />
             </MainCard>
         </div>

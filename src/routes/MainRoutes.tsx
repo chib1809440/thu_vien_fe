@@ -14,6 +14,9 @@ const ExamplePage = Loadable(
 const AssetPage = Loadable(
   lazy(() => import("../views/dashboard-admin/AssetPage"))
 );
+const AssetTrashPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/AssetPage/AssetTrash"))
+);
 const ContactPage = Loadable(
   lazy(() => import("../views/dashboard-admin/Contact"))
 );
@@ -131,6 +134,10 @@ const MainRoutes = {
     {
       path: "/tai-san-thu-vien",
       element: <AssetPage />,
+    },
+    {
+      path: "/tai-san-thu-vien/thung-rac",
+      element: <AssetTrashPage />,
     },
     {
       path: "/quan-ly-thanh-vien",

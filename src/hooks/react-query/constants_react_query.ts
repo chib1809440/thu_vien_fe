@@ -10,3 +10,7 @@ export const RQ_PERMISSIONLIST = 'permissionList'
 
 export const RQ_ASSETLIST = 'assetList'
 export const RQ_ASSET = 'asset'
+
+
+export const RQ_ASSETTRASHLIST = 'assetTrashList'
+export const RQ_ASSETTRASH = 'assetTrash'

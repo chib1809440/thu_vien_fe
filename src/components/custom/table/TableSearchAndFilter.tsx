@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, Button, Grid, Menu, MenuItem, TextField, Tooltip } from "@mui/material";
-import { IconBookUpload, IconDownload, IconFileImport, IconFilter, IconPrinter, IconSettings, IconTransformFilled, IconTrashXFilled } from "@tabler/icons-react";
+import { IconBookUpload, IconDownload, IconFileImport, IconFilter, IconPrinter, IconRestore, IconSettings, IconTransformFilled, IconTrashXFilled } from "@tabler/icons-react";
 import SearchNoButtonSection from "../search/SearchNoButton";
 import StyledButton from "../../default/button/StyledButton";
 import { AccountCircle } from "@mui/icons-material";
@@ -17,6 +17,7 @@ interface PropSearch {
     actionDeleteSelectedItem?: boolean,
     actionChangeClass?: boolean,
     actionPromotedClass?: boolean,
+    actionRestoreSelectedItem?: boolean,
     handleContentSearch: (e: any) => void
     onHandleDownloadFile?: () => void
     onHandleImportFile?: () => void
@@ -25,9 +26,11 @@ interface PropSearch {
     onHandlePrintFile?: () => void
     onHandleDeleteSelectedItem?: () => void
     onHandleChangeClass?: () => void
-    onHandlePromotedClass?: () => void
+    onHandlePromotedClass?: () => void,
+    onHandleRestoreSelectedItem?: () => void,
+
 }
-export function SearchAndFilter({ contentSearch, actionPromotedClass, onHandleImportQuestionFile, actionImportQuestionFile, onHandlePromotedClass, actionChangeClass, onHandleChangeClass, onHandleDeleteSelectedItem, actionDeleteSelectedItem, handleContentSearch, onHandleImportFile, onHandleDownloadFile, onHandlePrintFile, placeholderText, actionDownLoadFile, actionImportFile, pathFileActionDownLoadFile, actionPrintFile, actionExportFile, onHandleExportFile }: PropSearch) {
+export function SearchAndFilter({ contentSearch, actionPromotedClass, actionRestoreSelectedItem, onHandleRestoreSelectedItem, onHandleImportQuestionFile, actionImportQuestionFile, onHandlePromotedClass, actionChangeClass, onHandleChangeClass, onHandleDeleteSelectedItem, actionDeleteSelectedItem, handleContentSearch, onHandleImportFile, onHandleDownloadFile, onHandlePrintFile, placeholderText, actionDownLoadFile, actionImportFile, pathFileActionDownLoadFile, actionPrintFile, actionExportFile, onHandleExportFile }: PropSearch) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -58,6 +61,10 @@ export function SearchAndFilter({ contentSearch, actionPromotedClass, onHandleIm
     };
     const handleDeleteSeletedItem = () => {
         onHandleDeleteSelectedItem();
+        setAnchorEl(null);
+    };
+    const handleRestoreSeletedItem = () => {
+        onHandleRestoreSelectedItem();
         setAnchorEl(null);
     };
     const handleChangeClass = () => {
@@ -172,6 +179,14 @@ export function SearchAndFilter({ contentSearch, actionPromotedClass, onHandleIm
                                 <Box sx={{ display: "flex", alignItems: "center" }}>
                                     <IconTrashXFilled size={20} stroke={1.5} />
                                     <Box sx={{ ml: 1 }}>Xóa các dữ liệu đã chọn</Box>
+                                </Box>
+                            </MenuItem>
+                        }
+                        {
+                            actionRestoreSelectedItem && <MenuItem onClick={handleRestoreSeletedItem} sx={{ fontSize: '0.875rem' }}>
+                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    <IconRestore size={20} stroke={1.5} />
+                                    <Box sx={{ ml: 1 }}>Khối phục dữ liệu đã chọn</Box>
                                 </Box>
                             </MenuItem>
                         }

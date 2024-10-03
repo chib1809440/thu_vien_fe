@@ -5,8 +5,8 @@
 // import { ErrorResponse } from 'react-router-dom';
 
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createAsset, deleteAsset, deleteAssetSelected, getAllAssets, getAssetById, updateAsset } from "../../_apis/asset.api";
-import { RQ_ASSET, RQ_ASSETLIST } from "./constants_react_query";
+import { createAsset, softDeleteAsset, softDeleteAssetSelected, getAllAssets, getAssetById, updateAsset, deleteAssetSelected, deleteAsset, restoreAssetSelected } from "../../_apis/asset.api";
+import { RQ_ASSET, RQ_ASSETLIST, RQ_ASSETTRASHLIST } from "./constants_react_query";
 import { CreateAssetModel, Asset } from "../../interfaces/asset";
 
 // // useAssetsData Hook
@@ -129,20 +129,7 @@ export function useCreateAsset(onSuccess, onError) {
         },
     });
 }
-export function useDeleteAsset() {
-    const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: (id: string) => deleteAsset(id),
-        onSettled: async (_, error) => {
-            if (error) {
-                console.log(error);
-            } else {
-                await queryClient.invalidateQueries({ queryKey: [RQ_ASSETLIST] });
-            }
-        },
-    });
-}
 export function useUpdateAsset(onSuccess, onError) {
     const queryClient = useQueryClient();
 
@@ -178,6 +165,42 @@ export function useAsset(ids: (string | undefined)[] | undefined) {
         }),
     });
 }
+export function useSoftDeleteAssetSelected() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (ids: string[]) => softDeleteAssetSelected(ids),
+        onSettled: async (_, error) => {
+            if (error) {
+                console.log(error);
+            } else {
+                await queryClient.invalidateQueries({ queryKey: [RQ_ASSETLIST] });
+            }
+        },
+    });
+}
+export function useSoftDeleteAsset() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: string) => softDeleteAsset(id),
+        onSettled: async (_, error) => {
+            if (error) {
+                console.log(error);
+            } else {
+                await queryClient.invalidateQueries({ queryKey: [RQ_ASSETLIST] });
+            }
+        },
+    });
+}
+export function useAssetTrashList(page?: number, limit?: number, search?: string) {
+
+    return useQuery({
+        queryKey: [RQ_ASSETTRASHLIST, { page, limit, search }],
+        queryFn: () => getAllAssets(page, limit, search),
+        placeholderData: keepPreviousData,  // Sử dụng dữ liệu trước đó để tránh loading
+    });
+}
 export function useDeleteAssetSelected() {
     const queryClient = useQueryClient();
 
@@ -187,7 +210,35 @@ export function useDeleteAssetSelected() {
             if (error) {
                 console.log(error);
             } else {
-                await queryClient.invalidateQueries({ queryKey: [RQ_ASSETLIST] });
+                await queryClient.invalidateQueries({ queryKey: [RQ_ASSETTRASHLIST] });
+            }
+        },
+    });
+}
+export function useDeleteAsset() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: string) => deleteAsset(id),
+        onSettled: async (_, error) => {
+            if (error) {
+                console.log(error);
+            } else {
+                await queryClient.invalidateQueries({ queryKey: [RQ_ASSETTRASHLIST] });
+            }
+        },
+    });
+}
+export function useRestoreAssetSelected() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (ids: string[]) => restoreAssetSelected(ids),
+        onSettled: async (_, error) => {
+            if (error) {
+                console.log(error);
+            } else {
+                await queryClient.invalidateQueries({ queryKey: [RQ_ASSETTRASHLIST] });
             }
         },
     });

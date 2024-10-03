@@ -3,10 +3,12 @@ import MainCard from '../../../ui-component/cards/MainCard';
 import { Box, Stack } from '@mui/system';
 import { CsFlexRowBetween } from '../../../components/default/flex';
 import StyledButton from '../../../components/default/button/StyledButton';
-import { IconPlus } from '@tabler/icons';
+import { IconPlus, IconTrash } from '@tabler/icons';
 import TableAssetList from './ui-components/TableAssetList';
 import { HeadCell } from '../../../components/custom/table/type';
 import { Asset } from '../../../interfaces/asset';
+import { Button, useTheme } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 const headCells: HeadCell[] = [
     {
         id: 'asset_name',
@@ -56,7 +58,11 @@ export default function AssetPage() {
 
     const [isOpenAddDilog, setIsOpenAddDialog] = useState<boolean>(false);
     const [selected, setSelected] = useState<number[]>([]);
-
+    const theme = useTheme()
+    const navigate = useNavigate();
+    const handleClickNavigateTrash = () => {
+        navigate('/tai-san-thu-vien/thung-rac');
+    };
     return (
         <>
             <MainCard title="Danh sách tài sản">
@@ -71,6 +77,15 @@ export default function AssetPage() {
                                 onClick={() => setIsOpenAddDialog(true)}
                             >
                                 Thêm tài sản
+                            </StyledButton>
+                            <StyledButton
+                                sx={{ marginLeft: 2, backgroundColor: theme.palette.error.dark, color: theme.palette.common.white }}
+                                size="small"
+                                startIcon={<IconTrash stroke={2} />}
+                                variant="contained"
+                                onClick={() => handleClickNavigateTrash()}
+                            >
+                                Thùng rác
                             </StyledButton>
                         </Box>
 

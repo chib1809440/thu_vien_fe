@@ -14,7 +14,7 @@ import { EntityResponse } from "../../../../interfaces/entityResponse";
 import { Asset } from "../../../../interfaces/asset";
 import { DataType, HeadCell, Order } from "../../../../components/custom/table/type";
 import useDebounce, { searchDelay } from "../../../../hooks/useDebounce";
-import { deleteAsset, getAllAssets } from "../../../../_apis/asset.api";
+import { softDeleteAsset, getAllAssets } from "../../../../_apis/asset.api";
 import { ContainerTable, StyledTableCell, StyledTableRow } from "../../../../components/custom/table/style";
 import { SearchAndFilter } from "../../../../components/custom/table/TableSearchAndFilter";
 import { EnhancedTableHead } from "../../../../components/custom/table/TableHead";
@@ -22,7 +22,7 @@ import GradientCircularProgressLoading from "../../../../components/default/load
 import { CsFlexRowBetween } from "../../../../components/default/flex";
 import CustomInput from "../../../../components/default/input/CustomInput";
 import AlertConfirmDialog from "../../../../components/default/alert/confirmAlertDialog";
-import { useDeleteAsset, useDeleteAssetSelected, useAssetList } from "../../../../hooks/react-query/assetData";
+import { useSoftDeleteAsset, useSoftDeleteAssetSelected, useAssetList } from "../../../../hooks/react-query/assetData";
 import AssetDialog from "../../../../components/default/dialog/AssetDialog";
 
 interface TableProps<T extends DataType> {
@@ -62,8 +62,8 @@ function TableAssetList<T extends DataType>({
         useAssetList(page, rowsPerPage, debouncedSearch);
 
 
-    const { mutate: deleteAsset, isPending: isPendingUpdate } = useDeleteAsset();
-    const { mutate: deleteAssetSelected } = useDeleteAssetSelected();
+    const { mutate: deleteAsset, isPending: isPendingUpdate } = useSoftDeleteAsset();
+    const { mutate: deleteAssetSelected } = useSoftDeleteAssetSelected();
 
     const handleCheckedAll = async () => {
         const newCheckedAll = !checkedAll;

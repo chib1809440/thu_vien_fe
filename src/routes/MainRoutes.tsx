@@ -6,6 +6,18 @@ import AuthGuard from "../utils/route-guard/AuthGuard";
 import AuthGuardV2 from "../utils/route-guard/AuthGuardV2";
 import GroupPage from "../views/dashboard-admin/GroupPage";
 import LibraryPage from "../views/dashboard-admin/LibraryPage";
+import MaterialPage from "../views/dashboard-admin/MaterialPage";
+import CategoryPage from "../views/dashboard-admin/CategoryPage";
+import AuthorPage from "../views/dashboard-admin/AuthorPage";
+import AuthorDeleteListPage from "../views/dashboard-admin/AuthorPage/AuthorDeleteListPage";
+import CategoryDeleteListPage from "../views/dashboard-admin/CategoryPage/CategoryDeleteListPage";
+import PublisherPage from "../views/dashboard-admin/PublisherPage";
+import PublisherDeleteListPage from "../views/dashboard-admin/PublisherPage/PublisherDeleteListPage";
+import MaterialDeleteListPage from "../views/dashboard-admin/MaterialPage/MaterialDeleteListPage";
+import ShelfPage from "../views/dashboard-admin/ShelfPage";
+import ShelfDeleteListPage from "../views/dashboard-admin/ShelfPage/ShelfDeleteListPage";
+import PublicationsPageV3 from "../views/dashboard-admin/PublicationsPageV3";
+import PublicationsDeleteListPage from "../views/dashboard-admin/PublicationsPageV3/PublicationsDeleteListPage";
 
 const HomePage = Loadable(
   lazy(() => import("../views/dashboard-admin/HomePage"))
@@ -150,6 +162,56 @@ const MainRoutes = {
     {
       path: "/tai-san-thu-vien",
       element: <AssetPage />,
+    },
+    {
+      path: "quan-ly-danh-muc/dang-hoc-lieu",
+      element: <MaterialPage />,
+    },
+    {
+      path: "quan-ly-danh-muc/linh-vuc",
+      element: <CategoryPage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/tac-gia",
+      element: <AuthorPage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/danh-sach-xoa-tac-gia",
+      element: <AuthorDeleteListPage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/danh-sach-xoa-linh-vuc",
+      element: <CategoryDeleteListPage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/nha-san-xuat",
+      element: <PublisherPage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/danh-sach-xoa-nha-san-xuat",
+      element: <PublisherDeleteListPage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/danh-sach-xoa-dang-hoc-lieu",
+      element: <MaterialDeleteListPage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/tu-ke",
+      element: <ShelfPage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/danh-sach-xoa-tu-ke",
+      element: <ShelfDeleteListPage />,
+    },
+
+    // sách
+    {
+      path: "/thu-vien/an-pham",
+      element: <PublicationsPageV3 />,
+    },
+    {
+      path: "/thu-vien/danh-sach-xoa-an-pham",
+      element: <PublicationsDeleteListPage />,
     },
     {
       path: "/tai-san-thu-vien/thung-rac",

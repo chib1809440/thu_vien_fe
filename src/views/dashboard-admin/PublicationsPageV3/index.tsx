@@ -9,16 +9,20 @@ import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
+import { useFetchAuthor } from "../../../hooks/services/author/author-query";
+import { useFetchCategory } from "../../../hooks/services/category/category-query";
+import { useFetchMaterial } from "../../../hooks/services/material/material-query";
 import { useAddPublications, useDeleteSoftManyPublications, useDeleteSoftPublications, useEditPublications } from "../../../hooks/services/publications/publications-mutation";
 import { useFetchPublications, useReFetchPublications } from "../../../hooks/services/publications/publications-query";
+import { useFetchPublisher } from "../../../hooks/services/publisher/publisher-query";
+import { useFetchShelf } from "../../../hooks/services/shelf/shelf-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TPublications, TPublicationsCreate } from "../../../types/models/publications.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
-import FormAddEditPublications from "./ui-components/FormAddEditPublications";
-import { useFetchCategory } from "../../../hooks/services/category/category-query";
 import { typeOptions } from "../../../utils/constants.utils";
+import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 
 const PublicationsPageV3 = () => {
     const queryString = useQueryString();
@@ -28,8 +32,11 @@ const PublicationsPageV3 = () => {
 
     const { data, isLoading } = useFetchPublications({ limit, page, search });
     // const { data: libs } = useFetchLibrary({ groupId });
-    const { data: category } = useFetchCategory();
-    console.log(category);
+    const { data: categoryData } = useFetchCategory();
+    const { data: materialData } = useFetchMaterial();
+    const { data: authorData } = useFetchAuthor();
+    const { data: publisherData } = useFetchPublisher();
+    const { data: shelfData } = useFetchShelf();
 
 
     const mutationAdd = useAddPublications();
@@ -154,7 +161,7 @@ const PublicationsPageV3 = () => {
             {
                 id: "type",
                 disablePadding: "none",
-                label: "Loại",
+                label: "Loại ấn phẩm",
                 align: "left",
                 sxRow: { px: 3, maxWidth: 150 },
                 render: (row) => {
@@ -324,7 +331,7 @@ const PublicationsPageV3 = () => {
                 type: selectedEdit.type,
                 isPublic: selectedEdit.isPublic,
                 isLink: selectedEdit.isLink,
-
+                file: selectedEdit.file,
             };
         }
 
@@ -334,10 +341,11 @@ const PublicationsPageV3 = () => {
             description: "",
             quantity: 0,
             shelvesQuantity: 0,
-            status: "trên kệ",
+            status: "có sẵn",
             type: "ấn phẩm cứng",
             isPublic: false,
             isLink: false,
+            file: "",
         };
     }, [selectedEdit]);
 
@@ -356,7 +364,11 @@ const PublicationsPageV3 = () => {
                     initialValues={initialValues}
                     onSubmit={handleSubmit}
                     isEditMode={selectedEdit ? true : false}
-                    cateOptions={category?.data?.result || []}
+                    cateOptions={categoryData?.data?.result || []}
+                    authorOptions={authorData?.data?.result || []}
+                    materialOptions={materialData?.data?.result || []}
+                    publisherOptions={publisherData?.data?.result || []}
+                    shelfOptions={shelfData?.data?.result || []}
                 />
             )}
 

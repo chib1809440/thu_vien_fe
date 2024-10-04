@@ -9,6 +9,10 @@ import { TPublicationsCreate } from "../../../../types/models/publications.type"
 import SwitchForm from "../../../../components/custom/form/SwitchForm";
 import { TCategory } from "../../../../types/models/category";
 import { statusOptions, typeOptions } from "../../../../utils/constants.utils";
+import { TMaterial } from "../../../../types/models/material";
+import { TAuthor } from "../../../../types/models/author";
+import { TPublisher } from "../../../../types/models/publisher";
+import { TShelves } from "../../../../types/models/shelves";
 
 type Props = {
     open: boolean;
@@ -17,13 +21,21 @@ type Props = {
     isFetching?: boolean;
     initialValues: TPublicationsCreate;
     isEditMode?: boolean;
-    // libOptions?: TLibrary[];
     cateOptions?: TCategory[];
+    materialOptions?: TMaterial[];
+    authorOptions?: TAuthor[];
+    publisherOptions?: TPublisher[];
+    shelfOptions?: TShelves[];
 };
 
 const schema = yup.object().shape({
     name: yup.string().required("Vui lòng nhập tên"),
-    barcode: yup.string(),
+    barcode: yup.string().required("Vui lòng mã barcode"),
+    quantity: yup.number().when(['type', 'status'], {
+        is: (type, status) => type === 'ấn phẩm cứng' && (status === 'trên kệ' || status === 'có sẵn'),
+        then: yup.number().required("Vui lòng nhập số lượng"),
+        otherwise: yup.number().notRequired(),
+    }),
 });
 
 const FormAddEditPublications: FC<Props> = ({
@@ -31,13 +43,17 @@ const FormAddEditPublications: FC<Props> = ({
     onClose,
     onSubmit,
     cateOptions,
+    materialOptions,
+    authorOptions,
+    publisherOptions,
+    shelfOptions,
     initialValues = {
         name: "",
         barcode: "",
         description: "",
         quantity: 0,
         shelvesQuantity: 0,
-        status: "trên kệ",
+        status: "có sẵn",
         type: "ấn phẩm cứng",
         isPublic: false,
         isLink: false,
@@ -72,13 +88,22 @@ const FormAddEditPublications: FC<Props> = ({
     const [filteredStatusOptions, setFilteredStatusOptions] = useState(statusOptions);
 
     useEffect(() => {
-        // Lọc các tùy chọn trạng thái dựa trên loại ấn phẩm
+
         if (values.type === 'ấn phẩm mềm') {
-            setFilteredStatusOptions(statusOptions.filter(option => option.value === 'có sẵn' || option.value === 'không có sẵn'));
-        } else {
-            setFilteredStatusOptions(statusOptions);
+            setFilteredStatusOptions(statusOptions.filter(option =>
+                option.value === 'có sẵn' || option.value === 'không có sẵn'
+            ));
+        } else if (values.type === 'ấn phẩm cứng') {
+            setFilteredStatusOptions(statusOptions.filter(option =>
+                option.value === 'trên kệ' ||
+                option.value === 'có sẵn' ||
+                option.value === 'không có sẵn'
+            ));
         }
     }, [values.type]);
+
+    const showQuantityInput = values.type === 'ấn phẩm cứng' &&
+        (values.status === 'trên kệ' || values.status === 'có sẵn');
 
     return (
         <FormikProvider value={formik}>
@@ -144,7 +169,7 @@ const FormAddEditPublications: FC<Props> = ({
                             <SelectForm
                                 label="Chọn dạng học liệu"
                                 required
-                                options={cateOptions?.map((item) => ({
+                                options={materialOptions?.map((item) => ({
                                     value: item._id,
                                     label: item.name,
                                 })) || []}
@@ -160,7 +185,7 @@ const FormAddEditPublications: FC<Props> = ({
                             <SelectForm
                                 label="Chọn tác giả"
                                 required
-                                options={cateOptions?.map((item) => ({
+                                options={authorOptions?.map((item) => ({
                                     value: item._id,
                                     label: item.name,
                                 })) || []}
@@ -168,23 +193,42 @@ const FormAddEditPublications: FC<Props> = ({
                             <SelectForm
                                 label="Chọn nhà xuất bản"
                                 required
-                                options={cateOptions?.map((item) => ({
+                                options={publisherOptions?.map((item) => ({
                                     value: item._id,
                                     label: item.name,
                                 })) || []}
                             />
                         </Box>
 
-                        {values.status === "trên kệ" && (
-                            <SelectForm
-                                label="Chọn kệ tủ"
-                                options={cateOptions?.map((item) => ({
-                                    value: item._id,
-                                    label: item.name,
-                                })) || []}
-                            />
-                        )}
 
+                        <Box sx={{ display: "flex", gap: 2 }}>
+                            {showQuantityInput && (
+                                <InputForm
+                                    label="Số lượng"
+                                    placeholder="Nhập số lượng"
+                                    error={touched.quantity && Boolean(errors.quantity)}
+                                    helperText={touched.quantity && errors.quantity}
+                                    {...getFieldProps("quantity")}
+                                />
+                            )}
+                            {values.status === "trên kệ" && (
+                                <SelectForm
+                                    label="Chọn kệ tủ"
+                                    options={shelfOptions?.map((item) => ({
+                                        value: item._id,
+                                        label: item.name,
+                                    })) || []}
+                                />
+                            )}
+                            {values.status === "trên kệ" && (
+                                <InputForm
+                                    label="Số lượng kệ"
+                                    placeholder="Nhập số lượng kệ"
+                                    {...getFieldProps("shelvesQuantity")}
+                                />
+                            )}
+                        </Box>
+                        
                         <InputForm
                             label="Mô tả"
                             placeholder="Nhập mô tả"
@@ -192,24 +236,6 @@ const FormAddEditPublications: FC<Props> = ({
                             helperText={touched.description && errors.description}
                             {...getFieldProps("description")}
                         />
-
-
-
-                        <Box sx={{ display: "flex", gap: 2 }}>
-                            <InputForm
-                                label="Số lượng"
-                                placeholder="Nhập số lượng"
-                                error={touched.quantity && Boolean(errors.quantity)}
-                                helperText={touched.quantity && errors.quantity}
-                                {...getFieldProps("quantity")}
-                            />
-
-                            <InputForm
-                                label="Số lượng kệ"
-                                placeholder="Nhập số lượng kệ"
-                                {...getFieldProps("shelvesQuantity")}
-                            />
-                        </Box>
 
                         {/* <AutocompleteForm
                             label="Thư viện"

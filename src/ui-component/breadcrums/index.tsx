@@ -21,7 +21,7 @@ export default function IBreadcrumsCustom({ mainProfile, profile, link, ...props
                 padding: '3px 25px',
                 borderRadius: '12px',
             }}>
-                <Link underline="hover" color="inherit" href="#">
+                <Link underline="hover" color="inherit" href="/trang-chu">
                     <HomeIcon />
                 </Link>
                 <CustomLink underline="hover" color="inherit" href={link}>
@@ -38,7 +38,7 @@ const Container = styled.div`
     justify-content: space-between;
     background-color: white;
     padding: 12px 25px;
-    border-radius: 12px;
+    border-radius: 6px;
     margin-bottom: 15px;
     align-items: center;
 `

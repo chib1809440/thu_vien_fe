@@ -39,17 +39,17 @@ const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: 3, retryDelay: 3000, refetchOnWindowFocus: false, } },
 });
 root.render(
-    <Provider store={store}>
-        <PersistGate loading={null} persistor={persister}>
-            <ConfigProvider>
-                <BrowserRouter basename={BASE_PATH}>
-                    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+            <PersistGate loading={null} persistor={persister}>
+                <ConfigProvider>
+                    <BrowserRouter basename={BASE_PATH}>
                         <App />
-                    </QueryClientProvider>,
-                </BrowserRouter>
-            </ConfigProvider>
-        </PersistGate>
-    </Provider>,
+                    </BrowserRouter>
+                </ConfigProvider>
+            </PersistGate>
+        </Provider>,
+    </QueryClientProvider>,
 );
 
 // If you want your app to work offline and load faster, you can change

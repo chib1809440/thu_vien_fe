@@ -1,0 +1,391 @@
+import { bgcolor, Box, Stack } from "@mui/system";
+import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
+import { IconEye, IconTrashXFilled } from "@tabler/icons-react";
+import { useCallback, useMemo, useState } from "react";
+import { toast } from "react-toastify";
+import ActionsForm from "../../../components/custom/form/ActionForm";
+import TableList from "../../../components/custom/table-list/TableList";
+import StyledButton from "../../../components/default/button/StyledButton";
+import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
+import { CsFlexRowBetween } from "../../../components/default/flex";
+import { useAddGroup, useDeleteGroup, useDeleteManyGroup, useEditGroup } from "../../../hooks/services/group/group-mutation";
+import { useFetchGroup, useReFetchGroup } from "../../../hooks/services/group/group-query";
+import { useFetchLibrary } from "../../../hooks/services/library/library-query";
+import useQueryString from "../../../hooks/services/useQueryString";
+import { TColumn, TMenuOption } from "../../../types/common/table";
+import { TGroup, TGroupCreate } from "../../../types/models/group.type";
+import IBreadcrumsCustom from "../../../ui-component/breadcrums";
+import MainCard from "../../../ui-component/cards/MainCard";
+import FormAddEditGroup from "./ui-components/FormAddEditGroup";
+import { Chip } from "@mui/material";
+import GroupDetailsDialog from "./ui-components/GroupDetailsDialog";
+
+const GroupPage = () => {
+    const queryString = useQueryString();
+    const page = queryString?.page ?? 1;
+    const limit = queryString?.limit ?? 5;
+    const search = queryString?.q ?? "";
+    const groupId = "";
+
+    const { data, isLoading } = useFetchGroup({ limit, page, search });
+    const { data: libs } = useFetchLibrary({ groupId });
+
+    const mutationAdd = useAddGroup();
+    const mutationEdit = useEditGroup();
+    const mutationDelete = useDeleteGroup();
+    const mutationDeleteMany = useDeleteManyGroup();
+    const revalidate = useReFetchGroup();
+
+    const [openAddEdit, setOpenAddEdit] = useState(false);
+    const [selectedEdit, setSelectedEdit] = useState<TGroup | null>(null);
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const [groupToDelete, setGroupToDelete] = useState<TGroup | null>(null);
+
+    const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
+    const [openConfirmDeleteMultiple, setOpenConfirmDeleteMultiple] = useState(false);
+    const [openViewDetails, setOpenViewDetails] = useState(false);
+    const [groupDetails, setGroupDetails] = useState<TGroup | null>(null);
+
+    const addGroup = () => {
+        setOpenAddEdit(true);
+    };
+
+    const handleEditGroup = (row: TGroup) => {
+        setSelectedEdit(row);
+        setOpenAddEdit(true);
+    };
+
+    const handleClose = () => {
+        setOpenAddEdit(false);
+        setSelectedEdit(null);
+    };
+
+    const handleSubmit = (values: TGroupCreate) => {
+        const payload = {
+            ...values,
+            libraries: values.libraries.map((t: any) => t?._id),
+        };
+
+        if (selectedEdit) {
+            mutationEdit.mutate(
+                { ...payload, _id: selectedEdit._id },
+                {
+                    onSuccess: () => {
+                        revalidate();
+                        toast.success('Chỉnh sửa thành công.');
+                        handleClose();
+                    },
+                }
+            );
+
+            return;
+
+        }
+
+        mutationAdd.mutate(payload, {
+            onSuccess: (data) => {
+                revalidate();
+                toast.success('Thêm thành công.');
+                setOpenAddEdit(false);
+            },
+        });
+    };
+
+    const handleOpenConfirmDialog = (row: TGroup) => {
+        setGroupToDelete(row);
+        setOpenConfirmDialog(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (groupToDelete) {
+            mutationDelete.mutate(groupToDelete._id, {
+                onSuccess: () => {
+                    revalidate();
+                    toast.success('Xóa nhóm thành công.');
+                    setOpenConfirmDialog(false);
+                },
+            });
+        }
+    };
+
+    const handleCloseConfirmDialog = () => {
+        setOpenConfirmDialog(false);
+    };
+
+    const handleViewDetails = (row: TGroup) => {
+        setGroupDetails(row);
+        setOpenViewDetails(true);
+    };
+
+    const handleCloseViewDetails = () => {
+        setOpenViewDetails(false);
+        setGroupDetails(null);
+    };
+
+    const columns: TColumn<TGroup>[] = useMemo(
+        () => [
+            {
+                id: "name",
+                disablePadding: "none",
+                label: "Tên nhóm",
+                align: "left",
+                sxRow: { paddingRight: 4, maxWidth: 200 },
+            },
+            {
+                id: "mainLibrary",
+                disablePadding: "none",
+                label: "Trưởng nhóm",
+                sxRow: { paddingRight: 4, maxWidth: 200 },
+                render: (row) => {
+                    return (
+                        <Box
+                            component="span"
+                            sx={{
+                                display: "block",
+                                whiteSpace: "normal",
+                                wordWrap: "break-word",
+                                maxWidth: "100%",
+                                overflow: "hidden",
+                            }}
+                        >
+                            {row.mainLibrary ? row.mainLibrary.name : "Chưa có trưởng có trưởng nhóm"}
+                        </Box>
+                    );
+                },
+            },
+            {
+                id: "libraries",
+                disablePadding: "none",
+                label: "Thư viện",
+                sxRow: { paddingRight: 4, maxWidth: 200 },
+                render: (row) => {
+                    return (
+                        <Box
+                            component="span"
+                            sx={{
+                                display: "block",
+                                whiteSpace: "normal",
+                                wordWrap: "break-word",
+                                maxWidth: "100%",
+                                overflow: "hidden",
+                            }}
+                        >
+                            {
+                                row.libraries && row.libraries.length > 0
+                                    ? (
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                            {row.libraries.slice(0, 2).map((lib) => (
+                                                <Chip
+                                                    key={lib._id}
+                                                    label={lib.name}
+                                                    variant="outlined"
+                                                    color="primary"
+                                                />
+                                            ))}
+                                            {row.libraries.length > 2 && (
+                                                <Chip
+                                                    label={`+${row.libraries.length - 2} thư viện khác`}
+                                                    variant="outlined"
+                                                    color="primary"
+                                                />
+                                            )}
+                                        </Box>
+                                    )
+                                    : "Chưa có thư viện"
+                            }
+                        </Box>
+                    );
+                },
+            },
+
+            {
+                id: "action",
+                disablePadding: "none",
+                align: "center",
+                label: "Hành động",
+                render: (row) => {
+                    return (
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                gap: 1,
+                            }}
+                        >
+                            <IconEye
+                                size={20}
+                                stroke={1.5}
+                                onClick={() => handleViewDetails(row)}
+                            />
+                            <IconPencil
+                                onClick={() => handleEditGroup(row)}
+                                size={20}
+                                stroke={1.5}
+                            />
+                            <IconTrash
+                                size={20}
+                                stroke={1.5}
+                                onClick={() => handleOpenConfirmDialog(row)}
+                            />
+                        </Box>
+                    );
+                },
+            },
+        ],
+        [handleEditGroup, handleOpenConfirmDialog]
+    );
+
+    const handleCheckedDelete = useCallback((row: TGroup, checked: boolean) => {
+        setCheckedDelete((prev) => {
+            if (prev.includes(row._id)) {
+                return prev.filter((t) => t !== row._id);
+            }
+            return [...prev, row._id];
+        });
+    }, []);
+
+    const handleCheckedDeleteAll = useCallback(
+        (checked: boolean) => {
+            if (data?.data?.result?.length === 0) return;
+            setCheckedDelete((prev) => (checked ? data?.data?.result.map((t) => t._id) : []));
+        },
+        [data]
+    );
+
+    const checkedAll = useMemo(() => {
+        if (data?.data?.result?.length === 0 || checkedDelete.length === 0) return false;
+        return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
+    }, [checkedDelete, data]);
+
+    const handleDeleteMultiple = useCallback(() => {
+        if (checkedDelete.length === 0) {
+            toast.error("Vui lòng chọn dữ liệu để xóa");
+            return;
+        }
+        setOpenConfirmDeleteMultiple(true);
+    }, [checkedDelete]);
+
+    const handleConfirmDeleteMultiple = useCallback(() => {
+        if (checkedDelete.length === 0) return;
+        mutationDeleteMany.mutate(checkedDelete, {
+            onSuccess: () => {
+                revalidate();
+                toast.success("Xóa các mục đã chọn thành công.");
+                setOpenConfirmDeleteMultiple(false);
+                setCheckedDelete([]);
+            },
+        });
+    }, [checkedDelete]);
+
+    const actionMenus = useMemo((): TMenuOption[] => {
+        return [
+            {
+                label: "Xóa các dữ liệu đã chọn",
+                icon: <IconTrashXFilled size={20} stroke={1.5} />,
+                onClick: handleDeleteMultiple,
+            },
+        ];
+    }, [handleDeleteMultiple]);
+
+    const initialValues = useMemo((): TGroupCreate => {
+        if (selectedEdit) {
+            const libraries = [];
+
+            if (selectedEdit?.libraries?.length === 0 && selectedEdit?.mainLibrary) {
+                libraries.push(selectedEdit?.mainLibrary);
+            } else {
+                libraries.push(...selectedEdit?.libraries);
+            }
+
+            return {
+                mainLibrary: selectedEdit.mainLibrary?._id || null,
+                name: selectedEdit.name,
+                libraries,
+            };
+        }
+
+        return {
+            mainLibrary: "",
+            name: "",
+            libraries: [],
+        };
+    }, [selectedEdit]);
+
+    return (
+        <div>
+            <IBreadcrumsCustom
+                profile="Quản lý nhóm"
+                mainProfile="Danh sách nhóm"
+                link="/he-thong/quan-ly-nhom"
+            />
+
+            {openAddEdit && (
+                <FormAddEditGroup
+                    open={openAddEdit}
+                    onClose={handleClose}
+                    initialValues={initialValues}
+                    onSubmit={handleSubmit}
+                    isEditMode={selectedEdit ? true : false}
+                    libOptions={libs?.data?.result || []}
+                />
+            )}
+
+            <MainCard>
+                <Stack spacing={2}>
+                    <CsFlexRowBetween>
+                        <Box sx={{ ml: 4, mb: 2 }}>
+                            <StyledButton
+                                color="primary"
+                                size="small"
+                                startIcon={<IconPlus stroke={2} />}
+                                variant="contained"
+                                onClick={addGroup}
+                            >
+                                Thêm mới
+                            </StyledButton>
+                        </Box>
+                    </CsFlexRowBetween>
+                </Stack>
+
+                <ActionsForm actions={actionMenus} />
+
+                <TableList
+                    checked={checkedDelete}
+                    columns={columns}
+                    rows={data?.data?.result || []}
+                    onChecked={handleCheckedDelete}
+                    onToggleCheckedAll={handleCheckedDeleteAll}
+                    checkedAll={checkedAll}
+                    isLoading={isLoading}
+                    keyChecked="_id"
+                    pagination={data?.data?.meta}
+                />
+
+                <ConfirmDeleteDialog
+                    key={"delete"}
+                    open={openConfirmDialog}
+                    onClose={handleCloseConfirmDialog}
+                    onConfirm={handleConfirmDelete}
+                    title="Xác nhận xóa thư viện"
+                    description={`Bạn có chắc chắn muốn xóa "${groupToDelete?.name}" ?`}
+                />
+                <ConfirmDeleteDialog
+                    key={"deleteMultiple"}
+                    open={openConfirmDeleteMultiple}
+                    onClose={() => setOpenConfirmDeleteMultiple(false)}
+                    onConfirm={handleConfirmDeleteMultiple}
+                    title="Xác nhận xóa các mục đã chọn"
+                    description={`Bạn có chắc chắn muốn xóa?`}
+                />
+
+                <GroupDetailsDialog
+                    open={openViewDetails}
+                    onClose={handleCloseViewDetails}
+                    group={groupDetails}
+                />
+            </MainCard>
+        </div>
+    );
+};
+export default GroupPage;

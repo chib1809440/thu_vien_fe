@@ -4,6 +4,8 @@ import MainLayout, { MainLayoutV2 } from "../layout/MainLayout";
 import Loadable from "../ui-component/Loadable";
 import AuthGuard from "../utils/route-guard/AuthGuard";
 import AuthGuardV2 from "../utils/route-guard/AuthGuardV2";
+import GroupPage from "../views/dashboard-admin/GroupPage";
+import LibraryPage from "../views/dashboard-admin/LibraryPage";
 
 const HomePage = Loadable(
   lazy(() => import("../views/dashboard-admin/HomePage"))
@@ -36,6 +38,12 @@ const ControlPower = Loadable(
   lazy(() => import("../views/dashboard-admin/SystemPage/ControlPower"))
 );
 // 
+
+// const AuthorPage = Loadable(
+//   lazy(() => import("../views/dashboard-admin/Directory/Author"))
+// );
+
+// PublicationsPage
 
 const DetailsPublicationsPage = Loadable(
   lazy(() => import("../views/dashboard-admin/DetailsPublications"))
@@ -120,6 +128,14 @@ const MainRoutes = {
       element: <ExamplePage />,
     },
     {
+      path: "/he-thong/quan-ly-nhom",
+      element: <GroupPage />,
+    },
+    {
+      path: "/he-thong/quan-ly-thu-vien",
+      element: <LibraryPage />,
+    },
+    {
       path: "/thong-tin",
       element: <ContactPage />,
     },
@@ -152,7 +168,6 @@ const MainRoutes = {
       path: "/phan-quyen",
       element: <ControlPower />,
     },
-
     {
       path: "/chi-tiet-hoc-lieu",
       element: <DetailsPublicationsPage />,

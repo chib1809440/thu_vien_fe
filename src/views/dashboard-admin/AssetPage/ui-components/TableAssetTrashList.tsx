@@ -14,7 +14,7 @@ import { EntityResponse } from "../../../../interfaces/entityResponse";
 import { Asset } from "../../../../interfaces/asset";
 import { DataType, HeadCell, Order } from "../../../../components/custom/table/type";
 import useDebounce, { searchDelay } from "../../../../hooks/useDebounce";
-import { softDeleteAsset, getAllAssets, restoreAssetSelected } from "../../../../_apis/asset.api";
+import { softDeleteAsset, getAllAssets } from "../../../../_apis/asset.api";
 import { ContainerTable, StyledTableCell, StyledTableRow } from "../../../../components/custom/table/style";
 import { SearchAndFilter } from "../../../../components/custom/table/TableSearchAndFilter";
 import { EnhancedTableHead } from "../../../../components/custom/table/TableHead";
@@ -64,7 +64,7 @@ function TableAssetTrashList<T extends DataType>({
 
     const { mutate: deleteAsset, isPending: isPendingUpdate } = useDeleteAsset();
     const { mutate: deleteAssetSelected } = useDeleteAssetSelected();
-    const { mutate: restoreAssets } = useRestoreAssetSelected();
+    const { mutate: restoreAssetSelected } = useRestoreAssetSelected();
 
     const handleCheckedAll = async () => {
         const newCheckedAll = !checkedAll;
@@ -137,7 +137,7 @@ function TableAssetTrashList<T extends DataType>({
     };
     const handleClickRestore = (id: string) => {
         let asset: Asset = assets.data.result.find(x => x._id === id)
-        restoreAssets([asset._id]);
+        restoreAssetSelected([asset._id]);
     }
     const [asset, setAsset] = useState<Asset>();
     const pageCount = useMemo(() => {
@@ -201,8 +201,8 @@ function TableAssetTrashList<T extends DataType>({
             if (page !== 1 && assets.data.result.length === checked.length) {
                 setPage(page - 1)
             }
-            toast.success(`Xóa dữ liệu  thành công`, {});
-            setIsOpenConfirmDeleteSelectedDialog(false);
+            toast.success(`Khôi phục dữ liệu  thành công`, {});
+            setIsOpenConfirmRestoreSelectedDialog(false);
 
         } catch (error) {
             setIsOpenConfirmDeleteSelectedDialog(false);
@@ -392,7 +392,7 @@ function TableAssetTrashList<T extends DataType>({
                 isOpenConfirmDeleteSelectedDialog && <AlertConfirmDialog title="Xác nhận xóa dữ liệu?" message="Dữ liệu đã xóa thì không khôi khục được" onHandleConfirm={handleConfirmDeleteItemSelected} openConfirm={isOpenConfirmDeleteSelectedDialog} handleOpenConfirmDialog={setIsOpenConfirmDeleteSelectedDialog} />
             }
             {
-                isOpenConfirmRestoreSelectedDialog && <AlertConfirmDialog title="Xác nhận xóa dữ liệu?" message="Dữ liệu đã xóa thì không khôi khục được" onHandleConfirm={handleConfirmRestoreItemSelected} openConfirm={isOpenConfirmRestoreSelectedDialog} handleOpenConfirmDialog={setIsOpenConfirmRestoreSelectedDialog} />
+                isOpenConfirmRestoreSelectedDialog && <AlertConfirmDialog title="Xác nhận khôi phục dữ liệu?" message="" onHandleConfirm={handleConfirmRestoreItemSelected} openConfirm={isOpenConfirmRestoreSelectedDialog} handleOpenConfirmDialog={setIsOpenConfirmRestoreSelectedDialog} />
             }
         </>
 

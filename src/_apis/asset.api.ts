@@ -71,8 +71,6 @@ export const deleteAssetSelected = async (ids: string[]): Promise<EntityResponse
     return response.data;
 };
 export const restoreAssetSelected = async (ids: string[]): Promise<EntityResponse<Asset>> => {
-    const response = await axios.delete<EntityResponse<Asset>>(`${ASSET_API}/restore`, {
-        data: ids,  // Use `data` to send the body with axios.delete
-    });
+    const response = await axios.patch<EntityResponse<Asset>>(`${ASSET_API}/restore`, ids);
     return response.data;
 };

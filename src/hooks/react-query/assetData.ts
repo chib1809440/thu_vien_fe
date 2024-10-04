@@ -5,7 +5,7 @@
 // import { ErrorResponse } from 'react-router-dom';
 
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createAsset, softDeleteAsset, softDeleteAssetSelected, getAllAssets, getAssetById, updateAsset, deleteAssetSelected, deleteAsset, restoreAssetSelected } from "../../_apis/asset.api";
+import { createAsset, softDeleteAsset, softDeleteAssetSelected, getAllAssets, getAssetById, updateAsset, deleteAssetSelected, deleteAsset, restoreAssetSelected, getAllAssetsDeleted } from "../../_apis/asset.api";
 import { RQ_ASSET, RQ_ASSETLIST, RQ_ASSETTRASHLIST } from "./constants_react_query";
 import { CreateAssetModel, Asset } from "../../interfaces/asset";
 
@@ -197,7 +197,7 @@ export function useAssetTrashList(page?: number, limit?: number, search?: string
 
     return useQuery({
         queryKey: [RQ_ASSETTRASHLIST, { page, limit, search }],
-        queryFn: () => getAllAssets(page, limit, search),
+        queryFn: () => getAllAssetsDeleted(page, limit, search),
         placeholderData: keepPreviousData,  // Sử dụng dữ liệu trước đó để tránh loading
     });
 }
@@ -231,7 +231,6 @@ export function useDeleteAsset() {
 }
 export function useRestoreAssetSelected() {
     const queryClient = useQueryClient();
-
     return useMutation({
         mutationFn: (ids: string[]) => restoreAssetSelected(ids),
         onSettled: async (_, error) => {

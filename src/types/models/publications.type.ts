@@ -27,5 +27,18 @@ export type TPublications = TEntityAbstract & {
     file?: any;
 };
 
-export type TPublicationsCreate = Partial<Pick<TPublications, "isPublic" | "isLink" | "name" | "barcode" | "description" | "note" | "quantity" | "shelvesQuantity" | "status" | "type" | "file">>;
-export type TPublicationsEdit = Partial<Pick<TPublications, "isPublic" | "isLink" | "name" | "barcode" | "description" | "note" | "quantity" | "shelvesQuantity" | "status" | "type" | "file">> & { _id: string };
+export type TPublicationsCreate = Partial<Pick<TPublications, "isPublic" | "isLink" | "name" | "barcode" | "description" | "note" | "quantity" | "shelvesQuantity" | "status" | "type" | "file">> & {
+    categoryId?: string | null;
+    authorId?: string | null;
+    shelvesId?: string | null;
+    publisherId?: string | null;
+    materialId?: string | null;
+};
+export type TPublicationsEdit = Partial<Pick<TPublications, "isPublic" | "isLink" | "name" | "barcode" | "description" | "note" | "quantity" | "shelvesQuantity" | "status" | "type" | "file">> & {
+    _id: string;
+    categoryId?: string | null;
+    authorId?: string | null;
+    shelvesId?: string | null;
+    publisherId?: string | null;
+    materialId?: string | null;
+};

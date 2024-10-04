@@ -1,18 +1,27 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import * as yup from "yup";
-import AutocompleteForm from "../../../../components/custom/form/AutoCompleteForm";
 import InputForm from "../../../../components/custom/form/InputForm";
 import SelectForm from "../../../../components/custom/form/SelectForm";
-import { TPublicationsCreate } from "../../../../types/models/publications.type";
 import SwitchForm from "../../../../components/custom/form/SwitchForm";
-import { TCategory } from "../../../../types/models/category";
-import { statusOptions, typeOptions } from "../../../../utils/constants.utils";
-import { TMaterial } from "../../../../types/models/material";
 import { TAuthor } from "../../../../types/models/author";
-import { TPublisher } from "../../../../types/models/publisher";
+import { TCategory } from "../../../../types/models/category";
+import { TMaterial } from "../../../../types/models/material";
+import { TPublicationsCreate } from "../../../../types/models/publications.type";
+import { TPublisher, TPublisherCreate } from "../../../../types/models/publisher";
 import { TShelves } from "../../../../types/models/shelves";
+import { statusOptions, typeOptions } from "../../../../utils/constants.utils";
+import FormAddCommonDialog from "./FormAddCommonDialog";
+import { useAddPublisher } from "../../../../hooks/services/publisher/publisher-mutation";
+import { useAddCategory } from "../../../../hooks/services/category/category-mutation";
+import { useAddMaterial } from "../../../../hooks/services/material/material-mutation";
+import { useAddAuthor } from "../../../../hooks/services/author/author-mutation";
+import { toast } from "react-toastify";
+import { useReFetchPublisher } from "../../../../hooks/services/publisher/publisher-query";
+import { useReFetchCategory } from "../../../../hooks/services/category/category-query";
+import { useReFetchMaterial } from "../../../../hooks/services/material/material-query";
+import { useReFetchAuthor } from "../../../../hooks/services/author/author-query";
 
 type Props = {
     open: boolean;
@@ -31,10 +40,32 @@ type Props = {
 const schema = yup.object().shape({
     name: yup.string().required("Vui lòng nhập tên"),
     barcode: yup.string().required("Vui lòng mã barcode"),
-    quantity: yup.number().when(['type', 'status'], {
-        is: (type, status) => type === 'ấn phẩm cứng' && (status === 'trên kệ' || status === 'có sẵn'),
-        then: yup.number().required("Vui lòng nhập số lượng"),
-        otherwise: yup.number().notRequired(),
+    categoryId: yup.string().when('type', {
+        is: 'ấn phẩm cứng',
+        then: yup.string()
+            .required("Vui lòng chọn dạng học liệu"),
+
+        otherwise: yup.string().notRequired(),
+    }),
+    authorId: yup.string().when('type', {
+        is: 'ấn phẩm cứng',
+        then: yup.string()
+            .required("Vui lòng chọn tác giả"),
+        otherwise: yup.string().notRequired(),
+    }),
+    publisherId: yup.string().when('type', {
+        is: 'ấn phẩm cứng',
+        then: yup.string()
+            .required("Vui lòng chọn nhà xuất bản"),
+
+        otherwise: yup.string().notRequired(),
+    }),
+    materialId: yup.string().when('type', {
+        is: 'ấn phẩm cứng',
+        then: yup.string()
+            .required("Vui lòng chọn dạng học liệu"),
+
+        otherwise: yup.string().notRequired(),
     }),
 });
 
@@ -53,10 +84,15 @@ const FormAddEditPublications: FC<Props> = ({
         description: "",
         quantity: 0,
         shelvesQuantity: 0,
-        status: "có sẵn",
+        status: "không có sẵn",
         type: "ấn phẩm cứng",
         isPublic: false,
         isLink: false,
+        categoryId: "",
+        authorId: "",
+        shelvesId: "",
+        publisherId: "",
+        materialId: "",
     },
     isFetching = false,
     isEditMode = false,
@@ -78,25 +114,114 @@ const FormAddEditPublications: FC<Props> = ({
         [formik]
     );
 
-    // const handleChangedLibs = useCallback((value: TLibrary[]) => {
-    //     setFieldValue?.("libraries", value);
-    //     if (value.length === 0) {
-    //         setFieldValue("mainLibrary", "");
-    //     }
-    // }, []);
-
     const [filteredStatusOptions, setFilteredStatusOptions] = useState(statusOptions);
+    const [openAdd, setOpenAdd] = useState(false);
+    const [typeToAdd, setTypeToAdd] = useState<"publisher" | "author" | "category" | "material" | null>(null);
+    const mutationAddPublisher = useAddPublisher();
+    const mutationAddCategory = useAddCategory();
+    const mutationAddMaterial = useAddMaterial();
+    const mutationAddAuthor = useAddAuthor();
+    const revalidatePublisher = useReFetchPublisher();
+    const revalidateCategory = useReFetchCategory();
+    const revalidateMaterial = useReFetchMaterial();
+    const revalidateAuthor = useReFetchAuthor();
+
+    const handleAddPublisher = () => {
+        setTypeToAdd("publisher");
+        setOpenAdd(true);
+    };
+
+    const handleAddAuthor = () => {
+        setTypeToAdd("author");
+        setOpenAdd(true);
+    };
+
+    const handleAddCategory = () => {
+        setTypeToAdd("category");
+        setOpenAdd(true);
+    };
+
+    const handleAddMaterial = () => {
+        setTypeToAdd("material");
+        setOpenAdd(true);
+    };
+
+    const handleClose = () => {
+        setOpenAdd(false);
+    };
+
+    const handleAddSubmit = (values) => {
+        let mutation;
+        let revalidate;
+
+        // Xác định loại đối tượng dựa trên một trường trong values
+        if (values.type === 'publisher') {
+            mutation = mutationAddPublisher;
+            revalidate = revalidatePublisher;
+        } else if (values.type === 'category') {
+            mutation = mutationAddCategory;
+            revalidate = revalidateCategory;
+        } else if (values.type === 'material') {
+            mutation = mutationAddMaterial;
+            revalidate = revalidateMaterial;
+        } else if (values.type === 'author') {
+            mutation = mutationAddAuthor;
+            revalidate = revalidateAuthor;
+        }
+
+        if (mutation) {
+            mutation.mutate(values, {
+                onSuccess: (data) => {
+                    if (revalidate) {
+                        revalidate();
+                    }
+                    toast.success('Thêm thành công.');
+                    setOpenAdd(false);
+                },
+                onError: (error) => {
+                    toast.error('Thêm thất bại: ' + error.message);
+                }
+            });
+        }
+    };
+
+    const initialValuesMap = {
+        publisher: {
+            type: "publisher",
+            name: "",
+            description: "",
+        },
+        author: {
+            type: "author",
+            name: "",
+            description: "",
+        },
+        category: {
+            type: "category",
+            name: "",
+            description: "",
+        },
+        material: {
+            type: "material",
+            name: "",
+            description: "",
+        },
+    };
+
+    const getInitialValuesAdd = useMemo(() => {
+        return initialValuesMap[typeToAdd] || {};
+    }, [typeToAdd]);
 
     useEffect(() => {
 
         if (values.type === 'ấn phẩm mềm') {
             setFilteredStatusOptions(statusOptions.filter(option =>
-                option.value === 'có sẵn' || option.value === 'không có sẵn'
+                option.value === 'có sẵn'
             ));
-        } else if (values.type === 'ấn phẩm cứng') {
+        }
+
+        if (values.type === 'ấn phẩm cứng') {
             setFilteredStatusOptions(statusOptions.filter(option =>
-                option.value === 'trên kệ' ||
-                option.value === 'có sẵn' ||
                 option.value === 'không có sẵn'
             ));
         }
@@ -153,6 +278,7 @@ const FormAddEditPublications: FC<Props> = ({
                                 {...getFieldProps("type")}
                                 error={touched.type && Boolean(errors.type)}
                                 helperText={touched.type && errors.type}
+                                disabled={isEditMode}
                             />
 
                             <SelectForm
@@ -162,41 +288,58 @@ const FormAddEditPublications: FC<Props> = ({
                                 {...getFieldProps("status")}
                                 error={touched.status && Boolean(errors.status)}
                                 helperText={touched.status && errors.status}
+                                disabled={isEditMode}
                             />
                         </Box>
 
                         <Box sx={{ display: "flex", gap: 2 }}>
                             <SelectForm
                                 label="Chọn dạng học liệu"
-                                required
+                                required={values.type === "ấn phẩm cứng"}
                                 options={materialOptions?.map((item) => ({
                                     value: item._id,
                                     label: item.name,
                                 })) || []}
+                                {...getFieldProps("materialId")}
+                                error={touched.materialId && Boolean(errors.materialId)}
+                                helperText={touched.materialId && errors.materialId}
+                                handleAdd={handleAddMaterial}
                             />
                             <SelectForm
                                 label="Chọn lĩnh vực"
-                                required
+                                required={values.type === "ấn phẩm cứng"}
                                 options={cateOptions?.map((item) => ({
                                     value: item._id,
                                     label: item.name,
                                 })) || []}
+                                {...getFieldProps("categoryId")}
+                                error={touched.categoryId && Boolean(errors.categoryId)}
+                                helperText={touched.categoryId && errors.categoryId}
+                                handleAdd={handleAddCategory}
                             />
                             <SelectForm
                                 label="Chọn tác giả"
-                                required
+                                required={values.type === "ấn phẩm cứng"}
                                 options={authorOptions?.map((item) => ({
                                     value: item._id,
                                     label: item.name,
                                 })) || []}
+                                {...getFieldProps("authorId")}
+                                error={touched.authorId && Boolean(errors.authorId)}
+                                helperText={touched.authorId && errors.authorId}
+                                handleAdd={handleAddAuthor}
                             />
                             <SelectForm
                                 label="Chọn nhà xuất bản"
-                                required
+                                required={values.type === "ấn phẩm cứng"}
                                 options={publisherOptions?.map((item) => ({
                                     value: item._id,
                                     label: item.name,
                                 })) || []}
+                                {...getFieldProps("publisherId")}
+                                error={touched.publisherId && Boolean(errors.publisherId)}
+                                helperText={touched.publisherId && errors.publisherId}
+                                handleAdd={handleAddPublisher}
                             />
                         </Box>
 
@@ -209,6 +352,7 @@ const FormAddEditPublications: FC<Props> = ({
                                     error={touched.quantity && Boolean(errors.quantity)}
                                     helperText={touched.quantity && errors.quantity}
                                     {...getFieldProps("quantity")}
+                                    disabled={isEditMode}
                                 />
                             )}
                             {values.status === "trên kệ" && (
@@ -218,17 +362,24 @@ const FormAddEditPublications: FC<Props> = ({
                                         value: item._id,
                                         label: item.name,
                                     })) || []}
+                                    {...getFieldProps("shelvesId")}
+                                    error={touched.shelvesId && Boolean(errors.shelvesId)}
+                                    helperText={touched.shelvesId && errors.shelvesId}
+                                    disabled={isEditMode}
                                 />
                             )}
-                            {values.status === "trên kệ" && (
+                            {values.shelvesId && values.status === "trên kệ" && (
                                 <InputForm
-                                    label="Số lượng kệ"
-                                    placeholder="Nhập số lượng kệ"
+                                    label="Số lượng trên kệ"
+                                    placeholder="Nhập số lượng trên kệ"
                                     {...getFieldProps("shelvesQuantity")}
+                                    error={touched.shelvesQuantity && Boolean(errors.shelvesQuantity)}
+                                    helperText={touched.shelvesQuantity && errors.shelvesQuantity}
+                                    disabled={isEditMode}
                                 />
                             )}
                         </Box>
-                        
+
                         <InputForm
                             label="Mô tả"
                             placeholder="Nhập mô tả"
@@ -237,25 +388,12 @@ const FormAddEditPublications: FC<Props> = ({
                             {...getFieldProps("description")}
                         />
 
-                        {/* <AutocompleteForm
-                            label="Thư viện"
-                            required
-                            value={(values.libraries as unknown as TLibrary[]) || []}
-                            options={libOptions}
-                            keyLabel={"name"}
-                            onChange={handleChangedLibs}
-                            error={touched.libraries && Boolean(errors.libraries)}
-                            helperText={touched.libraries && errors.libraries}
-                        /> */}
-
-
-
                         <InputForm
                             label="Ghi chú"
                             placeholder="Nhập ghi chú"
-                            error={touched.description && Boolean(errors.description)}
-                            helperText={touched.description && errors.description}
-                            {...getFieldProps("description")}
+                            error={touched.note && Boolean(errors.note)}
+                            helperText={touched.note && errors.note}
+                            {...getFieldProps("note")}
                         />
                         <SwitchForm
                             value={values?.isPublic ?? false}
@@ -284,6 +422,16 @@ const FormAddEditPublications: FC<Props> = ({
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            {openAdd && (
+                <FormAddCommonDialog
+                    open={openAdd}
+                    onClose={handleClose}
+                    initialValues={getInitialValuesAdd}
+                    onSubmit={handleAddSubmit}
+                    typeToAdd={typeToAdd}
+                />
+            )}
         </FormikProvider>
     );
 };

@@ -12,6 +12,7 @@ type Props = {
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onBlur?: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     sxBox?: SxProps<Theme>;
+    disabled?: boolean;
 };
 
 const InputForm: FC<Props> = ({
@@ -25,6 +26,7 @@ const InputForm: FC<Props> = ({
     name,
     onChange,
     onBlur,
+    disabled
 }) => {
     return (
         <FormControl
@@ -53,6 +55,7 @@ const InputForm: FC<Props> = ({
                         ml: 0,
                     },
                 }}
+                disabled={disabled}
             />
         </FormControl>
     );

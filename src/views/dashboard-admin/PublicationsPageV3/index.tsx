@@ -332,6 +332,11 @@ const PublicationsPageV3 = () => {
                 isPublic: selectedEdit.isPublic,
                 isLink: selectedEdit.isLink,
                 file: selectedEdit.file,
+                categoryId: (selectedEdit.categoryId as string) || null,
+                authorId: (selectedEdit.authorId as string) || null,
+                shelvesId: (selectedEdit.shelvesId as string) || null,
+                publisherId: (selectedEdit.publisherId as string) || null,
+                materialId: (selectedEdit.materialId as string) || null,
             };
         }
 
@@ -341,11 +346,16 @@ const PublicationsPageV3 = () => {
             description: "",
             quantity: 0,
             shelvesQuantity: 0,
-            status: "có sẵn",
+            status: "không có sẵn",
             type: "ấn phẩm cứng",
             isPublic: false,
             isLink: false,
             file: "",
+            categoryId: "",
+            authorId: "",
+            shelvesId: "",
+            publisherId: "",
+            materialId: "",
         };
     }, [selectedEdit]);
 

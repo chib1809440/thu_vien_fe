@@ -7,6 +7,7 @@ import { IconPlus } from '@tabler/icons';
 import TableUserList from './ui-components/TableUserList';
 import { User } from '../../../../interfaces/user';
 import { HeadCell } from '../../../../components/custom/table/type';
+import IBreadcrumsCustom from '../../../../ui-component/breadcrums';
 
 const headCells: HeadCell[] = [
     {
@@ -48,7 +49,12 @@ export default function AccountPage() {
 
     return (
         <>
-            <MainCard title="Danh sách tài khoản">
+            <IBreadcrumsCustom
+                profile="Quản lý tài khoản"
+                mainProfile="Danh sách tài khoản"
+                link="/quan-ly-tai-khoan"
+            />
+            <MainCard>
                 <Stack spacing={2}>
                     <CsFlexRowBetween>
                         <Box sx={{ ml: 4 }}>

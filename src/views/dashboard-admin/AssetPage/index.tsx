@@ -9,6 +9,7 @@ import { HeadCell } from '../../../components/custom/table/type';
 import { Asset } from '../../../interfaces/asset';
 import { Button, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import IBreadcrumsCustom from '../../../ui-component/breadcrums';
 const headCells: HeadCell[] = [
     {
         id: 'asset_name',
@@ -65,7 +66,12 @@ export default function AssetPage() {
     };
     return (
         <>
-            <MainCard title="Danh sách tài sản">
+            <IBreadcrumsCustom
+                profile="Quản lý tài sản"
+                mainProfile="Danh sách tài sản"
+                link="/tai-san-thu-vien"
+            />
+            <MainCard>
                 <Stack spacing={2}>
                     <CsFlexRowBetween>
                         <Box sx={{ ml: 4 }}>

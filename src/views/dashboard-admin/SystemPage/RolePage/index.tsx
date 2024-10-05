@@ -7,6 +7,7 @@ import { IconPlus } from '@tabler/icons';
 import TableRoleList from './ui-components/TableRoleList';
 import { Role } from '../../../../interfaces/role';
 import { HeadCell } from '../../../../components/custom/table/type';
+import IBreadcrumsCustom from '../../../../ui-component/breadcrums';
 
 const headCells: HeadCell[] = [
     {
@@ -30,7 +31,12 @@ export default function RolePage() {
 
     return (
         <>
-            <MainCard title="Danh sách vai trò">
+            <IBreadcrumsCustom
+                profile="Danh sách vai trò"
+                mainProfile="Danh sách vai trò"
+                link="/vai-tro"
+            />
+            <MainCard >
                 <Stack spacing={2}>
                     <CsFlexRowBetween>
                         <Box sx={{ ml: 4 }}>

@@ -48,8 +48,12 @@ const SelectForm: FC<Props> = ({
                 {
                     handleAdd && (
                         <Tooltip title="Thêm mới" arrow placement="top">
-                            <IconButton onClick={handleAdd} sx={{ color: "#2595f1", mb: 1, ml: 1 }}>
-                                <IconPlus />
+                            <IconButton
+                                size="small"
+                                onClick={handleAdd}
+                                sx={{ color: "#2595f1", ml: 1, p: 1.5 }}
+                            >
+                                <IconPlus size="18" />
                             </IconButton>
                         </Tooltip>
                     )}

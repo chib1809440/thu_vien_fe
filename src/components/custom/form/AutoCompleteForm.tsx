@@ -4,14 +4,17 @@ import {
     Checkbox,
     FormControl,
     FormHelperText,
+    IconButton,
     SxProps,
     TextField,
     Theme,
+    Tooltip,
     Typography,
 } from "@mui/material";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { ReactNode } from "react";
+import { IconPlus } from "@tabler/icons-react";
 
 const LIMIT_TAGS = 3;
 const LIMIT_TEXT = 40;
@@ -27,6 +30,7 @@ type Props<Type> = {
     error?: boolean;
     helperText?: ReactNode | string;
     onChange?: (value: Type[]) => void;
+    handleAdd?: () => void;
 };
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -43,6 +47,7 @@ const AutocompleteForm = <Type extends Record<string, any>>({
     label,
     required,
     onChange,
+    handleAdd,
 }: Props<Type>) => {
     return (
         <FormControl
@@ -53,9 +58,23 @@ const AutocompleteForm = <Type extends Record<string, any>>({
             fullWidth
             error={error}
         >
-            <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                {label} {required && <span className="required_text">(*)</span>}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography sx={{ fontWeight: "bold", mb: handleAdd ? 0 : 1.5 }}>
+                    {label} {required && <span className="required_text">(*)</span>}
+                </Typography>
+                {
+                    handleAdd && (
+                        <Tooltip title="Thêm mới" arrow placement="top">
+                            <IconButton
+                                size="small"
+                                onClick={handleAdd}
+                                sx={{ color: "#2595f1", ml: 1, p: 1.5 }}
+                            >
+                                <IconPlus size="18" />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+            </Box>
 
             <Autocomplete
                 multiple

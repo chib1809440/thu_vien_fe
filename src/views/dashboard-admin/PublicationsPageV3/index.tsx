@@ -68,9 +68,18 @@ const PublicationsPageV3 = () => {
     };
 
     const handleSubmit = (values: TPublicationsCreate) => {
+        const payload = {
+            ...values,
+            categoryIds: values.categoryIds.map((t: any) => t?._id),
+            materialIds: values.materialIds.map((t: any) => t?._id),
+            authorIds: values.authorIds.map((t: any) => t?._id),
+            publisherIds: values.publisherIds.map((t: any) => t?._id),
+        };
+
         if (selectedEdit) {
+            console.log(selectedEdit);
             mutationEdit.mutate(
-                { ...values, _id: selectedEdit._id },
+                { ...payload, _id: selectedEdit._id },
                 {
                     onSuccess: () => {
                         revalidate();
@@ -84,7 +93,7 @@ const PublicationsPageV3 = () => {
 
         }
 
-        mutationAdd.mutate(values, {
+        mutationAdd.mutate(payload, {
             onSuccess: (data) => {
                 revalidate();
                 toast.success('Thêm thành công.');
@@ -321,6 +330,8 @@ const PublicationsPageV3 = () => {
 
     const initialValues = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {
+            console.log(selectedEdit);
+            
             return {
                 name: selectedEdit.name,
                 barcode: selectedEdit.barcode,
@@ -332,11 +343,11 @@ const PublicationsPageV3 = () => {
                 isPublic: selectedEdit.isPublic,
                 isLink: selectedEdit.isLink,
                 file: selectedEdit.file,
-                categoryId: (selectedEdit.categoryId as string) || null,
-                authorId: (selectedEdit.authorId as string) || null,
+                categoryIds: selectedEdit.categoryIds || [],
+                authorIds: selectedEdit.authorIds || [],
                 shelvesId: (selectedEdit.shelvesId as string) || null,
-                publisherId: (selectedEdit.publisherId as string) || null,
-                materialId: (selectedEdit.materialId as string) || null,
+                publisherIds: selectedEdit.publisherIds || [],
+                materialIds: selectedEdit.materialIds || [],
             };
         }
 
@@ -351,11 +362,11 @@ const PublicationsPageV3 = () => {
             isPublic: false,
             isLink: false,
             file: "",
-            categoryId: "",
-            authorId: "",
+            categoryIds: [],
+            authorIds: [],
             shelvesId: "",
-            publisherId: "",
-            materialId: "",
+            publisherIds: [],
+            materialIds: [],
         };
     }, [selectedEdit]);
 

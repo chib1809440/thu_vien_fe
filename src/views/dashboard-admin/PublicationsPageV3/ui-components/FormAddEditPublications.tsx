@@ -1,27 +1,29 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useMemo, useRef, useState } from "react";
+import { toast } from "react-toastify";
 import * as yup from "yup";
+import AutocompleteForm from "../../../../components/custom/form/AutoCompleteForm";
 import InputForm from "../../../../components/custom/form/InputForm";
 import SelectForm from "../../../../components/custom/form/SelectForm";
 import SwitchForm from "../../../../components/custom/form/SwitchForm";
+import Uploadimage, { UploadAvatarRefProps } from "../../../../components/custom/form/UploadImage";
+import { useAddAuthor } from "../../../../hooks/services/author/author-mutation";
+import { useReFetchAuthor } from "../../../../hooks/services/author/author-query";
+import { useAddCategory } from "../../../../hooks/services/category/category-mutation";
+import { useReFetchCategory } from "../../../../hooks/services/category/category-query";
+import { useAddMaterial } from "../../../../hooks/services/material/material-mutation";
+import { useReFetchMaterial } from "../../../../hooks/services/material/material-query";
+import { useAddPublisher } from "../../../../hooks/services/publisher/publisher-mutation";
+import { useReFetchPublisher } from "../../../../hooks/services/publisher/publisher-query";
 import { TAuthor } from "../../../../types/models/author";
 import { TCategory } from "../../../../types/models/category";
 import { TMaterial } from "../../../../types/models/material";
 import { TPublicationsCreate } from "../../../../types/models/publications.type";
-import { TPublisher, TPublisherCreate } from "../../../../types/models/publisher";
+import { TPublisher } from "../../../../types/models/publisher";
 import { TShelves } from "../../../../types/models/shelves";
 import { statusOptions, typeOptions } from "../../../../utils/constants.utils";
 import FormAddCommonDialog from "./FormAddCommonDialog";
-import { useAddPublisher } from "../../../../hooks/services/publisher/publisher-mutation";
-import { useAddCategory } from "../../../../hooks/services/category/category-mutation";
-import { useAddMaterial } from "../../../../hooks/services/material/material-mutation";
-import { useAddAuthor } from "../../../../hooks/services/author/author-mutation";
-import { toast } from "react-toastify";
-import { useReFetchPublisher } from "../../../../hooks/services/publisher/publisher-query";
-import { useReFetchCategory } from "../../../../hooks/services/category/category-query";
-import { useReFetchMaterial } from "../../../../hooks/services/material/material-query";
-import { useReFetchAuthor } from "../../../../hooks/services/author/author-query";
 
 type Props = {
     open: boolean;
@@ -40,32 +42,41 @@ type Props = {
 const schema = yup.object().shape({
     name: yup.string().required("Vui lòng nhập tên"),
     barcode: yup.string().required("Vui lòng mã barcode"),
-    categoryId: yup.string().when('type', {
-        is: 'ấn phẩm cứng',
-        then: yup.string()
-            .required("Vui lòng chọn dạng học liệu"),
-
-        otherwise: yup.string().notRequired(),
+    categoryIds: yup.array().when("type", {
+        is: "ấn phẩm cứng",
+        then: yup
+            .array()
+            .min(1, "Vui lòng chọn một lĩnh vực")
+            .required("Vui lòng chọn một lĩnh vực")
+            .nullable(),
+        otherwise: yup.array().notRequired(),
     }),
-    authorId: yup.string().when('type', {
-        is: 'ấn phẩm cứng',
-        then: yup.string()
-            .required("Vui lòng chọn tác giả"),
-        otherwise: yup.string().notRequired(),
+    authorIds: yup.array().when("type", {
+        is: "ấn phẩm cứng",
+        then: yup
+            .array()
+            .min(1, "Vui lòng chọn một tác giả")
+            .required("Vui lòng chọn một tác giả")
+            .nullable(),
+        otherwise: yup.array().notRequired(),
     }),
-    publisherId: yup.string().when('type', {
-        is: 'ấn phẩm cứng',
-        then: yup.string()
-            .required("Vui lòng chọn nhà xuất bản"),
-
-        otherwise: yup.string().notRequired(),
+    publisherIds: yup.array().when("type", {
+        is: "ấn phẩm cứng",
+        then: yup
+            .array()
+            .min(1, "Vui lòng chọn một nhà xuất bản")
+            .required("Vui lòng chọn một nhà xuất bản")
+            .nullable(),
+        otherwise: yup.array().notRequired(),
     }),
-    materialId: yup.string().when('type', {
-        is: 'ấn phẩm cứng',
-        then: yup.string()
-            .required("Vui lòng chọn dạng học liệu"),
-
-        otherwise: yup.string().notRequired(),
+    materialIds: yup.array().when("type", {
+        is: "ấn phẩm cứng",
+        then: yup
+            .array()
+            .min(1, "Vui lòng chọn một dạng học liệu")
+            .required("Vui lòng chọn một dạng học liệu")
+            .nullable(),
+        otherwise: yup.array().notRequired(),
     }),
 });
 
@@ -88,16 +99,15 @@ const FormAddEditPublications: FC<Props> = ({
         type: "ấn phẩm cứng",
         isPublic: false,
         isLink: false,
-        categoryId: "",
-        authorId: "",
+        categoryIds: [],
+        authorIds: [],
         shelvesId: "",
-        publisherId: "",
-        materialId: "",
+        publisherIds: [],
+        materialIds: [],
     },
     isFetching = false,
     isEditMode = false,
 }) => {
-
     const formik = useFormik<TPublicationsCreate>({
         initialValues,
         validationSchema: schema,
@@ -114,9 +124,13 @@ const FormAddEditPublications: FC<Props> = ({
         [formik]
     );
 
-    const [filteredStatusOptions, setFilteredStatusOptions] = useState(statusOptions);
     const [openAdd, setOpenAdd] = useState(false);
-    const [typeToAdd, setTypeToAdd] = useState<"publisher" | "author" | "category" | "material" | null>(null);
+    const [typeToAdd, setTypeToAdd] = useState<
+        "publisher" | "author" | "category" | "material" | null
+    >(null);
+    const imageRef = useRef<UploadAvatarRefProps>(null);
+    const [defaultImage, setDefaultImage] = useState<string>("");
+
     const mutationAddPublisher = useAddPublisher();
     const mutationAddCategory = useAddCategory();
     const mutationAddMaterial = useAddMaterial();
@@ -155,16 +169,16 @@ const FormAddEditPublications: FC<Props> = ({
         let revalidate;
 
         // Xác định loại đối tượng dựa trên một trường trong values
-        if (values.type === 'publisher') {
+        if (values.type === "publisher") {
             mutation = mutationAddPublisher;
             revalidate = revalidatePublisher;
-        } else if (values.type === 'category') {
+        } else if (values.type === "category") {
             mutation = mutationAddCategory;
             revalidate = revalidateCategory;
-        } else if (values.type === 'material') {
+        } else if (values.type === "material") {
             mutation = mutationAddMaterial;
             revalidate = revalidateMaterial;
-        } else if (values.type === 'author') {
+        } else if (values.type === "author") {
             mutation = mutationAddAuthor;
             revalidate = revalidateAuthor;
         }
@@ -175,12 +189,12 @@ const FormAddEditPublications: FC<Props> = ({
                     if (revalidate) {
                         revalidate();
                     }
-                    toast.success('Thêm thành công.');
+                    toast.success("Thêm thành công.");
                     setOpenAdd(false);
                 },
                 onError: (error) => {
-                    toast.error('Thêm thất bại: ' + error.message);
-                }
+                    toast.error("Thêm thất bại: " + error.message);
+                },
             });
         }
     };
@@ -212,23 +226,53 @@ const FormAddEditPublications: FC<Props> = ({
         return initialValuesMap[typeToAdd] || {};
     }, [typeToAdd]);
 
-    useEffect(() => {
+    const handleTypeChange = (e) => {
+        console.log(e);
 
-        if (values.type === 'ấn phẩm mềm') {
-            setFilteredStatusOptions(statusOptions.filter(option =>
-                option.value === 'có sẵn'
-            ));
+        setFieldValue("type", e.target.value);
+
+        if (e.target.value === "ấn phẩm mềm") {
+            setFieldValue("status", "có sẵn");
+        } else {
+            setFieldValue("status", "không có sẵn");
         }
+    };
 
-        if (values.type === 'ấn phẩm cứng') {
-            setFilteredStatusOptions(statusOptions.filter(option =>
-                option.value === 'không có sẵn'
-            ));
+    const showQuantityInput =
+        values.type === "ấn phẩm cứng" &&
+        (values.status === "trên kệ" || values.status === "có sẵn");
+
+    const handleChangedMaterial = useCallback((value: TMaterial[]) => {
+        setFieldValue?.("materialIds", value);
+    }, []);
+    const handleChangedCategory = useCallback((value: TCategory[]) => {
+        setFieldValue?.("categoryIds", value);
+    }, []);
+    const handleChangedAuthor = useCallback((value: TAuthor[]) => {
+        setFieldValue?.("authorIds", value);
+    }, []);
+    const handleChangedPublisher = useCallback((value: TPublisher[]) => {
+        setFieldValue?.("publisherIds", value);
+    }, []);
+
+    // Xét ảnh
+
+    const handleChangeImage = (file: File) => {
+        console.log("File selected:", file);
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            setDefaultImage(event.target?.result as string);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleClearImage = () => {
+        if (imageRef.current) {
+            imageRef.current.clearState();
         }
-    }, [values.type]);
-
-    const showQuantityInput = values.type === 'ấn phẩm cứng' &&
-        (values.status === 'trên kệ' || values.status === 'có sẵn');
+        setDefaultImage("");
+    };
 
     return (
         <FormikProvider value={formik}>
@@ -250,99 +294,105 @@ const FormAddEditPublications: FC<Props> = ({
 
                 <DialogContent>
                     <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
-                        <Box sx={{ display: "flex", gap: 2 }}>
-                            <InputForm
-                                label="Tên ấn phẩm"
-                                placeholder="Nhập tên ấn phẩm"
-                                required
-                                error={touched.name && Boolean(errors.name)}
-                                helperText={touched.name && errors.name}
-                                {...getFieldProps("name")}
-                            />
 
-                            <InputForm
-                                label="Barcode"
-                                placeholder="Nhập barcode"
-                                required
-                                error={touched.barcode && Boolean(errors.barcode)}
-                                helperText={touched.barcode && errors.barcode}
-                                {...getFieldProps("barcode")}
-                            />
+                        <Box sx={{ display: "flex", gap: 2, width: "100%", mt: 2 }}>
+                            <Uploadimage ref={imageRef} defaultImage={defaultImage} onChange={handleChangeImage} />
+
+                            <Box sx={{ display: "flex", flexDirection: "column", width: "100%", ml: 5 }}>
+                                <Box sx={{ display: "flex", flexDirection: "row", width: "100%", gap: 2 }}>
+                                    <InputForm
+                                        label="Tên ấn phẩm"
+                                        placeholder="Nhập tên ấn phẩm"
+                                        required
+                                        error={touched.name && Boolean(errors.name)}
+                                        helperText={touched.name && errors.name}
+                                        {...getFieldProps("name")}
+                                    />
+
+                                    <InputForm
+                                        label="Barcode"
+                                        placeholder="Nhập barcode"
+                                        required
+                                        error={touched.barcode && Boolean(errors.barcode)}
+                                        helperText={touched.barcode && errors.barcode}
+                                        {...getFieldProps("barcode")}
+                                        disabled={isEditMode}
+                                    />
+                                </Box>
+
+                                <Box sx={{ display: "flex", flexDirection: "row", width: "100%", gap: 2 }}>
+                                    <SelectForm
+                                        label="Chọn loại ấn phẩm"
+                                        required
+                                        options={typeOptions}
+                                        {...getFieldProps("type")}
+                                        onChange={handleTypeChange}
+                                        error={touched.type && Boolean(errors.type)}
+                                        helperText={touched.type && errors.type}
+                                        disabled={isEditMode}
+                                    />
+
+                                    <SelectForm
+                                        label="Trạng thái ấn phẩm"
+                                        options={statusOptions}
+                                        {...getFieldProps("status")}
+                                        error={touched.status && Boolean(errors.status)}
+                                        helperText={touched.status && errors.status}
+                                        disabled
+                                    />
+                                </Box>
+                            </Box>
                         </Box>
 
                         <Box sx={{ display: "flex", gap: 2 }}>
-                            <SelectForm
-                                label="Chọn loại ấn phẩm"
-                                required
-                                options={typeOptions}
-                                {...getFieldProps("type")}
-                                error={touched.type && Boolean(errors.type)}
-                                helperText={touched.type && errors.type}
-                                disabled={isEditMode}
-                            />
-
-                            <SelectForm
-                                label="Chọn trạng thái ấn phẩm"
-                                required
-                                options={filteredStatusOptions}
-                                {...getFieldProps("status")}
-                                error={touched.status && Boolean(errors.status)}
-                                helperText={touched.status && errors.status}
-                                disabled={isEditMode}
-                            />
-                        </Box>
-
-                        <Box sx={{ display: "flex", gap: 2 }}>
-                            <SelectForm
+                            <AutocompleteForm
                                 label="Chọn dạng học liệu"
                                 required={values.type === "ấn phẩm cứng"}
-                                options={materialOptions?.map((item) => ({
-                                    value: item._id,
-                                    label: item.name,
-                                })) || []}
-                                {...getFieldProps("materialId")}
-                                error={touched.materialId && Boolean(errors.materialId)}
-                                helperText={touched.materialId && errors.materialId}
+                                value={(values.materialIds as unknown as TMaterial[]) || []}
+                                options={materialOptions}
+                                keyLabel={"name"}
+                                onChange={handleChangedMaterial}
+                                error={touched.materialIds && Boolean(errors.materialIds)}
+                                helperText={touched.materialIds && errors.materialIds}
                                 handleAdd={handleAddMaterial}
                             />
-                            <SelectForm
+
+                            <AutocompleteForm
                                 label="Chọn lĩnh vực"
                                 required={values.type === "ấn phẩm cứng"}
-                                options={cateOptions?.map((item) => ({
-                                    value: item._id,
-                                    label: item.name,
-                                })) || []}
-                                {...getFieldProps("categoryId")}
-                                error={touched.categoryId && Boolean(errors.categoryId)}
-                                helperText={touched.categoryId && errors.categoryId}
+                                value={(values.categoryIds as unknown as TCategory[]) || []}
+                                options={cateOptions}
+                                keyLabel={"name"}
+                                onChange={handleChangedCategory}
+                                error={touched.categoryIds && Boolean(errors.categoryIds)}
+                                helperText={touched.categoryIds && errors.categoryIds}
                                 handleAdd={handleAddCategory}
                             />
-                            <SelectForm
+
+                            <AutocompleteForm
                                 label="Chọn tác giả"
                                 required={values.type === "ấn phẩm cứng"}
-                                options={authorOptions?.map((item) => ({
-                                    value: item._id,
-                                    label: item.name,
-                                })) || []}
-                                {...getFieldProps("authorId")}
-                                error={touched.authorId && Boolean(errors.authorId)}
-                                helperText={touched.authorId && errors.authorId}
+                                value={(values.authorIds as unknown as TAuthor[]) || []}
+                                options={authorOptions}
+                                keyLabel={"name"}
+                                onChange={handleChangedAuthor}
+                                error={touched.authorIds && Boolean(errors.authorIds)}
+                                helperText={touched.authorIds && errors.authorIds}
                                 handleAdd={handleAddAuthor}
                             />
-                            <SelectForm
+
+                            <AutocompleteForm
                                 label="Chọn nhà xuất bản"
                                 required={values.type === "ấn phẩm cứng"}
-                                options={publisherOptions?.map((item) => ({
-                                    value: item._id,
-                                    label: item.name,
-                                })) || []}
-                                {...getFieldProps("publisherId")}
-                                error={touched.publisherId && Boolean(errors.publisherId)}
-                                helperText={touched.publisherId && errors.publisherId}
+                                value={(values.publisherIds as unknown as TPublisher[]) || []}
+                                options={publisherOptions}
+                                keyLabel={"name"}
+                                onChange={handleChangedPublisher}
+                                error={touched.publisherIds && Boolean(errors.publisherIds)}
+                                helperText={touched.publisherIds && errors.publisherIds}
                                 handleAdd={handleAddPublisher}
                             />
                         </Box>
-
 
                         <Box sx={{ display: "flex", gap: 2 }}>
                             {showQuantityInput && (
@@ -358,10 +408,12 @@ const FormAddEditPublications: FC<Props> = ({
                             {values.status === "trên kệ" && (
                                 <SelectForm
                                     label="Chọn kệ tủ"
-                                    options={shelfOptions?.map((item) => ({
-                                        value: item._id,
-                                        label: item.name,
-                                    })) || []}
+                                    options={
+                                        shelfOptions?.map((item) => ({
+                                            value: item._id,
+                                            label: item.name,
+                                        })) || []
+                                    }
                                     {...getFieldProps("shelvesId")}
                                     error={touched.shelvesId && Boolean(errors.shelvesId)}
                                     helperText={touched.shelvesId && errors.shelvesId}
@@ -373,7 +425,9 @@ const FormAddEditPublications: FC<Props> = ({
                                     label="Số lượng trên kệ"
                                     placeholder="Nhập số lượng trên kệ"
                                     {...getFieldProps("shelvesQuantity")}
-                                    error={touched.shelvesQuantity && Boolean(errors.shelvesQuantity)}
+                                    error={
+                                        touched.shelvesQuantity && Boolean(errors.shelvesQuantity)
+                                    }
                                     helperText={touched.shelvesQuantity && errors.shelvesQuantity}
                                     disabled={isEditMode}
                                 />
@@ -436,4 +490,4 @@ const FormAddEditPublications: FC<Props> = ({
     );
 };
 
-export default FormAddEditPublications;
+export default FormAddEditPublications; 

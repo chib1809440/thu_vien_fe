@@ -29,5 +29,4 @@ export interface AbstractEntity {
     createdAt?: string;
     updatedAt?: string;
     uuid?: string;
-    status?: number;
 }

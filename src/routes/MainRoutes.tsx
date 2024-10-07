@@ -16,8 +16,8 @@ import PublisherDeleteListPage from "../views/dashboard-admin/PublisherPage/Publ
 import MaterialDeleteListPage from "../views/dashboard-admin/MaterialPage/MaterialDeleteListPage";
 import ShelfPage from "../views/dashboard-admin/ShelfPage";
 import ShelfDeleteListPage from "../views/dashboard-admin/ShelfPage/ShelfDeleteListPage";
-import PublicationsPageV3 from "../views/dashboard-admin/PublicationsPageV3";
-import PublicationsDeleteListPage from "../views/dashboard-admin/PublicationsPageV3/PublicationsDeleteListPage";
+import PublicationsPage from "../views/dashboard-admin/PublicationsPage";
+import PublicationsDeleteListPage from "../views/dashboard-admin/PublicationsPage/PublicationsDeleteListPage";
 
 const HomePage = Loadable(
   lazy(() => import("../views/dashboard-admin/HomePage"))
@@ -207,7 +207,7 @@ const MainRoutes = {
     // sách
     {
       path: "/thu-vien/an-pham",
-      element: <PublicationsPageV3 />,
+      element: <PublicationsPage />,
     },
     {
       path: "/thu-vien/danh-sach-xoa-an-pham",

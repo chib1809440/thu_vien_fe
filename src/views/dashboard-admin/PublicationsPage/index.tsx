@@ -1,4 +1,4 @@
-import { Chip, Switch } from "@mui/material";
+import { Chip, FormControl, MenuItem, Select, Switch } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconEye, IconFileDownload, IconFileUpload, IconTrashXFilled } from "@tabler/icons-react";
@@ -9,6 +9,7 @@ import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
+import CustomInput from "../../../components/default/input/CustomInput";
 import { useFetchAuthor } from "../../../hooks/services/author/author-query";
 import { useFetchCategory } from "../../../hooks/services/category/category-query";
 import { useFetchMaterial } from "../../../hooks/services/material/material-query";
@@ -23,14 +24,29 @@ import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { typeOptions } from "../../../utils/constants.utils";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
+import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
 
-const PublicationsPageV3 = () => {
+const PublicationsPage = () => {
     const queryString = useQueryString();
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
 
-    const { data, isLoading } = useFetchPublications({ limit, page, search });
+    const [selectedMaterial, setSelectedMaterial] = useState(0);
+    const [selectedPublications, setSelectedPublications] = useState(0);
+    const [selectedAuthor, setSelectedAuthor] = useState(0);
+    const [selectedCategory, setSelectedCategory] = useState(0);
+    const [selectedPublisher, setSelectedPublisher] = useState(0);
+
+    const { data, isLoading } = useFetchPublications({
+        limit, page, search,
+        type: selectedPublications,
+        materialId: selectedMaterial !== 0 ? selectedMaterial : undefined,
+        authorId: selectedAuthor !== 0 ? selectedAuthor : undefined,
+        categoryId: selectedCategory !== 0 ? selectedCategory : undefined,
+        publisherId: selectedPublisher !== 0 ? selectedPublisher : undefined,
+    });
+
     // const { data: libs } = useFetchLibrary({ groupId });
     const { data: categoryData } = useFetchCategory();
     const { data: materialData } = useFetchMaterial();
@@ -52,6 +68,8 @@ const PublicationsPageV3 = () => {
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
+    const [openViewDetails, setOpenViewDetails] = useState(false);
+    const [publicationsDetails, setPublicationsDetails] = useState<TPublications | null>(null);
 
     const addPublications = () => {
         setOpenAddEdit(true);
@@ -67,6 +85,16 @@ const PublicationsPageV3 = () => {
         setSelectedEdit(null);
     };
 
+    const handleViewDetails = (row: TPublications) => {
+        setPublicationsDetails(row);
+        setOpenViewDetails(true);
+    };
+
+    const handleCloseViewDetails = () => {
+        setOpenViewDetails(false);
+        setPublicationsDetails(null);
+    };
+
     const handleSubmit = (values: TPublicationsCreate) => {
         const payload = {
             ...values,
@@ -74,10 +102,12 @@ const PublicationsPageV3 = () => {
             materialIds: values.materialIds.map((t: any) => t?._id),
             authorIds: values.authorIds.map((t: any) => t?._id),
             publisherIds: values.publisherIds.map((t: any) => t?._id),
-        };
 
+        };
+        // console.log(payload);
         if (selectedEdit) {
-            console.log(selectedEdit);
+            // console.log(selectedEdit);
+
             mutationEdit.mutate(
                 { ...payload, _id: selectedEdit._id },
                 {
@@ -124,6 +154,11 @@ const PublicationsPageV3 = () => {
     };
 
     const handleChangeShareConnect = (row: TPublications, checked: boolean) => {
+        if (!row.isPublic) {
+            toast.warn('Không thể thay đổi trạng thái liên thông vì chưa chia sẻ lên thư viện.');
+            return;
+        }
+
         // TODO: update
         mutationEdit.mutate(
             { isLink: checked, _id: row._id },
@@ -149,6 +184,26 @@ const PublicationsPageV3 = () => {
             }
         );
         return;
+    };
+
+    // lọc
+    const handlePublicationsFilterChange = (event) => {
+        setSelectedPublications(event.target.value);
+    };
+    const handleMaterialFilterChange = (event) => {
+        setSelectedMaterial(event.target.value);
+    };
+
+    const handleAuthorFilterChange = (event) => {
+        setSelectedAuthor(event.target.value);
+    };
+
+    const handleCategoryFilterChange = (event) => {
+        setSelectedCategory(event.target.value);
+    };
+
+    const handlePublisherFilterChange = (event) => {
+        setSelectedPublisher(event.target.value);
     };
 
     const columns: TColumn<TPublications>[] = useMemo(
@@ -247,6 +302,7 @@ const PublicationsPageV3 = () => {
                             <IconEye
                                 size={20}
                                 stroke={1.5}
+                                onClick={() => handleViewDetails(row)}
                             />
                             <IconPencil
                                 onClick={() => handleEditPublications(row)}
@@ -331,7 +387,7 @@ const PublicationsPageV3 = () => {
     const initialValues = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {
             console.log(selectedEdit);
-            
+
             return {
                 name: selectedEdit.name,
                 barcode: selectedEdit.barcode,
@@ -342,7 +398,7 @@ const PublicationsPageV3 = () => {
                 type: selectedEdit.type,
                 isPublic: selectedEdit.isPublic,
                 isLink: selectedEdit.isLink,
-                file: selectedEdit.file,
+                file: selectedEdit.file || "",
                 categoryIds: selectedEdit.categoryIds || [],
                 authorIds: selectedEdit.authorIds || [],
                 shelvesId: (selectedEdit.shelvesId as string) || null,
@@ -390,6 +446,9 @@ const PublicationsPageV3 = () => {
                     materialOptions={materialData?.data?.result || []}
                     publisherOptions={publisherData?.data?.result || []}
                     shelfOptions={shelfData?.data?.result || []}
+                    imageUrl={
+                        selectedEdit?.path ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}` : ""
+                    }
                 />
             )}
 
@@ -425,6 +484,86 @@ const PublicationsPageV3 = () => {
 
                 <ActionsForm actions={actionMenus} />
 
+                <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2, md: 3 }, width: '100%', pr: 4 }}>
+                    <FormControl variant="outlined" sx={{ width: "90%", display: "flex", flexDirection: "row", gap: 2 }}>
+                        <Select
+                            labelId="publications-select"
+                            label="Loại ấn phẩm"
+                            value={selectedPublications}
+                            onChange={handlePublicationsFilterChange}
+                            input={<CustomInput size="small" label="Loại ấn phẩm" />}
+                        >
+                            <MenuItem value={0}>Tất cả loại ấn phẩm</MenuItem>
+                            {typeOptions?.map((item, index) => (
+                                <MenuItem key={index} value={item.value}>
+                                    {item.label}
+                                </MenuItem>
+                            ))}
+                        </Select>
+
+                        <Select
+                            labelId="material-select"
+                            label="Dạng học liệu"
+                            value={selectedMaterial}
+                            onChange={handleMaterialFilterChange}
+                            input={<CustomInput size="small" label="Dạng học liệu" />}
+                        >
+                            <MenuItem value={0}>Tất cả dạng học liệu</MenuItem>
+                            {materialData?.data?.result?.map((item, index) => (
+                                <MenuItem key={index} value={item._id}>
+                                    {item.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+
+                        <Select
+                            labelId="category-select"
+                            label="Lĩnh vực"
+                            value={selectedCategory}
+                            onChange={handleCategoryFilterChange}
+                            input={<CustomInput size="small" label="Lĩnh vực" />}
+                        >
+                            <MenuItem value={0}>Tất cả lĩnh vực</MenuItem>
+                            {categoryData?.data?.result?.map((item, index) => (
+                                <MenuItem key={index} value={item._id}>
+                                    {item.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+
+                        <Select
+                            labelId="author-select"
+                            label="Tác giả"
+                            value={selectedAuthor}
+                            onChange={handleAuthorFilterChange}
+                            input={<CustomInput size="small" label="Tác giả" />}
+                        >
+                            <MenuItem value={0}>Tất cả tác giả</MenuItem>
+                            {authorData?.data?.result?.map((item, index) => (
+                                <MenuItem key={index} value={item._id}>
+                                    {item.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+
+                        <Select
+                            labelId="publisher-select"
+                            label="Nhà xuất bản"
+                            value={selectedPublisher}
+                            onChange={handlePublisherFilterChange}
+                            input={<CustomInput size="small" label="Nhà xuất bản" />}
+                        >
+                            <MenuItem value={0}>Tất cả nhà xuất bản</MenuItem>
+                            {publisherData?.data?.result?.map((item, index) => (
+                                <MenuItem key={index} value={item._id}>
+                                    {item.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                </Stack>
+
                 <TableList
                     checked={checkedDelete}
                     columns={columns}
@@ -453,8 +592,14 @@ const PublicationsPageV3 = () => {
                     title="Xác nhận xóa các mục đã chọn?"
                     description={`Bạn có chắc chắn muốn xóa?`}
                 />
+
+                <PublicationsDetailsDialog
+                    open={openViewDetails}
+                    onClose={handleCloseViewDetails}
+                    publications={publicationsDetails}
+                />
             </MainCard>
         </div>
     );
 };
-export default PublicationsPageV3;
+export default PublicationsPage;

@@ -49,7 +49,7 @@ const ActionsForm: FC<Props> = ({ actions = [] }) => {
 
     return (
         <Grid container pl={4} pr={4} pt={2}>
-            <Grid item xs={12} sm={12} md={3} lg={4} marginBottom={4}>
+            <Grid item xs={12} sm={12} md={3} lg={4} marginBottom={4} >
                 <SearchNoButtonSection
                     fullwidth
                     contentSearch={contentSearch}

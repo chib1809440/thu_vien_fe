@@ -5,8 +5,8 @@ import { TPublications, TPublicationsCreate, TPublicationsEdit } from "../../../
 
 export const useAddPublications = () => {
     return useMutation({
-        mutationFn: async (data: TPublicationsCreate, isWithFormData = true) => {
-            return await publicationsService.create<TPublicationsCreate, TPublications>(data, isWithFormData);
+        mutationFn: async (data: TPublicationsCreate) => {
+            return await publicationsService.create<TPublicationsCreate, TPublications>(data, true);
         },
         onError: (error: any) => {
             toast.error(error.message);
@@ -16,8 +16,8 @@ export const useAddPublications = () => {
 
 export const useEditPublications = () => {
     return useMutation({
-        mutationFn: async (data: TPublicationsEdit, isWithFormData = true) => {
-            return await publicationsService.update<TPublicationsEdit, TPublications>(data, data._id, isWithFormData)
+        mutationFn: async (data: TPublicationsEdit) => {
+            return await publicationsService.update<TPublicationsEdit, TPublications>(data, data._id, true)
         },
         onError: (error: any) => {
             toast.error(error.message);

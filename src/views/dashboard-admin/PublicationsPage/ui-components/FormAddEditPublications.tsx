@@ -37,6 +37,7 @@ type Props = {
     authorOptions?: TAuthor[];
     publisherOptions?: TPublisher[];
     shelfOptions?: TShelves[];
+    imageUrl?: string;
 };
 
 const schema = yup.object().shape({
@@ -89,6 +90,7 @@ const FormAddEditPublications: FC<Props> = ({
     authorOptions,
     publisherOptions,
     shelfOptions,
+    imageUrl,
     initialValues = {
         name: "",
         barcode: "",
@@ -107,6 +109,7 @@ const FormAddEditPublications: FC<Props> = ({
     },
     isFetching = false,
     isEditMode = false,
+
 }) => {
     const formik = useFormik<TPublicationsCreate>({
         initialValues,
@@ -130,6 +133,7 @@ const FormAddEditPublications: FC<Props> = ({
     >(null);
     const imageRef = useRef<UploadAvatarRefProps>(null);
     const [defaultImage, setDefaultImage] = useState<string>("");
+    const [typeHardPublications, setTypeHardPublications] = useState(true);
 
     const mutationAddPublisher = useAddPublisher();
     const mutationAddCategory = useAddCategory();
@@ -227,15 +231,14 @@ const FormAddEditPublications: FC<Props> = ({
     }, [typeToAdd]);
 
     const handleTypeChange = (e) => {
-        console.log(e);
 
-        setFieldValue("type", e.target.value);
+        const selectedType = e.target.value;
+        setFieldValue("type", selectedType);
+        setFieldValue("status", selectedType === "ấn phẩm mềm" ? "có sẵn" : "không có sẵn");
 
-        if (e.target.value === "ấn phẩm mềm") {
-            setFieldValue("status", "có sẵn");
-        } else {
-            setFieldValue("status", "không có sẵn");
-        }
+        // Truyền giá trị typeHardPublications vào Uploadimage
+        setTypeHardPublications(selectedType === "ấn phẩm cứng");
+        
     };
 
     const showQuantityInput =
@@ -256,16 +259,17 @@ const FormAddEditPublications: FC<Props> = ({
     }, []);
 
     // Xét ảnh
-
-    const handleChangeImage = (file: File) => {
-        console.log("File selected:", file);
+    const handleChangeImage = useCallback(async (file: File) => {
+        // console.log("File selected:", file);
 
         const reader = new FileReader();
         reader.onload = (event) => {
             setDefaultImage(event.target?.result as string);
+
         };
         reader.readAsDataURL(file);
-    };
+        await setFieldValue("file", file);
+    }, []);
 
     const handleClearImage = () => {
         if (imageRef.current) {
@@ -295,11 +299,11 @@ const FormAddEditPublications: FC<Props> = ({
                 <DialogContent>
                     <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
 
-                        <Box sx={{ display: "flex", gap: 2, width: "100%", mt: 2 }}>
-                            <Uploadimage ref={imageRef} defaultImage={defaultImage} onChange={handleChangeImage} />
+                        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, width: "100%", mt: 2 }}>
+                            <Uploadimage typeHardPublications={typeHardPublications} ref={imageRef} defaultImage={imageUrl || defaultImage} onChange={handleChangeImage} />
 
-                            <Box sx={{ display: "flex", flexDirection: "column", width: "100%", ml: 5 }}>
-                                <Box sx={{ display: "flex", flexDirection: "row", width: "100%", gap: 2 }}>
+                            <Box sx={{ display: "flex", flexDirection: "column", width: "100%", ml: { xs: 0, md: 2, xl: 5 } }}>
+                                <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, width: "100%", gap: { xs: 0, md: 2, xl: 2 } }}>
                                     <InputForm
                                         label="Tên ấn phẩm"
                                         placeholder="Nhập tên ấn phẩm"
@@ -320,10 +324,9 @@ const FormAddEditPublications: FC<Props> = ({
                                     />
                                 </Box>
 
-                                <Box sx={{ display: "flex", flexDirection: "row", width: "100%", gap: 2 }}>
+                                <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, width: "100%", gap: { xs: 0, md: 2, xl: 2 } }}>
                                     <SelectForm
                                         label="Chọn loại ấn phẩm"
-                                        required
                                         options={typeOptions}
                                         {...getFieldProps("type")}
                                         onChange={handleTypeChange}
@@ -344,7 +347,7 @@ const FormAddEditPublications: FC<Props> = ({
                             </Box>
                         </Box>
 
-                        <Box sx={{ display: "flex", gap: 2 }}>
+                        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: 0, md: 2, xl: 2 } }}>
                             <AutocompleteForm
                                 label="Chọn dạng học liệu"
                                 required={values.type === "ấn phẩm cứng"}
@@ -394,10 +397,11 @@ const FormAddEditPublications: FC<Props> = ({
                             />
                         </Box>
 
-                        <Box sx={{ display: "flex", gap: 2 }}>
+                        <Box sx={{ display: "flex", gap: { xs: 0, md: 2, xl: 2 } }}>
                             {showQuantityInput && (
                                 <InputForm
                                     label="Số lượng"
+                                    type="number"
                                     placeholder="Nhập số lượng"
                                     error={touched.quantity && Boolean(errors.quantity)}
                                     helperText={touched.quantity && errors.quantity}
@@ -423,6 +427,7 @@ const FormAddEditPublications: FC<Props> = ({
                             {values.shelvesId && values.status === "trên kệ" && (
                                 <InputForm
                                     label="Số lượng trên kệ"
+                                    type="number"
                                     placeholder="Nhập số lượng trên kệ"
                                     {...getFieldProps("shelvesQuantity")}
                                     error={
@@ -456,7 +461,13 @@ const FormAddEditPublications: FC<Props> = ({
                         />
                         <SwitchForm
                             value={values?.isLink ?? false}
-                            onChange={(checked) => setFieldValue("isLink", checked)}
+                            onChange={(checked) => {
+                                if (!values?.isPublic) {
+                                    toast.warn('Không thể thay đổi trạng thái liên thông vì chưa chia sẻ lên thư viện.');
+                                    return;
+                                }
+                                setFieldValue("isLink", checked);
+                            }}
                             label="Chia sẻ liên thông"
                         />
                     </Form>

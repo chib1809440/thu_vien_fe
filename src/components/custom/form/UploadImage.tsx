@@ -1,4 +1,5 @@
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { Box, IconButton, Typography } from "@mui/material";
 import {
     ChangeEvent,
@@ -13,6 +14,7 @@ import {
 type UploadAvatarProps = {
     defaultImage?: string;
     onChange?: (file: File) => void;
+    typeHardPublications?: boolean
 };
 
 export type UploadAvatarRefProps = {
@@ -44,7 +46,7 @@ const SPACING = 230;
 const SPACING_CHILD = 230 - 16;
 
 const Uploadimage = forwardRef<UploadAvatarRefProps, UploadAvatarProps>(
-    ({ defaultImage, onChange }, ref) => {
+    ({ defaultImage, onChange, typeHardPublications }, ref) => {
         const imageRef = useRef<HTMLInputElement | null>(null);
         const [imageBlob, setImageBlob] = useState<string>("");
 
@@ -121,25 +123,57 @@ const Uploadimage = forwardRef<UploadAvatarRefProps, UploadAvatarProps>(
                         ref={imageRef}
                         onChange={handleChangeImage}
                     />
-                    {imageBlob ? (
-                        <img
-                            src={imageBlob}
-                            alt="Uploaded"
-                            style={{
-                                width: "100%",
-                                height: "100%",
-                                borderRadius: "12px",
-                                objectFit: "cover",
-                            }}
-                        />
+                    {typeHardPublications ? (
+                        imageBlob ? (
+                            <img
+                                src={imageBlob}
+                                alt="Uploaded"
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    borderRadius: "12px",
+                                    objectFit: "cover",
+                                }}
+                            />
+                        ) : (
+                            <>
+                                <IconButton aria-label="upload photo">
+                                    <AddAPhotoIcon color="inherit" />
+                                </IconButton>
+                                <Typography color={"inherit"}>Chọn ảnh</Typography>
+                            </>
+                        )
                     ) : (
-                        <>
-                            <IconButton aria-label="upload photo">
-                                <AddAPhotoIcon color="inherit" />
-                            </IconButton>
-                            <Typography color={"inherit"}>Chọn ảnh</Typography>
-                        </>
+                        <Box sx={{ width: '100%' }}>
+                            <Box sx={{
+                                height: { xs: '80px', md: '220px' },
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                width: '100%',
+                                borderRadius: 2,
+                            }}>
+                                <IconButton aria-label="upload file">
+                                    <CloudUploadIcon color="inherit" />
+                                </IconButton>
+                                <Typography color={"inherit"}>Chọn file</Typography>
+
+                                {/* <Box display="flex" alignItems="center" mt={2}>
+                                    <Typography>name</Typography>
+                                </Box> */}
+                            </Box>
+                            <form className='form'>
+                                <input
+                                    style={{ display: 'none' }}
+                                    id="raised-button-file"
+                                    multiple
+                                    type="file"
+                                />
+                            </form>
+                        </Box>
                     )}
+
                 </Box>
             </Box>
         );

@@ -182,7 +182,7 @@ class BaseApi {
                 formData.append(key, payload[key]);
             });
 
-            const response = await this.httpClient.patch(`${this.endpoint}/${id}`, payload, {
+            const response = await this.httpClient.patch(`${this.endpoint}/${id}`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },

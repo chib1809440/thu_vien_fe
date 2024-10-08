@@ -9,9 +9,12 @@ import { TMenuOption } from "../../../types/common/table";
 
 type Props = {
     actions?: TMenuOption[];
+    barcodeSearch?: string;
+    handleBarcodeSearch?: (e: any) => void;
+    barcode?: boolean;
 };
 
-const ActionsForm: FC<Props> = ({ actions = [] }) => {
+const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSearch, barcode = false }) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const querySearch = searchParams.get("q") || "";
 
@@ -49,16 +52,26 @@ const ActionsForm: FC<Props> = ({ actions = [] }) => {
 
     return (
         <Grid container pl={4} pr={4} pt={2}>
-            <Grid item xs={12} sm={12} md={3} lg={4} marginBottom={4} >
+            <Grid item xs={12} sm={12} md={barcode ? 6 : 3} lg={barcode ? 6 : 4} marginBottom={4} sx={{ display: "flex" }} gap={2} >
                 <SearchNoButtonSection
                     fullwidth
                     contentSearch={contentSearch}
                     handleContentSearch={handleContentSearch}
                 />
+                {
+                    barcode ?
+                        (<SearchNoButtonSection
+                            fullwidth
+                            contentSearch={barcodeSearch}
+                            handleContentSearch={handleBarcodeSearch}
+                            placeholder="Tìm kiếm theo mã ấn phẩm"
+                        />)
+                        : ""
+                }
             </Grid>
 
             {actions.length > 0 && (
-                <Grid item xs={12} sm={6} md={9} lg={8} marginBottom={4}>
+                <Grid item xs={12} sm={6} md={barcode ? 6 : 9} lg={barcode ? 6 : 8} marginBottom={4}>
                     <Box
                         sx={{
                             display: "flex",

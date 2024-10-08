@@ -31,6 +31,9 @@ const AssetPage = Loadable(
 const AssetTrashPage = Loadable(
   lazy(() => import("../views/dashboard-admin/AssetPage/AssetTrash"))
 );
+const LibInformationPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/LibInformationPage"))
+);
 const ContactPage = Loadable(
   lazy(() => import("../views/dashboard-admin/Contact"))
 );
@@ -149,7 +152,7 @@ const MainRoutes = {
     },
     {
       path: "/thong-tin",
-      element: <ContactPage />,
+      element: <LibInformationPage />,
     },
     {
       path: "/quan-ly-tai-khoan",

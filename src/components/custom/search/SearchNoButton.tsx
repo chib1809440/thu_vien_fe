@@ -8,8 +8,9 @@ interface PropSearch {
   contentSearch: string,
   fullwidth?: boolean,
   handleContentSearch: (e: any) => void
+  placeholder?: string
 }
-const SearchNoButtonSection = ({ contentSearch, handleContentSearch, fullwidth }: PropSearch) => {
+const SearchNoButtonSection = ({ contentSearch, handleContentSearch, fullwidth, placeholder = "Tìm kiếm" }: PropSearch) => {
   const theme = useTheme();
 
   return (
@@ -19,7 +20,7 @@ const SearchNoButtonSection = ({ contentSearch, handleContentSearch, fullwidth }
           <FormControl sx={{ minWidth: fullwidth ? 0 : 280 }} size="small" fullWidth={fullwidth}>
             <CustomInput
               size="small"
-              placeholder='Tìm kiếm'
+              placeholder={placeholder}
               value={contentSearch}
               onChange={(e) => handleContentSearch(e.target.value)}
               startAdornment={

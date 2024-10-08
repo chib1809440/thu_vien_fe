@@ -1,4 +1,4 @@
-import { Chip, FormControl, MenuItem, Select, Switch } from "@mui/material";
+import { Chip, Switch } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconEye, IconFileDownload, IconFileUpload, IconTrashXFilled } from "@tabler/icons-react";
@@ -9,12 +9,19 @@ import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
-import CustomInput from "../../../components/default/input/CustomInput";
 import { useFetchAuthor } from "../../../hooks/services/author/author-query";
 import { useFetchCategory } from "../../../hooks/services/category/category-query";
 import { useFetchMaterial } from "../../../hooks/services/material/material-query";
-import { useAddPublications, useDeleteSoftManyPublications, useDeleteSoftPublications, useEditPublications } from "../../../hooks/services/publications/publications-mutation";
-import { useFetchPublications, useReFetchPublications } from "../../../hooks/services/publications/publications-query";
+import {
+    useAddPublications,
+    useDeleteSoftManyPublications,
+    useDeleteSoftPublications,
+    useEditPublications,
+} from "../../../hooks/services/publications/publications-mutation";
+import {
+    useFetchPublications,
+    useReFetchPublications,
+} from "../../../hooks/services/publications/publications-query";
 import { useFetchPublisher } from "../../../hooks/services/publisher/publisher-query";
 import { useFetchShelf } from "../../../hooks/services/shelf/shelf-query";
 import useQueryString from "../../../hooks/services/useQueryString";
@@ -23,6 +30,8 @@ import { TPublications, TPublicationsCreate } from "../../../types/models/public
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { typeOptions } from "../../../utils/constants.utils";
+import { parserParams } from "../../../utils/object";
+import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
 
@@ -37,23 +46,41 @@ const PublicationsPage = () => {
     const [selectedAuthor, setSelectedAuthor] = useState(0);
     const [selectedCategory, setSelectedCategory] = useState(0);
     const [selectedPublisher, setSelectedPublisher] = useState(0);
+    const [barcodeSearch, setBarcodeSearch] = useState("");
+
+    const filter = useMemo(
+        () =>
+            parserParams([
+                { compare: 0, target: { materialIds: selectedMaterial } },
+                { compare: 0, target: { authorIds: selectedAuthor } },
+                { compare: 0, target: { categoryIds: selectedCategory } },
+                { compare: 0, target: { publisherIds: selectedPublisher } },
+                { compare: "", target: { search } },
+                { compare: 0, target: { type: selectedPublications } },
+                { compare: "", target: { barcode: barcodeSearch } },
+            ]),
+        [
+            selectedMaterial,
+            selectedAuthor,
+            selectedCategory,
+            selectedPublisher,
+            selectedPublications,
+            barcodeSearch,
+            search,
+        ]
+    );
 
     const { data, isLoading } = useFetchPublications({
-        limit, page, search,
-        type: selectedPublications,
-        materialId: selectedMaterial !== 0 ? selectedMaterial : undefined,
-        authorId: selectedAuthor !== 0 ? selectedAuthor : undefined,
-        categoryId: selectedCategory !== 0 ? selectedCategory : undefined,
-        publisherId: selectedPublisher !== 0 ? selectedPublisher : undefined,
+        limit,
+        page,
+        ...filter,
     });
 
-    // const { data: libs } = useFetchLibrary({ groupId });
     const { data: categoryData } = useFetchCategory();
     const { data: materialData } = useFetchMaterial();
     const { data: authorData } = useFetchAuthor();
     const { data: publisherData } = useFetchPublisher();
     const { data: shelfData } = useFetchShelf();
-
 
     const mutationAdd = useAddPublications();
     const mutationEdit = useEditPublications();
@@ -86,6 +113,8 @@ const PublicationsPage = () => {
     };
 
     const handleViewDetails = (row: TPublications) => {
+        console.log(row);
+
         setPublicationsDetails(row);
         setOpenViewDetails(true);
     };
@@ -102,31 +131,27 @@ const PublicationsPage = () => {
             materialIds: values.materialIds.map((t: any) => t?._id),
             authorIds: values.authorIds.map((t: any) => t?._id),
             publisherIds: values.publisherIds.map((t: any) => t?._id),
-
         };
-        // console.log(payload);
-        if (selectedEdit) {
-            // console.log(selectedEdit);
 
+        if (selectedEdit) {
             mutationEdit.mutate(
                 { ...payload, _id: selectedEdit._id },
                 {
                     onSuccess: () => {
                         revalidate();
-                        toast.success('Chỉnh sửa thành công.');
+                        toast.success("Chỉnh sửa thành công.");
                         handleClose();
                     },
                 }
             );
 
             return;
-
         }
 
         mutationAdd.mutate(payload, {
             onSuccess: (data) => {
                 revalidate();
-                toast.success('Thêm thành công.');
+                toast.success("Thêm thành công.");
                 setOpenAddEdit(false);
             },
         });
@@ -142,7 +167,7 @@ const PublicationsPage = () => {
             mutationSoftDelete.mutate(publicationsToDelete._id, {
                 onSuccess: () => {
                     revalidate();
-                    toast.success('Xóa ấn phẩm thành công.');
+                    toast.success("Xóa ấn phẩm thành công.");
                     setOpenConfirmDialog(false);
                 },
             });
@@ -155,7 +180,7 @@ const PublicationsPage = () => {
 
     const handleChangeShareConnect = (row: TPublications, checked: boolean) => {
         if (!row.isPublic) {
-            toast.warn('Không thể thay đổi trạng thái liên thông vì chưa chia sẻ lên thư viện.');
+            toast.warn("Không thể thay đổi trạng thái liên thông vì chưa chia sẻ lên thư viện.");
             return;
         }
 
@@ -165,7 +190,7 @@ const PublicationsPage = () => {
             {
                 onSuccess: (data) => {
                     revalidate();
-                    toast.success('Cập nhật trạng thái thành công.');
+                    toast.success("Cập nhật trạng thái thành công.");
                 },
             }
         );
@@ -179,7 +204,7 @@ const PublicationsPage = () => {
             {
                 onSuccess: (data) => {
                     revalidate();
-                    toast.success('Cập nhật trạng thái thành công.');
+                    toast.success("Cập nhật trạng thái thành công.");
                 },
             }
         );
@@ -206,6 +231,10 @@ const PublicationsPage = () => {
         setSelectedPublisher(event.target.value);
     };
 
+    const handleBarcodeSearch = (value) => {
+        setBarcodeSearch(value)
+    };
+
     const columns: TColumn<TPublications>[] = useMemo(
         () => [
             {
@@ -229,19 +258,18 @@ const PublicationsPage = () => {
                 align: "left",
                 sxRow: { px: 3, maxWidth: 150 },
                 render: (row) => {
-                    const selectedType = typeOptions.find(option => option.value === row.type);
+                    const selectedType = typeOptions.find((option) => option.value === row.type);
 
-                    const chipColor = selectedType?.value === 'ấn phẩm cứng' ? '#007e43' : '#fa7d70';
+                    const chipColor =
+                        selectedType?.value === "ấn phẩm cứng" ? "#007e43" : "#fa7d70";
 
-                    return (
-                        selectedType ? (
-                            <Chip
-                                label={selectedType.label}
-                                style={{ backgroundColor: chipColor, color: '#fff' }}
-                                variant="filled"
-                            />
-                        ) : null
-                    );
+                    return selectedType ? (
+                        <Chip
+                            label={selectedType.label}
+                            style={{ backgroundColor: chipColor, color: "#fff" }}
+                            variant="filled"
+                        />
+                    ) : null;
                 },
             },
 
@@ -278,7 +306,9 @@ const PublicationsPage = () => {
                         <Switch
                             checked={row?.isLink}
                             value={row?.isLink}
-                            onChange={(event) => handleChangeShareConnect(row, event.target.checked)}
+                            onChange={(event) =>
+                                handleChangeShareConnect(row, event.target.checked)
+                            }
                         />
                     );
                 },
@@ -319,7 +349,12 @@ const PublicationsPage = () => {
                 },
             },
         ],
-        [handleEditPublications, handleOpenConfirmDialog, handleChangeShareConnect, handleChangePublic]
+        [
+            handleEditPublications,
+            handleOpenConfirmDialog,
+            handleChangeShareConnect,
+            handleChangePublic,
+        ]
     );
 
     const handleCheckedDelete = useCallback((row: TPublications, checked: boolean) => {
@@ -386,8 +421,6 @@ const PublicationsPage = () => {
 
     const initialValues = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {
-            console.log(selectedEdit);
-
             return {
                 name: selectedEdit.name,
                 barcode: selectedEdit.barcode,
@@ -401,7 +434,7 @@ const PublicationsPage = () => {
                 file: selectedEdit.file || "",
                 categoryIds: selectedEdit.categoryIds || [],
                 authorIds: selectedEdit.authorIds || [],
-                shelvesId: (selectedEdit.shelvesId as string) || null,
+                shelvesId: (selectedEdit.shelvesId as string) || "",
                 publisherIds: selectedEdit.publisherIds || [],
                 materialIds: selectedEdit.materialIds || [],
             };
@@ -447,13 +480,24 @@ const PublicationsPage = () => {
                     publisherOptions={publisherData?.data?.result || []}
                     shelfOptions={shelfData?.data?.result || []}
                     imageUrl={
-                        selectedEdit?.path ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}` : ""
+                        selectedEdit?.priviewImage
+                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.priviewImage}`
+                            : selectedEdit?.path
+                                ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
+                                : ""
                     }
                 />
             )}
 
             <MainCard>
-                <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
+                <Stack
+                    spacing={2}
+                    sx={{
+                        paddingLeft: { xs: 4, sm: 4 },
+                        paddingBottom: { xs: 2, sm: 2 },
+                        width: "100%",
+                    }}
+                >
                     <Box display="flex" flexWrap="wrap">
                         <Box>
                             <StyledButton
@@ -468,9 +512,16 @@ const PublicationsPage = () => {
                         </Box>
 
                         <Box>
-                            <Link to="/thu-vien/danh-sach-xoa-an-pham" style={{ textDecoration: 'none' }}>
+                            <Link
+                                to="/thu-vien/danh-sach-xoa-an-pham"
+                                style={{ textDecoration: "none" }}
+                            >
                                 <StyledButton
-                                    sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                    sx={{
+                                        background: "#de524a",
+                                        color: "white",
+                                        marginLeft: "10px",
+                                    }}
                                     size="small"
                                     startIcon={<IconTrash stroke={2} />}
                                     variant="contained"
@@ -482,87 +533,27 @@ const PublicationsPage = () => {
                     </Box>
                 </Stack>
 
-                <ActionsForm actions={actionMenus} />
+                <ActionsForm actions={actionMenus} barcode={true} barcodeSearch={barcodeSearch} handleBarcodeSearch={handleBarcodeSearch} />
 
-                <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2, md: 3 }, width: '100%', pr: 4 }}>
-                    <FormControl variant="outlined" sx={{ width: "90%", display: "flex", flexDirection: "row", gap: 2 }}>
-                        <Select
-                            labelId="publications-select"
-                            label="Loại ấn phẩm"
-                            value={selectedPublications}
-                            onChange={handlePublicationsFilterChange}
-                            input={<CustomInput size="small" label="Loại ấn phẩm" />}
-                        >
-                            <MenuItem value={0}>Tất cả loại ấn phẩm</MenuItem>
-                            {typeOptions?.map((item, index) => (
-                                <MenuItem key={index} value={item.value}>
-                                    {item.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-
-                        <Select
-                            labelId="material-select"
-                            label="Dạng học liệu"
-                            value={selectedMaterial}
-                            onChange={handleMaterialFilterChange}
-                            input={<CustomInput size="small" label="Dạng học liệu" />}
-                        >
-                            <MenuItem value={0}>Tất cả dạng học liệu</MenuItem>
-                            {materialData?.data?.result?.map((item, index) => (
-                                <MenuItem key={index} value={item._id}>
-                                    {item.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-
-                        <Select
-                            labelId="category-select"
-                            label="Lĩnh vực"
-                            value={selectedCategory}
-                            onChange={handleCategoryFilterChange}
-                            input={<CustomInput size="small" label="Lĩnh vực" />}
-                        >
-                            <MenuItem value={0}>Tất cả lĩnh vực</MenuItem>
-                            {categoryData?.data?.result?.map((item, index) => (
-                                <MenuItem key={index} value={item._id}>
-                                    {item.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-
-                        <Select
-                            labelId="author-select"
-                            label="Tác giả"
-                            value={selectedAuthor}
-                            onChange={handleAuthorFilterChange}
-                            input={<CustomInput size="small" label="Tác giả" />}
-                        >
-                            <MenuItem value={0}>Tất cả tác giả</MenuItem>
-                            {authorData?.data?.result?.map((item, index) => (
-                                <MenuItem key={index} value={item._id}>
-                                    {item.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-
-                        <Select
-                            labelId="publisher-select"
-                            label="Nhà xuất bản"
-                            value={selectedPublisher}
-                            onChange={handlePublisherFilterChange}
-                            input={<CustomInput size="small" label="Nhà xuất bản" />}
-                        >
-                            <MenuItem value={0}>Tất cả nhà xuất bản</MenuItem>
-                            {publisherData?.data?.result?.map((item, index) => (
-                                <MenuItem key={index} value={item._id}>
-                                    {item.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-
-                </Stack>
+                <FilterByItems
+                    selectedPublications={selectedPublications}
+                    handlePublicationsFilterChange={handlePublicationsFilterChange}
+                    typeOptions={typeOptions}
+                    selectedMaterial={selectedMaterial}
+                    handleMaterialFilterChange={handleMaterialFilterChange}
+                    materialData={materialData}
+                    selectedCategory={selectedCategory}
+                    handleCategoryFilterChange={handleCategoryFilterChange}
+                    categoryData={categoryData}
+                    selectedAuthor={selectedAuthor}
+                    handleAuthorFilterChange={handleAuthorFilterChange}
+                    authorData={authorData}
+                    selectedPublisher={selectedPublisher}
+                    handlePublisherFilterChange={handlePublisherFilterChange}
+                    publisherData={publisherData}
+                    barcodeSearch={barcodeSearch}
+                    handleBarcodeSearch={handleBarcodeSearch}
+                />
 
                 <TableList
                     checked={checkedDelete}

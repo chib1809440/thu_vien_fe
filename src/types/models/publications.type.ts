@@ -26,16 +26,17 @@ export type TPublications = TEntityAbstract & {
     materialIds?: TMaterial[] | null;
     file?: any;
     path?: string;
+    priviewImage?: string;
 };
 
-export type TPublicationsCreate = Partial<Pick<TPublications, "isPublic" | "isLink" | "name" | "barcode" | "description" | "note" | "quantity" | "shelvesQuantity" | "status" | "type" | "file" | "path">> & {
+export type TPublicationsCreate = Partial<Pick<TPublications, "isPublic" | "isLink" | "name" | "barcode" | "description" | "note" | "quantity" | "shelvesQuantity" | "status" | "type" | "file">> & {
     categoryIds?: string[] | TCategory[] | null;
     authorIds?: string[] | TAuthor[] | null;
     shelvesId?: string | null;
     publisherIds?: string[] | TPublisher[] | null;
     materialIds?: string[] | TMaterial[] | null;
 };
-export type TPublicationsEdit = Partial<Pick<TPublications, "isPublic" | "isLink" | "name" | "barcode" | "description" | "note" | "quantity" | "shelvesQuantity" | "status" | "type" | "file" | "path">> & {
+export type TPublicationsEdit = Partial<Pick<TPublications, "isPublic" | "isLink" | "name" | "barcode" | "description" | "note" | "quantity" | "shelvesQuantity" | "status" | "type" | "file">> & {
     _id: string;
     categoryIds?: string[] | TCategory[] | null;
     authorIds?: string[] | TAuthor[] | null;

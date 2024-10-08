@@ -31,6 +31,8 @@ type Props<Type> = {
     helperText?: ReactNode | string;
     onChange?: (value: Type[]) => void;
     handleAdd?: () => void;
+    limitTags?: number;
+    limitText?: number;
 };
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -48,6 +50,8 @@ const AutocompleteForm = <Type extends Record<string, any>>({
     required,
     onChange,
     handleAdd,
+    limitTags = LIMIT_TAGS,
+    limitText = LIMIT_TEXT,
 }: Props<Type>) => {
     return (
         <FormControl
@@ -62,28 +66,28 @@ const AutocompleteForm = <Type extends Record<string, any>>({
                 <Typography sx={{ fontWeight: "bold", mb: handleAdd ? 0 : 1.5 }}>
                     {label} {required && <span className="required_text">(*)</span>}
                 </Typography>
-                {
-                    handleAdd && (
-                        <Tooltip title="Thêm mới" arrow placement="top">
-                            <IconButton
-                                size="small"
-                                onClick={handleAdd}
-                                sx={{ color: "#2595f1", ml: 1, p: 1.5 }}
-                            >
-                                <IconPlus size="18" />
-                            </IconButton>
-                        </Tooltip>
-                    )}
+                {handleAdd && (
+                    <Tooltip title="Thêm mới" arrow placement="top">
+                        <IconButton
+                            size="small"
+                            onClick={handleAdd}
+                            sx={{ color: "#2595f1", ml: 1, p: 1.5 }}
+                        >
+                            <IconPlus size="18" />
+                        </IconButton>
+                    </Tooltip>
+                )}
             </Box>
 
             <Autocomplete
                 multiple
-                limitTags={LIMIT_TAGS}
+                limitTags={limitTags}
                 id="multiple-limit-tags"
                 options={options}
                 value={value}
                 onChange={(_, value) => onChange?.(value)}
                 getOptionLabel={(option) => option?.[keyLabel]}
+                isOptionEqualToValue={(option, value) => option?.[keyLabel] === value?.[keyLabel]}
                 disableCloseOnSelect
                 renderInput={(params) => <TextField {...params} placeholder={placeholder} />}
                 fullWidth
@@ -93,10 +97,10 @@ const AutocompleteForm = <Type extends Record<string, any>>({
                     return (
                         <Typography variant="body2">
                             {value
-                                .slice(0, LIMIT_TAGS)
+                                .slice(0, limitTags)
                                 .map((option, _) =>
-                                    option?.[keyLabel].length > LIMIT_TEXT
-                                        ? option?.[keyLabel].slice(0, LIMIT_TEXT) + "..."
+                                    option?.[keyLabel].length > limitText
+                                        ? option?.[keyLabel].slice(0, limitText) + "..."
                                         : option?.[keyLabel]
                                 )
                                 .join(", ")}
@@ -106,7 +110,7 @@ const AutocompleteForm = <Type extends Record<string, any>>({
                                 sx={{ display: "inline" }}
                                 fontWeight="bold"
                             >
-                                {numTags > LIMIT_TAGS && ` +${numTags - LIMIT_TAGS} đã chọn`}
+                                {numTags > limitTags && ` +${numTags - limitTags} đã chọn`}
                             </Typography>
                         </Typography>
                     );

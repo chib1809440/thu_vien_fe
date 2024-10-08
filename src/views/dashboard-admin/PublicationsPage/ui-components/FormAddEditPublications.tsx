@@ -79,6 +79,14 @@ const schema = yup.object().shape({
             .nullable(),
         otherwise: yup.array().notRequired(),
     }),
+    file: yup.mixed().when("type", {
+        is: "ấn phẩm mềm",
+        then: yup
+            .mixed()
+            .required("Vui lòng upload file")
+            .nullable(),
+        otherwise: yup.mixed().notRequired(),
+    }),
 });
 
 const FormAddEditPublications: FC<Props> = ({
@@ -109,7 +117,6 @@ const FormAddEditPublications: FC<Props> = ({
     },
     isFetching = false,
     isEditMode = false,
-
 }) => {
     const formik = useFormik<TPublicationsCreate>({
         initialValues,
@@ -231,14 +238,12 @@ const FormAddEditPublications: FC<Props> = ({
     }, [typeToAdd]);
 
     const handleTypeChange = (e) => {
-
         const selectedType = e.target.value;
         setFieldValue("type", selectedType);
         setFieldValue("status", selectedType === "ấn phẩm mềm" ? "có sẵn" : "không có sẵn");
 
         // Truyền giá trị typeHardPublications vào Uploadimage
         setTypeHardPublications(selectedType === "ấn phẩm cứng");
-        
     };
 
     const showQuantityInput =
@@ -265,7 +270,6 @@ const FormAddEditPublications: FC<Props> = ({
         const reader = new FileReader();
         reader.onload = (event) => {
             setDefaultImage(event.target?.result as string);
-
         };
         reader.readAsDataURL(file);
         await setFieldValue("file", file);
@@ -298,12 +302,38 @@ const FormAddEditPublications: FC<Props> = ({
 
                 <DialogContent>
                     <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: { xs: "column", md: "row" },
+                                gap: 2,
+                                width: "100%",
+                                mt: 2,
+                            }}
+                        >
+                            <Uploadimage
+                                typeHardPublications={typeHardPublications}
+                                ref={imageRef}
+                                defaultImage={imageUrl || defaultImage}
+                                onChange={handleChangeImage}
+                            />
 
-                        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, width: "100%", mt: 2 }}>
-                            <Uploadimage typeHardPublications={typeHardPublications} ref={imageRef} defaultImage={imageUrl || defaultImage} onChange={handleChangeImage} />
-
-                            <Box sx={{ display: "flex", flexDirection: "column", width: "100%", ml: { xs: 0, md: 2, xl: 5 } }}>
-                                <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, width: "100%", gap: { xs: 0, md: 2, xl: 2 } }}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    width: "100%",
+                                    ml: { xs: 0, md: 2, xl: 5 },
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: { xs: "column", md: "row" },
+                                        width: "100%",
+                                        gap: { xs: 0, md: 2, xl: 2 },
+                                    }}
+                                >
                                     <InputForm
                                         label="Tên ấn phẩm"
                                         placeholder="Nhập tên ấn phẩm"
@@ -324,7 +354,14 @@ const FormAddEditPublications: FC<Props> = ({
                                     />
                                 </Box>
 
-                                <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, width: "100%", gap: { xs: 0, md: 2, xl: 2 } }}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: { xs: "column", md: "row" },
+                                        width: "100%",
+                                        gap: { xs: 0, md: 2, xl: 2 },
+                                    }}
+                                >
                                     <SelectForm
                                         label="Chọn loại ấn phẩm"
                                         options={typeOptions}
@@ -347,7 +384,13 @@ const FormAddEditPublications: FC<Props> = ({
                             </Box>
                         </Box>
 
-                        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: 0, md: 2, xl: 2 } }}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: { xs: "column", md: "row" },
+                                gap: { xs: 0, md: 2, xl: 2 },
+                            }}
+                        >
                             <AutocompleteForm
                                 label="Chọn dạng học liệu"
                                 required={values.type === "ấn phẩm cứng"}
@@ -358,6 +401,8 @@ const FormAddEditPublications: FC<Props> = ({
                                 error={touched.materialIds && Boolean(errors.materialIds)}
                                 helperText={touched.materialIds && errors.materialIds}
                                 handleAdd={handleAddMaterial}
+                                limitTags={1}
+                                limitText={10}
                             />
 
                             <AutocompleteForm
@@ -370,6 +415,8 @@ const FormAddEditPublications: FC<Props> = ({
                                 error={touched.categoryIds && Boolean(errors.categoryIds)}
                                 helperText={touched.categoryIds && errors.categoryIds}
                                 handleAdd={handleAddCategory}
+                                limitTags={1}
+                                limitText={10}
                             />
 
                             <AutocompleteForm
@@ -382,6 +429,8 @@ const FormAddEditPublications: FC<Props> = ({
                                 error={touched.authorIds && Boolean(errors.authorIds)}
                                 helperText={touched.authorIds && errors.authorIds}
                                 handleAdd={handleAddAuthor}
+                                limitTags={1}
+                                limitText={10}
                             />
 
                             <AutocompleteForm
@@ -394,6 +443,8 @@ const FormAddEditPublications: FC<Props> = ({
                                 error={touched.publisherIds && Boolean(errors.publisherIds)}
                                 helperText={touched.publisherIds && errors.publisherIds}
                                 handleAdd={handleAddPublisher}
+                                limitTags={1}
+                                limitText={10}
                             />
                         </Box>
 
@@ -463,7 +514,9 @@ const FormAddEditPublications: FC<Props> = ({
                             value={values?.isLink ?? false}
                             onChange={(checked) => {
                                 if (!values?.isPublic) {
-                                    toast.warn('Không thể thay đổi trạng thái liên thông vì chưa chia sẻ lên thư viện.');
+                                    toast.warn(
+                                        "Không thể thay đổi trạng thái liên thông vì chưa chia sẻ lên thư viện."
+                                    );
                                     return;
                                 }
                                 setFieldValue("isLink", checked);
@@ -501,4 +554,4 @@ const FormAddEditPublications: FC<Props> = ({
     );
 };
 
-export default FormAddEditPublications; 
+export default FormAddEditPublications;

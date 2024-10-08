@@ -343,3 +343,18 @@ img {
   border-color: #3f51b5;
   box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.2);
 }
+select.react-datepicker__month-select {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    border-radius: 7px;
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+select.react-datepicker__year-select {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    border-radius: 7px;
+    border: 1px solid #ccc;
+    padding: 5px;
+
+}

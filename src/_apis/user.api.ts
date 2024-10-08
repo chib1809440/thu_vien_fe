@@ -32,6 +32,11 @@ export const getUserById = async (id: string): Promise<EntityResponse<User>> => 
     const response = await axios.get<EntityResponse<User>>(`${User_API}/${id}`);
     return response.data;
 };
+// Read by ID
+export const getUserByBarCode = async (barCode: string): Promise<EntityResponse<User>> => {
+    const response = await axios.get<EntityResponse<User>>(`${User_API}/barcode/${barCode}`);
+    return response.data;
+};
 
 // Update
 export const updateUser = async (id: string, formData: FormData): Promise<EntityResponse<User>> => {

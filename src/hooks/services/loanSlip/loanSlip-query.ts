@@ -5,7 +5,7 @@ import { TLoanSlip } from "../../../types/models/loanSlip.type";
 import { getQueryKeys } from "../../../utils/object";
 import { GET_LOANSLIP, GET_LOANSLIP_DELETED, GET_LOANSLIP_DELETED_ID, GET_LOANSLIP_ID } from "./loanSlip-key";
 
-export const useFetchLoanSlips = (params?: TFilter) => {
+export const useFetchLoanSlip = (params?: TFilter) => {
     return useQuery({
         queryKey: getQueryKeys({ key: GET_LOANSLIP, ...params }),
         queryFn: async () => {
@@ -38,7 +38,7 @@ export const useFetchLoanSlipById = (_id: string) => {
 };
 
 // get danh sách xóa mềm
-export const useFetchLoanSlipsDeleteList = (params?: TFilter) => {
+export const useFetchLoanSlipDeleteList = (params?: TFilter) => {
     return useQuery({
         queryKey: getQueryKeys({ key: GET_LOANSLIP_DELETED, ...params }),
         queryFn: async () => {
@@ -48,7 +48,7 @@ export const useFetchLoanSlipsDeleteList = (params?: TFilter) => {
     })
 }
 
-export const useReFetchLoanSlipsDeleteList = () => {
+export const useReFetchLoanSlipDeleteList = () => {
     const queryClient = useQueryClient();
 
     const revalidate = (params?: TFilter) => {

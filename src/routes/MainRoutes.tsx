@@ -10,6 +10,7 @@ import MaterialPage from "../views/dashboard-admin/MaterialPage";
 import CategoryPage from "../views/dashboard-admin/CategoryPage";
 import AuthorPage from "../views/dashboard-admin/AuthorPage";
 import AuthorDeleteListPage from "../views/dashboard-admin/AuthorPage/AuthorDeleteListPage";
+import LoanSlipDeleteListPage from "../views/dashboard-admin/LoanSlipPage/LoanSlipDeleteListPage";
 import CategoryDeleteListPage from "../views/dashboard-admin/CategoryPage/CategoryDeleteListPage";
 import PublisherPage from "../views/dashboard-admin/PublisherPage";
 import PublisherDeleteListPage from "../views/dashboard-admin/PublisherPage/PublisherDeleteListPage";
@@ -63,8 +64,8 @@ const DetailsPublicationsPage = Loadable(
 const DetailsDirectoryPage = Loadable(
   lazy(() => import("../views/dashboard-admin/DetailsDirectory"))
 );
-const BorrowPage = Loadable(
-  lazy(() => import("../views/dashboard-admin/BorrowToPayPage/BorrowPage"))
+const LoanSlipPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/LoanSlipPage"))
 );
 const PayPage = Loadable(
   lazy(() => import("../views/dashboard-admin/BorrowToPayPage/PayPage"))
@@ -241,7 +242,11 @@ const MainRoutes = {
 
     {
       path: "/quan-ly-muon-tra/phieu-muon",
-      element: <BorrowPage />,
+      element: <LoanSlipPage />,
+    },
+    {
+      path: "/quan-ly-muon-tra/phieu-muon/danh-sach-xoa-phieu-muon",
+      element: <LoanSlipDeleteListPage />,
     },
     {
       path: "/quan-ly-muon-tra/phieu-tra",

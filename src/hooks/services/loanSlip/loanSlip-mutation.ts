@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import loanSlipsService from "../../../_apis/services/loanSlip.service";
 import { TLoanSlip, TLoanSlipCreate, TLoanSlipEdit } from "../../../types/models/loanSlip.type";
 
-export const useAddLoanSlips = () => {
+export const useAddLoanSlip = () => {
     return useMutation({
         mutationFn: async (data: TLoanSlipCreate) => {
             return await loanSlipsService.create<TLoanSlipCreate, TLoanSlip>(data);
@@ -14,7 +14,7 @@ export const useAddLoanSlips = () => {
     })
 }
 
-export const useEditLoanSlips = () => {
+export const useEditLoanSlip = () => {
     return useMutation({
         mutationFn: async (data: TLoanSlipEdit) => {
             return await loanSlipsService.update<TLoanSlipEdit, TLoanSlip>(data, data._id)
@@ -25,7 +25,7 @@ export const useEditLoanSlips = () => {
     })
 }
 
-export const useDeleteLoanSlips = () => {
+export const useDeleteLoanSlip = () => {
     return useMutation({
         mutationFn: async (id: string) => {
             return await loanSlipsService.delete<TLoanSlip>(id);
@@ -36,7 +36,7 @@ export const useDeleteLoanSlips = () => {
     });
 };
 
-export const useDeleteManyLoanSlips = () => {
+export const useDeleteManyLoanSlip = () => {
     return useMutation({
         mutationFn: async (ids: string[]) => {
             return await loanSlipsService.deleteMultiple<TLoanSlip>(ids);
@@ -48,7 +48,7 @@ export const useDeleteManyLoanSlips = () => {
 };
 
 // xóa mềm
-export const useDeleteSoftLoanSlips = () => {
+export const useDeleteSoftLoanSlip = () => {
     return useMutation({
         mutationFn: async (_id: string) => {
             return await loanSlipsService.softDelete<TLoanSlip>(_id)
@@ -59,7 +59,7 @@ export const useDeleteSoftLoanSlips = () => {
     })
 };
 
-export const useDeleteSoftManyLoanSlips = () => {
+export const useDeleteSoftManyLoanSlip = () => {
     return useMutation({
         mutationFn: async (ids: string[]) => {
             return await loanSlipsService.softDeleteMultiple<TLoanSlip>(ids)
@@ -71,7 +71,7 @@ export const useDeleteSoftManyLoanSlips = () => {
 };
 
 // restore
-export const useRestoreManyLoanSlips = () => {
+export const useRestoreManyLoanSlip = () => {
     return useMutation({
         mutationFn: async (ids: string[]) => {
             return await loanSlipsService.restoreMany<TLoanSlip>(ids)

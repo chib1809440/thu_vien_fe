@@ -12,11 +12,13 @@ type Props = {
     isFetching?: boolean;
     initialValues: TLibraryCreate;
     isEditMode?: boolean;
-
 };
 
 const schema = yup.object().shape({
     name: yup.string().required("Vui lòng nhập tên"),
+    facebook: yup.string().url("Vui lòng nhập đúng định dạng facebook"),
+    email: yup.string().email("Vui lòng nhập đúng định dạng email"),
+    phoneNumber: yup.string().matches(/^[0-9]+$/, "Vui lòng nhập đúng định dạng số điện thoại"),
 });
 
 const FormAddEditLibrary: FC<Props> = ({
@@ -29,7 +31,7 @@ const FormAddEditLibrary: FC<Props> = ({
         managementAgency: "",
         phoneNumber: "",
         email: "",
-        facebook: ""
+        facebook: "",
     },
     isFetching = false,
     isEditMode = false,

@@ -1,88 +1,196 @@
 import { CardMedia, Grid, Input, InputLabel, Typography } from "@mui/material";
-import IconEmail from '../../../assets/images/contact/email.svg';
-import IconFacebook from '../../../assets/images/contact/facebook.svg';
-import IconMap from '../../../assets/images/contact/map.svg';
-import IconZalo from '../../../assets/images/contact/zalo.svg';
-import { useUserList } from "../../../hooks/react-query/userData";
+import { useMemo, useState } from "react";
+import IconEmail from "../../../assets/images/contact/email.svg";
+import IconFacebook from "../../../assets/images/contact/facebook.svg";
+import { useAuth } from "../../../contexts/JWTContext";
+import {
+    useFetchLibraryById,
+    useReFetchLibrary,
+    useReFetchLibraryById,
+} from "../../../hooks/services/library/library-query";
 import ButtonGD from "../../../ui-component/ButtonGD";
 import MainCard from "../../../ui-component/cards/MainCard";
-import { useParams } from "react-router-dom";
-
+import { useEditLibrary } from "../../../hooks/services/library/library-mutation";
+import { TLibrary, TLibraryCreate } from "../../../types/models/library.type";
+import { toast } from "react-toastify";
+import FormAddEditLibrary from "../LibraryPage/ui-components/FormAddEditLibrary";
+import { display } from "@mui/system";
 
 const LibInformationPage = () => {
-    const { libraryId } = useParams(); // Lấy ID từ params
-    const { data: users } = useUserList();
-    
+    const { user } = useAuth();
+    const mutationUpdate = useEditLibrary();
+    const revalidate = useReFetchLibrary();
+    const revalidateById = useReFetchLibraryById();
+    const [openAddEdit, setOpenAddEdit] = useState(false);
+
+    const libraryId = useMemo(() => {
+        if (!user) return null;
+
+        const _user = { ...user } as any;
+
+        return _user?.data?.libraryId;
+    }, [user]);
+
+    const { data: libraryInfo } = useFetchLibraryById(libraryId);
+
+    const handleClose = () => {
+        setOpenAddEdit(false);
+    };
+    const handleSubmit = (values: TLibraryCreate) => {
+        if (libraryInfo) {
+            mutationUpdate.mutate(
+                { ...values, _id: libraryInfo._id },
+                {
+                    onSuccess: () => {
+                        revalidateById(libraryInfo._id);
+                        revalidate();
+                        toast.success("Chỉnh sửa thành công.");
+                        handleClose();
+                    },
+                }
+            );
+            return;
+        }
+    };
+
+    const handleClickUpdate = () => {
+        setOpenAddEdit(true);
+    };
+
+    const initialValues = useMemo((): TLibraryCreate => {
+        if (libraryInfo) {
+            return {
+                name: libraryInfo.name,
+                address: libraryInfo.address,
+                managementAgency: libraryInfo.managementAgency,
+                phoneNumber: libraryInfo.phoneNumber,
+                email: libraryInfo.email,
+                facebook: libraryInfo.facebook,
+            };
+        }
+
+        return {
+            name: "",
+            address: "",
+            managementAgency: "",
+            phoneNumber: "",
+            email: "",
+            facebook: "",
+        };
+    }, [libraryInfo]);
 
     return (
         <>
+            {openAddEdit && (
+                <FormAddEditLibrary
+                    open={openAddEdit}
+                    onClose={handleClose}
+                    initialValues={initialValues}
+                    onSubmit={handleSubmit}
+                    isEditMode={true}
+                />
+            )}
+
             <MainCard>
-                <Grid md={12} container justifyContent='flex-end'>
-                    {/* {!isUp ? */}
-                    <ButtonGD title="Cập nhật" />
-                    {/* : */}
-                    {/* <ButtonGD onClick={() => handlClickUp()} title="Xác nhận" /> */}
-                    {/* } */}
+                <Grid md={12} container justifyContent="flex-end">
+                    <ButtonGD title="Cập nhật" onClick={handleClickUpdate} />
                 </Grid>
-                <Grid container md={12} justifyContent='space-around'>
-                    <Grid md={3} container >
+                <Grid container md={12} justifyContent="space-around">
+                    <Grid md={3} container>
                         <Grid lg={12}>
-                            <img style={{ borderRadius: '5px' }} width='256px' height='256px' src="../../logo.png" />
+                            <img
+                                style={{ borderRadius: "5px" }}
+                                width="256px"
+                                height="256px"
+                                src="../../logo.png"
+                            />
                             {/* {preview === '' ? <img style={{ borderRadius: '5px' }} width='256px' height='256px' src="../../logo.png" /> : <img style={{ borderRadius: '5px' }} width='256px' height='auto' src={preview} />} */}
                         </Grid>
                         <Grid lg={12} container gap={2}>
-                            <InputLabel sx={{ fontWeight: '700', fontSize: '16px' }} id="upload-photo"> Chọn hình ảnh
-                                <Input type="file" name="photo" id="upload-photo" sx={{ display: 'none' }}
-                                    inputProps={{ accept: 'image/*' }}
-                                // onChange={handleImageInput}
+                            <InputLabel
+                                sx={{ fontWeight: "700", fontSize: "16px" }}
+                                id="upload-photo"
+                            >
+                                {" "}
+                                Chọn hình ảnh
+                                <Input
+                                    type="file"
+                                    name="photo"
+                                    id="upload-photo"
+                                    sx={{ display: "none" }}
+                                    inputProps={{ accept: "image/*" }}
+                                    // onChange={handleImageInput}
                                 />
                             </InputLabel>
                             {/* {preview !== '' &&  onClick={handlClickUpLogo} */}
-                            <ButtonGD title="Xác nhận" ></ButtonGD>
+                            {/* <ButtonGD title="Xác nhận"></ButtonGD> */}
                             {/* } */}
                         </Grid>
                     </Grid>
-                    <Grid md={8} container justifyContent='flex-start' alignItems='flex-start'>
-                        <Grid container justifyContent='space-between'>
+                    <Grid md={8} container justifyContent="flex-start" alignItems="flex-start">
+                        <Grid container justifyContent="space-between">
                             <Grid md={8}>
-                                <Typography mt={2} textAlign='left' variant='h4'>Cơ quan quản lý: </Typography>
-                                <Typography mt={2} textAlign='left' variant='h4'>Tên trường: </Typography>
-                                <Typography mt={2} textAlign='left' variant='h4'>Địa chỉ: </Typography>
-                                <Typography mt={2} textAlign='left' variant='h4'>Điện thoại: </Typography>
-                                <Typography mt={2} textAlign='left' variant='h4'>Hotline: </Typography>
+                                <Typography mt={2} textAlign="left" variant="h4">
+                                    Cơ quan quản lý:
+                                    <Typography component="span" textTransform={"capitalize"}>{` ${
+                                        libraryInfo?.managementAgency || ""
+                                    }`}</Typography>
+                                </Typography>
+                                <Typography mt={2} textAlign="left" variant="h4">
+                                    Tên trường:
+                                    <Typography component="span" textTransform={"capitalize"}>{` ${
+                                        libraryInfo?.name || ""
+                                    }`}</Typography>
+                                </Typography>
+                                <Typography mt={2} textAlign="left" variant="h4">
+                                    Địa chỉ:
+                                    <Typography component="span" textTransform={"capitalize"}>{` ${
+                                        libraryInfo?.address || ""
+                                    }`}</Typography>
+                                </Typography>
+                                <Typography mt={2} textAlign="left" variant="h4">
+                                    Điện thoại:{` ${libraryInfo?.phoneNumber || ""}`}
+                                </Typography>
+                                <Typography mt={2} textAlign="left" variant="h4">
+                                    Hotline:{` ${libraryInfo?.phoneNumber || ""}`}
+                                </Typography>
                             </Grid>
                             <Grid md={4}>
-                                <Grid container alignItems='center' justifyContent='flex-end'>
-                                    {/* <Typography variant='h5'><a href={props.dataContact?.facebookContact} target="_blank" rel="noreferrer">{gioiHanChuoi(props.dataContact?.facebookContact || '')}</a></Typography> */}
-                                    <CardMedia
-                                        component="img"
-                                        image={IconFacebook}
-                                        sx={{ width: 40, height: 40 }}
-                                    />
+                                <Grid container alignItems="center" justifyContent="flex-end">
+                                    {libraryInfo?.facebook && (
+                                        <a
+                                            href={libraryInfo?.facebook}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                        >
+                                            <CardMedia
+                                                component="img"
+                                                image={IconFacebook}
+                                                sx={{ width: 40, height: 40 }}
+                                            />
+                                        </a>
+                                    )}
                                 </Grid>
-                                <Grid container alignItems='center' justifyContent='flex-end'>
-                                    {/* <Typography variant='h5'><a href={props.dataContact?.zaloContact} target="_blank" rel="noreferrer">{gioiHanChuoi(props.dataContact?.zaloContact || '')}</a></Typography> */}
-                                    <CardMedia
-                                        component="img"
-                                        image={IconZalo}
-                                        sx={{ width: 40, height: 40 }}
-                                    />
-                                </Grid>
-                                <Grid container alignItems='center' justifyContent='flex-end'>
-                                    {/* <Typography variant='h5'><a href={props.dataContact?.urlGoogleMap} target="_blank" rel="noreferrer">{gioiHanChuoi(props.dataContact?.urlGoogleMap || '')}</a></Typography> */}
-                                    <CardMedia
-                                        component="img"
-                                        image={IconMap}
-                                        sx={{ width: 40, height: 40 }}
-                                    />
-                                </Grid>
-                                <Grid container alignItems='center' justifyContent='flex-end'>
-                                    {/* <Typography variant='h5'><a href={props.dataContact?.emailContact} target="_blank" rel="noreferrer">{gioiHanChuoi(props.dataContact?.emailContact || '')}</a></Typography> */}
-                                    <CardMedia
-                                        component="img"
-                                        image={IconEmail}
-                                        sx={{ width: 40, height: 40 }}
-                                    />
+                                <Grid container alignItems="center" justifyContent="flex-end">
+                                    {libraryInfo?.email && (
+                                        <a
+                                            href={libraryInfo?.email}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                            }}
+                                        >
+                                            {libraryInfo?.email}
+                                            <CardMedia
+                                                component="img"
+                                                image={IconEmail}
+                                                sx={{ width: 40, height: 40, ml: 1 }}
+                                            />
+                                        </a>
+                                    )}
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -91,6 +199,6 @@ const LibInformationPage = () => {
             </MainCard>
         </>
     );
-}
+};
 
 export default LibInformationPage;

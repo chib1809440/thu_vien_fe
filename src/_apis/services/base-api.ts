@@ -11,7 +11,10 @@ class BaseApi {
         this._endpoint = endpoint;
         this.httpClient = axiosServices;
     }
-
+    // Getter method to access httpClient
+    public getHttpClient(): AxiosInstance {
+        return this.httpClient;
+    }
     // Methods
     public async getAll<DynamicType>(params?: TFilter) {
         const response = await this.httpClient.get(this.endpoint, {

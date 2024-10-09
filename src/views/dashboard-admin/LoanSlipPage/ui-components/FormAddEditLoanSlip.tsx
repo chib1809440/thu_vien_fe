@@ -1,6 +1,6 @@
-import { Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormHelperText, Grid, TextField, Typography } from "@mui/material";
+import { Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, Table, TableBody, TableContainer, TableHead, TextField, Typography } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import * as yup from "yup";
 import InputForm from "../../../../components/custom/form/InputForm";
 import SwitchForm from "../../../../components/custom/form/SwitchForm";
@@ -12,6 +12,55 @@ import useDebounce, { searchDelay } from "../../../../hooks/useDebounce";
 import { getUserByBarCode } from "../../../../_apis/user.api";
 import { EntityResponse } from "../../../../interfaces/entityResponse";
 import { User } from "../../../../interfaces/user";
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import { styled } from '@mui/material/styles';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import { TPublications } from "../../../../types/models/publications.type";
+import { positions } from "@mui/system";
+import publicationsService from "../../../../_apis/services/publications.service";
+import useDebounceArray from "../../../../hooks/useDebounceArray";
+import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+        backgroundColor: theme.palette.common.black,
+        color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+        fontSize: 14,
+    },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    '&:nth-of-type(odd)': {
+        backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    '&:last-child td, &:last-child th': {
+        border: 0,
+    },
+}));
+
+function createData(
+    name: string,
+    calories: number,
+    fat: number,
+    carbs: number,
+    protein: number,
+) {
+    return { name, calories, fat, carbs, protein };
+}
+
+type CreatePublication = {
+    publicationId: string;
+    name: string;
+    quantityLoan: number;
+    quantity: number,
+    shelvesQuantity: number,
+    position: string;
+    barcode: string;
+};
 
 type Props = {
     open: boolean;
@@ -24,9 +73,8 @@ type Props = {
 };
 
 const schema = yup.object().shape({
-    name: yup
+    note: yup
         .string()
-        .required("Vui lòng nhập tên")
 });
 
 const FormAddEditLoanSlip: FC<Props> = ({
@@ -48,7 +96,18 @@ const FormAddEditLoanSlip: FC<Props> = ({
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
             if (onSubmit) {
-                onSubmit(values, resetForm);
+                const createLoanSlip: TLoanSlipCreate = {
+                    note: values.note,
+                    userId: userData?.data?.result._id,
+                    borrowedDay: borrowedDay.toDateString(),
+                    returnDay: returnDay.toDateString(),
+                    isPrint: false,
+                    receiptDate: new Date().toDateString(),
+                    status: 'duyệt',
+                    publications: publications
+
+                }
+                onSubmit(createLoanSlip, resetForm);
             }
         },
     });
@@ -59,9 +118,21 @@ const FormAddEditLoanSlip: FC<Props> = ({
     );
     const [borrowedDay, setBorrowedDay] = useState(new Date());
     const [returnDay, setReturnDay] = useState(new Date());
-    const [barCodeUserId, setbarCodeUserId] = useState<string>('');
+    const [barcodeUserId, setbarcodeUserId] = useState<string>('');
+    const [searchBarCode, setSearchBarCode] = useState<string>('');
     const [userData, setUserData] = useState<EntityResponse<User>>(null);
-    const debouncedBarCodeUserId = useDebounce(barCodeUserId, searchDelay);
+    const [publications, setPublications] = useState<CreatePublication[]>([
+        {
+            name: '',
+            publicationId: '',
+            position: '',
+            quantityLoan: 1,
+            quantity: 0,
+            shelvesQuantity: 0,
+            barcode: '',
+        },
+    ]);
+    const debouncedBarCodeUserId = useDebounce(barcodeUserId, 3000);
     useEffect(() => {
         if (debouncedBarCodeUserId) {
             // Chỉ gọi API khi có giá trị barcode
@@ -76,6 +147,90 @@ const FormAddEditLoanSlip: FC<Props> = ({
             fetchUser();
         }
     }, [debouncedBarCodeUserId]);
+    const handleBarCodeChange = (index: number, newBarCode: string) => {
+        const updatedPublications = [...publications];
+        updatedPublications[index].barcode = newBarCode;
+        setSearchBarCode(newBarCode + ' ' + index);
+        setPublications(updatedPublications);
+    };
+    // Use custom hook to debounce array of barcodes
+    const debouncedBarcode = useDebounce(searchBarCode, 500);;
+    useEffect(() => {
+        if (debouncedBarcode) {
+            const fetchPublicationByBarCode = async () => {
+                try {
+                    const barcode = debouncedBarcode.split(' ')[0];
+                    const index = Number(debouncedBarcode.split(' ')[1]);
+                    const result = await publicationsService.getByBarcode<TPublications>(barcode);
+                    const publicationData = result.data.result; // Assuming result.data.result contains the publication info
+                    if (publicationData) {
+                        setPublications((prevPublications) => {
+                            // Check if the barcode already exists in the publications state
+                            const existingPublication = prevPublications.find(
+                                (pub) => pub.publicationId === publicationData._id
+                            );
+
+                            if (existingPublication) {
+                                // If it exists, update the quantityLoan
+                                let newPublications = [...publications];
+                                newPublications[index] = {
+                                    ...newPublications[index],
+                                    name: '', // Set name to empty string
+                                    barcode: '' // Set name to empty string
+                                };
+                                newPublications = newPublications.map((pub) =>
+                                    pub.publicationId === publicationData._id
+                                        ? { ...pub, quantityLoan: pub.quantityLoan + 1 } // Increment the quantityLoan
+                                        : pub
+                                );
+                                return newPublications
+                            } else {
+                                let newPublications = [...publications];
+                                newPublications = newPublications.map((pub) =>
+                                    pub.barcode === publicationData.barcode
+                                        ? { name: publicationData.name, publicationId: publicationData._id, quantityLoan: 1, position: '', barcode: publicationData.barcode, quantity: publicationData.quantity, shelvesQuantity: publicationData.shelvesQuantity } // Increment the quantityLoan
+                                        : pub
+                                );
+                                newPublications.push({
+                                    name: '',
+                                    publicationId: '',
+                                    position: '',
+                                    quantityLoan: 1,
+                                    quantity: 0,
+                                    shelvesQuantity: 0,
+                                    barcode: '',
+                                },)
+                                return newPublications;
+                            }
+                        });
+                    }
+                    setSearchBarCode('');
+                } catch (error) {
+                    console.error('Error fetching publication data:', error);
+                }
+            };
+
+            fetchPublicationByBarCode();
+        }
+    }, [debouncedBarcode]);
+    console.log(publications);
+
+    const barcodeUserIdRef = useRef(null);
+
+    useEffect(() => {
+        // Focus the input field on mount
+        if (barcodeUserIdRef.current) {
+            barcodeUserIdRef.current.focus();
+        }
+    }, []);
+    const lastInputRef = useRef<HTMLInputElement | null>(null); // Reference for the last input
+
+    // Focus the last input field when the component mounts or updates
+    useEffect(() => {
+        if (lastInputRef.current) {
+            lastInputRef.current.focus();
+        }
+    }, [publications]);
     return (
         <FormikProvider value={formik}>
             <Dialog
@@ -94,7 +249,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     {isEditMode ? "Sửa phiếu mượn" : "Thêm phiếu mượn mới"}
                 </DialogTitle>
 
-                <DialogContent sx={{ p: 4 }} >
+                <DialogContent sx={{ p: 8 }} >
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <Box >
@@ -111,11 +266,13 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                     <TextField
                                         variant="outlined"
                                         fullWidth
-                                        id="barCodeUserId"
-                                        name="barCodeUserId"
+                                        id="barcodeUserId"
+                                        name="barcodeUserId"
                                         placeholder="Nhập barcode người dùng"
-                                        value={barCodeUserId}
-                                        onChange={(e) => setbarCodeUserId(e.target.value)}
+                                        value={barcodeUserId}
+                                        onChange={(e) => setbarcodeUserId(e.target.value)}
+                                        inputRef={barcodeUserIdRef}
+                                        autoFocus
                                     />
                                 </Box>
                             </Grid>
@@ -173,15 +330,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
                             <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
 
-                                {/* <InputForm
-                                    label="Ghi chú"
-                                    placeholder="Nhập ghi chú"
-                                    required
-                                    error={touched.note && Boolean(errors.note)}
-                                    helperText={touched.note && errors.note}
-                                    {...getFieldProps("name")}
-                                    
-                                /> */}
+
                                 <Grid container spacing={2}>
                                     <Grid item xs={6}>
                                         <Box style={{ width: "100%" }} sx={{ mt: 2 }}>
@@ -249,6 +398,99 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                     variant="filled"
                                 />
                             </Box>
+                            <TableContainer component={Paper} sx={{ mt: 4 }}>
+                                <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                                    <TableHead>
+                                        <TableRow>
+                                            <StyledTableCell align="left" width='20%'>BarCode</StyledTableCell>
+                                            <StyledTableCell align="left" width='40%'>Tên sách</StyledTableCell>
+                                            <StyledTableCell align="left" width='15%'>Số lượng trong kho</StyledTableCell>
+                                            <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell>
+                                            <StyledTableCell align="center" width='15%'>Số lượng</StyledTableCell>
+                                            <StyledTableCell align="center" width='15%'>Vị trí</StyledTableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {publications?.map((row, index) => (
+                                            <StyledTableRow key={index}>
+                                                <StyledTableCell align="left">
+                                                    <Box style={{ width: "100%" }} sx={{ mt: 2, mb: 2 }}>
+                                                        <TextField
+                                                            variant="outlined"
+                                                            fullWidth
+                                                            placeholder="Nhập barcode sách"
+                                                            value={row.barcode}
+                                                            onChange={(e) => handleBarCodeChange(index, e.target.value)}
+                                                            inputRef={index === publications.length - 1 ? lastInputRef : null} // Focus on the last input
+                                                        />
+                                                    </Box>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="left">
+                                                    {row.name || "Không có dữ liệu"}
+                                                </StyledTableCell>
+                                                <StyledTableCell align="left">
+                                                    {row.quantity}
+                                                </StyledTableCell>
+                                                <StyledTableCell align="left">
+                                                    {row.shelvesQuantity}
+                                                </StyledTableCell>
+                                                <StyledTableCell align="center">
+                                                    <Box style={{ width: "100%" }}>
+                                                        <TextField
+                                                            variant="outlined"
+                                                            fullWidth
+                                                            placeholder="Số lượng"
+                                                            value={row.quantityLoan}
+                                                            onChange={(e) => {
+                                                                const updatedPublications = [...publications];
+                                                                updatedPublications[index].quantityLoan = Number(e.target.value);
+                                                                setPublications(updatedPublications);
+                                                            }}
+                                                        />
+                                                    </Box>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="center">
+                                                    <FormControl fullWidth>
+                                                        <Select
+                                                            value={row.position || 'trên kệ'} // Default value is "trên kệ"
+                                                            onChange={(e) => {
+                                                                const updatedPublications = [...publications];
+                                                                updatedPublications[index].position = e.target.value; // Update the position field
+                                                                setPublications(updatedPublications);
+                                                            }}
+                                                        >
+                                                            <MenuItem value="trong kho">Trong kho</MenuItem>
+                                                            <MenuItem value="trên kệ">Trên kệ</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
+                                                </StyledTableCell>
+                                            </StyledTableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                            <Box sx={{ mt: 4 }}>
+                                <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
+                                    Ghi chú
+                                </Typography>
+                                <TextareaAutosize
+                                    id="address"
+                                    name="address"
+                                    value={formik.values.note}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    minRows={4}
+                                />
+                                {formik.touched.note &&
+                                    Boolean(formik.errors.note) && (
+                                        <FormHelperText className="required_text">
+                                            {" "}
+                                            {formik.errors.note
+                                                ? formik.errors.note.toString()
+                                                : ""}
+                                        </FormHelperText>
+                                    )}
+                            </Box>
                         </Grid>
                     </Grid>
                 </DialogContent>
@@ -272,3 +514,55 @@ const FormAddEditLoanSlip: FC<Props> = ({
 };
 
 export default FormAddEditLoanSlip;
+const blue = {
+    100: '#DAECFF',
+    200: '#b6daff',
+    400: '#3399FF',
+    500: '#007FFF',
+    600: '#0072E5',
+    900: '#003A75',
+};
+
+const grey = {
+    50: '#F3F6F9',
+    100: '#E5EAF2',
+    200: '#DAE2ED',
+    300: '#C7D0DD',
+    400: '#B0B8C4',
+    500: '#9DA8B7',
+    600: '#6B7A90',
+    700: '#434D5B',
+    800: '#303740',
+    900: '#1C2025',
+};
+
+const TextareaAutosize = styled(BaseTextareaAutosize)(
+    ({ theme }) => `
+  box-sizing: border-box;
+  width: 100%;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
+  background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
+  border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[400]};
+  box-shadow: 0px 2px 2px ${theme.palette.mode === 'dark' ? grey[900] : grey[50]};
+
+  &:hover {
+    border-color: ${blue[400]};
+  }
+
+  &:focus {
+    border-color: ${blue[400]};
+    box-shadow: 0 0 0 3px ${theme.palette.mode === 'dark' ? blue[600] : blue[200]};
+  }
+
+  // firefox
+  &:focus-visible {
+    outline: 0;
+  }
+`,
+);

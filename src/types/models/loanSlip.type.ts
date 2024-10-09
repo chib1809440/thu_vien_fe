@@ -11,9 +11,17 @@ export type TLoanSlip = TEntityAbstract & {
     barcode: string;
     isPrint: boolean;
     receiptDate: string;
-    status: string;
-    publications: TPublications[]
+    status: TStatusLoanSlip;
+    publications: CreatePublication[]
 };
-
-export type TLoanSlipCreate = Partial<Pick<TLoanSlip, "note" | "borrowedDay" | "returnDay" | "barcode" | "isPrint" | "receiptDate" | "status" | "publications">> & { userId: string };
+export type CreatePublication = {
+    publicationId: string;
+    name: string;
+    quantityLoan: number;
+    quantity: number,
+    shelvesQuantity: number,
+    position: string;
+    barcode: string;
+};
+export type TLoanSlipCreate = Partial<Pick<TLoanSlip, "note" | "borrowedDay" | "returnDay" | "isPrint" | "receiptDate" | "status" | "publications">> & { userId: string };
 export type TLoanSlipEdit = Partial<Pick<TLoanSlip, "note" | "borrowedDay" | "returnDay" | "barcode" | "isPrint" | "receiptDate" | "status" | "publications">> & { _id: string, userId: string };

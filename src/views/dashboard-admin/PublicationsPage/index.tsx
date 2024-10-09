@@ -134,6 +134,8 @@ const PublicationsPage = () => {
         };
 
         if (selectedEdit) {
+            console.log(selectedEdit);
+            
             mutationEdit.mutate(
                 { ...payload, _id: selectedEdit._id },
                 {

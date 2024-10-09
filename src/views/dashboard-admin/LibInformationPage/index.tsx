@@ -1,20 +1,19 @@
 import { CardMedia, Grid, Input, InputLabel, Typography } from "@mui/material";
 import { useMemo, useState } from "react";
+import { toast } from "react-toastify";
 import IconEmail from "../../../assets/images/contact/email.svg";
 import IconFacebook from "../../../assets/images/contact/facebook.svg";
 import { useAuth } from "../../../contexts/JWTContext";
+import { useEditLibrary } from "../../../hooks/services/library/library-mutation";
 import {
     useFetchLibraryById,
     useReFetchLibrary,
     useReFetchLibraryById,
 } from "../../../hooks/services/library/library-query";
+import { TLibraryCreate } from "../../../types/models/library.type";
 import ButtonGD from "../../../ui-component/ButtonGD";
 import MainCard from "../../../ui-component/cards/MainCard";
-import { useEditLibrary } from "../../../hooks/services/library/library-mutation";
-import { TLibrary, TLibraryCreate } from "../../../types/models/library.type";
-import { toast } from "react-toastify";
 import FormAddEditLibrary from "../LibraryPage/ui-components/FormAddEditLibrary";
-import { display } from "@mui/system";
 
 const LibInformationPage = () => {
     const { user } = useAuth();
@@ -119,7 +118,7 @@ const LibInformationPage = () => {
                                     id="upload-photo"
                                     sx={{ display: "none" }}
                                     inputProps={{ accept: "image/*" }}
-                                    // onChange={handleImageInput}
+                                // onChange={handleImageInput}
                                 />
                             </InputLabel>
                             {/* {preview !== '' &&  onClick={handlClickUpLogo} */}
@@ -132,30 +131,31 @@ const LibInformationPage = () => {
                             <Grid md={8}>
                                 <Typography mt={2} textAlign="left" variant="h4">
                                     Cơ quan quản lý:
-                                    <Typography component="span" textTransform={"capitalize"}>{` ${
-                                        libraryInfo?.managementAgency || ""
-                                    }`}</Typography>
+                                    <Typography component="span" textTransform={"capitalize"}>
+                                        {` ${libraryInfo?.managementAgency || ""}`}
+                                    </Typography>
                                 </Typography>
                                 <Typography mt={2} textAlign="left" variant="h4">
                                     Tên trường:
-                                    <Typography component="span" textTransform={"capitalize"}>{` ${
-                                        libraryInfo?.name || ""
-                                    }`}</Typography>
+                                    <Typography component="span" textTransform={"capitalize"}>
+                                        {` ${libraryInfo?.name || ""}`}
+                                    </Typography>
                                 </Typography>
                                 <Typography mt={2} textAlign="left" variant="h4">
                                     Địa chỉ:
-                                    <Typography component="span" textTransform={"capitalize"}>{` ${
-                                        libraryInfo?.address || ""
-                                    }`}</Typography>
+                                    <Typography component="span" textTransform={"capitalize"}>
+                                        {` ${libraryInfo?.address || ""}`}
+                                    </Typography>
                                 </Typography>
                                 <Typography mt={2} textAlign="left" variant="h4">
-                                    Điện thoại:{` ${libraryInfo?.phoneNumber || ""}`}
-                                </Typography>
-                                <Typography mt={2} textAlign="left" variant="h4">
-                                    Hotline:{` ${libraryInfo?.phoneNumber || ""}`}
+
+                                    Điện thoại:
+                                    <Typography component="span" textTransform={"capitalize"}>
+                                        {` ${libraryInfo?.phoneNumber || ""}`}
+                                    </Typography>
                                 </Typography>
                             </Grid>
-                            <Grid md={4}>
+                            <Grid md={4} mt={3}>
                                 <Grid container alignItems="center" justifyContent="flex-end">
                                     {libraryInfo?.facebook && (
                                         <a

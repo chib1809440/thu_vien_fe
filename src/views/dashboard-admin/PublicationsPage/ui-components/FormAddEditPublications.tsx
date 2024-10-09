@@ -79,14 +79,14 @@ const schema = yup.object().shape({
             .nullable(),
         otherwise: yup.array().notRequired(),
     }),
-    file: yup.mixed().when("type", {
-        is: "ấn phẩm mềm",
-        then: yup
-            .mixed()
-            .required("Vui lòng upload file")
-            .nullable(),
-        otherwise: yup.mixed().notRequired(),
-    }),
+    // file: yup.mixed().when("type", {
+    //     is: "ấn phẩm mềm",
+    //     then: yup
+    //         .mixed()
+    //         .required("Vui lòng upload file")
+    //         .nullable(),
+    //     otherwise: yup.mixed().notRequired(),
+    // }),
 });
 
 const FormAddEditPublications: FC<Props> = ({
@@ -141,6 +141,7 @@ const FormAddEditPublications: FC<Props> = ({
     const imageRef = useRef<UploadAvatarRefProps>(null);
     const [defaultImage, setDefaultImage] = useState<string>("");
     const [typeHardPublications, setTypeHardPublications] = useState(true);
+    const [fileName, setFileName] = useState('');
 
     const mutationAddPublisher = useAddPublisher();
     const mutationAddCategory = useAddCategory();
@@ -272,6 +273,7 @@ const FormAddEditPublications: FC<Props> = ({
             setDefaultImage(event.target?.result as string);
         };
         reader.readAsDataURL(file);
+        setFileName(file.name);
         await setFieldValue("file", file);
     }, []);
 
@@ -316,6 +318,7 @@ const FormAddEditPublications: FC<Props> = ({
                                 ref={imageRef}
                                 defaultImage={imageUrl || defaultImage}
                                 onChange={handleChangeImage}
+                                fileName={fileName}
                             />
 
                             <Box
@@ -460,7 +463,7 @@ const FormAddEditPublications: FC<Props> = ({
                                     disabled={isEditMode}
                                 />
                             )}
-                            {values.status === "trên kệ" && (
+                            {showQuantityInput && (
                                 <SelectForm
                                     label="Chọn kệ tủ"
                                     options={
@@ -475,7 +478,7 @@ const FormAddEditPublications: FC<Props> = ({
                                     disabled={isEditMode}
                                 />
                             )}
-                            {values.shelvesId && values.status === "trên kệ" && (
+                            {showQuantityInput && (
                                 <InputForm
                                     label="Số lượng trên kệ"
                                     type="number"

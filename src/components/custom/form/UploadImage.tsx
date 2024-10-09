@@ -14,7 +14,8 @@ import {
 type UploadAvatarProps = {
     defaultImage?: string;
     onChange?: (file: File) => void;
-    typeHardPublications?: boolean
+    typeHardPublications?: boolean;
+    fileName?: string;
 };
 
 export type UploadAvatarRefProps = {
@@ -46,9 +47,10 @@ const SPACING = 230;
 const SPACING_CHILD = 230 - 16;
 
 const Uploadimage = forwardRef<UploadAvatarRefProps, UploadAvatarProps>(
-    ({ defaultImage, onChange, typeHardPublications }, ref) => {
+    ({ defaultImage, onChange, typeHardPublications, fileName }, ref) => {
         const imageRef = useRef<HTMLInputElement | null>(null);
         const [imageBlob, setImageBlob] = useState<string>("");
+        
 
         useEffect(() => {
             if (!defaultImage) {
@@ -157,20 +159,13 @@ const Uploadimage = forwardRef<UploadAvatarRefProps, UploadAvatarProps>(
                                 <IconButton aria-label="upload file">
                                     <CloudUploadIcon color="inherit" />
                                 </IconButton>
-                                <Typography color={"inherit"}>Chọn file</Typography>
+                                {!fileName && (<Typography color={"inherit"}>Chọn file</Typography>)}
 
-                                {/* <Box display="flex" alignItems="center" mt={2}>
-                                    <Typography>name</Typography>
-                                </Box> */}
+                                <Typography variant="body2" color="inherit" mt={1} px={1}>
+                                    {fileName}
+                                </Typography>
+
                             </Box>
-                            <form className='form'>
-                                <input
-                                    style={{ display: 'none' }}
-                                    id="raised-button-file"
-                                    multiple
-                                    type="file"
-                                />
-                            </form>
                         </Box>
                     )}
 

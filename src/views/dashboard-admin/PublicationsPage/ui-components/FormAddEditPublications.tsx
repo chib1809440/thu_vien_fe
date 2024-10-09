@@ -1,6 +1,6 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
-import { FC, useCallback, useMemo, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import * as yup from "yup";
 import AutocompleteForm from "../../../../components/custom/form/AutoCompleteForm";
@@ -141,7 +141,7 @@ const FormAddEditPublications: FC<Props> = ({
     const imageRef = useRef<UploadAvatarRefProps>(null);
     const [defaultImage, setDefaultImage] = useState<string>("");
     const [typeHardPublications, setTypeHardPublications] = useState(true);
-    const [fileName, setFileName] = useState('');
+    const [fileName, setFileName] = useState("");
 
     const mutationAddPublisher = useAddPublisher();
     const mutationAddCategory = useAddCategory();
@@ -151,6 +151,26 @@ const FormAddEditPublications: FC<Props> = ({
     const revalidateCategory = useReFetchCategory();
     const revalidateMaterial = useReFetchMaterial();
     const revalidateAuthor = useReFetchAuthor();
+
+    const isMounted = useRef(true);
+
+    useEffect(() => {
+        if (!isMounted.current || initialValues?.type === null) {
+            return;
+        }
+
+        if (initialValues?.type === "ấn phẩm cứng") {
+            setTypeHardPublications(true);
+        } else {
+            setTypeHardPublications(false);
+        }
+
+        isMounted.current = true;
+
+        return () => {
+            isMounted.current = false;
+        };
+    }, [isMounted.current, initialValues?.type]);
 
     const handleAddPublisher = () => {
         setTypeToAdd("publisher");
@@ -243,6 +263,14 @@ const FormAddEditPublications: FC<Props> = ({
         setFieldValue("type", selectedType);
         setFieldValue("status", selectedType === "ấn phẩm mềm" ? "có sẵn" : "không có sẵn");
 
+        setFileName("");
+        setDefaultImage("");
+        setFieldValue("file", null);
+
+        if (imageRef.current) {
+            imageRef.current.clearState();
+        }
+
         // Truyền giá trị typeHardPublications vào Uploadimage
         setTypeHardPublications(selectedType === "ấn phẩm cứng");
     };
@@ -266,23 +294,18 @@ const FormAddEditPublications: FC<Props> = ({
 
     // Xét ảnh
     const handleChangeImage = useCallback(async (file: File) => {
-        // console.log("File selected:", file);
-
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            setDefaultImage(event.target?.result as string);
-        };
-        reader.readAsDataURL(file);
-        setFileName(file.name);
-        await setFieldValue("file", file);
-    }, []);
-
-    const handleClearImage = () => {
-        if (imageRef.current) {
-            imageRef.current.clearState();
+        if (!typeHardPublications) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                setDefaultImage(event.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setFileName(file.name);
         }
-        setDefaultImage("");
-    };
+
+        setFieldValue("file", file);
+    }, []);
 
     return (
         <FormikProvider value={formik}>

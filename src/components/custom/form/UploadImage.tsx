@@ -1,5 +1,5 @@
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { Box, IconButton, Typography } from "@mui/material";
 import {
     ChangeEvent,
@@ -50,8 +50,6 @@ const Uploadimage = forwardRef<UploadAvatarRefProps, UploadAvatarProps>(
     ({ defaultImage, onChange, typeHardPublications, fileName }, ref) => {
         const imageRef = useRef<HTMLInputElement | null>(null);
         const [imageBlob, setImageBlob] = useState<string>("");
-        
-
         useEffect(() => {
             if (!defaultImage) {
                 return;
@@ -107,7 +105,9 @@ const Uploadimage = forwardRef<UploadAvatarRefProps, UploadAvatarProps>(
                     borderRadius="12px"
                     sx={{
                         background: (theme) =>
-                            theme.palette.mode === "dark" ? theme.palette.grey[900] : theme.palette.grey[300],
+                            theme.palette.mode === "dark"
+                                ? theme.palette.grey[900]
+                                : theme.palette.grey[300],
                         cursor: "pointer",
                     }}
                     display={"flex"}
@@ -146,29 +146,46 @@ const Uploadimage = forwardRef<UploadAvatarRefProps, UploadAvatarProps>(
                             </>
                         )
                     ) : (
-                        <Box sx={{ width: '100%' }}>
-                            <Box sx={{
-                                height: { xs: '80px', md: '220px' },
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                width: '100%',
-                                borderRadius: 2,
-                            }}>
-                                <IconButton aria-label="upload file">
-                                    <CloudUploadIcon color="inherit" />
-                                </IconButton>
-                                {!fileName && (<Typography color={"inherit"}>Chọn file</Typography>)}
+                        <>
+                            {imageBlob && !fileName ? (
+                                <img
+                                    src={imageBlob}
+                                    alt="Uploaded"
+                                    style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        borderRadius: "12px",
+                                        objectFit: "cover",
+                                    }}
+                                />
+                            ) : (
+                                <Box sx={{ width: "100%" }}>
+                                    <Box
+                                        sx={{
+                                            height: { xs: "80px", md: "220px" },
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            width: "100%",
+                                            borderRadius: 2,
+                                        }}
+                                    >
+                                        <IconButton aria-label="upload file">
+                                            <CloudUploadIcon color="inherit" />
+                                        </IconButton>
+                                        {!fileName && (
+                                            <Typography color={"inherit"}>Chọn file</Typography>
+                                        )}
 
-                                <Typography variant="body2" color="inherit" mt={1} px={1}>
-                                    {fileName}
-                                </Typography>
-
-                            </Box>
-                        </Box>
+                                        <Typography variant="body2" color="inherit" mt={1} px={1}>
+                                            {fileName}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                            )}
+                        </>
                     )}
-
                 </Box>
             </Box>
         );

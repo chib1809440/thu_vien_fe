@@ -135,7 +135,7 @@ const PublicationsPage = () => {
 
         if (selectedEdit) {
             console.log(selectedEdit);
-            
+
             mutationEdit.mutate(
                 { ...payload, _id: selectedEdit._id },
                 {
@@ -234,7 +234,7 @@ const PublicationsPage = () => {
     };
 
     const handleBarcodeSearch = (value) => {
-        setBarcodeSearch(value)
+        setBarcodeSearch(value);
     };
 
     const columns: TColumn<TPublications>[] = useMemo(
@@ -485,8 +485,8 @@ const PublicationsPage = () => {
                         selectedEdit?.priviewImage
                             ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.priviewImage}`
                             : selectedEdit?.path
-                                ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
-                                : ""
+                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
+                            : ""
                     }
                 />
             )}
@@ -535,7 +535,12 @@ const PublicationsPage = () => {
                     </Box>
                 </Stack>
 
-                <ActionsForm actions={actionMenus} barcode={true} barcodeSearch={barcodeSearch} handleBarcodeSearch={handleBarcodeSearch} />
+                <ActionsForm
+                    actions={actionMenus}
+                    barcode={true}
+                    barcodeSearch={barcodeSearch}
+                    handleBarcodeSearch={handleBarcodeSearch}
+                />
 
                 <FilterByItems
                     selectedPublications={selectedPublications}

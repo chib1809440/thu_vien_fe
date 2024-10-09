@@ -40,54 +40,56 @@ type Props = {
     imageUrl?: string;
 };
 
-const schema = yup.object().shape({
-    name: yup.string().required("Vui lòng nhập tên"),
-    barcode: yup.string().required("Vui lòng mã barcode"),
-    categoryIds: yup.array().when("type", {
-        is: "ấn phẩm cứng",
-        then: yup
-            .array()
-            .min(1, "Vui lòng chọn một lĩnh vực")
-            .required("Vui lòng chọn một lĩnh vực")
-            .nullable(),
-        otherwise: yup.array().notRequired(),
-    }),
-    authorIds: yup.array().when("type", {
-        is: "ấn phẩm cứng",
-        then: yup
-            .array()
-            .min(1, "Vui lòng chọn một tác giả")
-            .required("Vui lòng chọn một tác giả")
-            .nullable(),
-        otherwise: yup.array().notRequired(),
-    }),
-    publisherIds: yup.array().when("type", {
-        is: "ấn phẩm cứng",
-        then: yup
-            .array()
-            .min(1, "Vui lòng chọn một nhà xuất bản")
-            .required("Vui lòng chọn một nhà xuất bản")
-            .nullable(),
-        otherwise: yup.array().notRequired(),
-    }),
-    materialIds: yup.array().when("type", {
-        is: "ấn phẩm cứng",
-        then: yup
-            .array()
-            .min(1, "Vui lòng chọn một dạng học liệu")
-            .required("Vui lòng chọn một dạng học liệu")
-            .nullable(),
-        otherwise: yup.array().notRequired(),
-    }),
-    // file: yup.mixed().when("type", {
-    //     is: "ấn phẩm mềm",
-    //     then: yup
-    //         .mixed()
-    //         .required("Vui lòng upload file")
-    //         .nullable(),
-    //     otherwise: yup.mixed().notRequired(),
-    // }),
-});
+const schema = (isEditMode: boolean) =>
+    yup.object().shape({
+        name: yup.string().required("Vui lòng nhập tên"),
+        barcode: yup.string().required("Vui lòng mã barcode"),
+        categoryIds: yup.array().when("type", {
+            is: "ấn phẩm cứng",
+            then: yup
+                .array()
+                .min(1, "Vui lòng chọn một lĩnh vực")
+                .required("Vui lòng chọn một lĩnh vực")
+                .nullable(),
+            otherwise: yup.array().notRequired(),
+        }),
+        authorIds: yup.array().when("type", {
+            is: "ấn phẩm cứng",
+            then: yup
+                .array()
+                .min(1, "Vui lòng chọn một tác giả")
+                .required("Vui lòng chọn một tác giả")
+                .nullable(),
+            otherwise: yup.array().notRequired(),
+        }),
+        publisherIds: yup.array().when("type", {
+            is: "ấn phẩm cứng",
+            then: yup
+                .array()
+                .min(1, "Vui lòng chọn một nhà xuất bản")
+                .required("Vui lòng chọn một nhà xuất bản")
+                .nullable(),
+            otherwise: yup.array().notRequired(),
+        }),
+        materialIds: yup.array().when("type", {
+            is: "ấn phẩm cứng",
+            then: yup
+                .array()
+                .min(1, "Vui lòng chọn một dạng học liệu")
+                .required("Vui lòng chọn một dạng học liệu")
+                .nullable(),
+            otherwise: yup.array().notRequired(),
+        }),
+        ...(!isEditMode
+            ? {
+                  file: yup.mixed().when("type", {
+                      is: "ấn phẩm mềm",
+                      then: yup.mixed().required("Vui lòng upload file").nullable(),
+                      otherwise: yup.mixed().notRequired(),
+                  }),
+              }
+            : { file: yup.mixed() }),
+    });
 
 const FormAddEditPublications: FC<Props> = ({
     open,
@@ -120,7 +122,7 @@ const FormAddEditPublications: FC<Props> = ({
 }) => {
     const formik = useFormik<TPublicationsCreate>({
         initialValues,
-        validationSchema: schema,
+        validationSchema: schema(isEditMode),
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
             if (onSubmit) {
@@ -342,6 +344,7 @@ const FormAddEditPublications: FC<Props> = ({
                                 defaultImage={imageUrl || defaultImage}
                                 onChange={handleChangeImage}
                                 fileName={fileName}
+                                error={touched.file && errors.file}
                             />
 
                             <Box

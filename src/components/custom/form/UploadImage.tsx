@@ -4,6 +4,7 @@ import { Box, IconButton, Typography } from "@mui/material";
 import {
     ChangeEvent,
     forwardRef,
+    ReactNode,
     useCallback,
     useEffect,
     useImperativeHandle,
@@ -16,6 +17,7 @@ type UploadAvatarProps = {
     onChange?: (file: File) => void;
     typeHardPublications?: boolean;
     fileName?: string;
+    error?: ReactNode;
 };
 
 export type UploadAvatarRefProps = {
@@ -47,7 +49,7 @@ const SPACING = 230;
 const SPACING_CHILD = 230 - 16;
 
 const Uploadimage = forwardRef<UploadAvatarRefProps, UploadAvatarProps>(
-    ({ defaultImage, onChange, typeHardPublications, fileName }, ref) => {
+    ({ defaultImage, onChange, typeHardPublications, fileName, error }, ref) => {
         const imageRef = useRef<HTMLInputElement | null>(null);
         const [imageBlob, setImageBlob] = useState<string>("");
         useEffect(() => {
@@ -181,6 +183,12 @@ const Uploadimage = forwardRef<UploadAvatarRefProps, UploadAvatarProps>(
                                         <Typography variant="body2" color="inherit" mt={1} px={1}>
                                             {fileName}
                                         </Typography>
+
+                                        {error && (
+                                            <Typography variant="body2" color="error" mt={1} px={1}>
+                                                {error}
+                                            </Typography>
+                                        )}
                                     </Box>
                                 </Box>
                             )}

@@ -4,20 +4,7 @@ import MainLayout, { MainLayoutV2 } from "../layout/MainLayout";
 import Loadable from "../ui-component/Loadable";
 import AuthGuard from "../utils/route-guard/AuthGuard";
 import AuthGuardV2 from "../utils/route-guard/AuthGuardV2";
-import GroupPage from "../views/dashboard-admin/GroupPage";
-import LibraryPage from "../views/dashboard-admin/LibraryPage";
-import MaterialPage from "../views/dashboard-admin/MaterialPage";
-import CategoryPage from "../views/dashboard-admin/CategoryPage";
-import AuthorPage from "../views/dashboard-admin/AuthorPage";
-import AuthorDeleteListPage from "../views/dashboard-admin/AuthorPage/AuthorDeleteListPage";
-import CategoryDeleteListPage from "../views/dashboard-admin/CategoryPage/CategoryDeleteListPage";
-import PublisherPage from "../views/dashboard-admin/PublisherPage";
-import PublisherDeleteListPage from "../views/dashboard-admin/PublisherPage/PublisherDeleteListPage";
-import MaterialDeleteListPage from "../views/dashboard-admin/MaterialPage/MaterialDeleteListPage";
-import ShelfPage from "../views/dashboard-admin/ShelfPage";
-import ShelfDeleteListPage from "../views/dashboard-admin/ShelfPage/ShelfDeleteListPage";
-import PublicationsPage from "../views/dashboard-admin/PublicationsPage";
-import PublicationsDeleteListPage from "../views/dashboard-admin/PublicationsPage/PublicationsDeleteListPage";
+
 
 const HomePage = Loadable(
   lazy(() => import("../views/dashboard-admin/HomePage"))
@@ -52,13 +39,64 @@ const DistributionOfPowers = Loadable(
 const ControlPower = Loadable(
   lazy(() => import("../views/dashboard-admin/SystemPage/ControlPower"))
 );
-// 
 
-// const AuthorPage = Loadable(
-//   lazy(() => import("../views/dashboard-admin/Directory/Author"))
-// );
+const GroupPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/GroupPage"))
+);
+const LibraryPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/LibraryPage"))
+);
+
+// cate
+const MaterialPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/MaterialPage"))
+);
+const CategoryPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/CategoryPage"))
+);
+const AuthorPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/AuthorPage"))
+);
+const AuthorDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/AuthorPage/AuthorDeleteListPage"))
+);
+const CategoryDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/CategoryPage/CategoryDeleteListPage"))
+);
+const PublisherPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/PublisherPage"))
+);
+const PublisherDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/PublisherPage/PublisherDeleteListPage"))
+);
+const MaterialDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/MaterialPage/MaterialDeleteListPage"))
+);
+const ShelfPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/ShelfPage"))
+);
+const ShelfDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/ShelfPage/ShelfDeleteListPage"))
+);
 
 // PublicationsPage
+const PublicationsPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/PublicationsPage"))
+);
+const PublicationsDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/PublicationsPage/PublicationsDeleteListPage"))
+);
+
+// Stock
+const ShelvesProductPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/WarehousePage/ShelvesProductPage"))
+);
+const StockProductPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/WarehousePage/StockProductPage"))
+);
+const LiquidationProductPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/WarehousePage/LiquidationProductPage"))
+);
 
 const DetailsPublicationsPage = Loadable(
   lazy(() => import("../views/dashboard-admin/DetailsPublications"))
@@ -216,6 +254,21 @@ const MainRoutes = {
       path: "/thu-vien/danh-sach-xoa-an-pham",
       element: <PublicationsDeleteListPage />,
     },
+
+    // kho
+    {
+      path: "/quan-ly-kho/tu-ke",
+      element: <ShelvesProductPage />,
+    },
+    {
+      path: "/quan-ly-kho/kho",
+      element: <StockProductPage />,
+    },
+    {
+      path: "/quan-ly-kho/thanh-ly-hu-hong",
+      element: <LiquidationProductPage />,
+    },
+
     {
       path: "/tai-san-thu-vien/thung-rac",
       element: <AssetTrashPage />,

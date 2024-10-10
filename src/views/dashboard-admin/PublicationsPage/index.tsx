@@ -12,8 +12,16 @@ import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDelet
 import { useFetchAuthor } from "../../../hooks/services/author/author-query";
 import { useFetchCategory } from "../../../hooks/services/category/category-query";
 import { useFetchMaterial } from "../../../hooks/services/material/material-query";
-import { useAddPublications, useDeleteSoftManyPublications, useDeleteSoftPublications, useEditPublications } from "../../../hooks/services/publications/publications-mutation";
-import { useFetchPublications, useReFetchPublications } from "../../../hooks/services/publications/publications-query";
+import {
+    useAddPublications,
+    useDeleteSoftManyPublications,
+    useDeleteSoftPublications,
+    useEditPublications,
+} from "../../../hooks/services/publications/publications-mutation";
+import {
+    useFetchPublications,
+    useReFetchPublications,
+} from "../../../hooks/services/publications/publications-query";
 import { useFetchPublisher } from "../../../hooks/services/publisher/publisher-query";
 import { useFetchShelf } from "../../../hooks/services/shelf/shelf-query";
 import useQueryString from "../../../hooks/services/useQueryString";
@@ -22,22 +30,57 @@ import { TPublications, TPublicationsCreate } from "../../../types/models/public
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { typeOptions } from "../../../utils/constants.utils";
+import { parserParams } from "../../../utils/object";
+import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
+import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
 
-const PublicationsPageV3 = () => {
+const PublicationsPage = () => {
     const queryString = useQueryString();
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
 
-    const { data, isLoading } = useFetchPublications({ limit, page, search });
-    // const { data: libs } = useFetchLibrary({ groupId });
+    const [selectedMaterial, setSelectedMaterial] = useState(0);
+    const [selectedPublications, setSelectedPublications] = useState(0);
+    const [selectedAuthor, setSelectedAuthor] = useState(0);
+    const [selectedCategory, setSelectedCategory] = useState(0);
+    const [selectedPublisher, setSelectedPublisher] = useState(0);
+    const [barcodeSearch, setBarcodeSearch] = useState("");
+
+    const filter = useMemo(
+        () =>
+            parserParams([
+                { compare: 0, target: { materialIds: selectedMaterial } },
+                { compare: 0, target: { authorIds: selectedAuthor } },
+                { compare: 0, target: { categoryIds: selectedCategory } },
+                { compare: 0, target: { publisherIds: selectedPublisher } },
+                { compare: "", target: { search } },
+                { compare: 0, target: { type: selectedPublications } },
+                { compare: "", target: { barcode: barcodeSearch } },
+            ]),
+        [
+            selectedMaterial,
+            selectedAuthor,
+            selectedCategory,
+            selectedPublisher,
+            selectedPublications,
+            barcodeSearch,
+            search,
+        ]
+    );
+
+    const { data, isLoading } = useFetchPublications({
+        limit,
+        page,
+        ...filter,
+    });
+
     const { data: categoryData } = useFetchCategory();
     const { data: materialData } = useFetchMaterial();
     const { data: authorData } = useFetchAuthor();
     const { data: publisherData } = useFetchPublisher();
     const { data: shelfData } = useFetchShelf();
-
 
     const mutationAdd = useAddPublications();
     const mutationEdit = useEditPublications();
@@ -52,6 +95,8 @@ const PublicationsPageV3 = () => {
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
+    const [openViewDetails, setOpenViewDetails] = useState(false);
+    const [publicationsDetails, setPublicationsDetails] = useState<TPublications | null>(null);
 
     const addPublications = () => {
         setOpenAddEdit(true);
@@ -67,27 +112,48 @@ const PublicationsPageV3 = () => {
         setSelectedEdit(null);
     };
 
+    const handleViewDetails = (row: TPublications) => {
+        console.log(row);
+
+        setPublicationsDetails(row);
+        setOpenViewDetails(true);
+    };
+
+    const handleCloseViewDetails = () => {
+        setOpenViewDetails(false);
+        setPublicationsDetails(null);
+    };
+
     const handleSubmit = (values: TPublicationsCreate) => {
+        const payload = {
+            ...values,
+            categoryIds: values.categoryIds.map((t: any) => t?._id),
+            materialIds: values.materialIds.map((t: any) => t?._id),
+            authorIds: values.authorIds.map((t: any) => t?._id),
+            publisherIds: values.publisherIds.map((t: any) => t?._id),
+        };
+
         if (selectedEdit) {
+            console.log(selectedEdit);
+
             mutationEdit.mutate(
-                { ...values, _id: selectedEdit._id },
+                { ...payload, _id: selectedEdit._id },
                 {
                     onSuccess: () => {
                         revalidate();
-                        toast.success('Chỉnh sửa thành công.');
+                        toast.success("Chỉnh sửa thành công.");
                         handleClose();
                     },
                 }
             );
 
             return;
-
         }
 
-        mutationAdd.mutate(values, {
+        mutationAdd.mutate(payload, {
             onSuccess: (data) => {
                 revalidate();
-                toast.success('Thêm thành công.');
+                toast.success("Thêm thành công.");
                 setOpenAddEdit(false);
             },
         });
@@ -103,7 +169,7 @@ const PublicationsPageV3 = () => {
             mutationSoftDelete.mutate(publicationsToDelete._id, {
                 onSuccess: () => {
                     revalidate();
-                    toast.success('Xóa ấn phẩm thành công.');
+                    toast.success("Xóa ấn phẩm thành công.");
                     setOpenConfirmDialog(false);
                 },
             });
@@ -115,13 +181,18 @@ const PublicationsPageV3 = () => {
     };
 
     const handleChangeShareConnect = (row: TPublications, checked: boolean) => {
+        if (!row.isPublic) {
+            toast.warn("Không thể thay đổi trạng thái liên thông vì chưa chia sẻ lên thư viện.");
+            return;
+        }
+
         // TODO: update
         mutationEdit.mutate(
             { isLink: checked, _id: row._id },
             {
                 onSuccess: (data) => {
                     revalidate();
-                    toast.success('Cập nhật trạng thái thành công.');
+                    toast.success("Cập nhật trạng thái thành công.");
                 },
             }
         );
@@ -135,11 +206,35 @@ const PublicationsPageV3 = () => {
             {
                 onSuccess: (data) => {
                     revalidate();
-                    toast.success('Cập nhật trạng thái thành công.');
+                    toast.success("Cập nhật trạng thái thành công.");
                 },
             }
         );
         return;
+    };
+
+    // lọc
+    const handlePublicationsFilterChange = (event) => {
+        setSelectedPublications(event.target.value);
+    };
+    const handleMaterialFilterChange = (event) => {
+        setSelectedMaterial(event.target.value);
+    };
+
+    const handleAuthorFilterChange = (event) => {
+        setSelectedAuthor(event.target.value);
+    };
+
+    const handleCategoryFilterChange = (event) => {
+        setSelectedCategory(event.target.value);
+    };
+
+    const handlePublisherFilterChange = (event) => {
+        setSelectedPublisher(event.target.value);
+    };
+
+    const handleBarcodeSearch = (value) => {
+        setBarcodeSearch(value);
     };
 
     const columns: TColumn<TPublications>[] = useMemo(
@@ -165,19 +260,18 @@ const PublicationsPageV3 = () => {
                 align: "left",
                 sxRow: { px: 3, maxWidth: 150 },
                 render: (row) => {
-                    const selectedType = typeOptions.find(option => option.value === row.type);
+                    const selectedType = typeOptions.find((option) => option.value === row.type);
 
-                    const chipColor = selectedType?.value === 'ấn phẩm cứng' ? '#007e43' : '#fa7d70';
+                    const chipColor =
+                        selectedType?.value === "ấn phẩm cứng" ? "#007e43" : "#fa7d70";
 
-                    return (
-                        selectedType ? (
-                            <Chip
-                                label={selectedType.label}
-                                style={{ backgroundColor: chipColor, color: '#fff' }}
-                                variant="filled"
-                            />
-                        ) : null
-                    );
+                    return selectedType ? (
+                        <Chip
+                            label={selectedType.label}
+                            style={{ backgroundColor: chipColor, color: "#fff" }}
+                            variant="filled"
+                        />
+                    ) : null;
                 },
             },
 
@@ -214,7 +308,9 @@ const PublicationsPageV3 = () => {
                         <Switch
                             checked={row?.isLink}
                             value={row?.isLink}
-                            onChange={(event) => handleChangeShareConnect(row, event.target.checked)}
+                            onChange={(event) =>
+                                handleChangeShareConnect(row, event.target.checked)
+                            }
                         />
                     );
                 },
@@ -238,6 +334,7 @@ const PublicationsPageV3 = () => {
                             <IconEye
                                 size={20}
                                 stroke={1.5}
+                                onClick={() => handleViewDetails(row)}
                             />
                             <IconPencil
                                 onClick={() => handleEditPublications(row)}
@@ -254,7 +351,12 @@ const PublicationsPageV3 = () => {
                 },
             },
         ],
-        [handleEditPublications, handleOpenConfirmDialog, handleChangeShareConnect, handleChangePublic]
+        [
+            handleEditPublications,
+            handleOpenConfirmDialog,
+            handleChangeShareConnect,
+            handleChangePublic,
+        ]
     );
 
     const handleCheckedDelete = useCallback((row: TPublications, checked: boolean) => {
@@ -321,6 +423,9 @@ const PublicationsPageV3 = () => {
 
     const initialValues = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {
+
+            console.log(selectedEdit);
+            
             return {
                 name: selectedEdit.name,
                 barcode: selectedEdit.barcode,
@@ -331,7 +436,12 @@ const PublicationsPageV3 = () => {
                 type: selectedEdit.type,
                 isPublic: selectedEdit.isPublic,
                 isLink: selectedEdit.isLink,
-                file: selectedEdit.file,
+                file: selectedEdit.file || "",
+                categoryIds: selectedEdit.categoryIds || [],
+                authorIds: selectedEdit.authorIds || [],
+                shelvesId: (selectedEdit.shelvesId as string) || "",
+                publisherIds: selectedEdit.publisherIds || [],
+                materialIds: selectedEdit.materialIds || [],
             };
         }
 
@@ -341,11 +451,16 @@ const PublicationsPageV3 = () => {
             description: "",
             quantity: 0,
             shelvesQuantity: 0,
-            status: "có sẵn",
+            status: "không có sẵn",
             type: "ấn phẩm cứng",
             isPublic: false,
             isLink: false,
             file: "",
+            categoryIds: [],
+            authorIds: [],
+            shelvesId: "",
+            publisherIds: [],
+            materialIds: [],
         };
     }, [selectedEdit]);
 
@@ -369,11 +484,25 @@ const PublicationsPageV3 = () => {
                     materialOptions={materialData?.data?.result || []}
                     publisherOptions={publisherData?.data?.result || []}
                     shelfOptions={shelfData?.data?.result || []}
+                    imageUrl={
+                        selectedEdit?.priviewImage
+                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.priviewImage}`
+                            : selectedEdit?.path
+                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
+                            : ""
+                    }
                 />
             )}
 
             <MainCard>
-                <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
+                <Stack
+                    spacing={2}
+                    sx={{
+                        paddingLeft: { xs: 4, sm: 4 },
+                        paddingBottom: { xs: 2, sm: 2 },
+                        width: "100%",
+                    }}
+                >
                     <Box display="flex" flexWrap="wrap">
                         <Box>
                             <StyledButton
@@ -388,9 +517,16 @@ const PublicationsPageV3 = () => {
                         </Box>
 
                         <Box>
-                            <Link to="/thu-vien/danh-sach-xoa-an-pham" style={{ textDecoration: 'none' }}>
+                            <Link
+                                to="/thu-vien/danh-sach-xoa-an-pham"
+                                style={{ textDecoration: "none" }}
+                            >
                                 <StyledButton
-                                    sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                    sx={{
+                                        background: "#de524a",
+                                        color: "white",
+                                        marginLeft: "10px",
+                                    }}
                                     size="small"
                                     startIcon={<IconTrash stroke={2} />}
                                     variant="contained"
@@ -402,7 +538,32 @@ const PublicationsPageV3 = () => {
                     </Box>
                 </Stack>
 
-                <ActionsForm actions={actionMenus} />
+                <ActionsForm
+                    actions={actionMenus}
+                    barcode={true}
+                    barcodeSearch={barcodeSearch}
+                    handleBarcodeSearch={handleBarcodeSearch}
+                />
+
+                <FilterByItems
+                    selectedPublications={selectedPublications}
+                    handlePublicationsFilterChange={handlePublicationsFilterChange}
+                    typeOptions={typeOptions}
+                    selectedMaterial={selectedMaterial}
+                    handleMaterialFilterChange={handleMaterialFilterChange}
+                    materialData={materialData}
+                    selectedCategory={selectedCategory}
+                    handleCategoryFilterChange={handleCategoryFilterChange}
+                    categoryData={categoryData}
+                    selectedAuthor={selectedAuthor}
+                    handleAuthorFilterChange={handleAuthorFilterChange}
+                    authorData={authorData}
+                    selectedPublisher={selectedPublisher}
+                    handlePublisherFilterChange={handlePublisherFilterChange}
+                    publisherData={publisherData}
+                    barcodeSearch={barcodeSearch}
+                    handleBarcodeSearch={handleBarcodeSearch}
+                />
 
                 <TableList
                     checked={checkedDelete}
@@ -432,8 +593,14 @@ const PublicationsPageV3 = () => {
                     title="Xác nhận xóa các mục đã chọn?"
                     description={`Bạn có chắc chắn muốn xóa?`}
                 />
+
+                <PublicationsDetailsDialog
+                    open={openViewDetails}
+                    onClose={handleCloseViewDetails}
+                    publications={publicationsDetails}
+                />
             </MainCard>
         </div>
     );
 };
-export default PublicationsPageV3;
+export default PublicationsPage;

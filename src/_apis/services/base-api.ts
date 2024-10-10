@@ -28,7 +28,84 @@ class BaseApi {
         return response.data as TApiOneRecord<DynamicType>;
     }
 
-    public async create<DynamicPayload, DynamicResponse>(payload: DynamicPayload) {
+    public async create<DynamicPayload, DynamicResponse>(
+        payload: DynamicPayload,
+        isWithFormData: boolean = false
+    ) {
+        if (isWithFormData) {
+            const formData = new FormData();
+
+            Object.keys(payload).forEach((key) => {
+                // check is one file
+                if (payload[key] instanceof File) {
+                    formData.append(key, payload[key]);
+                    return;
+                }
+
+                // check is list file
+                if (Array.isArray(payload[key]) && payload[key][0] instanceof File) {
+                    payload[key].forEach((file) => {
+                        formData.append(key, file);
+                    });
+                    return;
+                }
+
+                // check is object
+                if (typeof payload[key] === "object") {
+                    formData.append(key, JSON.stringify(payload[key]));
+                    return;
+                }
+
+                // check is string
+                if (typeof payload[key] === "string") {
+                    formData.append(key, payload[key]);
+                    return;
+                }
+
+                // check is number
+                if (typeof payload[key] === "number") {
+                    formData.append(key, payload[key].toString());
+                    return;
+                }
+
+                // check is boolean
+                if (typeof payload[key] === "boolean") {
+                    formData.append(key, payload[key].toString());
+                    return;
+                }
+
+                // check is null
+                if (payload[key] === null) {
+                    formData.append(key, "");
+                    return;
+                }
+
+                // check is undefined
+                if (payload[key] === undefined) {
+                    formData.append(key, "");
+                    return;
+                }
+
+                // check is array
+                if (Array.isArray(payload[key])) {
+                    payload[key].forEach((file) => {
+                        formData.append(key, file);
+                    });
+                    return;
+                }
+
+                formData.append(key, payload[key]);
+            });
+
+            const response = await this.httpClient.post(this.endpoint, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            return response.data as TApiModifyRecord<DynamicResponse>;
+        }
+
         const response = await this.httpClient.post(this.endpoint, payload);
         return response.data as TApiModifyRecord<DynamicResponse>;
     }
@@ -40,8 +117,83 @@ class BaseApi {
 
     public async update<DynamicPayload, DynamicResponse>(
         payload: DynamicPayload,
-        id: string | number
+        id: string | number,
+        isWithFormData: boolean = false
     ) {
+        if (isWithFormData) {
+            const formData = new FormData();
+
+            Object.keys(payload).forEach((key) => {
+                // check is one file
+                if (payload[key] instanceof File) {
+                    formData.append(key, payload[key]);
+                    return;
+                }
+
+                // check is list file
+                if (Array.isArray(payload[key]) && payload[key][0] instanceof File) {
+                    payload[key].forEach((file) => {
+                        formData.append(key, file);
+                    });
+                    return;
+                }
+
+                // check is object
+                if (typeof payload[key] === "object") {
+                    formData.append(key, JSON.stringify(payload[key]));
+                    return;
+                }
+
+                // check is string
+                if (typeof payload[key] === "string") {
+                    formData.append(key, payload[key]);
+                    return;
+                }
+
+                // check is number
+                if (typeof payload[key] === "number") {
+                    formData.append(key, payload[key].toString());
+                    return;
+                }
+
+                // check is boolean
+                if (typeof payload[key] === "boolean") {
+                    formData.append(key, payload[key].toString());
+                    return;
+                }
+
+                // check is null
+                if (payload[key] === null) {
+                    formData.append(key, "");
+                    return;
+                }
+
+                // check is undefined
+                if (payload[key] === undefined) {
+                    formData.append(key, "");
+                    return;
+                }
+
+                // check is array
+                if (Array.isArray(payload[key])) {
+                    payload[key].forEach((file) => {
+                        formData.append(key, file);
+                    });
+                    return;
+                }
+
+                formData.append(key, payload[key]);
+            });
+
+            const response = await this.httpClient.patch(`${this.endpoint}/${id}`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            return response.data as TApiModifyRecord<DynamicResponse>;
+        }
+
         const response = await this.httpClient.patch(`${this.endpoint}/${id}`, payload);
         return response.data as TApiModifyRecord<DynamicResponse>;
     }
@@ -78,9 +230,9 @@ class BaseApi {
         return response.data as TApiModifyRecord<DynamicType>;
     }
 
-    public async restore<DynamicType>(id: string | number) {
+    public async restore<DynamicPayload, DynamicResponse>(id: string | number) {
         const response = await this.httpClient.patch(`${this.endpoint}/restore/${id}`);
-        return response.data as TApiModifyRecord<DynamicType>;
+        return response.data as TApiModifyRecord<DynamicResponse>;
     }
 
     public async restoreMany<DynamicType>(ids: string[]) {

@@ -12,6 +12,8 @@ type Props = {
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onBlur?: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     sxBox?: SxProps<Theme>;
+    disabled?: boolean;
+    type?: string
 };
 
 const InputForm: FC<Props> = ({
@@ -25,6 +27,8 @@ const InputForm: FC<Props> = ({
     name,
     onChange,
     onBlur,
+    disabled,
+    type = "text",
 }) => {
     return (
         <FormControl
@@ -48,11 +52,14 @@ const InputForm: FC<Props> = ({
                 value={value}
                 onChange={onChange}
                 onBlur={onBlur}
+                type={type}
                 sx={{
                     "& > .MuiFormHelperText-root": {
                         ml: 0,
                     },
                 }}
+                disabled={disabled}
+
             />
         </FormControl>
     );

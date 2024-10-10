@@ -34,7 +34,7 @@ const FormAddEditGroup: FC<Props> = ({
     onSubmit,
     libOptions,
     initialValues = {
-        mainLibrary: null,
+        mainLibrary: "",
         name: "",
         libraries: [],
     },

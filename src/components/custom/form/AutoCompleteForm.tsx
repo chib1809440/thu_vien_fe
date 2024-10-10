@@ -4,14 +4,17 @@ import {
     Checkbox,
     FormControl,
     FormHelperText,
+    IconButton,
     SxProps,
     TextField,
     Theme,
+    Tooltip,
     Typography,
 } from "@mui/material";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { ReactNode } from "react";
+import { IconPlus } from "@tabler/icons-react";
 
 const LIMIT_TAGS = 3;
 const LIMIT_TEXT = 40;
@@ -27,6 +30,9 @@ type Props<Type> = {
     error?: boolean;
     helperText?: ReactNode | string;
     onChange?: (value: Type[]) => void;
+    handleAdd?: () => void;
+    limitTags?: number;
+    limitText?: number;
 };
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -43,6 +49,9 @@ const AutocompleteForm = <Type extends Record<string, any>>({
     label,
     required,
     onChange,
+    handleAdd,
+    limitTags = LIMIT_TAGS,
+    limitText = LIMIT_TEXT,
 }: Props<Type>) => {
     return (
         <FormControl
@@ -53,18 +62,32 @@ const AutocompleteForm = <Type extends Record<string, any>>({
             fullWidth
             error={error}
         >
-            <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                {label} {required && <span className="required_text">(*)</span>}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography sx={{ fontWeight: "bold", mb: handleAdd ? 0 : 1.5 }}>
+                    {label} {required && <span className="required_text">(*)</span>}
+                </Typography>
+                {handleAdd && (
+                    <Tooltip title="Thêm mới" arrow placement="top">
+                        <IconButton
+                            size="small"
+                            onClick={handleAdd}
+                            sx={{ color: "#2595f1", ml: 1, p: 1.5 }}
+                        >
+                            <IconPlus size="18" />
+                        </IconButton>
+                    </Tooltip>
+                )}
+            </Box>
 
             <Autocomplete
                 multiple
-                limitTags={LIMIT_TAGS}
+                limitTags={limitTags}
                 id="multiple-limit-tags"
                 options={options}
                 value={value}
                 onChange={(_, value) => onChange?.(value)}
                 getOptionLabel={(option) => option?.[keyLabel]}
+                isOptionEqualToValue={(option, value) => option?.[keyLabel] === value?.[keyLabel]}
                 disableCloseOnSelect
                 renderInput={(params) => <TextField {...params} placeholder={placeholder} />}
                 fullWidth
@@ -74,10 +97,10 @@ const AutocompleteForm = <Type extends Record<string, any>>({
                     return (
                         <Typography variant="body2">
                             {value
-                                .slice(0, LIMIT_TAGS)
+                                .slice(0, limitTags)
                                 .map((option, _) =>
-                                    option?.[keyLabel].length > LIMIT_TEXT
-                                        ? option?.[keyLabel].slice(0, LIMIT_TEXT) + "..."
+                                    option?.[keyLabel].length > limitText
+                                        ? option?.[keyLabel].slice(0, limitText) + "..."
                                         : option?.[keyLabel]
                                 )
                                 .join(", ")}
@@ -87,7 +110,7 @@ const AutocompleteForm = <Type extends Record<string, any>>({
                                 sx={{ display: "inline" }}
                                 fontWeight="bold"
                             >
-                                {numTags > LIMIT_TAGS && ` +${numTags - LIMIT_TAGS} đã chọn`}
+                                {numTags > limitTags && ` +${numTags - limitTags} đã chọn`}
                             </Typography>
                         </Typography>
                     );

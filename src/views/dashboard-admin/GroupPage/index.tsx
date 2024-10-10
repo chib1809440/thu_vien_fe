@@ -1,4 +1,5 @@
-import { bgcolor, Box, Stack } from "@mui/system";
+import { Chip } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconEye, IconTrashXFilled } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
@@ -17,7 +18,6 @@ import { TGroup, TGroupCreate } from "../../../types/models/group.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditGroup from "./ui-components/FormAddEditGroup";
-import { Chip } from "@mui/material";
 import GroupDetailsDialog from "./ui-components/GroupDetailsDialog";
 
 const GroupPage = () => {
@@ -289,7 +289,7 @@ const GroupPage = () => {
     }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TGroupCreate => {
-        if (selectedEdit) {
+        if (selectedEdit) {            
             const libraries = [];
 
             if (selectedEdit?.libraries?.length === 0 && selectedEdit?.mainLibrary) {

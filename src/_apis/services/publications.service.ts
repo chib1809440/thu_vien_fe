@@ -5,8 +5,7 @@ import BaseApi from "./base-api";
 
 class PublicationsService extends BaseApi {
     public async getByBarcode<DynamicType>(id: string | number, params?: TFilter) {
-        const baseApi = new BaseApi("");
-        const httpClientInstance = baseApi.getHttpClient();
+        const httpClientInstance = this.getHttpClient();
         const response = await httpClientInstance.get(`${this.endpoint}/barcode/${id}`, { params });
         return response.data as TApiOneRecord<DynamicType>;
     }

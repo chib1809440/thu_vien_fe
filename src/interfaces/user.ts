@@ -10,6 +10,7 @@ export interface User extends AbstractEntity {
     birthday: string;
     avatar: string;
     gender: string;
+    barcode: string;
     roleId: Role;
 }
 export interface CreateUserModel {

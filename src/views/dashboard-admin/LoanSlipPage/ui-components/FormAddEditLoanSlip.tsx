@@ -4,7 +4,7 @@ import { FC, useEffect, useMemo, useRef, useState } from "react";
 import * as yup from "yup";
 import InputForm from "../../../../components/custom/form/InputForm";
 import SwitchForm from "../../../../components/custom/form/SwitchForm";
-import { TLoanSlipCreate } from "../../../../types/models/loanSlip.type";
+import { CreatePublication, TLoanSlip, TLoanSlipCreate } from "../../../../types/models/loanSlip.type";
 import DatePicker from "react-datepicker";
 import { Label } from "@mui/icons-material";
 import { vi } from "date-fns/locale";
@@ -52,15 +52,7 @@ function createData(
     return { name, calories, fat, carbs, protein };
 }
 
-type CreatePublication = {
-    publicationId: string;
-    name: string;
-    quantityLoan: number;
-    quantity: number,
-    shelvesQuantity: number,
-    position: string;
-    barcode: string;
-};
+
 
 type Props = {
     open: boolean;
@@ -68,6 +60,7 @@ type Props = {
     onSubmit?: (values: TLoanSlipCreate, resetForm: () => void) => void;
     isFetching?: boolean;
     initialValues: TLoanSlipCreate;
+    loanSlip?: TLoanSlip;
     isEditMode?: boolean;
 
 };
@@ -85,16 +78,23 @@ const FormAddEditLoanSlip: FC<Props> = ({
         note: "",
         borrowedDay: "",
         returnDay: "",
-        userId: ""
+        userId: "",
+        isPrint: false,
+        receiptDate: '',
+        status: 'đang xử lý',
     },
     isFetching = false,
     isEditMode = false,
+    loanSlip,
 }) => {
     const formik = useFormik<TLoanSlipCreate>({
         initialValues,
         validationSchema: schema,
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
+            const filteredPublications = publications.filter(
+                (publication) => publication.publicationId !== ''
+            );
             if (onSubmit) {
                 const createLoanSlip: TLoanSlipCreate = {
                     note: values.note,
@@ -103,9 +103,9 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     returnDay: returnDay.toDateString(),
                     isPrint: false,
                     receiptDate: new Date().toDateString(),
-                    status: 'duyệt',
-                    publications: publications
-
+                    status: 'đang xử lý',
+                    // Sử dụng danh sách publications đã lọc
+                    publications: filteredPublications,
                 }
                 onSubmit(createLoanSlip, resetForm);
             }
@@ -132,7 +132,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
             barcode: '',
         },
     ]);
-    const debouncedBarCodeUserId = useDebounce(barcodeUserId, 3000);
+    const debouncedBarCodeUserId = useDebounce(barcodeUserId, 500);
     useEffect(() => {
         if (debouncedBarCodeUserId) {
             // Chỉ gọi API khi có giá trị barcode
@@ -147,6 +147,32 @@ const FormAddEditLoanSlip: FC<Props> = ({
             fetchUser();
         }
     }, [debouncedBarCodeUserId]);
+    useEffect(() => {
+        if (loanSlip) {
+            setbarcodeUserId(loanSlip.userId.barcode);
+            setBorrowedDay(new Date(loanSlip.borrowedDay));
+            console.log(loanSlip.borrowedDay);
+            setReturnDay(new Date(loanSlip.returnDay));
+            let editPublications: CreatePublication[] = [];
+            // Giả sử loanSlip.publications là mảng chứa các đối tượng cần đẩy vào
+            console.log('khe khen', loanSlip.publications);
+            loanSlip.publications.forEach((publication) => {
+                const newPublication: CreatePublication = {
+                    publicationId: publication._id,
+                    name: publication.name,
+                    quantityLoan: publication.quantityLoan,
+                    quantity: publication.quantity,
+                    shelvesQuantity: publication.shelvesQuantity,
+                    position: publication.position,
+                    barcode: publication.barcode,
+                };
+                // Đẩy object vào mảng editPublications
+                editPublications.push(newPublication);
+            });
+            setPublications(editPublications);
+
+        }
+    }, [loanSlip])
     const handleBarCodeChange = (index: number, newBarCode: string) => {
         const updatedPublications = [...publications];
         updatedPublications[index].barcode = newBarCode;
@@ -474,8 +500,8 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                     Ghi chú
                                 </Typography>
                                 <TextareaAutosize
-                                    id="address"
-                                    name="address"
+                                    id="note"
+                                    name="note"
                                     value={formik.values.note}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}

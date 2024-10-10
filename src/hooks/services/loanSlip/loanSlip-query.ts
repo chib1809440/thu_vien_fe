@@ -20,7 +20,7 @@ export const useReFetchLoanSlip = () => {
 
     const revalidate = (params?: TFilter) => {
         queryClient.invalidateQueries({
-            queryKey: getQueryKeys({ key: GET_LOANSLIP_ID, ...params }),
+            queryKey: getQueryKeys({ key: GET_LOANSLIP, ...params }),
         });
     };
 

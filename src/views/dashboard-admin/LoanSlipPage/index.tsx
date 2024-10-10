@@ -1,4 +1,4 @@
-import { Switch } from "@mui/material";
+import { Button, Chip, Switch, useTheme } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconTrashXFilled } from "@tabler/icons-react";
@@ -17,6 +17,8 @@ import { TLoanSlip, TLoanSlipCreate } from "../../../types/models/loanSlip.type"
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditLoanSlip from "./ui-components/FormAddEditLoanSlip";
+import { formatDate } from "../../../helpers/formatDate";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 
 const LoanSlipPage = () => {
@@ -24,7 +26,7 @@ const LoanSlipPage = () => {
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
-
+    const theme = useTheme();
     const { data, isLoading } = useFetchLoanSlip({ limit, page, search });
     const mutationAdd = useAddLoanSlip();
     const mutationEdit = useEditLoanSlip();
@@ -48,13 +50,15 @@ const LoanSlipPage = () => {
         setSelectedEdit(row);
         setOpenAddEdit(true);
     };
+    const handleApprovalLoanSlip = (row: TLoanSlip) => {
 
+    };
     const handleClose = () => {
         setOpenAddEdit(false);
         setSelectedEdit(null);
     };
 
-    const handleSubmit = (values: TLoanSlipCreate) => {
+    const handleSubmit = (values: any) => {
         if (selectedEdit) {
             mutationEdit.mutate(
                 { ...values, _id: selectedEdit._id },
@@ -103,21 +107,77 @@ const LoanSlipPage = () => {
     const columns: TColumn<TLoanSlip>[] = useMemo(
         () => [
             {
-                id: "name",
+                id: "barcode",
                 disablePadding: "none",
-                label: "Tên phiếu mượn",
+                label: "Barcode",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
-                id: "description",
+                id: "borrowedDay",
                 disablePadding: "none",
-                label: "Mô tả",
+                label: "Ngày mượn",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => {
+                    return (
+                        <Box
+                        >
+                            {formatDate(row.borrowedDay)}
+                        </Box>
+                    );
+                },
             },
-
-
+            {
+                id: "returnDay",
+                disablePadding: "none",
+                label: "Ngày trả",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => {
+                    return (
+                        <Box
+                        >
+                            {formatDate(row.returnDay)}
+                        </Box>
+                    );
+                },
+            },
+            {
+                id: "status",
+                disablePadding: "none",
+                label: "Trạng thái",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => {
+                    return (
+                        <Box
+                        >
+                            {capitalizeFirstLetter(row.status)}
+                        </Box>
+                    );
+                },
+            },
+            {
+                id: "isAgree",
+                disablePadding: "none",
+                label: "Duyệt",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => {
+                    return (
+                        <Box
+                        >
+                            {
+                                row.isAgree === true ? <>
+                                </> : <>
+                                    <Button variant="contained" sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }} onClick={() => handleApprovalLoanSlip(row)}>Chưa duyệt</Button>
+                                </>
+                            }
+                        </Box>
+                    );
+                },
+            },
             {
                 id: "action",
                 disablePadding: "none",
@@ -210,14 +270,19 @@ const LoanSlipPage = () => {
                 note: selectedEdit.note,
                 borrowedDay: selectedEdit.borrowedDay,
                 returnDay: selectedEdit.returnDay,
+                receiptDate: selectedEdit.receiptDate,
+                isPrint: selectedEdit.isPrint,
+                status: 'đang xử lý',
                 userId: ''
             };
         }
-
         return {
             note: "",
             borrowedDay: "",
             returnDay: "",
+            receiptDate: "",
+            isPrint: false,
+            status: 'đang xử lý',
             userId: ''
         };
     }, [selectedEdit]);
@@ -235,6 +300,7 @@ const LoanSlipPage = () => {
                     open={openAddEdit}
                     onClose={handleClose}
                     initialValues={initialValues}
+                    loanSlip={selectedEdit}
                     onSubmit={handleSubmit}
                     isEditMode={selectedEdit ? true : false}
                 />

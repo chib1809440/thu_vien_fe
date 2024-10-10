@@ -33,12 +33,13 @@ interface CoverCardProps {
     authorNames?: any[],
     publisherNames?: any[],
     handleOpenView?: () => void;
-    open?: boolean
+    numberPage?: number;
 }
 
-const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, categoryNames, authorNames, publisherNames, handleOpenView, open = false }: CoverCardProps) => {
+const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, categoryNames, authorNames, publisherNames, handleOpenView, numberPage }: CoverCardProps) => {
     const theme = useTheme()
     const { borderRadius } = useConfig();
+
 
     return (
         <Paper sx={{ border: `1px solid ${theme.palette.grey[200]}`, height: handleOpenView ? "500px" : "300px", position: "relative" }}>
@@ -162,7 +163,7 @@ const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, cat
                         )}
                     </Box>
                     {
-                        subtitle === 'ấn phẩm mềm' && handleOpenView && (
+                        subtitle === 'ấn phẩm mềm' && handleOpenView && numberPage > 0 && (
                             <StyledButton
                                 color="primary"
                                 size="small"

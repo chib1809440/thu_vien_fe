@@ -8,12 +8,12 @@ type Props = {
     error?: boolean;
     helperText?: ReactNode | string;
     placeholder?: string;
-    value: string;
+    value: string | number;
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onBlur?: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     sxBox?: SxProps<Theme>;
     disabled?: boolean;
-    type?: string
+    type?: string;
 };
 
 const InputForm: FC<Props> = ({

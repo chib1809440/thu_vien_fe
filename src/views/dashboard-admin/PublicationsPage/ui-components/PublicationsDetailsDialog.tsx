@@ -17,10 +17,13 @@ const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: bool
     const handleClose = () => {
         setShowBook(false);
     };
+
+    const numberPage = publications?.images?.length
+    
     return (
         <>
             {
-                showBook && (
+                showBook && publications.images.length > 0 && (
                     <BookViewDialog onClose={handleClose} open={showBook} publications={publications} />
                 )
             }
@@ -49,7 +52,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: bool
                                     publisherNames={publications.publisherIds.length > 0 ? publications.publisherIds.map(publisher => publisher.name) : []}
                                     photo={publications?.priviewImage ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}` : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
                                     handleOpenView={handleOpenView}
-                                    open={showBook}
+                                    numberPage={numberPage}
                                 />
 
                             </Grid>

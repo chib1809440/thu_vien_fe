@@ -1,6 +1,6 @@
 import { Box } from "@mui/system";
 import { IconPencil } from "@tabler/icons";
-import { IconTrashXFilled } from "@tabler/icons-react";
+import { IconFileExcel, IconTrashXFilled } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
@@ -23,6 +23,7 @@ const StockProductPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
     const type = "";
+    const status = "";
 
     const [barcodeSearch, setBarcodeSearch] = useState("");
 
@@ -32,11 +33,13 @@ const StockProductPage = () => {
                 { compare: "", target: { search } },
                 { compare: "", target: { barcode: barcodeSearch } },
                 { compare: "", target: { type: "ấn phẩm cứng" } },
+                { compare: "", target: { status: "có sẵn" } },
             ]),
         [
             barcodeSearch,
             search,
-            type
+            type,
+            status
         ]
     );
 
@@ -86,6 +89,7 @@ const StockProductPage = () => {
     const handleBarcodeSearch = (value) => {
         setBarcodeSearch(value);
     };
+
 
     const columns: TColumn<TPublications>[] = useMemo(
         () => [
@@ -137,6 +141,7 @@ const StockProductPage = () => {
                 label: "SL tổng",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => (row.quantity + row.shelvesQuantity),
             },
             {
                 id: "action",
@@ -195,7 +200,7 @@ const StockProductPage = () => {
         return [
             {
                 label: "Xuất excel",
-                icon: <IconTrashXFilled size={20} stroke={1.5} />,
+                icon: <IconFileExcel size={20} stroke={1.5} />,
                 onClick: handleExcelExport,
             },
         ];
@@ -208,7 +213,6 @@ const StockProductPage = () => {
 
             return {
                 name: selectedEdit.name,
-                status: selectedEdit.status,
                 quantity: selectedEdit.quantity,
                 shelvesId: (selectedEdit.shelvesId as string) || "",
                 shelvesQuantity: selectedEdit.shelvesQuantity,
@@ -217,7 +221,6 @@ const StockProductPage = () => {
 
         return {
             name: "",
-            status: "không có sẵn",
             quantity: 0,
             shelvesQuantity: 0,
             shelvesId: "",

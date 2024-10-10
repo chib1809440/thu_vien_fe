@@ -113,8 +113,6 @@ const PublicationsPage = () => {
     };
 
     const handleViewDetails = (row: TPublications) => {
-        console.log(row);
-
         setPublicationsDetails(row);
         setOpenViewDetails(true);
     };
@@ -422,10 +420,7 @@ const PublicationsPage = () => {
     }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TPublicationsCreate => {
-        if (selectedEdit) {
-
-            console.log(selectedEdit);
-            
+        if (selectedEdit) {            
             return {
                 name: selectedEdit.name,
                 barcode: selectedEdit.barcode,

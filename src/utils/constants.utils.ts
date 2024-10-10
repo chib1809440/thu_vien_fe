@@ -14,7 +14,5 @@ export const statusOptions = [
 export const stockStatusOptions = [
     { value: 'trên kệ', label: 'Chuyển lên tủ - kệ' },
     { value: 'thanh lý', label: 'Ấn phẩm thanh lý' },
-    { value: 'bị hư hại', label: 'Ấn phẩm hư hỏng' },
-    { value: 'có sẵn', label: 'Ấn phẩm có sẵn' },
-    { value: 'không có sẵn', label: 'Ấn phẩm không có sẵn' },
+    { value: 'hư hỏng', label: 'Ấn phẩm hư hỏng' },
 ];

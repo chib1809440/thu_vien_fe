@@ -34,11 +34,15 @@ interface CoverCardProps {
     publisherNames?: any[],
     handleOpenView?: () => void;
     numberPage?: number;
+    quantityShelves?: number,
+    nameShelves?: string,
 }
 
-const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, categoryNames, authorNames, publisherNames, handleOpenView, numberPage }: CoverCardProps) => {
+const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, categoryNames, authorNames, publisherNames, handleOpenView, numberPage, quantityShelves, nameShelves }: CoverCardProps) => {
     const theme = useTheme()
     const { borderRadius } = useConfig();
+    console.log(nameShelves, quantityShelves);
+
 
 
     return (
@@ -90,9 +94,26 @@ const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, cat
                             <Typography variant="h4" display={"flex"} >
                                 Trạng thái:
                                 <StyledHeading ml={1} variant="h4" textTransform={"capitalize"}> {status}</StyledHeading>
+                                {
+                                    nameShelves && (
+                                        <Typography variant="h4" display={"flex"} ml={2} >
+                                            Tên kệ - tủ:
+                                            <StyledHeading ml={1} variant="h4" textTransform={"capitalize"}> {nameShelves}</StyledHeading>
+                                        </Typography>
+                                    )
+                                }
+                                {
+                                    quantityShelves > 0 && (
+                                        <Typography variant="h4" display={"flex"} ml={2} >
+                                            Số lượng ấn phẩm trên kệ:
+                                            <StyledHeading ml={1} variant="h4" textTransform={"capitalize"}> {quantityShelves}</StyledHeading>
+                                        </Typography>
+                                    )
+                                }
                             </Typography>
                         )
                     }
+
 
                     <Box sx={{
                         textTransform: "capitalize", mb: handleOpenView ? 0 : 2,
@@ -169,7 +190,7 @@ const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, cat
                                 size="small"
                                 startIcon={<IconBook stroke={2} />}
                                 variant="contained"
-                                sx={{ marginTop: 1 }}
+                                sx={{ marginTop: 1, width: '150px' }}
                                 onClick={handleOpenView}
                             >
                                 Xem sách

@@ -1,5 +1,6 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from "@mui/material";
+import { Box } from '@mui/system';
 import { Form, FormikProvider, useFormik } from "formik";
 import { FC, useMemo, useState } from "react";
 import * as yup from "yup";
@@ -20,18 +21,6 @@ type Props = {
 
 };
 
-const schema = yup.object().shape({
-    name: yup
-        .string()
-        .required("Vui lòng nhập tên"),
-    shelvesQuantity: yup
-        .number()
-        .required("Vui lòng nhập số lượng trên kệ")
-        .min(1, "Số lượng trên kệ phải lớn hơn 0")
-        .max(yup.ref('quantity'), "Số lượng trên kệ không được lớn hơn số lượng tồn kho")
-
-});
-
 const FormEditWarehouse: FC<Props> = ({
     open,
     onClose,
@@ -48,7 +37,6 @@ const FormEditWarehouse: FC<Props> = ({
 }) => {
     const formik = useFormik<TPublicationsCreate>({
         initialValues,
-        validationSchema: schema,
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
             if (onSubmit) {
@@ -63,29 +51,59 @@ const FormEditWarehouse: FC<Props> = ({
     );
 
     const [statusWarehouse, setStatusWarehouse] = useState("");
+    const [touchedMount, setTouchedMount] = useState({ additionalQuantity: false });
+    const [errorsMount, setErrorsMount] = useState({ additionalQuantity: '' });
 
-    const quantity = values.quantity || 0;
-    const shelvesQuantity = values.shelvesQuantity || 0;
-    const totalQuantity = quantity + shelvesQuantity;
+    const shelvesQuantity = parseInt(getFieldProps("shelvesQuantity").value, 10) || 0;
+    const stockQuantity = parseInt(getFieldProps("quantity").value, 10) || 0;
+    const totalQuantity = stockQuantity + shelvesQuantity;
 
-    const [operation, setOperation] = useState('add'); // Mặc định chọn "Thêm"
+    const [operation, setOperation] = useState('add');
     const [additionalQuantity, setAdditionalQuantity] = useState(0);
 
+    const validateAdditionalQuantity = (additionalQuantity, operation, shelvesQuantity, stockQuantity) => {
+        const value = Number(additionalQuantity);
+
+        if (operation === 'add') {
+            if (value <= 0) return "Số lượng phải lớn hơn 0";
+            if (value > stockQuantity) return `Số lượng muốn thêm không được lớn hơn số lượng tồn kho là ${stockQuantity}`;
+        } else if (operation === 'subtract') {
+            if (value <= 0) return "Số lượng phải lớn hơn 0";
+            if (value > shelvesQuantity) return `Số lượng muốn giảm không được lớn hơn số lượng trên kệ là ${shelvesQuantity}`;
+        }
+        return null;
+    };
+
     const handleQuantityChange = (e) => {
-        setAdditionalQuantity(e.target.value);
+        const value = e.target.value;
+    
+        const numericValue = Number(value);
+        if (numericValue < 0) {
+            setAdditionalQuantity(0); 
+            setErrorsMount({ ...errorsMount, additionalQuantity: "Số lượng không được âm" });
+            return; 
+        }
+    
+        setAdditionalQuantity(numericValue);
+        setTouchedMount({ ...touchedMount, additionalQuantity: true });
+        
+        const error = validateAdditionalQuantity(numericValue, operation, shelvesQuantity, stockQuantity);
+        setErrorsMount({ ...errorsMount, additionalQuantity: error });
     };
 
     const calculateTotal = () => {
-        const currentQuantity = parseInt(getFieldProps("shelvesQuantity").value, 10) || 0;
         const changeAmount = Number(additionalQuantity) || 0;
 
-        if (operation === 'subtract' && changeAmount > currentQuantity) {
-            alert("Số lượng giảm không được lớn hơn số lượng hiện có.");
-            return currentQuantity; // Không thay đổi số lượng
+        if (operation === 'subtract' && changeAmount > shelvesQuantity) {
+            return shelvesQuantity;
+        }
+        if (operation === 'add' && changeAmount > stockQuantity) {
+            return shelvesQuantity;
         }
 
-        return operation === 'add' ? currentQuantity + changeAmount : currentQuantity - changeAmount;
+        return operation === 'add' ? shelvesQuantity + changeAmount : shelvesQuantity - changeAmount;
     };
+
     return (
         <FormikProvider value={formik}>
             <Dialog
@@ -113,58 +131,46 @@ const FormEditWarehouse: FC<Props> = ({
 
                 <DialogContent>
                     <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
-                        <InputForm
-                            label="Tên ấn phẩm"
-                            error={touched.name && Boolean(errors.name)}
-                            helperText={touched.name && errors.name}
-                            {...getFieldProps("name")}
-                            disabled
-                        />
-                        <SelectForm
-                            label="Trạng thái ấn phẩm"
-                            options={stockStatusOptions}
-                            value={statusWarehouse}
-                            onChange={(event) => {
-                                setStatusWarehouse(event.target.value);
-                            }}
-                        />
+                        <Box sx={{ display: "flex", gap: 2 }}>
+                            <InputForm
+                                label="Tên ấn phẩm"
+                                error={touched.name && Boolean(errors.name)}
+                                helperText={touched.name && errors.name}
+                                {...getFieldProps("name")}
+                                disabled
+                            />
+                            <SelectForm
+                                label="Trạng thái ấn phẩm"
+                                text='Trạng thái:'
+                                options={stockStatusOptions}
+                                value={statusWarehouse}
+                                onChange={(event) => {
+                                    setStatusWarehouse(event.target.value);
+                                }}
+                            />
+                        </Box>
+
                         {statusWarehouse === "trên kệ" && (
                             <>
                                 <InputForm
-                                    label="Tổng số lượng ấn phẩm"
+                                    label="Tổng số lượng ấn phẩm sách"
                                     type="number"
                                     value={totalQuantity}
                                     disabled
                                 />
-                                <SelectForm
-                                    label="Chọn kệ tủ"
-                                    options={shelfOptions?.map((item) => ({
-                                        value: item._id,
-                                        label: item.name,
-                                    })) || []}
-                                    {...getFieldProps("shelvesId")}
-                                    error={touched.shelvesId && Boolean(errors.shelvesId)}
-                                    helperText={touched.shelvesId && errors.shelvesId}
-                                />
-                                <div>
-                                    <label>
-                                        <input
-                                            type="radio"
-                                            value="add"
-                                            checked={operation === 'add'}
-                                            onChange={() => setOperation('add')}
-                                        />
-                                        Thêm
-                                    </label>
-                                    <label>
-                                        <input
-                                            type="radio"
-                                            value="subtract"
-                                            checked={operation === 'subtract'}
-                                            onChange={() => setOperation('subtract')}
-                                        />
-                                        Giảm
-                                    </label>
+                                <Box sx={{ display: "flex", gap: 2 }}>
+                                    <SelectForm
+                                        label="Chọn kệ tủ"
+                                        text='Kệ - tủ:'
+                                        options={shelfOptions?.map((item) => ({
+                                            value: item._id,
+                                            label: item.name,
+                                        })) || []}
+                                        {...getFieldProps("shelvesId")}
+                                        error={touched.shelvesId && Boolean(errors.shelvesId)}
+                                        helperText={touched.shelvesId && errors.shelvesId}
+                                        disabled={Boolean(getFieldProps("shelvesId").value)}
+                                    />
 
                                     <InputForm
                                         label="Số lượng trên kệ"
@@ -173,20 +179,53 @@ const FormEditWarehouse: FC<Props> = ({
                                         {...getFieldProps("shelvesQuantity")}
                                         error={touched.shelvesQuantity && Boolean(errors.shelvesQuantity)}
                                         helperText={touched.shelvesQuantity && errors.shelvesQuantity}
+                                        disabled
                                     />
+                                </Box>
 
-                                    <InputForm
-                                        label="Số lượng thêm hoặc giảm"
-                                        type="number"
-                                        placeholder="Nhập số lượng"
-                                        value={additionalQuantity}
-                                        onChange={handleQuantityChange}
-                                    />
+                                <Box display={"flex"} my={1}>
+                                    <Typography>
+                                        <input
+                                            type="radio"
+                                            value="add"
+                                            checked={operation === 'add'}
+                                            onChange={() => {
+                                                setOperation('add');
+                                                const error = validateAdditionalQuantity(additionalQuantity, 'add', shelvesQuantity, stockQuantity);
+                                                setErrorsMount({ ...errorsMount, additionalQuantity: error }); 
+                                                setTouchedMount({ ...touchedMount, additionalQuantity: true }); 
+                                            }}
+                                        />
+                                        Thêm
+                                    </Typography>
+                                    <Typography ml={2}>
+                                        <input
+                                            type="radio"
+                                            value="subtract"
+                                            checked={operation === 'subtract'}
+                                            onChange={() => {
+                                                setOperation('subtract');
+                                                const error = validateAdditionalQuantity(additionalQuantity, 'subtract', shelvesQuantity, stockQuantity);
+                                                setErrorsMount({ ...errorsMount, additionalQuantity: error }); 
+                                                setTouchedMount({ ...touchedMount, additionalQuantity: true }); 
+                                            }}
+                                        />
+                                        Giảm
+                                    </Typography>
+                                </Box>
+                                <InputForm
+                                    label={operation === 'add' ? "Số lượng muốn thêm lên kệ" : "Số lượng muốn giảm từ kệ"}
+                                    type="number"
+                                    placeholder="Nhập số lượng"
+                                    value={additionalQuantity}
+                                    onChange={handleQuantityChange}
+                                    error={touchedMount.additionalQuantity && Boolean(errorsMount.additionalQuantity)} 
+                                    helperText={touchedMount.additionalQuantity && errorsMount.additionalQuantity ? errorsMount.additionalQuantity : undefined} // Truyền helperText
+                                />
 
-                                    <div>
-                                        <strong>Tổng số lượng trên kệ: {calculateTotal()}</strong>
-                                    </div>
-                                </div>
+                                <Typography>
+                                    <strong>Tổng số lượng trên kệ còn: <span style={{ color: "blue" }}>{calculateTotal()}</span> ấn phẩm sách</strong>
+                                </Typography>
                             </>
                         )}
 

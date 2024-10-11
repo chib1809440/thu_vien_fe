@@ -1,11 +1,252 @@
-import React from 'react'
+import { Box } from "@mui/system";
+import { IconPencil } from "@tabler/icons";
+import { IconFileExcel } from "@tabler/icons-react";
+import { useCallback, useMemo, useState } from "react";
+import { toast } from "react-toastify";
+import ActionsForm from "../../../components/custom/form/ActionForm";
+import TableList from "../../../components/custom/table-list/TableList";
+import { useEditLiquidation } from "../../../hooks/services/liquidation/liquidation-mutation";
+import { useFetchLiquidation, useReFetchLiquidation } from "../../../hooks/services/liquidation/liquidation-query";
+import useQueryString from "../../../hooks/services/useQueryString";
+import { TColumn, TMenuOption } from "../../../types/common/table";
+import { TLiquidation, TLiquidationCreate } from "../../../types/models/liquidation.type";
+import IBreadcrumsCustom from "../../../ui-component/breadcrums";
+import MainCard from "../../../ui-component/cards/MainCard";
+import { parserParams } from "../../../utils/object";
+import FormEditLiquidation from "./ui-components/FormEditLiquidation";
+import { TPublications } from "../../../types/models/publications.type";
 
-type Props = {}
 
-const LiquidationProductPage = (props: Props) => {
-  return (
-    <div>LiquidationProductPage</div>
-  )
-}
+const LiquidationProductPage = () => {
+    const queryString = useQueryString();
+    const page = queryString?.page ?? 1;
+    const limit = queryString?.limit ?? 5;
+    const search = queryString?.q ?? "";
+    const type = "";
+    const status = "";
 
-export default LiquidationProductPage
+    const [barcodeSearch, setBarcodeSearch] = useState("");
+
+    const filter = useMemo(
+        () =>
+            parserParams([
+                { compare: "", target: { search } },
+                { compare: "", target: { barcode: barcodeSearch } },
+            ]),
+        [
+            barcodeSearch,
+            search,
+            type,
+            status
+        ]
+    );
+
+    const { data, isLoading } = useFetchLiquidation({
+        limit,
+        page,
+    });   
+
+    const mutationEdit = useEditLiquidation();
+    const revalidate = useReFetchLiquidation();
+
+    const [openAddEdit, setOpenAddEdit] = useState(false);
+    const [selectedEdit, setSelectedEdit] = useState<TLiquidation | null>(null);
+
+    const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
+
+    const handleEditLiquidation = (row: TLiquidation) => {
+        setSelectedEdit(row);
+        setOpenAddEdit(true);
+    };
+
+    const handleClose = () => {
+        setOpenAddEdit(false);
+        setSelectedEdit(null);
+    };
+
+    const handleSubmit = (values: TLiquidationCreate) => {
+        console.log(values);
+        return;
+    };
+
+    const handleBarcodeSearch = (value) => {
+        setBarcodeSearch(value);
+    };
+
+
+    const columns: TColumn<TLiquidation>[] = useMemo(
+        () => [
+            {
+                id: "barcode",
+                disablePadding: "none",
+                label: "Mã(ISBN)",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => ((row.publicationId as TPublications)?.barcode),
+            },
+            {
+                id: "name",
+                disablePadding: "none",
+                label: "Tên ấn phẩm",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => ((row.publicationId as TPublications)?.name),
+            },
+            {
+                id: "quantity",
+                disablePadding: "none",
+                label: "SL sách hư hỏng",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+            },
+            {
+                id: "position",
+                disablePadding: "none",
+                label: "Vị trí hư hỏng",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+            },
+            {
+                id: "quantity",
+                disablePadding: "none",
+                label: "SL sách thanh lý",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+            },
+            {
+                id: "quantity",
+                disablePadding: "none",
+                label: "SL tổng",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+            },
+            {
+                id: "action",
+                disablePadding: "none",
+                align: "center",
+                label: "Hành động",
+                render: (row) => {
+                    return (
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                gap: 1,
+                            }}
+                        >
+                            <IconPencil
+                                onClick={() => handleEditLiquidation(row)}
+                                size={20}
+                                stroke={1.5}
+                            />
+                        </Box>
+                    );
+                },
+            },
+        ],
+        [handleEditLiquidation]
+    );
+
+    const handleCheckedDelete = useCallback((row: TLiquidation, checked: boolean) => {
+        setCheckedDelete((prev) => {
+            if (prev.includes(row._id)) {
+                return prev.filter((t) => t !== row._id);
+            }
+            return [...prev, row._id];
+        });
+    }, []);
+
+    const handleCheckedDeleteAll = useCallback(
+        (checked: boolean) => {
+            if (data?.data?.result?.length === 0) return;
+            setCheckedDelete((prev) => (checked ? data?.data?.result.map((t) => t._id) : []));
+        },
+        [data]
+    );
+
+    const checkedAll = useMemo(() => {
+        if (data?.data?.result?.length === 0 || checkedDelete.length === 0) return false;
+        return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
+    }, [checkedDelete, data]);
+
+
+    const handleExcelExport = () => { }
+
+    const actionMenus = useMemo((): TMenuOption[] => {
+        return [
+            {
+                label: "Xuất excel",
+                icon: <IconFileExcel size={20} stroke={1.5} />,
+                onClick: handleExcelExport,
+            },
+        ];
+    }, []);
+
+    const initialValues = useMemo((): TLiquidationCreate => {
+
+        if (selectedEdit) {
+            console.log(selectedEdit);
+
+            return {
+                note: selectedEdit.note,
+                quantity: selectedEdit.quantity,
+                reason: selectedEdit.reason,
+                status: selectedEdit.status,
+                position: selectedEdit.position,
+                publicationId: (selectedEdit.publicationId as string) || "",
+            };
+        }
+
+        return {
+            note: "",
+            quantity: 0,
+            status: "hư hỏng",
+            reason: "",
+            position: "trong kho",
+            publicationId: "",
+        };
+    }, [selectedEdit]);
+
+    return (
+        <div>
+            <IBreadcrumsCustom
+                profile="Quản lý kho"
+                mainProfile="Danh sách thanh lý - hư hỏng"
+                link="/quan-ly-kho/kho"
+            />
+
+            {openAddEdit && (
+                <FormEditLiquidation
+                    open={openAddEdit}
+                    onClose={handleClose}
+                    initialValues={initialValues}
+                    onSubmit={handleSubmit}
+                />
+            )}
+
+            <MainCard>
+
+                <ActionsForm
+                    actions={actionMenus}
+                    barcode={true}
+                    barcodeSearch={barcodeSearch}
+                    handleBarcodeSearch={handleBarcodeSearch}
+                />
+
+                <TableList
+                    checked={checkedDelete}
+                    columns={columns}
+                    rows={data?.data?.result || []}
+                    onChecked={handleCheckedDelete}
+                    onToggleCheckedAll={handleCheckedDeleteAll}
+                    checkedAll={checkedAll}
+                    isLoading={isLoading}
+                    keyChecked="_id"
+                    pagination={data?.data?.meta}
+                />
+            </MainCard>
+        </div>
+    );
+};
+export default LiquidationProductPage;

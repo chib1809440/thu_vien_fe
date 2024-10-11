@@ -118,15 +118,28 @@ const Uploadimage = forwardRef<UploadAvatarRefProps, UploadAvatarProps>(
                     flexDirection={"column"}
                     onClick={handleClickUpload}
                 >
-                    <input
-                        accept="image/*"
-                        multiple={false}
-                        type="file"
-                        tabIndex={-1}
-                        style={{ display: "none" }}
-                        ref={imageRef}
-                        onChange={handleChangeImage}
-                    />
+                    {typeHardPublications ? (
+                        <input
+                            accept={"image/*"}
+                            multiple={false}
+                            type="file"
+                            tabIndex={-1}
+                            style={{ display: "none" }}
+                            ref={imageRef}
+                            onChange={handleChangeImage}
+                        />
+                    ) : (
+                        <input
+                            accept={"application/pdf"}
+                            multiple={false}
+                            type="file"
+                            tabIndex={-1}
+                            style={{ display: "none" }}
+                            ref={imageRef}
+                            onChange={handleChangeImage}
+                        />
+                    )}
+                    
                     {typeHardPublications ? (
                         imageBlob ? (
                             <img

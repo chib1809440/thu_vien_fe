@@ -1,6 +1,6 @@
 import { Box } from "@mui/system";
 import { IconPencil } from "@tabler/icons";
-import { IconFileExcel, IconTrashXFilled } from "@tabler/icons-react";
+import { IconFileExcel } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
@@ -122,18 +122,19 @@ const StockProductPage = () => {
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
-                id: "quantity",
+                id: "quantityLoan",
                 disablePadding: "none",
                 label: "SL mượn",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
-                id: "quantity",
+                id: "quantityLiquidationDamaged",
                 disablePadding: "none",
                 label: "SL hư hỏng - thanh lý",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => (row.quantityLiquidation + row.quantityDamaged),
             },
             {
                 id: "quantity",
@@ -141,7 +142,7 @@ const StockProductPage = () => {
                 label: "SL tổng",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => (row.quantity + row.shelvesQuantity),
+                render: (row) => (row.quantity + row.shelvesQuantity + row.quantityLiquidation + row.quantityDamaged + row.quantityLoan),
             },
             {
                 id: "action",

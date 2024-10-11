@@ -1,6 +1,5 @@
 import { TApiOneRecord } from "../../types/api/api.type";
 import { TFilter } from "../../types/models/entity-common.type";
-import axiosServices from "../../utils/axios";
 import BaseApi from "./base-api";
 
 class PublicationsService extends BaseApi {
@@ -8,6 +7,17 @@ class PublicationsService extends BaseApi {
         const httpClientInstance = this.getHttpClient();
         const response = await httpClientInstance.get(`${this.endpoint}/barcode/${id}`, { params });
         return response.data as TApiOneRecord<DynamicType>;
+    }
+
+    public async importExcel(file: File) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const response = await this.httpClient.post(`${this.endpoint}/import-excel`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+        return response.data as TApiOneRecord<boolean>;
     }
 }
 

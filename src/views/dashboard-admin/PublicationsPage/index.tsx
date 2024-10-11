@@ -420,7 +420,7 @@ const PublicationsPage = () => {
     }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TPublicationsCreate => {
-        if (selectedEdit) {            
+        if (selectedEdit) {                       
             return {
                 name: selectedEdit.name,
                 barcode: selectedEdit.barcode,

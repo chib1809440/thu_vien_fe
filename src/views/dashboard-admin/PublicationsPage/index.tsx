@@ -425,7 +425,7 @@ const PublicationsPage = () => {
         if (selectedEdit) {
 
             console.log(selectedEdit);
-            
+
             return {
                 name: selectedEdit.name,
                 barcode: selectedEdit.barcode,
@@ -488,8 +488,8 @@ const PublicationsPage = () => {
                         selectedEdit?.priviewImage
                             ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.priviewImage}`
                             : selectedEdit?.path
-                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
-                            : ""
+                                ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
+                                : ""
                     }
                 />
             )}
@@ -544,7 +544,6 @@ const PublicationsPage = () => {
                     barcodeSearch={barcodeSearch}
                     handleBarcodeSearch={handleBarcodeSearch}
                 />
-
                 <FilterByItems
                     selectedPublications={selectedPublications}
                     handlePublicationsFilterChange={handlePublicationsFilterChange}
@@ -564,7 +563,6 @@ const PublicationsPage = () => {
                     barcodeSearch={barcodeSearch}
                     handleBarcodeSearch={handleBarcodeSearch}
                 />
-
                 <TableList
                     checked={checkedDelete}
                     columns={columns}

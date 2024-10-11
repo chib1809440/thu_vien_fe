@@ -23,6 +23,8 @@ import useDebounceArray from "../../../../hooks/useDebounceArray";
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconCirclePlusFilled } from "@tabler/icons-react";
+import PrintLoanSlip from "./PrintLoanSlip";
+import { useReactToPrint } from "react-to-print";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -135,6 +137,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
         },
     ]);
     const debouncedBarCodeUserId = useDebounce(barcodeUserId, 500);
+
     useEffect(() => {
         if (debouncedBarCodeUserId) {
             // Chỉ gọi API khi có giá trị barcode
@@ -281,7 +284,10 @@ const FormAddEditLoanSlip: FC<Props> = ({
         };
         setPublications([...publications, newPublication]); // Thêm phần tử mới vào danh sách
     };
-
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+    });
     return (
         <FormikProvider value={formik}>
             <Dialog
@@ -302,6 +308,11 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
                 <DialogContent sx={{ p: 8 }} >
                     <Grid container spacing={2}>
+                        <Box sx={{ display: 'none' }}>
+                            {
+                                loanSlip && <PrintLoanSlip ref={componentRef} loanSlip={loanSlip} />
+                            }
+                        </Box>
                         <Grid item xs={12}>
                             <Box >
                                 <Chip
@@ -462,8 +473,11 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                         <TableRow>
                                             <StyledTableCell align="left" width='20%'>BarCode</StyledTableCell>
                                             <StyledTableCell align="left" width='40%'>Tên sách</StyledTableCell>
-                                            <StyledTableCell align="left" width='15%'>Số lượng trong kho</StyledTableCell>
-                                            <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell>
+                                            {
+                                                isEditMode === false && <>  <StyledTableCell align="left" width='15%'>Số lượng trong kho</StyledTableCell>
+                                                    <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell></>
+                                            }
+
                                             <StyledTableCell align="center" width='15%'>Số lượng</StyledTableCell>
                                             <StyledTableCell align="center" width='15%'>Vị trí</StyledTableCell>
                                             <StyledTableCell align="center" width='15%'>Hành động</StyledTableCell>
@@ -490,12 +504,15 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                 <StyledTableCell align="left">
                                                     {row.name || "Không có dữ liệu"}
                                                 </StyledTableCell>
-                                                <StyledTableCell align="left">
-                                                    {row.quantity}
-                                                </StyledTableCell>
-                                                <StyledTableCell align="left">
-                                                    {row.shelvesQuantity}
-                                                </StyledTableCell>
+                                                {
+                                                    isEditMode === false && <> <StyledTableCell align="left">
+                                                        {row.quantity}
+                                                    </StyledTableCell>
+                                                        <StyledTableCell align="left">
+                                                            {row.shelvesQuantity}
+                                                        </StyledTableCell></>
+                                                }
+
                                                 <StyledTableCell align="center">
                                                     <Box style={{ width: "100%" }}>
                                                         <TextField
@@ -566,10 +583,22 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     </Grid>
                 </DialogContent>
 
-                <DialogActions>
+                <DialogActions sx={{ p: 4 }}>
                     <Button disabled={isFetching} onClick={onClose} color="error">
                         Huỷ
                     </Button>
+                    {
+
+                        isEditMode &&  <Button onClick={handlePrint} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                            Trả sách
+                        </Button>
+                    }
+                    {
+
+                        isEditMode && <Button onClick={handlePrint} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                            In
+                        </Button>
+                    }
                     <Button
                         disabled={isFetching}
                         onClick={handleSubmit as () => void}

@@ -1,4 +1,4 @@
-import { TApiOneRecord } from "../../types/api/api.type";
+import { TApiModifyRecord, TApiOneRecord } from "../../types/api/api.type";
 import { TFilter } from "../../types/models/entity-common.type";
 import BaseApi from "./base-api";
 
@@ -18,6 +18,16 @@ class PublicationsService extends BaseApi {
             },
         });
         return response.data as TApiOneRecord<boolean>;
+    }
+
+    public async updateShelvesQuantity(data: { id: string; shelvesId: string; quantity: number }) {
+        const response = await this.httpClient.patch(`${this.endpoint}/shelves-quantity`, data);
+        return response.data;
+    }
+
+    public async updateStockQuantity(data: { quantity: number }) {
+        const response = await this.httpClient.patch(`${this.endpoint}/stock-quantity`, data);
+        return response.data;
     }
 }
 

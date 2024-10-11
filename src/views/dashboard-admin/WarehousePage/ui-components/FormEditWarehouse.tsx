@@ -1,24 +1,30 @@
-import CloseIcon from '@mui/icons-material/Close';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from "@mui/material";
-import { Box } from '@mui/system';
+import CloseIcon from "@mui/icons-material/Close";
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+    Typography,
+} from "@mui/material";
+import { Box } from "@mui/system";
 import { Form, FormikProvider, useFormik } from "formik";
 import { FC, useMemo, useState } from "react";
-import * as yup from "yup";
 import InputForm from "../../../../components/custom/form/InputForm";
 import SelectForm from "../../../../components/custom/form/SelectForm";
 import { TPublicationsCreate } from "../../../../types/models/publications.type";
-import { TShelves } from '../../../../types/models/shelves';
+import { TShelves } from "../../../../types/models/shelves";
 import { stockStatusOptions } from "../../../../utils/constants.utils";
 
 type Props = {
     open: boolean;
     onClose: () => void;
-    onSubmit?: (values: TPublicationsCreate, resetForm: () => void) => void;
+    onSubmit?: (values: TPublicationsCreate & { operation: string }, resetForm: () => void) => void;
     isFetching?: boolean;
     initialValues: TPublicationsCreate;
     isEditMode?: boolean;
     shelfOptions?: TShelves[];
-
 };
 
 const FormEditWarehouse: FC<Props> = ({
@@ -35,12 +41,33 @@ const FormEditWarehouse: FC<Props> = ({
     isFetching = false,
     isEditMode = false,
 }) => {
+    const [statusWarehouse, setStatusWarehouse] = useState("");
+    const [touchedMount, setTouchedMount] = useState({ additionalQuantity: false });
+    const [errorsMount, setErrorsMount] = useState({ additionalQuantity: "" });
+
+    const [operation, setOperation] = useState("add");
+    const [additionalQuantity, setAdditionalQuantity] = useState(0);
+
     const formik = useFormik<TPublicationsCreate>({
         initialValues,
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
+            if (touchedMount.additionalQuantity && errorsMount.additionalQuantity) {
+                return;
+            }
+
+            const changeAmount = Number(additionalQuantity) || 0;
+
             if (onSubmit) {
-                onSubmit(values, resetForm);
+                onSubmit(
+                    {
+                        ...values,
+                        operation,
+                        shelvesQuantity: changeAmount,
+                        quantity: changeAmount,
+                    },
+                    resetForm
+                );
             }
         },
     });
@@ -50,58 +77,65 @@ const FormEditWarehouse: FC<Props> = ({
         [formik]
     );
 
-    const [statusWarehouse, setStatusWarehouse] = useState("");
-    const [touchedMount, setTouchedMount] = useState({ additionalQuantity: false });
-    const [errorsMount, setErrorsMount] = useState({ additionalQuantity: '' });
-
     const shelvesQuantity = parseInt(getFieldProps("shelvesQuantity").value, 10) || 0;
     const stockQuantity = parseInt(getFieldProps("quantity").value, 10) || 0;
     const totalQuantity = stockQuantity + shelvesQuantity;
 
-    const [operation, setOperation] = useState('add');
-    const [additionalQuantity, setAdditionalQuantity] = useState(0);
-
-    const validateAdditionalQuantity = (additionalQuantity, operation, shelvesQuantity, stockQuantity) => {
+    const validateAdditionalQuantity = (
+        additionalQuantity,
+        operation,
+        shelvesQuantity,
+        stockQuantity
+    ) => {
         const value = Number(additionalQuantity);
 
-        if (operation === 'add') {
+        if (operation === "add") {
             if (value <= 0) return "Số lượng phải lớn hơn 0";
-            if (value > stockQuantity) return `Số lượng muốn thêm không được lớn hơn số lượng tồn kho là ${stockQuantity}`;
-        } else if (operation === 'subtract') {
+            if (value > stockQuantity)
+                return `Số lượng muốn thêm không được lớn hơn số lượng tồn kho là ${stockQuantity}`;
+        } else if (operation === "subtract") {
             if (value <= 0) return "Số lượng phải lớn hơn 0";
-            if (value > shelvesQuantity) return `Số lượng muốn giảm không được lớn hơn số lượng trên kệ là ${shelvesQuantity}`;
+            if (value > shelvesQuantity)
+                return `Số lượng muốn giảm không được lớn hơn số lượng trên kệ là ${shelvesQuantity}`;
         }
         return null;
     };
 
     const handleQuantityChange = (e) => {
         const value = e.target.value;
-    
+
         const numericValue = Number(value);
         if (numericValue < 0) {
-            setAdditionalQuantity(0); 
+            setAdditionalQuantity(0);
             setErrorsMount({ ...errorsMount, additionalQuantity: "Số lượng không được âm" });
-            return; 
+            return;
         }
-    
+
         setAdditionalQuantity(numericValue);
         setTouchedMount({ ...touchedMount, additionalQuantity: true });
-        
-        const error = validateAdditionalQuantity(numericValue, operation, shelvesQuantity, stockQuantity);
+
+        const error = validateAdditionalQuantity(
+            numericValue,
+            operation,
+            shelvesQuantity,
+            stockQuantity
+        );
         setErrorsMount({ ...errorsMount, additionalQuantity: error });
     };
 
     const calculateTotal = () => {
         const changeAmount = Number(additionalQuantity) || 0;
 
-        if (operation === 'subtract' && changeAmount > shelvesQuantity) {
+        if (operation === "subtract" && changeAmount > shelvesQuantity) {
             return shelvesQuantity;
         }
-        if (operation === 'add' && changeAmount > stockQuantity) {
+        if (operation === "add" && changeAmount > stockQuantity) {
             return shelvesQuantity;
         }
 
-        return operation === 'add' ? shelvesQuantity + changeAmount : shelvesQuantity - changeAmount;
+        return operation === "add"
+            ? shelvesQuantity + changeAmount
+            : shelvesQuantity - changeAmount;
     };
 
     return (
@@ -122,8 +156,8 @@ const FormEditWarehouse: FC<Props> = ({
                     <IconButton
                         aria-label="close"
                         onClick={onClose}
-                        color='error'
-                        sx={{ position: 'absolute', right: 8, top: 2 }}
+                        color="error"
+                        sx={{ position: "absolute", right: 8, top: 2 }}
                     >
                         <CloseIcon />
                     </IconButton>
@@ -141,7 +175,7 @@ const FormEditWarehouse: FC<Props> = ({
                             />
                             <SelectForm
                                 label="Trạng thái ấn phẩm"
-                                text='Trạng thái:'
+                                text="Trạng thái:"
                                 options={stockStatusOptions}
                                 value={statusWarehouse}
                                 onChange={(event) => {
@@ -161,11 +195,13 @@ const FormEditWarehouse: FC<Props> = ({
                                 <Box sx={{ display: "flex", gap: 2 }}>
                                     <SelectForm
                                         label="Chọn kệ tủ"
-                                        text='Kệ - tủ:'
-                                        options={shelfOptions?.map((item) => ({
-                                            value: item._id,
-                                            label: item.name,
-                                        })) || []}
+                                        text="Kệ - tủ:"
+                                        options={
+                                            shelfOptions?.map((item) => ({
+                                                value: item._id,
+                                                label: item.name,
+                                            })) || []
+                                        }
                                         {...getFieldProps("shelvesId")}
                                         error={touched.shelvesId && Boolean(errors.shelvesId)}
                                         helperText={touched.shelvesId && errors.shelvesId}
@@ -177,8 +213,13 @@ const FormEditWarehouse: FC<Props> = ({
                                         type="number"
                                         placeholder="Nhập số lượng lên kệ"
                                         {...getFieldProps("shelvesQuantity")}
-                                        error={touched.shelvesQuantity && Boolean(errors.shelvesQuantity)}
-                                        helperText={touched.shelvesQuantity && errors.shelvesQuantity}
+                                        error={
+                                            touched.shelvesQuantity &&
+                                            Boolean(errors.shelvesQuantity)
+                                        }
+                                        helperText={
+                                            touched.shelvesQuantity && errors.shelvesQuantity
+                                        }
                                         disabled
                                     />
                                 </Box>
@@ -188,12 +229,23 @@ const FormEditWarehouse: FC<Props> = ({
                                         <input
                                             type="radio"
                                             value="add"
-                                            checked={operation === 'add'}
+                                            checked={operation === "add"}
                                             onChange={() => {
-                                                setOperation('add');
-                                                const error = validateAdditionalQuantity(additionalQuantity, 'add', shelvesQuantity, stockQuantity);
-                                                setErrorsMount({ ...errorsMount, additionalQuantity: error }); 
-                                                setTouchedMount({ ...touchedMount, additionalQuantity: true }); 
+                                                setOperation("add");
+                                                const error = validateAdditionalQuantity(
+                                                    additionalQuantity,
+                                                    "add",
+                                                    shelvesQuantity,
+                                                    stockQuantity
+                                                );
+                                                setErrorsMount({
+                                                    ...errorsMount,
+                                                    additionalQuantity: error,
+                                                });
+                                                setTouchedMount({
+                                                    ...touchedMount,
+                                                    additionalQuantity: true,
+                                                });
                                             }}
                                         />
                                         Thêm
@@ -202,29 +254,56 @@ const FormEditWarehouse: FC<Props> = ({
                                         <input
                                             type="radio"
                                             value="subtract"
-                                            checked={operation === 'subtract'}
+                                            checked={operation === "subtract"}
                                             onChange={() => {
-                                                setOperation('subtract');
-                                                const error = validateAdditionalQuantity(additionalQuantity, 'subtract', shelvesQuantity, stockQuantity);
-                                                setErrorsMount({ ...errorsMount, additionalQuantity: error }); 
-                                                setTouchedMount({ ...touchedMount, additionalQuantity: true }); 
+                                                setOperation("subtract");
+                                                const error = validateAdditionalQuantity(
+                                                    additionalQuantity,
+                                                    "subtract",
+                                                    shelvesQuantity,
+                                                    stockQuantity
+                                                );
+                                                setErrorsMount({
+                                                    ...errorsMount,
+                                                    additionalQuantity: error,
+                                                });
+                                                setTouchedMount({
+                                                    ...touchedMount,
+                                                    additionalQuantity: true,
+                                                });
                                             }}
                                         />
                                         Giảm
                                     </Typography>
                                 </Box>
                                 <InputForm
-                                    label={operation === 'add' ? "Số lượng muốn thêm lên kệ" : "Số lượng muốn giảm từ kệ"}
+                                    label={
+                                        operation === "add"
+                                            ? "Số lượng muốn thêm lên kệ"
+                                            : "Số lượng muốn giảm từ kệ"
+                                    }
                                     type="number"
                                     placeholder="Nhập số lượng"
                                     value={additionalQuantity}
                                     onChange={handleQuantityChange}
-                                    error={touchedMount.additionalQuantity && Boolean(errorsMount.additionalQuantity)} 
-                                    helperText={touchedMount.additionalQuantity && errorsMount.additionalQuantity ? errorsMount.additionalQuantity : undefined} // Truyền helperText
+                                    error={
+                                        touchedMount.additionalQuantity &&
+                                        Boolean(errorsMount.additionalQuantity)
+                                    }
+                                    helperText={
+                                        touchedMount.additionalQuantity &&
+                                        errorsMount.additionalQuantity
+                                            ? errorsMount.additionalQuantity
+                                            : undefined
+                                    } // Truyền helperText
                                 />
 
                                 <Typography>
-                                    <strong>Tổng số lượng trên kệ còn: <span style={{ color: "blue" }}>{calculateTotal()}</span> ấn phẩm sách</strong>
+                                    <strong>
+                                        Tổng số lượng trên kệ còn:{" "}
+                                        <span style={{ color: "blue" }}>{calculateTotal()}</span> ấn
+                                        phẩm sách
+                                    </strong>
                                 </Typography>
                             </>
                         )}

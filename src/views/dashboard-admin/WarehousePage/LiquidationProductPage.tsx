@@ -6,7 +6,10 @@ import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import { useEditLiquidation } from "../../../hooks/services/liquidation/liquidation-mutation";
-import { useFetchLiquidation, useReFetchLiquidation } from "../../../hooks/services/liquidation/liquidation-query";
+import {
+    useFetchLiquidation,
+    useReFetchLiquidation,
+} from "../../../hooks/services/liquidation/liquidation-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TLiquidation, TLiquidationCreate } from "../../../types/models/liquidation.type";
@@ -15,7 +18,6 @@ import MainCard from "../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../utils/object";
 import FormEditLiquidation from "./ui-components/FormEditLiquidation";
 import { TPublications } from "../../../types/models/publications.type";
-
 
 const LiquidationProductPage = () => {
     const queryString = useQueryString();
@@ -33,18 +35,13 @@ const LiquidationProductPage = () => {
                 { compare: "", target: { search } },
                 { compare: "", target: { barcode: barcodeSearch } },
             ]),
-        [
-            barcodeSearch,
-            search,
-            type,
-            status
-        ]
+        [barcodeSearch, search, type, status]
     );
 
     const { data, isLoading } = useFetchLiquidation({
         limit,
         page,
-    });   
+    });
 
     const mutationEdit = useEditLiquidation();
     const revalidate = useReFetchLiquidation();
@@ -73,7 +70,6 @@ const LiquidationProductPage = () => {
         setBarcodeSearch(value);
     };
 
-
     const columns: TColumn<TLiquidation>[] = useMemo(
         () => [
             {
@@ -82,7 +78,7 @@ const LiquidationProductPage = () => {
                 label: "Mã(ISBN)",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => ((row.publicationId as TPublications)?.barcode),
+                render: (row) => (row.publicationId as TPublications)?.barcode,
             },
             {
                 id: "name",
@@ -90,7 +86,7 @@ const LiquidationProductPage = () => {
                 label: "Tên ấn phẩm",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => ((row.publicationId as TPublications)?.name),
+                render: (row) => (row.publicationId as TPublications)?.name,
             },
             {
                 id: "quantity",
@@ -170,8 +166,7 @@ const LiquidationProductPage = () => {
         return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
     }, [checkedDelete, data]);
 
-
-    const handleExcelExport = () => { }
+    const handleExcelExport = () => {};
 
     const actionMenus = useMemo((): TMenuOption[] => {
         return [
@@ -184,7 +179,6 @@ const LiquidationProductPage = () => {
     }, []);
 
     const initialValues = useMemo((): TLiquidationCreate => {
-
         if (selectedEdit) {
             console.log(selectedEdit);
 
@@ -226,7 +220,6 @@ const LiquidationProductPage = () => {
             )}
 
             <MainCard>
-
                 <ActionsForm
                     actions={actionMenus}
                     barcode={true}

@@ -5,8 +5,14 @@ import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
-import { useEditPublications } from "../../../hooks/services/publications/publications-mutation";
-import { useFetchPublications, useReFetchPublications } from "../../../hooks/services/publications/publications-query";
+import {
+    useEditPublications,
+    useUpdateShelvesQuantity,
+} from "../../../hooks/services/publications/publications-mutation";
+import {
+    useFetchPublications,
+    useReFetchPublications,
+} from "../../../hooks/services/publications/publications-query";
 import { useFetchShelf } from "../../../hooks/services/shelf/shelf-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
@@ -15,7 +21,6 @@ import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../utils/object";
 import FormEditWarehouse from "./ui-components/FormEditWarehouse";
-
 
 const StockProductPage = () => {
     const queryString = useQueryString();
@@ -35,12 +40,7 @@ const StockProductPage = () => {
                 { compare: "", target: { type: "ấn phẩm cứng" } },
                 { compare: "", target: { status: "có sẵn" } },
             ]),
-        [
-            barcodeSearch,
-            search,
-            type,
-            status
-        ]
+        [barcodeSearch, search, type, status]
     );
 
     const { data, isLoading } = useFetchPublications({
@@ -56,6 +56,7 @@ const StockProductPage = () => {
     const [selectedEdit, setSelectedEdit] = useState<TPublications | null>(null);
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
+    const mutationUpdateShelvesQty = useUpdateShelvesQuantity();
 
     const handleEditWarehouse = (row: TPublications) => {
         setSelectedEdit(row);
@@ -67,29 +68,50 @@ const StockProductPage = () => {
         setSelectedEdit(null);
     };
 
-    const handleSubmit = (values: TPublicationsCreate) => {
-        console.log(values);
-        return;
+    const handleSubmit = (values: TPublicationsCreate & { operation: string }) => {
+        if (!selectedEdit) return;
 
-        if (selectedEdit) {
-            mutationEdit.mutate(
-                { ...values, _id: selectedEdit._id },
+        const payload = { ...values, shelvesId: selectedEdit?.shelvesId, id: selectedEdit?._id };
+
+        console.log(`payload:::`, payload);
+
+        if (values.operation === "add") {
+            mutationUpdateShelvesQty.mutate(
+                {
+                    id: payload.id,
+                    quantity: payload.shelvesQuantity,
+                    shelvesId: payload.shelvesId as string,
+                },
                 {
                     onSuccess: () => {
                         revalidate();
-                        toast.success('cập nhật thành công.');
+                        toast.success("Chuyển sách lên kệ thành công.");
                         handleClose();
                     },
                 }
             );
-            return;
+        } else {
+            mutationUpdateShelvesQty.mutate(
+                {
+                    id: payload.id,
+                    quantity: payload.shelvesQuantity,
+                    shelvesId: payload.shelvesId as string,
+                },
+                {
+                    onSuccess: () => {
+                        revalidate();
+                        toast.success("Giảm số lượng  trên kệ vào kho");
+                        handleClose();
+                    },
+                }
+            );
         }
+        return;
     };
 
     const handleBarcodeSearch = (value) => {
         setBarcodeSearch(value);
     };
-
 
     const columns: TColumn<TPublications>[] = useMemo(
         () => [
@@ -134,7 +156,7 @@ const StockProductPage = () => {
                 label: "SL hư hỏng - thanh lý",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => (row.quantityLiquidation + row.quantityDamaged),
+                render: (row) => row.quantityLiquidation + row.quantityDamaged,
             },
             {
                 id: "quantity",
@@ -142,7 +164,7 @@ const StockProductPage = () => {
                 label: "SL tổng",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => (row.quantity + row.shelvesQuantity + row.quantityLiquidation + row.quantityDamaged + row.quantityLoan),
+                render: (row) => row.quantity + row.shelvesQuantity,
             },
             {
                 id: "action",
@@ -194,8 +216,7 @@ const StockProductPage = () => {
         return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
     }, [checkedDelete, data]);
 
-
-    const handleExcelExport = () => { }
+    const handleExcelExport = () => {};
 
     const actionMenus = useMemo((): TMenuOption[] => {
         return [
@@ -208,10 +229,7 @@ const StockProductPage = () => {
     }, []);
 
     const initialValues = useMemo((): TPublicationsCreate => {
-
         if (selectedEdit) {
-            console.log(selectedEdit);
-
             return {
                 name: selectedEdit.name,
                 quantity: selectedEdit.quantity,
@@ -248,7 +266,6 @@ const StockProductPage = () => {
             )}
 
             <MainCard>
-
                 <ActionsForm
                     actions={actionMenus}
                     barcode={true}

@@ -34,6 +34,9 @@ import { parserParams } from "../../../utils/object";
 import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
+import axios from "axios";
+import publicationsService from "../../../_apis/services/publications.service";
+import DialogImportFile from "./ui-components/DialogImportFile ";
 
 const PublicationsPage = () => {
     const queryString = useQueryString();
@@ -97,6 +100,7 @@ const PublicationsPage = () => {
     const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
     const [openViewDetails, setOpenViewDetails] = useState(false);
     const [publicationsDetails, setPublicationsDetails] = useState<TPublications | null>(null);
+    const [openImportFile, setOpenImportFile] = useState(false);
 
     const addPublications = () => {
         setOpenAddEdit(true);
@@ -399,17 +403,58 @@ const PublicationsPage = () => {
         });
     }, [checkedDelete]);
 
+    const handleDownloadTemplate = async () => {
+        const filePath = "http://localhost:28040/assets/template/template-publication.xlsx";
+        const fileName = "file mẫu.xlsx";
+        try {
+            const response = await axios.get(filePath, {
+                responseType: "blob",
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", fileName);
+            link.style.display = "none";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error("Error downloading file:", error);
+        }
+    };
+
+    const handleImportExcel = () => {
+        setOpenImportFile(true);
+    };
+
+    const handleCloseImportExcel = () => {
+        setOpenImportFile(false);
+    };
+
+    const handleSubmitImportFile = async (file: File) => {
+        try {
+            await publicationsService.importExcel(file);
+
+            revalidate();
+            toast.success("Import file excel thành công");
+            setOpenImportFile(false);
+        } catch (error) {
+            toast.error(error?.message);
+        }
+    };
+
     const actionMenus = useMemo((): TMenuOption[] => {
         return [
             {
                 label: "Tải file mẫu",
                 icon: <IconFileDownload size={20} stroke={1.5} />,
-                onClick: handleDeleteMultiple,
+                onClick: handleDownloadTemplate,
             },
             {
                 label: "Import file excel",
                 icon: <IconFileUpload size={20} stroke={1.5} />,
-                onClick: handleDeleteMultiple,
+                onClick: handleImportExcel,
             },
             {
                 label: "Xóa các dữ liệu đã chọn",
@@ -417,10 +462,10 @@ const PublicationsPage = () => {
                 onClick: handleDeleteMultiple,
             },
         ];
-    }, [handleDeleteMultiple]);
+    }, [handleDeleteMultiple, handleDownloadTemplate, handleImportExcel]);
 
     const initialValues = useMemo((): TPublicationsCreate => {
-        if (selectedEdit) {                       
+        if (selectedEdit) {
             return {
                 name: selectedEdit.name,
                 barcode: selectedEdit.barcode,
@@ -466,6 +511,14 @@ const PublicationsPage = () => {
                 mainProfile="Danh sách ấn phẩm"
                 link="/thu-vien/an-pham"
             />
+
+            {openImportFile && (
+                <DialogImportFile
+                    open={openImportFile}
+                    onClose={handleCloseImportExcel}
+                    onSubmit={handleSubmitImportFile}
+                />
+            )}
 
             {openAddEdit && (
                 <FormAddEditPublications

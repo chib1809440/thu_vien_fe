@@ -36,7 +36,6 @@ type Props = {
     materialOptions?: TMaterial[];
     authorOptions?: TAuthor[];
     publisherOptions?: TPublisher[];
-    shelfOptions?: TShelves[];
     imageUrl?: string;
 };
 
@@ -99,7 +98,6 @@ const FormAddEditPublications: FC<Props> = ({
     materialOptions,
     authorOptions,
     publisherOptions,
-    shelfOptions,
     imageUrl,
     initialValues = {
         name: "",
@@ -113,7 +111,6 @@ const FormAddEditPublications: FC<Props> = ({
         isLink: false,
         categoryIds: [],
         authorIds: [],
-        shelvesId: "",
         publisherIds: [],
         materialIds: [],
     },
@@ -129,7 +126,7 @@ const FormAddEditPublications: FC<Props> = ({
                 onSubmit(values, resetForm);
             }
         },
-    });
+    });    
 
     const { errors, touched, values, setFieldValue, handleSubmit, getFieldProps } = useMemo(
         () => formik,
@@ -152,7 +149,7 @@ const FormAddEditPublications: FC<Props> = ({
     const revalidatePublisher = useReFetchPublisher();
     const revalidateCategory = useReFetchCategory();
     const revalidateMaterial = useReFetchMaterial();
-    const revalidateAuthor = useReFetchAuthor();
+    const revalidateAuthor = useReFetchAuthor();    
 
     const isMounted = useRef(true);
 
@@ -277,10 +274,6 @@ const FormAddEditPublications: FC<Props> = ({
         setTypeHardPublications(selectedType === "ấn phẩm cứng");
     };
 
-    const showQuantityInput =
-        values.type === "ấn phẩm cứng" &&
-        (values.status === "trên kệ" || values.status === "có sẵn");
-
     const handleChangedMaterial = useCallback((value: TMaterial[]) => {
         setFieldValue?.("materialIds", value);
     }, []);
@@ -307,7 +300,7 @@ const FormAddEditPublications: FC<Props> = ({
         }
 
         setFieldValue("file", file);
-    }, []);
+    }, []);    
 
     return (
         <FormikProvider value={formik}>
@@ -475,48 +468,6 @@ const FormAddEditPublications: FC<Props> = ({
                                 limitTags={1}
                                 limitText={10}
                             />
-                        </Box>
-
-                        <Box sx={{ display: "flex", gap: { xs: 0, md: 2, xl: 2 } }}>
-                            {showQuantityInput && (
-                                <InputForm
-                                    label="Số lượng"
-                                    type="number"
-                                    placeholder="Nhập số lượng"
-                                    error={touched.quantity && Boolean(errors.quantity)}
-                                    helperText={touched.quantity && errors.quantity}
-                                    {...getFieldProps("quantity")}
-                                    disabled={isEditMode}
-                                />
-                            )}
-                            {showQuantityInput && (
-                                <SelectForm
-                                    label="Chọn kệ tủ"
-                                    options={
-                                        shelfOptions?.map((item) => ({
-                                            value: item._id,
-                                            label: item.name,
-                                        })) || []
-                                    }
-                                    {...getFieldProps("shelvesId")}
-                                    error={touched.shelvesId && Boolean(errors.shelvesId)}
-                                    helperText={touched.shelvesId && errors.shelvesId}
-                                    disabled={isEditMode}
-                                />
-                            )}
-                            {showQuantityInput && (
-                                <InputForm
-                                    label="Số lượng trên kệ"
-                                    type="number"
-                                    placeholder="Nhập số lượng trên kệ"
-                                    {...getFieldProps("shelvesQuantity")}
-                                    error={
-                                        touched.shelvesQuantity && Boolean(errors.shelvesQuantity)
-                                    }
-                                    helperText={touched.shelvesQuantity && errors.shelvesQuantity}
-                                    disabled={isEditMode}
-                                />
-                            )}
                         </Box>
 
                         <InputForm

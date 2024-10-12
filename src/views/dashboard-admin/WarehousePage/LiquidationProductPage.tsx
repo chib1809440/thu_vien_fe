@@ -41,6 +41,7 @@ const LiquidationProductPage = () => {
     const { data, isLoading } = useFetchLiquidation({
         limit,
         page,
+        ...filter
     });
 
     const mutationEdit = useEditLiquidation();

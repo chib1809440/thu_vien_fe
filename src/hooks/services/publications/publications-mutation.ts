@@ -105,7 +105,7 @@ export const useUpdateShelvesQuantity = () => {
 // updateStockQuantity
 export const useUpdateStockQuantity = () => {
     return useMutation({
-        mutationFn: async (data: { quantity: number }) => {
+        mutationFn: async (data: {id: string; quantity: number }) => {
             return await publicationsService.updateStockQuantity(data);
         },
         onError: (error: any) => {

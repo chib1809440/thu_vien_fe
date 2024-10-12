@@ -2,9 +2,11 @@ import { Chip, Switch } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconEye, IconFileDownload, IconFileUpload, IconTrashXFilled } from "@tabler/icons-react";
+import axios from "axios";
 import { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import publicationsService from "../../../_apis/services/publications.service";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
@@ -23,7 +25,6 @@ import {
     useReFetchPublications,
 } from "../../../hooks/services/publications/publications-query";
 import { useFetchPublisher } from "../../../hooks/services/publisher/publisher-query";
-import { useFetchShelf } from "../../../hooks/services/shelf/shelf-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TPublications, TPublicationsCreate } from "../../../types/models/publications.type";
@@ -31,12 +32,10 @@ import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { typeOptions } from "../../../utils/constants.utils";
 import { parserParams } from "../../../utils/object";
+import DialogImportFile from "./ui-components/DialogImportFile ";
 import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
-import axios from "axios";
-import publicationsService from "../../../_apis/services/publications.service";
-import DialogImportFile from "./ui-components/DialogImportFile ";
 
 const PublicationsPage = () => {
     const queryString = useQueryString();
@@ -83,7 +82,6 @@ const PublicationsPage = () => {
     const { data: materialData } = useFetchMaterial();
     const { data: authorData } = useFetchAuthor();
     const { data: publisherData } = useFetchPublisher();
-    const { data: shelfData } = useFetchShelf();
 
     const mutationAdd = useAddPublications();
     const mutationEdit = useEditPublications();
@@ -466,6 +464,8 @@ const PublicationsPage = () => {
 
     const initialValues = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {
+            console.log(selectedEdit);
+            
             return {
                 name: selectedEdit.name,
                 barcode: selectedEdit.barcode,
@@ -479,7 +479,7 @@ const PublicationsPage = () => {
                 file: selectedEdit.file || "",
                 categoryIds: selectedEdit.categoryIds || [],
                 authorIds: selectedEdit.authorIds || [],
-                shelvesId: (selectedEdit.shelvesId as string) || "",
+                shelvesId: (selectedEdit.shelvesId as string) || null,
                 publisherIds: selectedEdit.publisherIds || [],
                 materialIds: selectedEdit.materialIds || [],
             };
@@ -498,7 +498,6 @@ const PublicationsPage = () => {
             file: "",
             categoryIds: [],
             authorIds: [],
-            shelvesId: "",
             publisherIds: [],
             materialIds: [],
         };
@@ -531,7 +530,6 @@ const PublicationsPage = () => {
                     authorOptions={authorData?.data?.result || []}
                     materialOptions={materialData?.data?.result || []}
                     publisherOptions={publisherData?.data?.result || []}
-                    shelfOptions={shelfData?.data?.result || []}
                     imageUrl={
                         selectedEdit?.priviewImage
                             ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.priviewImage}`

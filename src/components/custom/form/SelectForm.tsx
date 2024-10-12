@@ -40,7 +40,7 @@ const SelectForm: FC<Props> = ({
     disabled,
     handleAdd,
     text=""
-}) => {
+}) => {    
     return (
         <FormControl sx={{ my: 1, ...sx }} error={error} fullWidth>
             <Box sx={{ display: "flex", alignItems: "center" }}>

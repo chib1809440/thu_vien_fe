@@ -6,6 +6,7 @@ import {
     DialogContent,
     DialogTitle,
     IconButton,
+    Select,
     Typography,
 } from "@mui/material";
 import { Box } from "@mui/system";
@@ -41,6 +42,9 @@ const FormEditWarehouse: FC<Props> = ({
     isFetching = false,
     isEditMode = false,
 }) => {
+
+
+
     const [statusWarehouse, setStatusWarehouse] = useState("");
     const [touchedMount, setTouchedMount] = useState({ additionalQuantity: false });
     const [errorsMount, setErrorsMount] = useState({ additionalQuantity: "" });
@@ -65,6 +69,7 @@ const FormEditWarehouse: FC<Props> = ({
                         operation,
                         shelvesQuantity: changeAmount,
                         quantity: changeAmount,
+                        shelvesId: values?.shelvesId
                     },
                     resetForm
                 );
@@ -76,6 +81,7 @@ const FormEditWarehouse: FC<Props> = ({
         () => formik,
         [formik]
     );
+    console.log("values", values);
 
     const shelvesQuantity = parseInt(getFieldProps("shelvesQuantity").value, 10) || 0;
     const stockQuantity = parseInt(getFieldProps("quantity").value, 10) || 0;
@@ -292,7 +298,7 @@ const FormEditWarehouse: FC<Props> = ({
                                     }
                                     helperText={
                                         touchedMount.additionalQuantity &&
-                                        errorsMount.additionalQuantity
+                                            errorsMount.additionalQuantity
                                             ? errorsMount.additionalQuantity
                                             : undefined
                                     } // Truyền helperText

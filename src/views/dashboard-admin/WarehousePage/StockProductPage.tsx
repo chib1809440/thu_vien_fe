@@ -8,6 +8,7 @@ import TableList from "../../../components/custom/table-list/TableList";
 import {
     useEditPublications,
     useUpdateShelvesQuantity,
+    useUpdateStockQuantity,
 } from "../../../hooks/services/publications/publications-mutation";
 import {
     useFetchPublications,
@@ -21,6 +22,7 @@ import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../utils/object";
 import FormEditWarehouse from "./ui-components/FormEditWarehouse";
+import { TShelves } from "../../../types/models/shelves";
 
 const StockProductPage = () => {
     const queryString = useQueryString();
@@ -57,6 +59,7 @@ const StockProductPage = () => {
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const mutationUpdateShelvesQty = useUpdateShelvesQuantity();
+    const mutationUpdateStockQty = useUpdateStockQuantity();
 
     const handleEditWarehouse = (row: TPublications) => {
         setSelectedEdit(row);
@@ -71,7 +74,7 @@ const StockProductPage = () => {
     const handleSubmit = (values: TPublicationsCreate & { operation: string }) => {
         if (!selectedEdit) return;
 
-        const payload = { ...values, shelvesId: selectedEdit?.shelvesId, id: selectedEdit?._id };
+        const payload = { ...values, shelvesId: (selectedEdit?.shelvesId as TShelves)?._id, id: selectedEdit?._id };
 
         console.log(`payload:::`, payload);
 
@@ -91,11 +94,10 @@ const StockProductPage = () => {
                 }
             );
         } else {
-            mutationUpdateShelvesQty.mutate(
+            mutationUpdateStockQty.mutate(
                 {
-                    id: payload.id,
                     quantity: payload.shelvesQuantity,
-                    shelvesId: payload.shelvesId as string,
+                    id: payload.id,
                 },
                 {
                     onSuccess: () => {
@@ -230,10 +232,11 @@ const StockProductPage = () => {
 
     const initialValues = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {
+            
             return {
                 name: selectedEdit.name,
                 quantity: selectedEdit.quantity,
-                shelvesId: (selectedEdit.shelvesId as string) || "",
+                shelvesId: ((selectedEdit.shelvesId as TShelves)?._id) || "",
                 shelvesQuantity: selectedEdit.shelvesQuantity,
             };
         }
@@ -244,7 +247,7 @@ const StockProductPage = () => {
             shelvesQuantity: 0,
             shelvesId: "",
         };
-    }, [selectedEdit]);
+    }, [selectedEdit]);    
 
     return (
         <div>

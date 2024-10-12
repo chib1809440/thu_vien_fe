@@ -19,7 +19,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: bool
         setShowBook(false);
     };
 
-    const numberPage = publications?.images?.length
+    const numberPage = publications?.images?.length;    
     
     return (
         <>
@@ -31,7 +31,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: bool
             <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
                 <DialogContent>
                     <IconButton
-                        aria-label="close"
+                        aria-label="cl ose"
                         onClick={onClose}
                         color='error'
                         sx={{ position: 'absolute', right: 8, top: 2 }}

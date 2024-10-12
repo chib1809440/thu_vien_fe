@@ -25,8 +25,8 @@ class PublicationsService extends BaseApi {
         return response.data;
     }
 
-    public async updateStockQuantity(data: { quantity: number }) {
-        const response = await this.httpClient.patch(`${this.endpoint}/stock-quantity`, data);
+    public async updateStockQuantity(data: {id: string; quantity: number }) {
+        const response = await this.httpClient.patch(`${this.endpoint}/move-stock`, data);
         return response.data;
     }
 }

@@ -8,5 +8,4 @@ export const StyledHeading = styled(Typography)`
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   text-shadow: none;
-  text-transform:uppercase;
 `;

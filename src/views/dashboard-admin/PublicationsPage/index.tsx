@@ -2,9 +2,11 @@ import { Chip, Switch } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconEye, IconFileDownload, IconFileUpload, IconTrashXFilled } from "@tabler/icons-react";
+import axios from "axios";
 import { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import publicationsService from "../../../_apis/services/publications.service";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
@@ -23,7 +25,6 @@ import {
     useReFetchPublications,
 } from "../../../hooks/services/publications/publications-query";
 import { useFetchPublisher } from "../../../hooks/services/publisher/publisher-query";
-import { useFetchShelf } from "../../../hooks/services/shelf/shelf-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TPublications, TPublicationsCreate } from "../../../types/models/publications.type";
@@ -31,6 +32,7 @@ import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { typeOptions } from "../../../utils/constants.utils";
 import { parserParams } from "../../../utils/object";
+import DialogImportFile from "./ui-components/DialogImportFile ";
 import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
@@ -80,7 +82,6 @@ const PublicationsPage = () => {
     const { data: materialData } = useFetchMaterial();
     const { data: authorData } = useFetchAuthor();
     const { data: publisherData } = useFetchPublisher();
-    const { data: shelfData } = useFetchShelf();
 
     const mutationAdd = useAddPublications();
     const mutationEdit = useEditPublications();
@@ -97,6 +98,7 @@ const PublicationsPage = () => {
     const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
     const [openViewDetails, setOpenViewDetails] = useState(false);
     const [publicationsDetails, setPublicationsDetails] = useState<TPublications | null>(null);
+    const [openImportFile, setOpenImportFile] = useState(false);
 
     const addPublications = () => {
         setOpenAddEdit(true);
@@ -113,8 +115,6 @@ const PublicationsPage = () => {
     };
 
     const handleViewDetails = (row: TPublications) => {
-        console.log(row);
-
         setPublicationsDetails(row);
         setOpenViewDetails(true);
     };
@@ -401,17 +401,58 @@ const PublicationsPage = () => {
         });
     }, [checkedDelete]);
 
+    const handleDownloadTemplate = async () => {
+        const filePath = "http://localhost:28040/assets/template/template-publication.xlsx";
+        const fileName = "file mẫu.xlsx";
+        try {
+            const response = await axios.get(filePath, {
+                responseType: "blob",
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", fileName);
+            link.style.display = "none";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error("Error downloading file:", error);
+        }
+    };
+
+    const handleImportExcel = () => {
+        setOpenImportFile(true);
+    };
+
+    const handleCloseImportExcel = () => {
+        setOpenImportFile(false);
+    };
+
+    const handleSubmitImportFile = async (file: File) => {
+        try {
+            await publicationsService.importExcel(file);
+
+            revalidate();
+            toast.success("Import file excel thành công");
+            setOpenImportFile(false);
+        } catch (error) {
+            toast.error(error?.message);
+        }
+    };
+
     const actionMenus = useMemo((): TMenuOption[] => {
         return [
             {
                 label: "Tải file mẫu",
                 icon: <IconFileDownload size={20} stroke={1.5} />,
-                onClick: handleDeleteMultiple,
+                onClick: handleDownloadTemplate,
             },
             {
                 label: "Import file excel",
                 icon: <IconFileUpload size={20} stroke={1.5} />,
-                onClick: handleDeleteMultiple,
+                onClick: handleImportExcel,
             },
             {
                 label: "Xóa các dữ liệu đã chọn",
@@ -419,11 +460,10 @@ const PublicationsPage = () => {
                 onClick: handleDeleteMultiple,
             },
         ];
-    }, [handleDeleteMultiple]);
+    }, [handleDeleteMultiple, handleDownloadTemplate, handleImportExcel]);
 
     const initialValues = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {
-
             console.log(selectedEdit);
 
             return {
@@ -439,7 +479,7 @@ const PublicationsPage = () => {
                 file: selectedEdit.file || "",
                 categoryIds: selectedEdit.categoryIds || [],
                 authorIds: selectedEdit.authorIds || [],
-                shelvesId: (selectedEdit.shelvesId as string) || "",
+                shelvesId: (selectedEdit.shelvesId as string) || null,
                 publisherIds: selectedEdit.publisherIds || [],
                 materialIds: selectedEdit.materialIds || [],
             };
@@ -458,7 +498,6 @@ const PublicationsPage = () => {
             file: "",
             categoryIds: [],
             authorIds: [],
-            shelvesId: "",
             publisherIds: [],
             materialIds: [],
         };
@@ -472,6 +511,14 @@ const PublicationsPage = () => {
                 link="/thu-vien/an-pham"
             />
 
+            {openImportFile && (
+                <DialogImportFile
+                    open={openImportFile}
+                    onClose={handleCloseImportExcel}
+                    onSubmit={handleSubmitImportFile}
+                />
+            )}
+
             {openAddEdit && (
                 <FormAddEditPublications
                     open={openAddEdit}
@@ -483,7 +530,6 @@ const PublicationsPage = () => {
                     authorOptions={authorData?.data?.result || []}
                     materialOptions={materialData?.data?.result || []}
                     publisherOptions={publisherData?.data?.result || []}
-                    shelfOptions={shelfData?.data?.result || []}
                     imageUrl={
                         selectedEdit?.priviewImage
                             ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.priviewImage}`

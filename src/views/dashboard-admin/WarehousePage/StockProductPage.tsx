@@ -1,12 +1,19 @@
 import { Box } from "@mui/system";
 import { IconPencil } from "@tabler/icons";
-import { IconTrashXFilled } from "@tabler/icons-react";
+import { IconFileExcel } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
-import { useEditPublications } from "../../../hooks/services/publications/publications-mutation";
-import { useFetchPublications, useReFetchPublications } from "../../../hooks/services/publications/publications-query";
+import {
+    useEditPublications,
+    useUpdateShelvesQuantity,
+    useUpdateStockQuantity,
+} from "../../../hooks/services/publications/publications-mutation";
+import {
+    useFetchPublications,
+    useReFetchPublications,
+} from "../../../hooks/services/publications/publications-query";
 import { useFetchShelf } from "../../../hooks/services/shelf/shelf-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
@@ -15,7 +22,7 @@ import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../utils/object";
 import FormEditWarehouse from "./ui-components/FormEditWarehouse";
-
+import { TShelves } from "../../../types/models/shelves";
 
 const StockProductPage = () => {
     const queryString = useQueryString();
@@ -23,6 +30,7 @@ const StockProductPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
     const type = "";
+    const status = "";
 
     const [barcodeSearch, setBarcodeSearch] = useState("");
 
@@ -32,12 +40,9 @@ const StockProductPage = () => {
                 { compare: "", target: { search } },
                 { compare: "", target: { barcode: barcodeSearch } },
                 { compare: "", target: { type: "ấn phẩm cứng" } },
+                { compare: "", target: { status: "có sẵn" } },
             ]),
-        [
-            barcodeSearch,
-            search,
-            type
-        ]
+        [barcodeSearch, search, type, status]
     );
 
     const { data, isLoading } = useFetchPublications({
@@ -53,6 +58,8 @@ const StockProductPage = () => {
     const [selectedEdit, setSelectedEdit] = useState<TPublications | null>(null);
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
+    const mutationUpdateShelvesQty = useUpdateShelvesQuantity();
+    const mutationUpdateStockQty = useUpdateStockQuantity();
 
     const handleEditWarehouse = (row: TPublications) => {
         setSelectedEdit(row);
@@ -64,23 +71,44 @@ const StockProductPage = () => {
         setSelectedEdit(null);
     };
 
-    const handleSubmit = (values: TPublicationsCreate) => {
-        console.log(values);
-        return;
+    const handleSubmit = (values: TPublicationsCreate & { operation: string }) => {
+        if (!selectedEdit) return;
 
-        if (selectedEdit) {
-            mutationEdit.mutate(
-                { ...values, _id: selectedEdit._id },
+        const payload = { ...values, shelvesId: (selectedEdit?.shelvesId as TShelves)?._id, id: selectedEdit?._id };
+
+        console.log(`payload:::`, payload);
+
+        if (values.operation === "add") {
+            mutationUpdateShelvesQty.mutate(
+                {
+                    id: payload.id,
+                    quantity: payload.shelvesQuantity,
+                    shelvesId: payload.shelvesId as string,
+                },
                 {
                     onSuccess: () => {
                         revalidate();
-                        toast.success('cập nhật thành công.');
+                        toast.success("Chuyển sách lên kệ thành công.");
                         handleClose();
                     },
                 }
             );
-            return;
+        } else {
+            mutationUpdateStockQty.mutate(
+                {
+                    quantity: payload.shelvesQuantity,
+                    id: payload.id,
+                },
+                {
+                    onSuccess: () => {
+                        revalidate();
+                        toast.success("Giảm số lượng  trên kệ vào kho");
+                        handleClose();
+                    },
+                }
+            );
         }
+        return;
     };
 
     const handleBarcodeSearch = (value) => {
@@ -118,18 +146,19 @@ const StockProductPage = () => {
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
-                id: "quantity",
+                id: "quantityLoan",
                 disablePadding: "none",
                 label: "SL mượn",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
-                id: "quantity",
+                id: "quantityLiquidationDamaged",
                 disablePadding: "none",
                 label: "SL hư hỏng - thanh lý",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => row.quantityLiquidation + row.quantityDamaged,
             },
             {
                 id: "quantity",
@@ -137,6 +166,7 @@ const StockProductPage = () => {
                 label: "SL tổng",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => row.quantity + row.shelvesQuantity,
             },
             {
                 id: "action",
@@ -188,41 +218,36 @@ const StockProductPage = () => {
         return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
     }, [checkedDelete, data]);
 
-
-    const handleExcelExport = () => { }
+    const handleExcelExport = () => {};
 
     const actionMenus = useMemo((): TMenuOption[] => {
         return [
             {
                 label: "Xuất excel",
-                icon: <IconTrashXFilled size={20} stroke={1.5} />,
+                icon: <IconFileExcel size={20} stroke={1.5} />,
                 onClick: handleExcelExport,
             },
         ];
     }, []);
 
     const initialValues = useMemo((): TPublicationsCreate => {
-
         if (selectedEdit) {
-            console.log(selectedEdit);
-
+            
             return {
                 name: selectedEdit.name,
-                status: selectedEdit.status,
                 quantity: selectedEdit.quantity,
-                shelvesId: (selectedEdit.shelvesId as string) || "",
+                shelvesId: ((selectedEdit.shelvesId as TShelves)?._id) || "",
                 shelvesQuantity: selectedEdit.shelvesQuantity,
             };
         }
 
         return {
             name: "",
-            status: "không có sẵn",
             quantity: 0,
             shelvesQuantity: 0,
             shelvesId: "",
         };
-    }, [selectedEdit]);
+    }, [selectedEdit]);    
 
     return (
         <div>
@@ -244,7 +269,6 @@ const StockProductPage = () => {
             )}
 
             <MainCard>
-
                 <ActionsForm
                     actions={actionMenus}
                     barcode={true}

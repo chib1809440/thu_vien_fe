@@ -1,11 +1,283 @@
-import React from 'react'
+import { Box } from "@mui/system";
+import { IconPencil } from "@tabler/icons";
+import { IconFileExcel } from "@tabler/icons-react";
+import { useCallback, useMemo, useState } from "react";
+import { toast } from "react-toastify";
+import ActionsForm from "../../../components/custom/form/ActionForm";
+import TableList from "../../../components/custom/table-list/TableList";
+import {
+    useEditPublications,
+    useUpdateShelvesQuantity,
+} from "../../../hooks/services/publications/publications-mutation";
+import {
+    useFetchPublications,
+    useReFetchPublications,
+} from "../../../hooks/services/publications/publications-query";
+import { useFetchShelf } from "../../../hooks/services/shelf/shelf-query";
+import useQueryString from "../../../hooks/services/useQueryString";
+import { TColumn, TMenuOption } from "../../../types/common/table";
+import { TPublications, TPublicationsCreate } from "../../../types/models/publications.type";
+import IBreadcrumsCustom from "../../../ui-component/breadcrums";
+import MainCard from "../../../ui-component/cards/MainCard";
+import { parserParams } from "../../../utils/object";
+import FormEditWarehouse from "./ui-components/FormEditWarehouse";
+import { TShelves } from "../../../types/models/shelves";
 
-type Props = {}
+const ShelvesProductPage = () => {
+    const queryString = useQueryString();
+    const page = queryString?.page ?? 1;
+    const limit = queryString?.limit ?? 5;
+    const search = queryString?.q ?? "";
+    const type = "";
+    const status = "";
 
-const ShelvesProductPage = (props: Props) => {
-  return (
-    <div>ShelvesProductPage</div>
-  )
-}
+    const [barcodeSearch, setBarcodeSearch] = useState("");
 
-export default ShelvesProductPage
+    const filter = useMemo(
+        () =>
+            parserParams([
+                { compare: "", target: { search } },
+                { compare: "", target: { barcode: barcodeSearch } },
+                { compare: "", target: { type: "ấn phẩm cứng" } },
+                { compare: "", target: { status: "có sẵn" } },
+            ]),
+        [barcodeSearch, search, type, status]
+    );
+
+    const { data, isLoading } = useFetchPublications({
+        limit,
+        page,
+        ...filter,
+    });
+    const { data: shelfData } = useFetchShelf();
+    const mutationEdit = useEditPublications();
+    const revalidate = useReFetchPublications();
+
+    const [openAddEdit, setOpenAddEdit] = useState(false);
+    const [selectedEdit, setSelectedEdit] = useState<TPublications | null>(null);
+
+    const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
+    const mutationUpdateShelvesQty = useUpdateShelvesQuantity();
+
+    const handleEditWarehouse = (row: TPublications) => {
+        setSelectedEdit(row);
+        setOpenAddEdit(true);
+    };
+
+    const handleClose = () => {
+        setOpenAddEdit(false);
+        setSelectedEdit(null);
+    };
+
+    const handleSubmit = (values: TPublicationsCreate & { operation: string }) => {
+        if (!selectedEdit) return;
+
+        const payload = { ...values, shelvesId: selectedEdit?.shelvesId, id: selectedEdit?._id };
+
+        console.log(`payload:::`, payload);
+
+        if (values.operation === "add") {
+            mutationUpdateShelvesQty.mutate(
+                {
+                    id: payload.id,
+                    quantity: payload.shelvesQuantity,
+                    shelvesId: payload.shelvesId as string,
+                },
+                {
+                    onSuccess: () => {
+                        revalidate();
+                        toast.success("Chuyển sách lên kệ thành công.");
+                        handleClose();
+                    },
+                }
+            );
+        } else {
+            mutationUpdateShelvesQty.mutate(
+                {
+                    id: payload.id,
+                    quantity: payload.shelvesQuantity,
+                    shelvesId: payload.shelvesId as string,
+                },
+                {
+                    onSuccess: () => {
+                        revalidate();
+                        toast.success("Giảm số lượng  trên kệ vào kho");
+                        handleClose();
+                    },
+                }
+            );
+        }
+        return;
+    };
+
+    const handleBarcodeSearch = (value) => {
+        setBarcodeSearch(value);
+    };
+
+    const columns: TColumn<TPublications>[] = useMemo(
+        () => [
+            {
+                id: "barcode",
+                disablePadding: "none",
+                label: "Mã(ISBN)",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+            },
+            {
+                id: "name",
+                disablePadding: "none",
+                label: "Tên ấn phẩm",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+            },
+            {
+                id: "quantity",
+                disablePadding: "none",
+                label: "Tên kệ",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => (row.shelvesId as TShelves)?.name,
+            },
+            {
+                id: "shelvesQuantity",
+                disablePadding: "none",
+                label: "SL còn lại",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+            },
+            {
+                id: "shelvesQuantity",
+                disablePadding: "none",
+                label: "SL mượn",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+            },
+            {
+                id: "shelvesQuantity",
+                disablePadding: "none",
+                label: "Ghi chú",
+                align: "left",
+            },
+            {
+                id: "action",
+                disablePadding: "none",
+                align: "center",
+                label: "Hành động",
+                render: (row) => {
+                    return (
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                gap: 1,
+                            }}
+                        >
+                            <IconPencil
+                                onClick={() => handleEditWarehouse(row)}
+                                size={20}
+                                stroke={1.5}
+                            />
+                        </Box>
+                    );
+                },
+            },
+        ],
+        [handleEditWarehouse]
+    );
+
+    const handleCheckedDelete = useCallback((row: TPublications, checked: boolean) => {
+        setCheckedDelete((prev) => {
+            if (prev.includes(row._id)) {
+                return prev.filter((t) => t !== row._id);
+            }
+            return [...prev, row._id];
+        });
+    }, []);
+
+    const handleCheckedDeleteAll = useCallback(
+        (checked: boolean) => {
+            if (data?.data?.result?.length === 0) return;
+            setCheckedDelete((prev) => (checked ? data?.data?.result.map((t) => t._id) : []));
+        },
+        [data]
+    );
+
+    const checkedAll = useMemo(() => {
+        if (data?.data?.result?.length === 0 || checkedDelete.length === 0) return false;
+        return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
+    }, [checkedDelete, data]);
+
+    const handleExcelExport = () => {};
+
+    const actionMenus = useMemo((): TMenuOption[] => {
+        return [
+            {
+                label: "Xuất excel",
+                icon: <IconFileExcel size={20} stroke={1.5} />,
+                onClick: handleExcelExport,
+            },
+        ];
+    }, []);
+
+    const initialValues = useMemo((): TPublicationsCreate => {
+        if (selectedEdit) {
+            return {
+                name: selectedEdit.name,
+                quantity: selectedEdit.quantity,
+                shelvesId: (selectedEdit.shelvesId as string) || "",
+                shelvesQuantity: selectedEdit.shelvesQuantity,
+            };
+        }
+
+        return {
+            name: "",
+            quantity: 0,
+            shelvesQuantity: 0,
+            shelvesId: "",
+        };
+    }, [selectedEdit]);
+
+    return (
+        <div>
+            <IBreadcrumsCustom
+                profile="Quản lý kho"
+                mainProfile="Danh sách tủ kệ"
+                link="/quan-ly-kho/kho"
+            />
+
+            {openAddEdit && (
+                <FormEditWarehouse
+                    open={openAddEdit}
+                    onClose={handleClose}
+                    initialValues={initialValues}
+                    onSubmit={handleSubmit}
+                    isEditMode={selectedEdit ? true : false}
+                    shelfOptions={shelfData?.data?.result || []}
+                />
+            )}
+
+            <MainCard>
+                <ActionsForm
+                    actions={actionMenus}
+                    barcode={true}
+                    barcodeSearch={barcodeSearch}
+                    handleBarcodeSearch={handleBarcodeSearch}
+                />
+
+                <TableList
+                    checked={checkedDelete}
+                    columns={columns}
+                    rows={data?.data?.result || []}
+                    onChecked={handleCheckedDelete}
+                    onToggleCheckedAll={handleCheckedDeleteAll}
+                    checkedAll={checkedAll}
+                    isLoading={isLoading}
+                    keyChecked="_id"
+                    pagination={data?.data?.meta}
+                />
+            </MainCard>
+        </div>
+    );
+};
+export default ShelvesProductPage;

@@ -22,6 +22,7 @@ type Props = {
     endAdornment?: ReactNode;
     disabled?: boolean;
     handleAdd?: () => void;
+    text?: string
 };
 
 const SelectForm: FC<Props> = ({
@@ -38,7 +39,8 @@ const SelectForm: FC<Props> = ({
     endAdornment,
     disabled,
     handleAdd,
-}) => {
+    text=""
+}) => {    
     return (
         <FormControl sx={{ my: 1, ...sx }} error={error} fullWidth>
             <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -59,7 +61,13 @@ const SelectForm: FC<Props> = ({
                     )}
             </Box>
 
-            <Select name={name} value={value ?? ""} onChange={onChange} onBlur={onBlur} endAdornment={endAdornment} disabled={disabled} >
+            <Select name={name} value={ value ?? ""} onChange={onChange} onBlur={onBlur}
+                endAdornment={endAdornment} disabled={disabled}
+                renderValue={(selectedValue) => {
+                    const selectedOption = options.find(option => option.value === selectedValue);
+                    return selectedOption ? `${text} ${selectedOption.label}` : text;
+                }}
+            >
                 <MenuItem value="">
                     <em>Chọn</em>
                 </MenuItem>

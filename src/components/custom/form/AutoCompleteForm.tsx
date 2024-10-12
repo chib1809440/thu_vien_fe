@@ -99,7 +99,7 @@ const AutocompleteForm = <Type extends Record<string, any>>({
                             {value
                                 .slice(0, limitTags)
                                 .map((option, _) =>
-                                    option?.[keyLabel].length > limitText
+                                    option?.[keyLabel]?.length > limitText
                                         ? option?.[keyLabel].slice(0, limitText) + "..."
                                         : option?.[keyLabel]
                                 )

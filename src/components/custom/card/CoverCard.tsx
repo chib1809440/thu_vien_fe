@@ -33,12 +33,17 @@ interface CoverCardProps {
     authorNames?: any[],
     publisherNames?: any[],
     handleOpenView?: () => void;
-    open?: boolean
+    numberPage?: number;
+    quantityShelves?: number,
+    nameShelves?: string,
 }
 
-const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, categoryNames, authorNames, publisherNames, handleOpenView, open = false }: CoverCardProps) => {
+const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, categoryNames, authorNames, publisherNames, handleOpenView, numberPage, quantityShelves, nameShelves }: CoverCardProps) => {
     const theme = useTheme()
     const { borderRadius } = useConfig();
+    console.log(nameShelves, quantityShelves);
+
+
 
     return (
         <Paper sx={{ border: `1px solid ${theme.palette.grey[200]}`, height: handleOpenView ? "500px" : "300px", position: "relative" }}>
@@ -46,7 +51,6 @@ const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, cat
 
             </Box>
             <Box sx={{
-
                 position: "absolute",
                 height: "255px",
                 top: "20%",
@@ -67,58 +71,93 @@ const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, cat
                     <ImageCard id={""} photo={photo} aspectRatio={"3/4"} />
 
                 </Paper>
-                <Box sx={{
+            </Box>
+
+            <Box
+                sx={{
+                    position: "absolute",
+                    pt: handleOpenView ? 2 : 1,
+                    top: { xs: "50%", sm: handleOpenView ? "30%" : "50%" },
+                    left: { xs: "0", sm: handleOpenView ? "15%" : "15%" }, // Left sẽ là 30% trên màn hình nhỏ và 20% trên màn hình lớn hơn
                     display: "flex",
+                    justifyContent: "flex-end",
                     gap: 1,
                     flexDirection: "column",
-                }}>
-                    <Typography variant="h4" display={"flex"} >
-                        Tên ấn phẩm:
-                        <StyledHeading ml={1} variant="h4"> {title}</StyledHeading>
-                    </Typography>
-                    {
-                        barcode && (
-                            <Typography variant="h4" display={"flex"}>
-                                Barcode:
-                                <StyledHeading ml={1} variant="h4"> {barcode}</StyledHeading>
-                            </Typography>
-                        )
-                    }
-                    {
-                        status && (
-                            <Typography variant="h4" display={"flex"} >
-                                Trạng thái:
-                                <StyledHeading ml={1} variant="h4" textTransform={"capitalize"}> {status}</StyledHeading>
-                            </Typography>
-                        )
-                    }
+                    ml: handleOpenView ? 5 : 3
+                }}
+            >
+                <Typography variant="h4" display={"flex"} >
+                    Tên ấn phẩm:
+                    <StyledHeading ml={1} variant="h4"> {title}</StyledHeading>
+                </Typography>
+                {
+                    barcode && (
+                        <Typography variant="h4" display={"flex"}>
+                            Barcode:
+                            <StyledHeading ml={1} variant="h4"> {barcode}</StyledHeading>
+                        </Typography>
+                    )
+                }
+                {
+                    status && (
+                        <Typography variant="h4" display={"flex"} >
+                            Trạng thái:
+                            <StyledHeading ml={1} variant="h4" textTransform={"capitalize"}> {status}</StyledHeading>
+                            {
+                                nameShelves && (
+                                    <Typography variant="h4" display={"flex"} ml={2} >
+                                        Tên kệ - tủ:
+                                        <StyledHeading ml={1} variant="h4" textTransform={"capitalize"}> {nameShelves}</StyledHeading>
+                                    </Typography>
+                                )
+                            }
+                            {
+                                quantityShelves > 0 && (
+                                    <Typography variant="h4" display={"flex"} ml={2} >
+                                        Số lượng ấn phẩm trên kệ:
+                                        <StyledHeading ml={1} variant="h4" textTransform={"capitalize"}> {quantityShelves}</StyledHeading>
+                                    </Typography>
+                                )
+                            }
+                        </Typography>
+                    )
+                }
 
-                    <Box sx={{
-                        textTransform: "capitalize", mb: handleOpenView ? 0 : 2,
-                        display: "flex", flexWrap: "wrap"
-                    }}>
-                        {subtitle && subtitle.length > 0 && (
-                            <Chip variant="filled" label={subtitle} sx={{
-                                margin: '0.5rem',
-                                color: theme.palette.text.dark,
-                                background: "linear-gradient(90deg, rgba(255, 159, 0, 1) 0%, rgba(255, 109, 0, 1) 100%)",
-                            }} />
-                        )}
-                        {materialNames && materialNames.length > 0 && (
-                            materialNames.map((name, index) => (
-                                <Chip
-                                    key={index}
-                                    variant="filled"
-                                    label={name}
-                                    sx={{
-                                        color: theme.palette.text.dark,
-                                        background: getRandomPastelGradient(),
-                                        margin: '0.5rem'
-                                    }}
-                                />
-                            ))
-                        )}
-                        {categoryNames && categoryNames.length > 0 && (
+                {subtitle && subtitle.length > 0 && (
+                    <Typography variant="h4" display={"flex"} alignItems={"center"} >
+                        Loại:
+                        <Chip variant="filled" label={subtitle} sx={{
+                            ml: 2,
+                            color: theme.palette.text.dark,
+                            background: "linear-gradient(90deg, rgba(255, 159, 0, 1) 0%, rgba(255, 109, 0, 1) 100%)",
+                        }} />
+                    </Typography>
+                )}
+
+                {materialNames && materialNames.length > 0 && (
+                    <Typography variant="h4" display={"flex"} alignItems={"center"} >
+                        Dạng học liệu:
+                        {materialNames.map((name, index) => (
+
+                            <Chip
+                                key={index}
+                                variant="filled"
+                                label={name}
+                                sx={{
+                                    color: theme.palette.text.dark,
+                                    background: getRandomPastelGradient(),
+                                    ml: 2,
+                                    textTransform: "capitalize"
+                                }}
+                            />
+                        ))}
+                    </Typography>
+                )}
+
+                {categoryNames && categoryNames.length > 0 && (
+                    <Typography variant="h4" display={"flex"} alignItems={"center"} >
+                        Lĩnh vực:
+                        {
                             categoryNames.map((name, index) => (
                                 <Chip
                                     key={index}
@@ -127,12 +166,18 @@ const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, cat
                                     sx={{
                                         color: theme.palette.text.dark,
                                         background: getRandomPastelGradient(),
-                                        margin: '0.5rem'
+                                        ml: 2,
+                                        textTransform: "capitalize"
                                     }}
                                 />
-                            ))
-                        )}
-                        {authorNames && authorNames.length > 0 && (
+                            ))}
+                    </Typography>
+                )}
+
+                {authorNames && authorNames.length > 0 && (
+                    <Typography variant="h4" display={"flex"} alignItems={"center"} >
+                        Tác giả:
+                        {
                             authorNames.map((name, index) => (
                                 <Chip
                                     key={index}
@@ -141,12 +186,18 @@ const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, cat
                                     sx={{
                                         color: theme.palette.text.dark,
                                         background: getRandomPastelGradient(),
-                                        margin: '0.5rem'
+                                        ml: 2,
+                                        textTransform: "capitalize"
                                     }}
                                 />
-                            ))
-                        )}
-                        {publisherNames && publisherNames.length > 0 && (
+                            ))}
+                    </Typography>
+                )}
+
+                {publisherNames && publisherNames.length > 0 && (
+                    <Typography variant="h4" display={"flex"} alignItems={"center"} >
+                        Nhà xuất bản:
+                        {
                             publisherNames.map((name, index) => (
                                 <Chip
                                     key={index}
@@ -155,26 +206,27 @@ const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, cat
                                     sx={{
                                         color: theme.palette.text.dark,
                                         background: getRandomPastelGradient(),
-                                        margin: '0.5rem'
+                                        ml: 2,
+                                        textTransform: "capitalize"
                                     }}
                                 />
-                            ))
-                        )}
-                    </Box>
-                    {
-                        subtitle === 'ấn phẩm mềm' && handleOpenView && (
-                            <StyledButton
-                                color="primary"
-                                size="small"
-                                startIcon={<IconBook stroke={2} />}
-                                variant="contained"
-                                sx={{ marginTop: 1 }}
-                                onClick={handleOpenView}
-                            >
-                                Xem sách
-                            </StyledButton>)
-                    }
-                </Box>
+                            ))}
+                    </Typography>
+                )}
+
+                {
+                    subtitle === 'ấn phẩm mềm' && handleOpenView && numberPage > 0 && (
+                        <StyledButton
+                            color="primary"
+                            size="small"
+                            startIcon={<IconBook stroke={2} />}
+                            variant="contained"
+                            sx={{ marginTop: 1, width: '150px' }}
+                            onClick={handleOpenView}
+                        >
+                            Xem sách
+                        </StyledButton>)
+                }
             </Box>
 
         </Paper>

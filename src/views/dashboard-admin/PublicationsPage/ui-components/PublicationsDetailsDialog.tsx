@@ -6,6 +6,7 @@ import { useState } from 'react';
 import CoverCard from '../../../../components/custom/card/CoverCard';
 import { TPublications } from '../../../../types/models/publications.type';
 import BookViewDialog from './BookViewDialog';
+import { TShelves } from '../../../../types/models/shelves';
 
 const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: boolean; onClose: () => void; publications: TPublications | null }) => {
     const [showBook, setShowBook] = useState(false);
@@ -17,17 +18,20 @@ const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: bool
     const handleClose = () => {
         setShowBook(false);
     };
+
+    const numberPage = publications?.images?.length;    
+    
     return (
         <>
             {
-                showBook && (
+                showBook && publications.images.length > 0 && (
                     <BookViewDialog onClose={handleClose} open={showBook} publications={publications} />
                 )
             }
             <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
                 <DialogContent>
                     <IconButton
-                        aria-label="close"
+                        aria-label="cl ose"
                         onClick={onClose}
                         color='error'
                         sx={{ position: 'absolute', right: 8, top: 2 }}
@@ -49,7 +53,9 @@ const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: bool
                                     publisherNames={publications.publisherIds.length > 0 ? publications.publisherIds.map(publisher => publisher.name) : []}
                                     photo={publications?.priviewImage ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}` : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
                                     handleOpenView={handleOpenView}
-                                    open={showBook}
+                                    numberPage={numberPage}
+                                    nameShelves={(publications?.shelvesId as TShelves)?.name}
+                                    quantityShelves={publications?.shelvesQuantity > 0 ? publications?.shelvesQuantity : 0}
                                 />
 
                             </Grid>

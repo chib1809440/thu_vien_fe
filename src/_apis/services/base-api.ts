@@ -5,11 +5,11 @@ import axiosServices from "../../utils/axios";
 
 class BaseApi {
     private _endpoint: string = "";
-    private httpClient: AxiosInstance;
+    private _httpClient: AxiosInstance;
 
     constructor(endpoint: string) {
         this._endpoint = endpoint;
-        this.httpClient = axiosServices;
+        this._httpClient = axiosServices;
     }
     // Getter method to access httpClient
     public getHttpClient(): AxiosInstance {
@@ -248,6 +248,10 @@ class BaseApi {
 
     set endpoint(endpoint: string) {
         this._endpoint = endpoint;
+    }
+
+    get httpClient() {
+        return this._httpClient;
     }
 }
 

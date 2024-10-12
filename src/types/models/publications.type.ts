@@ -27,7 +27,10 @@ export type TPublications = TEntityAbstract & {
     file?: any;
     path?: string;
     priviewImage?: string;
-    images?: any[]
+    images?: any[];
+    quantityLoan?: number,
+    quantityLiquidation?: number,
+    quantityDamaged?: number,
 };
 
 export type TPublicationsCreate = Partial<Pick<TPublications, "isPublic" | "isLink" | "name" | "barcode" | "description" | "note" | "quantity" | "shelvesQuantity" | "status" | "type" | "file">> & {

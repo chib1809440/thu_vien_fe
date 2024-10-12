@@ -61,6 +61,7 @@ function createData(
 type Props = {
     open: boolean;
     onClose: () => void;
+    onHandleReturnLoanSlip: (loanSlip: TLoanSlip) => void;
     onSubmit?: (values: TLoanSlipCreate, resetForm: () => void) => void;
     isFetching?: boolean;
     initialValues: TLoanSlipCreate;
@@ -78,6 +79,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
     open,
     onClose,
     onSubmit,
+    onHandleReturnLoanSlip,
     initialValues = {
         note: "",
         borrowedDay: "",
@@ -182,6 +184,9 @@ const FormAddEditLoanSlip: FC<Props> = ({
         updatedPublications[index].barcode = newBarCode;
         setSearchBarCode(newBarCode + ' ' + index);
         setPublications(updatedPublications);
+    };
+    const handleReturnLoanSlip = () => {
+        onHandleReturnLoanSlip(loanSlip)
     };
     // Use custom hook to debounce array of barcodes
     const debouncedBarcode = useDebounce(searchBarCode, 500);
@@ -589,13 +594,13 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     </Button>
                     {
 
-                        isEditMode &&  <Button onClick={handlePrint} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                        isEditMode && <Button onClick={handleReturnLoanSlip} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
                             Trả sách
                         </Button>
                     }
                     {
 
-                        isEditMode && <Button onClick={handlePrint} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                        isEditMode && <Button onClick={() => handlePrint()} style={{ background: '#212121', color: 'white' }} variant="contained"  >
                             In
                         </Button>
                     }

@@ -12,12 +12,14 @@ export type TLoanSlip = TEntityAbstract & {
     barcode: string;
     isPrint: boolean;
     isAgree: boolean;
+    isReturn: boolean,
     receiptDate: string;
     status: TStatusLoanSlip;
     publications: (TPublications & { quantityLoan: number, position: string, publicationId: string })[];
 };
 
 export type CreatePublication = {
+
     publicationId: string;
     name: string;
     quantityLoan: number;

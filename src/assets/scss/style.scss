@@ -402,11 +402,23 @@ select.react-datepicker__year-select {
 
 .icon-background {
     position: absolute; /* Đặt vị trí icon tuyệt đối */
-    right: 12px; /* Khoảng cách từ bên phải */
+    right: 1px; /* Khoảng cách từ bên phải */
     top: 50%; /* Căn giữa theo chiều dọc */
     transform: translateY(-50%); /* Căn giữa chính xác */
     background-color: #3a3737; /* Nền xám cho icon */
     padding: 0.375rem; /* Padding cho icon */
     border-radius: 0.25rem; /* Bỏ cạnh nếu cần */
     pointer-events: none; /* Không cho phép click vào icon */
+}
+.date-picker-container {
+    display: flex;
+    align-items: center; /* Căn chỉnh theo chiều dọc */
+    position: relative;
+    width: 100%;
+}
+
+.icon-clear {
+    right: 40px; /* Khoảng cách giữa DatePicker và IconX */
+    cursor: pointer; /* Thêm hiệu ứng con trỏ */
+    position: absolute;
 }

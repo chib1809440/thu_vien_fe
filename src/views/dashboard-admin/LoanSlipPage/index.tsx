@@ -1,7 +1,7 @@
 import { Button, Chip, Grid, Switch, useTheme } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { IconCalendar, IconPencil, IconPlus, IconPrinter, IconTrash } from "@tabler/icons";
-import { IconTrashXFilled } from "@tabler/icons-react";
+import { IconCalendar, IconPencil, IconPlus, IconPrinter, IconTrash, IconX } from "@tabler/icons";
+import { IconClockSearch, IconTrashXFilled } from "@tabler/icons-react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -9,7 +9,7 @@ import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
-import { useAddLoanSlip, useApprovalLoanSlip, useDeleteSoftLoanSlip, useDeleteSoftManyLoanSlip, useEditLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-mutation";
+import { useAddLoanSlip, useApprovalLoanSlip, useDeleteSoftLoanSlip, useDeleteSoftManyLoanSlip, useEditLoanSlip, useReturnLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-mutation";
 import { useFetchLoanSlip, useReFetchLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
@@ -20,7 +20,7 @@ import FormAddEditLoanSlip from "./ui-components/FormAddEditLoanSlip";
 import { formatDate } from "../../../helpers/formatDate";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { useReactToPrint } from "react-to-print";
-
+import { vi } from "date-fns/locale";
 import Html2Pdf from 'html2pdf.js';
 import PrintLoanSlip from "./ui-components/PrintLoanSlip";
 import { parserParams } from "../../../utils/object";
@@ -40,11 +40,12 @@ function CustomInput({ value, onClick }: CustomInputProps) {
                 value={value}
                 onClick={onClick}
                 readOnly
-                style={{ width: '80%' }}
+                style={{ width: '100%' }} // Giảm chiều rộng để có chỗ cho biểu tượng "X"
             />
-            <span className="icon-background">
+            <span className="icon-background" onClick={onClick}>
                 <IconCalendar color="white" />
             </span>
+
         </div>
     );
 }
@@ -54,6 +55,8 @@ const LoanSlipPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
     const [barcodeSearch, setBarcodeSearch] = useState("");
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
     const filter = useMemo(
         () =>
             parserParams([
@@ -66,10 +69,11 @@ const LoanSlipPage = () => {
         ]
     );
     const theme = useTheme();
-
     const { data, isLoading } = useFetchLoanSlip({
         limit,
         page,
+        startDate,
+        endDate,
         ...filter,
     });
     const mutationAdd = useAddLoanSlip();
@@ -79,12 +83,17 @@ const LoanSlipPage = () => {
     const mutationSoftDelete = useDeleteSoftLoanSlip();
     const mutationSoftDeleteMany = useDeleteSoftManyLoanSlip();
     const revalidate = useReFetchLoanSlip();
-
+    const handleClearStartDate = () => {
+        setStartDate(null); // Đặt lại giá trị endDate về null
+    };
+    const handleClearEndDate = () => {
+        setEndDate(null); // Đặt lại giá trị endDate về null
+    };
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TLoanSlip | null>(null);
     const [selectedPrint, setSelectedPrint] = useState<TLoanSlip | null>(null);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(null);
+
     const [loanSlipToDelete, setLoanSlipToDelete] = useState<TLoanSlip | null>(null);
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
@@ -110,6 +119,14 @@ const LoanSlipPage = () => {
             onSuccess: () => {
                 revalidate();
                 toast.success('Duyệt phiếu mượn thành công.');
+            },
+        });
+    };
+    const handleReturnLoanSlip = (row: TLoanSlip) => {
+        mutationReturn.mutate(row._id, {
+            onSuccess: () => {
+                revalidate();
+                toast.success('Trả sách thành công.');
             },
         });
     };
@@ -207,7 +224,35 @@ const LoanSlipPage = () => {
                     );
                 },
             },
-
+            {
+                id: "isReturn",
+                disablePadding: "none",
+                label: "Tình trạng trả",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => {
+                    return (
+                        <Box
+                        >
+                            {
+                                row.isReturn === false ? <>
+                                    <Chip
+                                        style={{ color: 'white', background: theme.palette.error.dark }}
+                                        label="Chưa trả"
+                                        variant="filled"
+                                    />
+                                </> : <>
+                                    <Chip
+                                        style={{ color: 'white', background: '#096A5E' }}
+                                        label="Đã trả"
+                                        variant="filled"
+                                    />
+                                </>
+                            }
+                        </Box>
+                    );
+                },
+            },
             {
                 id: "isAgree",
                 disablePadding: "none",
@@ -253,11 +298,15 @@ const LoanSlipPage = () => {
                                 size={20}
                                 stroke={1.5}
                             />
-                            <IconTrash
-                                size={20}
-                                stroke={1.5}
-                                onClick={() => handleOpenConfirmDialog(row)}
-                            />
+                            {
+                                row.isAgree === true &&
+                                <IconTrash
+                                    size={20}
+                                    stroke={1.5}
+                                    onClick={() => handleOpenConfirmDialog(row)}
+                                />
+                            }
+
 
                         </Box>
                     );
@@ -357,6 +406,7 @@ const LoanSlipPage = () => {
                     initialValues={initialValues}
                     loanSlip={selectedEdit}
                     onSubmit={handleSubmit}
+                    onHandleReturnLoanSlip={handleReturnLoanSlip}
                     isEditMode={selectedEdit ? true : false}
                 />
             )}
@@ -395,28 +445,46 @@ const LoanSlipPage = () => {
                     barcodeSearch={barcodeSearch}
                     handleBarcodeSearch={handleBarcodeSearch} placeholder="Tìm kiếm theo barcode" />
                 <Grid container pl={4} pr={4} xs={12} sm={12} md={12} lg={12} gap={2} sx={{ display: "flex", mb: 3, flexWrap: "wrap" }}>
-                    <Grid item xs={12} sm={12} md={3} lg={3}>
+                    <Grid item xs={12} sm={12} md={4} lg={3}>
                         <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Từ ngày:
                             </span>
-                            <DatePicker
-                                selected={selectedDate}
-                                onChange={(date: Date | null) => setSelectedDate(date)}
-                                customInput={<CustomInput value={selectedDate ? selectedDate.toLocaleDateString() : ''} onClick={() => { }} />}
-                            />
+                            <div className="date-picker-container">
+                                <DatePicker
+                                    locale={vi}
+                                    selected={startDate}
+                                    dateFormat="dd/MM/yyyy" // Định dạng ngày tháng năm
+                                    onChange={(date: Date | null) => setStartDate(date)}
+                                    customInput={<CustomInput value={startDate ? startDate.toLocaleDateString() : ''} onClick={() => { }} />}
+                                /> 
+                                {
+                                    startDate && <span className="icon-clear" onClick={handleClearStartDate}>
+                                        <IconX color="red" />
+                                    </span>
+                                }
+                            </div>
                         </div>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={3} lg={3}>
+                    <Grid item xs={12} sm={12} md={4} lg={3}>
                         <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Đến ngày:
                             </span>
-                            <DatePicker
-                                selected={selectedDate}
-                                onChange={(date: Date | null) => setSelectedDate(date)}
-                                customInput={<CustomInput value={selectedDate ? selectedDate.toLocaleDateString() : ''} onClick={() => { }} />}
-                            />
+                            <div className="date-picker-container">
+                                <DatePicker
+                                    selected={endDate}
+                                    dateFormat="dd/MM/yyyy" // Định dạng ngày tháng năm
+                                    onChange={(date: Date | null) => setEndDate(date)}
+                                    customInput={<CustomInput value={endDate ? endDate.toLocaleDateString() : ''} onClick={() => { }} />}
+                                />
+                                {
+                                    endDate && <span className="icon-clear" onClick={handleClearEndDate}>
+                                        <IconX color="red" />
+                                    </span>
+                                }
+                            </div>
+
                         </div>
                     </Grid>
                 </Grid>

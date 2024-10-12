@@ -7,6 +7,9 @@ export function formatDate(dateString: string): string {
         throw new Error('Invalid date string');
     }
 
+    // Thêm 7 giờ vào thời gian
+    date.setUTCHours(date.getUTCHours() + 7);
+
     // Lấy ngày, tháng, và năm từ đối tượng Date
     const day = String(date.getUTCDate()).padStart(2, '0'); // Lấy ngày theo UTC
     const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Tháng theo UTC, thêm 1 vì getUTCMonth() trả về từ 0-11

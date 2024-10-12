@@ -358,3 +358,55 @@ select.react-datepicker__year-select {
     padding: 5px;
 
 }
+@media print {
+    @page {
+        margin:  10mm 10mm 10mm 10mm;
+        size: 80mm auto;
+    }
+    .order-content {
+        font-family: Arial, sans-serif;
+        font-size: 9px !important;
+        line-height: 1;
+        overflow: hidden;
+         page-break-after: avoid; /* Tránh ngắt trang sau phần tử này */
+        page-break-inside: avoid; /* Tránh ngắt trang bên trong phần tử này */
+    }
+
+    h2, p {
+        page-break-inside: avoid;
+        page-break-after: avoid;
+    }
+}
+.input-group-text{
+    height:43px;
+    cursor: pointer;
+}
+.input-group {
+    display: flex; /* Sử dụng Flexbox */
+    align-items: center; /* Căn giữa theo chiều dọc */
+}
+
+.custom-input {
+    height: 30px; /* Chiều cao input */
+    font-size: 14px; /* Kích thước font */
+    margin-right: 0; /* Đảm bảo không có khoảng cách bên phải */
+}
+
+.input-group-text {
+    display: flex; /* Đảm bảo icon cũng là Flexbox */
+    align-items: center; /* Căn giữa icon */
+}
+.position-relative {
+    position: relative; /* Để sử dụng position:absolute cho icon */
+}
+
+.icon-background {
+    position: absolute; /* Đặt vị trí icon tuyệt đối */
+    right: 12px; /* Khoảng cách từ bên phải */
+    top: 50%; /* Căn giữa theo chiều dọc */
+    transform: translateY(-50%); /* Căn giữa chính xác */
+    background-color: #3a3737; /* Nền xám cho icon */
+    padding: 0.375rem; /* Padding cho icon */
+    border-radius: 0.25rem; /* Bỏ cạnh nếu cần */
+    pointer-events: none; /* Không cho phép click vào icon */
+}

@@ -14,7 +14,7 @@ export type TLoanSlip = TEntityAbstract & {
     isAgree: boolean;
     receiptDate: string;
     status: TStatusLoanSlip;
-    publications: (TPublications & { quantityLoan: number, position: string })[];
+    publications: (TPublications & { quantityLoan: number, position: string, publicationId: string })[];
 };
 
 export type CreatePublication = {

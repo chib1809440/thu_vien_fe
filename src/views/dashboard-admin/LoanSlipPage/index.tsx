@@ -1,15 +1,15 @@
-import { Button, Chip, Switch, useTheme } from "@mui/material";
+import { Button, Chip, Grid, Switch, useTheme } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
+import { IconCalendar, IconPencil, IconPlus, IconPrinter, IconTrash } from "@tabler/icons";
 import { IconTrashXFilled } from "@tabler/icons-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
-import { useAddLoanSlip, useDeleteSoftLoanSlip, useDeleteSoftManyLoanSlip, useEditLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-mutation";
+import { useAddLoanSlip, useApprovalLoanSlip, useDeleteSoftLoanSlip, useDeleteSoftManyLoanSlip, useEditLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-mutation";
 import { useFetchLoanSlip, useReFetchLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
@@ -19,16 +19,62 @@ import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditLoanSlip from "./ui-components/FormAddEditLoanSlip";
 import { formatDate } from "../../../helpers/formatDate";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
+import { useReactToPrint } from "react-to-print";
 
+import Html2Pdf from 'html2pdf.js';
+import PrintLoanSlip from "./ui-components/PrintLoanSlip";
+import { parserParams } from "../../../utils/object";
+import { useFetchPublications } from "../../../hooks/services/publications/publications-query";
+import DatePicker from "react-datepicker";
+interface CustomInputProps {
+    value: string;
+    onClick: () => void;
+}
 
+function CustomInput({ value, onClick }: CustomInputProps) {
+    return (
+        <div className="input-group position-relative">
+            <input
+                type="text"
+                className="form-control custom-input"
+                value={value}
+                onClick={onClick}
+                readOnly
+                style={{ width: '80%' }}
+            />
+            <span className="icon-background">
+                <IconCalendar color="white" />
+            </span>
+        </div>
+    );
+}
 const LoanSlipPage = () => {
     const queryString = useQueryString();
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
+    const [barcodeSearch, setBarcodeSearch] = useState("");
+    const filter = useMemo(
+        () =>
+            parserParams([
+                { compare: "", target: { search } },
+                { compare: "", target: { barcode: barcodeSearch } },
+            ]),
+        [
+            barcodeSearch,
+            search,
+        ]
+    );
     const theme = useTheme();
-    const { data, isLoading } = useFetchLoanSlip({ limit, page, search });
+
+    const { data, isLoading } = useFetchLoanSlip({
+        limit,
+        page,
+        ...filter,
+    });
     const mutationAdd = useAddLoanSlip();
+    const mutationApproval = useApprovalLoanSlip();
+    const mutationReturn = useReturnLoanSlip();
     const mutationEdit = useEditLoanSlip();
     const mutationSoftDelete = useDeleteSoftLoanSlip();
     const mutationSoftDeleteMany = useDeleteSoftManyLoanSlip();
@@ -36,7 +82,9 @@ const LoanSlipPage = () => {
 
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TLoanSlip | null>(null);
+    const [selectedPrint, setSelectedPrint] = useState<TLoanSlip | null>(null);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(null);
     const [loanSlipToDelete, setLoanSlipToDelete] = useState<TLoanSlip | null>(null);
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
@@ -50,8 +98,20 @@ const LoanSlipPage = () => {
         setSelectedEdit(row);
         setOpenAddEdit(true);
     };
+    const handlePrintLoanSlip = (row: TLoanSlip) => {
+        setSelectedPrint(row);
+        handlePrint()
+    };
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+    });
     const handleApprovalLoanSlip = (row: TLoanSlip) => {
-
+        mutationApproval.mutate(row._id, {
+            onSuccess: () => {
+                revalidate();
+                toast.success('Duyệt phiếu mượn thành công.');
+            },
+        });
     };
     const handleClose = () => {
         setOpenAddEdit(false);
@@ -86,7 +146,9 @@ const LoanSlipPage = () => {
         setLoanSlipToDelete(row);
         setOpenConfirmDialog(true);
     };
-
+    const handleBarcodeSearch = (value) => {
+        setBarcodeSearch(value);
+    };
     const handleConfirmDelete = () => {
         if (loanSlipToDelete) {
             mutationSoftDelete.mutate(loanSlipToDelete._id, {
@@ -102,6 +164,8 @@ const LoanSlipPage = () => {
     const handleCloseConfirmDialog = () => {
         setOpenConfirmDialog(false);
     };
+    const componentRef = useRef();
+    // Hàm xử lý in
 
 
     const columns: TColumn<TLoanSlip>[] = useMemo(
@@ -143,21 +207,7 @@ const LoanSlipPage = () => {
                     );
                 },
             },
-            {
-                id: "status",
-                disablePadding: "none",
-                label: "Trạng thái",
-                align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => {
-                    return (
-                        <Box
-                        >
-                            {capitalizeFirstLetter(row.status)}
-                        </Box>
-                    );
-                },
-            },
+
             {
                 id: "isAgree",
                 disablePadding: "none",
@@ -170,6 +220,11 @@ const LoanSlipPage = () => {
                         >
                             {
                                 row.isAgree === true ? <>
+                                    <Chip
+                                        style={{ color: 'white', background: '#096A5E' }}
+                                        label="Đã duyệt"
+                                        variant="filled"
+                                    />
                                 </> : <>
                                     <Button variant="contained" sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }} onClick={() => handleApprovalLoanSlip(row)}>Chưa duyệt</Button>
                                 </>
@@ -307,6 +362,7 @@ const LoanSlipPage = () => {
             )}
 
             <MainCard>
+
                 <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
                     <Box display="flex" flexWrap="wrap">
                         <Box>
@@ -335,7 +391,35 @@ const LoanSlipPage = () => {
                         </Box>
                     </Box>
                 </Stack>
-                <ActionsForm actions={actionMenus} />
+                <ActionsForm actions={actionMenus} barcode={true}
+                    barcodeSearch={barcodeSearch}
+                    handleBarcodeSearch={handleBarcodeSearch} placeholder="Tìm kiếm theo barcode" />
+                <Grid container pl={4} pr={4} xs={12} sm={12} md={12} lg={12} gap={2} sx={{ display: "flex", mb: 3, flexWrap: "wrap" }}>
+                    <Grid item xs={12} sm={12} md={3} lg={3}>
+                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                            <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
+                                Từ ngày:
+                            </span>
+                            <DatePicker
+                                selected={selectedDate}
+                                onChange={(date: Date | null) => setSelectedDate(date)}
+                                customInput={<CustomInput value={selectedDate ? selectedDate.toLocaleDateString() : ''} onClick={() => { }} />}
+                            />
+                        </div>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={3} lg={3}>
+                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                            <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
+                                Đến ngày:
+                            </span>
+                            <DatePicker
+                                selected={selectedDate}
+                                onChange={(date: Date | null) => setSelectedDate(date)}
+                                customInput={<CustomInput value={selectedDate ? selectedDate.toLocaleDateString() : ''} onClick={() => { }} />}
+                            />
+                        </div>
+                    </Grid>
+                </Grid>
                 <TableList
                     checked={checkedDelete}
                     columns={columns}

@@ -12,9 +12,10 @@ type Props = {
     barcodeSearch?: string;
     handleBarcodeSearch?: (e: any) => void;
     barcode?: boolean;
+    placeholder?: string;
 };
 
-const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSearch, barcode = false }) => {
+const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSearch, barcode = false, placeholder = 'Tìm kiếm theo mã ấn phẩm' }) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const querySearch = searchParams.get("q") || "";
 
@@ -64,7 +65,7 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
                             fullwidth
                             contentSearch={barcodeSearch}
                             handleContentSearch={handleBarcodeSearch}
-                            placeholder="Tìm kiếm theo mã ấn phẩm"
+                            placeholder={placeholder}
                         />)
                         : ""
                 }

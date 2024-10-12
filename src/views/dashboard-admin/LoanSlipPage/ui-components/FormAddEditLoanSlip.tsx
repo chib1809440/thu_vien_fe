@@ -21,6 +21,10 @@ import { positions } from "@mui/system";
 import publicationsService from "../../../../_apis/services/publications.service";
 import useDebounceArray from "../../../../hooks/useDebounceArray";
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
+import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
+import { IconCirclePlusFilled } from "@tabler/icons-react";
+import PrintLoanSlip from "./PrintLoanSlip";
+import { useReactToPrint } from "react-to-print";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -133,6 +137,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
         },
     ]);
     const debouncedBarCodeUserId = useDebounce(barcodeUserId, 500);
+
     useEffect(() => {
         if (debouncedBarCodeUserId) {
             // Chỉ gọi API khi có giá trị barcode
@@ -155,10 +160,9 @@ const FormAddEditLoanSlip: FC<Props> = ({
             setReturnDay(new Date(loanSlip.returnDay));
             let editPublications: CreatePublication[] = [];
             // Giả sử loanSlip.publications là mảng chứa các đối tượng cần đẩy vào
-            console.log('khe khen', loanSlip.publications);
             loanSlip.publications.forEach((publication) => {
                 const newPublication: CreatePublication = {
-                    publicationId: publication._id,
+                    publicationId: publication.publicationId,
                     name: publication.name,
                     quantityLoan: publication.quantityLoan,
                     quantity: publication.quantity,
@@ -180,7 +184,9 @@ const FormAddEditLoanSlip: FC<Props> = ({
         setPublications(updatedPublications);
     };
     // Use custom hook to debounce array of barcodes
-    const debouncedBarcode = useDebounce(searchBarCode, 500);;
+    const debouncedBarcode = useDebounce(searchBarCode, 500);
+    console.log(publications);
+
     useEffect(() => {
         if (debouncedBarcode) {
             const fetchPublicationByBarCode = async () => {
@@ -195,6 +201,8 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             const existingPublication = prevPublications.find(
                                 (pub) => pub.publicationId === publicationData._id
                             );
+                            console.log('id', publicationData._id);
+                            console.log('list', prevPublications);
 
                             if (existingPublication) {
                                 // If it exists, update the quantityLoan
@@ -253,10 +261,33 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
     // Focus the last input field when the component mounts or updates
     useEffect(() => {
-        if (lastInputRef.current) {
+        // Chỉ focus nếu phần tử cuối cùng là phần tử mới (không có barcode)
+        if (lastInputRef.current && publications[publications.length - 1]?.barcode === '') {
             lastInputRef.current.focus();
         }
-    }, [publications]);
+    }, [publications.length]);
+    const handleRemovePublication = (index: number) => {
+        const updatedPublications = [...publications];
+        updatedPublications.splice(index, 1); // Xóa phần tử tại vị trí index
+        setPublications(updatedPublications); // Cập nhật lại state
+    };
+    // Hàm để thêm một phần tử mới vào danh sách publications
+    const handleAddPublication = () => {
+        const newPublication: CreatePublication = {
+            name: '',
+            publicationId: '',
+            position: '',
+            quantityLoan: 1,
+            quantity: 0,
+            shelvesQuantity: 0,
+            barcode: '',
+        };
+        setPublications([...publications, newPublication]); // Thêm phần tử mới vào danh sách
+    };
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+    });
     return (
         <FormikProvider value={formik}>
             <Dialog
@@ -277,6 +308,11 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
                 <DialogContent sx={{ p: 8 }} >
                     <Grid container spacing={2}>
+                        <Box sx={{ display: 'none' }}>
+                            {
+                                loanSlip && <PrintLoanSlip ref={componentRef} loanSlip={loanSlip} />
+                            }
+                        </Box>
                         <Grid item xs={12}>
                             <Box >
                                 <Chip
@@ -417,11 +453,18 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     </Grid>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
-                            <Box sx={{ mt: 4 }}>
+                            <Box sx={{ mt: 4, display: 'flex', alignItems: 'center' }}>
                                 <Chip
                                     color='primary'
                                     label="Thông tin sách"
                                     variant="filled"
+                                />
+                                <IconCirclePlusFilled
+                                    style={{ cursor: 'pointer', marginLeft: '10px' }} // Khoảng cách giữa Chip và Icon
+                                    onClick={() => handleAddPublication()} // Gọi hàm thêm
+                                    color="green"
+                                    size={30}
+                                    stroke={1.5}
                                 />
                             </Box>
                             <TableContainer component={Paper} sx={{ mt: 4 }}>
@@ -430,36 +473,46 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                         <TableRow>
                                             <StyledTableCell align="left" width='20%'>BarCode</StyledTableCell>
                                             <StyledTableCell align="left" width='40%'>Tên sách</StyledTableCell>
-                                            <StyledTableCell align="left" width='15%'>Số lượng trong kho</StyledTableCell>
-                                            <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell>
+                                            {
+                                                isEditMode === false && <>  <StyledTableCell align="left" width='15%'>Số lượng trong kho</StyledTableCell>
+                                                    <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell></>
+                                            }
+
                                             <StyledTableCell align="center" width='15%'>Số lượng</StyledTableCell>
                                             <StyledTableCell align="center" width='15%'>Vị trí</StyledTableCell>
+                                            <StyledTableCell align="center" width='15%'>Hành động</StyledTableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
                                         {publications?.map((row, index) => (
                                             <StyledTableRow key={index}>
                                                 <StyledTableCell align="left">
-                                                    <Box style={{ width: "100%" }} sx={{ mt: 2, mb: 2 }}>
-                                                        <TextField
-                                                            variant="outlined"
-                                                            fullWidth
-                                                            placeholder="Nhập barcode sách"
-                                                            value={row.barcode}
-                                                            onChange={(e) => handleBarCodeChange(index, e.target.value)}
-                                                            inputRef={index === publications.length - 1 ? lastInputRef : null} // Focus on the last input
-                                                        />
+                                                    <Box style={{ width: "100%" }} >
+                                                        {
+                                                            row.publicationId !== '' ? <>{row.barcode}</> : <>   <TextField
+                                                                variant="outlined"
+                                                                fullWidth
+                                                                placeholder="Nhập barcode sách"
+                                                                value={row.barcode}
+                                                                onChange={(e) => handleBarCodeChange(index, e.target.value)}
+                                                                inputRef={index === publications.length - 1 ? lastInputRef : null} // Focus on the last input
+                                                            /></>
+                                                        }
+
                                                     </Box>
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left">
                                                     {row.name || "Không có dữ liệu"}
                                                 </StyledTableCell>
-                                                <StyledTableCell align="left">
-                                                    {row.quantity}
-                                                </StyledTableCell>
-                                                <StyledTableCell align="left">
-                                                    {row.shelvesQuantity}
-                                                </StyledTableCell>
+                                                {
+                                                    isEditMode === false && <> <StyledTableCell align="left">
+                                                        {row.quantity}
+                                                    </StyledTableCell>
+                                                        <StyledTableCell align="left">
+                                                            {row.shelvesQuantity}
+                                                        </StyledTableCell></>
+                                                }
+
                                                 <StyledTableCell align="center">
                                                     <Box style={{ width: "100%" }}>
                                                         <TextField
@@ -489,6 +542,15 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                             <MenuItem value="trên kệ">Trên kệ</MenuItem>
                                                         </Select>
                                                     </FormControl>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="center">
+                                                    <IconTrash
+                                                        style={{ cursor: 'pointer', color: 'red' }}
+                                                        onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
+                                                        color="red"
+                                                        size={20}
+                                                        stroke={1.5}
+                                                    />
                                                 </StyledTableCell>
                                             </StyledTableRow>
                                         ))}
@@ -521,10 +583,22 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     </Grid>
                 </DialogContent>
 
-                <DialogActions>
+                <DialogActions sx={{ p: 4 }}>
                     <Button disabled={isFetching} onClick={onClose} color="error">
                         Huỷ
                     </Button>
+                    {
+
+                        isEditMode &&  <Button onClick={handlePrint} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                            Trả sách
+                        </Button>
+                    }
+                    {
+
+                        isEditMode && <Button onClick={handlePrint} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                            In
+                        </Button>
+                    }
                     <Button
                         disabled={isFetching}
                         onClick={handleSubmit as () => void}

@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import loanSlipsService from "../../../_apis/services/loanSlip.service";
 import { TLoanSlip, TLoanSlipCreate, TLoanSlipEdit } from "../../../types/models/loanSlip.type";
+import { translationMap } from "../../../helpers/translate";
 
 export const useAddLoanSlip = () => {
     return useMutation({
@@ -13,7 +14,42 @@ export const useAddLoanSlip = () => {
         },
     })
 }
-
+export const useApprovalLoanSlip = () => {
+    return useMutation({
+        mutationFn: async (id: string) => {
+            return await loanSlipsService.approvalLoanSlip<TLoanSlip>(id);
+        },
+        onError: (error: any) => {
+            console.log(error);
+            if (Array.isArray(error.message)) {
+                const errorMessages = error.message
+                    .map((err: any) => {
+                        // Tách thông báo theo dấu ':'
+                        const [mainMessage, additionalInfo] = err.message.split(": ");
+                        // Dịch phần trước dấu ':', giữ nguyên phần sau
+                        const translatedMessage = translationMap[mainMessage] || mainMessage;
+                        return `${translatedMessage}: ${additionalInfo}`;
+                    })
+                    .join(", ");
+                toast.error(errorMessages);
+            } else {
+                const [mainMessage, additionalInfo] = error.message.split(": ");
+                const translatedMessage = translationMap[mainMessage] || mainMessage;
+                toast.error(`${translatedMessage}: ${additionalInfo}`);
+            }
+        },
+    })
+}
+export const useReturnLoanSlip = () => {
+    return useMutation({
+        mutationFn: async (id: string) => {
+            return await loanSlipsService.returnLoanSlip<TLoanSlip>(id);
+        },
+        onError: (error: any) => {
+            toast.error(error.message)
+        },
+    })
+}
 export const useEditLoanSlip = () => {
     return useMutation({
         mutationFn: async (data: TLoanSlipEdit) => {

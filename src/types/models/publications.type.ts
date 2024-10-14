@@ -31,16 +31,17 @@ export type TPublications = TEntityAbstract & {
     quantityLoan?: number,
     quantityLiquidation?: number,
     quantityDamaged?: number,
+    totalQuantity?: number,
 };
 
-export type TPublicationsCreate = Partial<Pick<TPublications, "isPublic" | "isLink" | "name" | "barcode" | "description" | "note" | "quantity" | "shelvesQuantity" | "status" | "type" | "file">> & {
+export type TPublicationsCreate = Partial<Pick<TPublications, "isPublic" | "isLink" | "name" | "barcode" | "description" | "note" | "quantity" | "shelvesQuantity" | "status" | "type" | "file" | "quantityLiquidation" | "quantityDamaged" | "totalQuantity" | "quantityLoan">> & {
     categoryIds?: string[] | TCategory[] | null;
     authorIds?: string[] | TAuthor[] | null;
     shelvesId?: string | null;
     publisherIds?: string[] | TPublisher[] | null;
     materialIds?: string[] | TMaterial[] | null;
 };
-export type TPublicationsEdit = Partial<Pick<TPublications, "isPublic" | "isLink" | "name" | "barcode" | "description" | "note" | "quantity" | "shelvesQuantity" | "status" | "type" | "file">> & {
+export type TPublicationsEdit = Partial<Pick<TPublications, "isPublic" | "isLink" | "name" | "barcode" | "description" | "note" | "quantity" | "shelvesQuantity" | "status" | "type" | "file" | "quantityLiquidation" | "quantityDamaged" | "totalQuantity" | "quantityLoan">> & {
     _id: string;
     categoryIds?: string[] | TCategory[] | null;
     authorIds?: string[] | TAuthor[] | null;

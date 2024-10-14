@@ -1,0 +1,145 @@
+import CloseIcon from "@mui/icons-material/Close";
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton
+} from "@mui/material";
+import { Box } from "@mui/system";
+import { Form, FormikProvider, useFormik } from "formik";
+import { FC, useMemo } from "react";
+import InputForm from "../../../../components/custom/form/InputForm";
+import SelectForm from "../../../../components/custom/form/SelectForm";
+import { TPublicationsCreate } from "../../../../types/models/publications.type";
+import { TShelves } from "../../../../types/models/shelves";
+
+type Props = {
+    open: boolean;
+    onClose: () => void;
+    onSubmit?: (values: TPublicationsCreate, resetForm: () => void) => void;
+    isFetching?: boolean;
+    initialValues: TPublicationsCreate;
+    isEditMode?: boolean;
+    shelfOptions?: TShelves[];
+};
+
+const FormEditShelves: FC<Props> = ({
+    open,
+    onClose,
+    onSubmit,
+    shelfOptions,
+    initialValues = {
+        name: "",
+        quantity: 0,
+        shelvesQuantity: 0,
+        shelvesId: "",
+    },
+    isFetching = false,
+    isEditMode = false,
+}) => {
+
+
+    const formik = useFormik<TPublicationsCreate>({
+        initialValues,
+        enableReinitialize: true,
+        onSubmit: (values, { resetForm }) => {
+
+
+            if (onSubmit) {
+                onSubmit(
+                    {
+                        ...values,
+                    },
+                    resetForm
+                );
+            }
+        },
+
+    });
+
+    const { errors, touched, values, setFieldValue, handleSubmit, getFieldProps } = useMemo(
+        () => formik,
+        [formik]
+    );
+
+    console.log(values);
+    
+
+    return (
+        <FormikProvider value={formik}>
+            <Dialog
+                maxWidth="sm"
+                fullWidth
+                open={open}
+                onClose={(event, reason) => {
+                    if (reason !== "backdropClick") {
+                        onClose();
+                    }
+                }}
+                disableEscapeKeyDown
+            >
+                <DialogTitle>
+                    Cập nhật thông tin kho
+                    <IconButton
+                        aria-label="close"
+                        onClick={onClose}
+                        color="error"
+                        sx={{ position: "absolute", right: 8, top: 2 }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+
+                <DialogContent>
+                    <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
+                        <Box sx={{ display: "flex", gap: 2 }}>
+                            <InputForm
+                                label="Tên ấn phẩm"
+                                error={touched.name && Boolean(errors.name)}
+                                helperText={touched.name && errors.name}
+                                {...getFieldProps("name")}
+                                disabled
+                            />
+                            <SelectForm
+                                label="Chọn kệ tủ"
+                                text="Kệ - tủ:"
+                                options={
+                                    shelfOptions?.map((item) => ({
+                                        value: item._id,
+                                        label: item.name,
+                                    })) || []
+                                }
+                                {...getFieldProps("shelvesId")}
+                                error={touched.shelvesId && Boolean(errors.shelvesId)}
+                                helperText={touched.shelvesId && errors.shelvesId}
+                            />
+                           
+                        </Box>
+                         <InputForm
+                                label="Số lượng trên kệ"
+                                error={touched.shelvesQuantity && Boolean(errors.shelvesQuantity)}
+                                helperText={touched.shelvesQuantity && errors.shelvesQuantity}
+                                {...getFieldProps("shelvesQuantity")}
+                                disabled
+                            />
+                    </Form>
+                </DialogContent>
+
+                <DialogActions>
+                    <Button
+                        disabled={isFetching}
+                        onClick={handleSubmit as () => void}
+                        variant="contained"
+                        color="primary"
+                    >
+                        {isFetching ? "Đang cập nhật..." : "Cập nhật"}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </FormikProvider>
+    );
+};
+
+export default FormEditShelves;

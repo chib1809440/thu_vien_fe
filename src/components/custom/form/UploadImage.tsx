@@ -130,7 +130,7 @@ const Uploadimage = forwardRef<UploadAvatarRefProps, UploadAvatarProps>(
                         />
                     ) : (
                         <input
-                            accept={"application/pdf"}
+                            accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.mp4,.avi,.mov"
                             multiple={false}
                             type="file"
                             tabIndex={-1}

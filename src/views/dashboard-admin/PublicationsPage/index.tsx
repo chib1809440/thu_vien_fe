@@ -36,6 +36,7 @@ import DialogImportFile from "./ui-components/DialogImportFile ";
 import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
+import { TShelves } from "../../../types/models/shelves";
 
 const PublicationsPage = () => {
     const queryString = useQueryString();
@@ -135,7 +136,7 @@ const PublicationsPage = () => {
 
         if (selectedEdit) {
             console.log(selectedEdit);
-
+            // return;
             mutationEdit.mutate(
                 { ...payload, _id: selectedEdit._id },
                 {
@@ -479,7 +480,7 @@ const PublicationsPage = () => {
                 file: selectedEdit.file || "",
                 categoryIds: selectedEdit.categoryIds || [],
                 authorIds: selectedEdit.authorIds || [],
-                shelvesId: (selectedEdit.shelvesId as string) || null,
+                shelvesId: (selectedEdit.shelvesId as TShelves)?._id || null, 
                 publisherIds: selectedEdit.publisherIds || [],
                 materialIds: selectedEdit.materialIds || [],
             };

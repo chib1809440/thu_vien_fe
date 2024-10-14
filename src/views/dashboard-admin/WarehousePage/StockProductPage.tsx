@@ -5,10 +5,10 @@ import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
+import { useAddLiquidation } from "../../../hooks/services/liquidation/liquidation-mutation";
 import {
-    useEditPublications,
     useUpdateShelvesQuantity,
-    useUpdateStockQuantity,
+    useUpdateStockQuantity
 } from "../../../hooks/services/publications/publications-mutation";
 import {
     useFetchPublications,
@@ -17,12 +17,13 @@ import {
 import { useFetchShelf } from "../../../hooks/services/shelf/shelf-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
+import { TPositionLiquidation } from "../../../types/models/liquidation.type";
 import { TPublications, TPublicationsCreate } from "../../../types/models/publications.type";
+import { TShelves } from "../../../types/models/shelves";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../utils/object";
 import FormEditWarehouse from "./ui-components/FormEditWarehouse";
-import { TShelves } from "../../../types/models/shelves";
 
 const StockProductPage = () => {
     const queryString = useQueryString();
@@ -51,7 +52,6 @@ const StockProductPage = () => {
         ...filter,
     });
     const { data: shelfData } = useFetchShelf();
-    const mutationEdit = useEditPublications();
     const revalidate = useReFetchPublications();
 
     const [openAddEdit, setOpenAddEdit] = useState(false);
@@ -60,6 +60,7 @@ const StockProductPage = () => {
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const mutationUpdateShelvesQty = useUpdateShelvesQuantity();
     const mutationUpdateStockQty = useUpdateStockQuantity();
+    const mutatioCreateLiquidation = useAddLiquidation();
 
     const handleEditWarehouse = (row: TPublications) => {
         setSelectedEdit(row);
@@ -71,38 +72,75 @@ const StockProductPage = () => {
         setSelectedEdit(null);
     };
 
-    const handleSubmit = (values: TPublicationsCreate & { operation: string }) => {
+    const handleSubmit = (values: TPublicationsCreate & { operation: string, statusWarehouse: string, position?: TPositionLiquidation, reason?: string }) => {
         if (!selectedEdit) return;
 
-        const payload = { ...values, shelvesId: (selectedEdit?.shelvesId as TShelves)?._id, id: selectedEdit?._id };
+        const payload = { ...values, shelvesId: (selectedEdit?.shelvesId as TShelves)?._id, id: selectedEdit?._id, };
 
         console.log(`payload:::`, payload);
 
-        if (values.operation === "add") {
-            mutationUpdateShelvesQty.mutate(
+        if (values.statusWarehouse === "trên kệ") {
+
+            if (values.operation === "add") {
+                mutationUpdateShelvesQty.mutate(
+                    {
+                        id: payload.id,
+                        quantity: payload.shelvesQuantity,
+                        shelvesId: payload.shelvesId as string,
+                    },
+                    {
+                        onSuccess: () => {
+                            revalidate();
+                            toast.success("Chuyển sách lên kệ thành công.");
+                            handleClose();
+                        },
+                    }
+                );
+            } else {
+                mutationUpdateStockQty.mutate(
+                    {
+                        quantity: payload.shelvesQuantity,
+                        id: payload.id,
+                    },
+                    {
+                        onSuccess: () => {
+                            revalidate();
+                            toast.success("Giảm số lượng trên kệ vào kho");
+                            handleClose();
+                        },
+                    }
+                );
+            }
+        } else if (values.statusWarehouse === "thanh lý") {
+            mutatioCreateLiquidation.mutate(
                 {
-                    id: payload.id,
-                    quantity: payload.shelvesQuantity,
-                    shelvesId: payload.shelvesId as string,
+                    position: payload.position as TPositionLiquidation,
+                    publicationId: payload.id,
+                    quantity: payload.quantityLiquidation,
+                    status: "thanh lý",
+                    reason: payload.reason
                 },
                 {
                     onSuccess: () => {
                         revalidate();
-                        toast.success("Chuyển sách lên kệ thành công.");
+                        toast.success("Chuyển số lượng sách thanh lý thành công");
                         handleClose();
                     },
                 }
             );
-        } else {
-            mutationUpdateStockQty.mutate(
+        } else if (values.statusWarehouse === "hư hỏng") {
+            mutatioCreateLiquidation.mutate(
                 {
-                    quantity: payload.shelvesQuantity,
-                    id: payload.id,
+                    position: payload.position as TPositionLiquidation,
+                    publicationId: payload.id,
+                    quantity: payload.quantityLiquidation,
+                    status: "hư hỏng",
+                    reason: payload.reason
                 },
                 {
                     onSuccess: () => {
                         revalidate();
-                        toast.success("Giảm số lượng  trên kệ vào kho");
+                        toast.success("Chuyển số lượng sách hư hỏng thành công");
                         handleClose();
                     },
                 }
@@ -161,12 +199,11 @@ const StockProductPage = () => {
                 render: (row) => row.quantityLiquidation + row.quantityDamaged,
             },
             {
-                id: "quantity",
+                id: "totalQuantity",
                 disablePadding: "none",
                 label: "SL tổng",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => row.quantity + row.shelvesQuantity,
             },
             {
                 id: "action",
@@ -218,7 +255,7 @@ const StockProductPage = () => {
         return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
     }, [checkedDelete, data]);
 
-    const handleExcelExport = () => {};
+    const handleExcelExport = () => { };
 
     const actionMenus = useMemo((): TMenuOption[] => {
         return [
@@ -232,12 +269,17 @@ const StockProductPage = () => {
 
     const initialValues = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {
-            
+            console.log(selectedEdit);
+
             return {
                 name: selectedEdit.name,
                 quantity: selectedEdit.quantity,
                 shelvesId: ((selectedEdit.shelvesId as TShelves)?._id) || "",
                 shelvesQuantity: selectedEdit.shelvesQuantity,
+                quantityLiquidation: selectedEdit.quantityLiquidation,
+                quantityDamaged: selectedEdit.quantityDamaged,
+                totalQuantity: selectedEdit.totalQuantity,
+                quantityLoan: selectedEdit.quantityLoan,
             };
         }
 
@@ -245,9 +287,13 @@ const StockProductPage = () => {
             name: "",
             quantity: 0,
             shelvesQuantity: 0,
+            quantityLiquidation: 0,
+            quantityDamaged: 0,
+            quantityLoan: 0,
+            totalQuantity: 0,
             shelvesId: "",
         };
-    }, [selectedEdit]);    
+    }, [selectedEdit]);
 
     return (
         <div>

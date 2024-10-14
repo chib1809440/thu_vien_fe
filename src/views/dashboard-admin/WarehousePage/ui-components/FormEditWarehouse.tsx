@@ -6,22 +6,22 @@ import {
     DialogContent,
     DialogTitle,
     IconButton,
-    Select,
-    Typography,
+    Typography
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { Form, FormikProvider, useFormik } from "formik";
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import InputForm from "../../../../components/custom/form/InputForm";
 import SelectForm from "../../../../components/custom/form/SelectForm";
 import { TPublicationsCreate } from "../../../../types/models/publications.type";
 import { TShelves } from "../../../../types/models/shelves";
-import { stockStatusOptions } from "../../../../utils/constants.utils";
+import { positionLiquidationDamaged, stockStatusOptions } from "../../../../utils/constants.utils";
+import { toast } from "react-toastify";
 
 type Props = {
     open: boolean;
     onClose: () => void;
-    onSubmit?: (values: TPublicationsCreate & { operation: string }, resetForm: () => void) => void;
+    onSubmit?: (values: TPublicationsCreate & { operation: string, statusWarehouse: string, position?: string, reason?: string }, resetForm: () => void) => void;
     isFetching?: boolean;
     initialValues: TPublicationsCreate;
     isEditMode?: boolean;
@@ -43,14 +43,17 @@ const FormEditWarehouse: FC<Props> = ({
     isEditMode = false,
 }) => {
 
-
-
     const [statusWarehouse, setStatusWarehouse] = useState("");
+    const [positionLD, setPositionLD] = useState("trong kho");
+    const [reasonLD, setReasonLD] = useState("");
     const [touchedMount, setTouchedMount] = useState({ additionalQuantity: false });
     const [errorsMount, setErrorsMount] = useState({ additionalQuantity: "" });
 
     const [operation, setOperation] = useState("add");
     const [additionalQuantity, setAdditionalQuantity] = useState(0);
+    const [liquidationQuantity, setLiquidationQuantity] = useState(0);
+    const [liquidationTouched, setLiquidationTouched] = useState({ liquidationQuantity: false });
+    const [liquidationErrors, setLiquidationErrors] = useState({ liquidationQuantity: "" });
 
     const formik = useFormik<TPublicationsCreate>({
         initialValues,
@@ -61,20 +64,26 @@ const FormEditWarehouse: FC<Props> = ({
             }
 
             const changeAmount = Number(additionalQuantity) || 0;
+            const changeLiquidation = Number(liquidationQuantity) || 0;
 
             if (onSubmit) {
                 onSubmit(
                     {
                         ...values,
                         operation,
+                        statusWarehouse: statusWarehouse,
                         shelvesQuantity: changeAmount,
                         quantity: changeAmount,
-                        shelvesId: values?.shelvesId
+                        shelvesId: values?.shelvesId,
+                        quantityLiquidation: changeLiquidation,
+                        position: positionLD,
+                        reason: reasonLD
                     },
                     resetForm
                 );
             }
         },
+
     });
 
     const { errors, touched, values, setFieldValue, handleSubmit, getFieldProps } = useMemo(
@@ -85,7 +94,6 @@ const FormEditWarehouse: FC<Props> = ({
 
     const shelvesQuantity = parseInt(getFieldProps("shelvesQuantity").value, 10) || 0;
     const stockQuantity = parseInt(getFieldProps("quantity").value, 10) || 0;
-    const totalQuantity = stockQuantity + shelvesQuantity;
 
     const validateAdditionalQuantity = (
         additionalQuantity,
@@ -144,6 +152,41 @@ const FormEditWarehouse: FC<Props> = ({
             : shelvesQuantity - changeAmount;
     };
 
+    const validateLiquidationQuantity = (liquidationQuantity, stockQuantity) => {
+        if (liquidationQuantity <= 0) {
+            return "Số lượng phải lớn hơn 0";
+        }
+
+        if (positionLD === "trong kho" && liquidationQuantity > stockQuantity) {
+            return `Số lượng không thể lớn hơn số lượng tồn kho là ${stockQuantity}`;
+        }
+
+        if (positionLD === "trên kệ" && liquidationQuantity > shelvesQuantity) {
+            return `Số lượng không thể lớn hơn số lượng trên kệ là ${shelvesQuantity}`;
+        }
+
+        return null;
+    };
+
+    const handleLiqidation = (e) => {
+        const value = Number(e.target.value);
+        setLiquidationQuantity(value);
+        setLiquidationTouched({ liquidationQuantity: true });
+        let error = null;
+
+        if (positionLD === "trong kho") {
+            error = validateLiquidationQuantity(value, stockQuantity);
+        } else if (positionLD === "trên kệ") {
+            error = validateLiquidationQuantity(value, shelvesQuantity);
+        }
+
+        setLiquidationErrors({ liquidationQuantity: error });
+    };
+
+    const handleReasonChange = (event) => {
+        setReasonLD(event.target.value);
+    };
+
     return (
         <FormikProvider value={formik}>
             <Dialog
@@ -195,7 +238,9 @@ const FormEditWarehouse: FC<Props> = ({
                                 <InputForm
                                     label="Tổng số lượng ấn phẩm sách"
                                     type="number"
-                                    value={totalQuantity}
+                                    {...getFieldProps("totalQuantity")}
+                                    error={touched.totalQuantity && Boolean(errors.totalQuantity)}
+                                    helperText={touched.totalQuantity && errors.totalQuantity}
                                     disabled
                                 />
                                 <Box sx={{ display: "flex", gap: 2 }}>
@@ -301,7 +346,7 @@ const FormEditWarehouse: FC<Props> = ({
                                             errorsMount.additionalQuantity
                                             ? errorsMount.additionalQuantity
                                             : undefined
-                                    } // Truyền helperText
+                                    }
                                 />
 
                                 <Typography>
@@ -317,16 +362,42 @@ const FormEditWarehouse: FC<Props> = ({
                         {statusWarehouse === "thanh lý" && (
                             <>
                                 <InputForm
-                                    label="Tổng số lượng ấn phẩm"
+                                    label="Tổng số lượng ấn phẩm sách"
                                     type="number"
-                                    value={totalQuantity}
+                                    {...getFieldProps("totalQuantity")}
+                                    error={touched.totalQuantity && Boolean(errors.totalQuantity)}
+                                    helperText={touched.totalQuantity && errors.totalQuantity}
                                     disabled
                                 />
                                 <InputForm
                                     label="Số lượng thanh lý"
                                     type="number"
                                     placeholder="Nhập số lượng thanh lý"
-                                    value={0}
+                                    value={liquidationQuantity}
+                                    onChange={handleLiqidation}
+                                    error={liquidationTouched.liquidationQuantity && Boolean(liquidationErrors.liquidationQuantity)}
+                                    helperText={liquidationTouched.liquidationQuantity ? liquidationErrors.liquidationQuantity : undefined}
+                                />
+                                <InputForm
+                                    label="Lý do thanh lý"
+                                    placeholder="Nhập lý do thanh lý"
+                                    value={reasonLD}
+                                    onChange={handleReasonChange}
+                                />
+
+                                <SelectForm
+                                    label="Vị trí thanh lý"
+                                    options={positionLiquidationDamaged}
+                                    value={positionLD}
+                                    onChange={(event) => {
+                                        const newPosition = event.target.value;
+                                        setPositionLD(newPosition);
+
+                                        const error = validateLiquidationQuantity(liquidationQuantity,
+                                            newPosition === "trong kho" ? stockQuantity : shelvesQuantity);
+
+                                        setLiquidationErrors({ liquidationQuantity: error });
+                                    }}
                                 />
                             </>
                         )}
@@ -334,16 +405,42 @@ const FormEditWarehouse: FC<Props> = ({
                         {statusWarehouse === "hư hỏng" && (
                             <>
                                 <InputForm
-                                    label="Tổng số lượng ấn phẩm"
+                                    label="Tổng số lượng ấn phẩm sách"
                                     type="number"
-                                    value={totalQuantity}
+                                    {...getFieldProps("totalQuantity")}
+                                    error={touched.totalQuantity && Boolean(errors.totalQuantity)}
+                                    helperText={touched.totalQuantity && errors.totalQuantity}
                                     disabled
                                 />
                                 <InputForm
                                     label="Số lượng hư hỏng"
                                     type="number"
                                     placeholder="Nhập số lượng hư hỏng"
-                                    value={0}
+                                    value={liquidationQuantity}
+                                    onChange={handleLiqidation}
+                                    error={liquidationTouched.liquidationQuantity && Boolean(liquidationErrors.liquidationQuantity)}
+                                    helperText={liquidationTouched.liquidationQuantity ? liquidationErrors.liquidationQuantity : undefined}
+                                />
+                                <InputForm
+                                    label="Lý do hư hỏng"
+                                    placeholder="Nhập lý do hư hỏng"
+                                    value={reasonLD}
+                                    onChange={handleReasonChange}
+                                />
+
+                                <SelectForm
+                                    label="Vị trí hư hỏng"
+                                    options={positionLiquidationDamaged}
+                                    value={positionLD}
+                                    onChange={(event) => {
+                                        const newPosition = event.target.value;
+                                        setPositionLD(newPosition);
+
+                                        const error = validateLiquidationQuantity(liquidationQuantity,
+                                            newPosition === "trong kho" ? stockQuantity : shelvesQuantity);
+
+                                        setLiquidationErrors({ liquidationQuantity: error });
+                                    }}
                                 />
                             </>
                         )}

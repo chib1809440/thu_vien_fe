@@ -2,12 +2,10 @@ import { Box } from "@mui/system";
 import { IconPencil } from "@tabler/icons";
 import { IconFileExcel } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
-import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import {
-    useEditPublications,
-    useUpdateShelvesQuantity,
+    useUpdateShelvesQuantity
 } from "../../../hooks/services/publications/publications-mutation";
 import {
     useFetchPublications,
@@ -17,11 +15,11 @@ import { useFetchShelf } from "../../../hooks/services/shelf/shelf-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TPublications, TPublicationsCreate } from "../../../types/models/publications.type";
+import { TShelves } from "../../../types/models/shelves";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../utils/object";
-import FormEditWarehouse from "./ui-components/FormEditWarehouse";
-import { TShelves } from "../../../types/models/shelves";
+import FormEditShelves from "./ui-components/FormEditShelves";
 
 const ShelvesProductPage = () => {
     const queryString = useQueryString();
@@ -50,7 +48,6 @@ const ShelvesProductPage = () => {
         ...filter,
     });
     const { data: shelfData } = useFetchShelf();
-    const mutationEdit = useEditPublications();
     const revalidate = useReFetchPublications();
 
     const [openAddEdit, setOpenAddEdit] = useState(false);
@@ -69,44 +66,14 @@ const ShelvesProductPage = () => {
         setSelectedEdit(null);
     };
 
-    const handleSubmit = (values: TPublicationsCreate & { operation: string }) => {
+    const handleSubmit = (values: TPublicationsCreate) => {
         if (!selectedEdit) return;
 
         const payload = { ...values, shelvesId: selectedEdit?.shelvesId, id: selectedEdit?._id };
 
         console.log(`payload:::`, payload);
 
-        if (values.operation === "add") {
-            mutationUpdateShelvesQty.mutate(
-                {
-                    id: payload.id,
-                    quantity: payload.shelvesQuantity,
-                    shelvesId: payload.shelvesId as string,
-                },
-                {
-                    onSuccess: () => {
-                        revalidate();
-                        toast.success("Chuyển sách lên kệ thành công.");
-                        handleClose();
-                    },
-                }
-            );
-        } else {
-            mutationUpdateShelvesQty.mutate(
-                {
-                    id: payload.id,
-                    quantity: payload.shelvesQuantity,
-                    shelvesId: payload.shelvesId as string,
-                },
-                {
-                    onSuccess: () => {
-                        revalidate();
-                        toast.success("Giảm số lượng  trên kệ vào kho");
-                        handleClose();
-                    },
-                }
-            );
-        }
+        
         return;
     };
 
@@ -131,7 +98,7 @@ const ShelvesProductPage = () => {
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
-                id: "quantity",
+                id: "shelvesQuantity",
                 disablePadding: "none",
                 label: "Tên kệ",
                 align: "left",
@@ -146,17 +113,11 @@ const ShelvesProductPage = () => {
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
-                id: "shelvesQuantity",
+                id: "quantityLoan",
                 disablePadding: "none",
                 label: "SL mượn",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-            },
-            {
-                id: "shelvesQuantity",
-                disablePadding: "none",
-                label: "Ghi chú",
-                align: "left",
             },
             {
                 id: "action",
@@ -222,11 +183,14 @@ const ShelvesProductPage = () => {
 
     const initialValues = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {
+            console.log(selectedEdit);
+            
             return {
                 name: selectedEdit.name,
                 quantity: selectedEdit.quantity,
-                shelvesId: (selectedEdit.shelvesId as string) || "",
+                shelvesId: ((selectedEdit.shelvesId as TShelves)?._id) || "",
                 shelvesQuantity: selectedEdit.shelvesQuantity,
+                quantityLoan: selectedEdit.quantityLoan,
             };
         }
 
@@ -235,6 +199,7 @@ const ShelvesProductPage = () => {
             quantity: 0,
             shelvesQuantity: 0,
             shelvesId: "",
+            quantityLoan: 0,
         };
     }, [selectedEdit]);
 
@@ -247,7 +212,7 @@ const ShelvesProductPage = () => {
             />
 
             {openAddEdit && (
-                <FormEditWarehouse
+                <FormEditShelves
                     open={openAddEdit}
                     onClose={handleClose}
                     initialValues={initialValues}

@@ -12,12 +12,12 @@ import {
 } from "../../../hooks/services/liquidation/liquidation-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
-import { TLiquidation, TLiquidationCreate } from "../../../types/models/liquidation.type";
+import { TLiquidation, TLiquidationCreate, TPositionLiquidation } from "../../../types/models/liquidation.type";
+import { TPublications } from "../../../types/models/publications.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../utils/object";
 import FormEditLiquidation from "./ui-components/FormEditLiquidation";
-import { TPublications } from "../../../types/models/publications.type";
 
 const LiquidationProductPage = () => {
     const queryString = useQueryString();
@@ -44,7 +44,7 @@ const LiquidationProductPage = () => {
         ...filter
     });
 
-    const mutationEdit = useEditLiquidation();
+    const mutationUpdateLiquidation = useEditLiquidation();
     const revalidate = useReFetchLiquidation();
 
     const [openAddEdit, setOpenAddEdit] = useState(false);
@@ -62,9 +62,30 @@ const LiquidationProductPage = () => {
         setSelectedEdit(null);
     };
 
-    const handleSubmit = (values: TLiquidationCreate) => {
+    const handleSubmit = (values: TLiquidationCreate & { liquidationQuantity?: number }) => {
         console.log(values);
-        return;
+        if (selectedEdit) {
+            console.log(selectedEdit);
+
+            mutationUpdateLiquidation.mutate(
+                {
+                    position: values.position as TPositionLiquidation,
+                    publicationId: (values.publicationId as TPublications)?._id,
+                    quantity: values.liquidationQuantity,
+                    status: "thanh lý",
+                    reason: values.reason,
+                    _id: selectedEdit._id 
+                },
+                {
+                    onSuccess: () => {
+                        revalidate();
+                        toast.success("Chuyển số lượng sách thanh lý thành công");
+                        handleClose();
+                    },
+                }
+            );
+            return;
+        }
     };
 
     const handleBarcodeSearch = (value) => {
@@ -95,6 +116,9 @@ const LiquidationProductPage = () => {
                 label: "SL sách hư hỏng",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => {
+                    return row.status === 'thanh lý' ? 0 : row.quantity || 0;
+                },
             },
             {
                 id: "position",
@@ -104,11 +128,20 @@ const LiquidationProductPage = () => {
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
+                id: "reason",
+                disablePadding: "none",
+                label: "Lý do",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+            },
+            {
                 id: "quantity",
                 disablePadding: "none",
                 label: "SL sách thanh lý",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => {
+                    return row.status === 'hư hỏng' ? 0 : row.quantity || 0;
+                },
             },
             {
                 id: "quantity",
@@ -123,6 +156,10 @@ const LiquidationProductPage = () => {
                 align: "center",
                 label: "Hành động",
                 render: (row) => {
+                    if (row.status === 'thanh lý') {
+                        return null;
+                    }
+
                     return (
                         <Box
                             sx={{
@@ -167,7 +204,7 @@ const LiquidationProductPage = () => {
         return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
     }, [checkedDelete, data]);
 
-    const handleExcelExport = () => {};
+    const handleExcelExport = () => { };
 
     const actionMenus = useMemo((): TMenuOption[] => {
         return [
@@ -189,7 +226,7 @@ const LiquidationProductPage = () => {
                 reason: selectedEdit.reason,
                 status: selectedEdit.status,
                 position: selectedEdit.position,
-                publicationId: (selectedEdit.publicationId as string) || "",
+                publicationId: (selectedEdit.publicationId as string),
             };
         }
 

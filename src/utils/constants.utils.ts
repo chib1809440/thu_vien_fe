@@ -16,3 +16,8 @@ export const stockStatusOptions = [
     { value: 'thanh lý', label: 'Ấn phẩm thanh lý' },
     { value: 'hư hỏng', label: 'Ấn phẩm hư hỏng' },
 ];
+
+export const positionLiquidationDamaged = [
+    { value: 'trên kệ', label: 'Từ trên kệ' },
+    { value: 'trong kho', label: 'Từ trong kho' },
+]

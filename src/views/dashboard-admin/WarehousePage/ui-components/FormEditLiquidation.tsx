@@ -1,8 +1,9 @@
 import CloseIcon from '@mui/icons-material/Close';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from "@mui/material";
+import { Box } from '@mui/system';
 import { Form, FormikProvider, useFormik } from "formik";
 import { FC, useMemo, useState } from "react";
-import * as yup from "yup";
+import { toast } from 'react-toastify';
 import InputForm from "../../../../components/custom/form/InputForm";
 import { TLiquidationCreate } from '../../../../types/models/liquidation.type';
 import { TPublications } from '../../../../types/models/publications.type';
@@ -10,17 +11,10 @@ import { TPublications } from '../../../../types/models/publications.type';
 type Props = {
     open: boolean;
     onClose: () => void;
-    onSubmit?: (values: TLiquidationCreate, resetForm: () => void) => void;
+    onSubmit?: (values: TLiquidationCreate & { liquidationQuantity?: number }, resetForm: () => void) => void;
     isFetching?: boolean;
     initialValues: TLiquidationCreate;
 };
-
-const schema = yup.object().shape({
-    name: yup
-        .string()
-        .required("Vui lòng nhập tên"),
-
-});
 
 const FormEditLiquidation: FC<Props> = ({
     open,
@@ -36,13 +30,19 @@ const FormEditLiquidation: FC<Props> = ({
     },
     isFetching = false,
 }) => {
+    const [liquidationQuantity, setLiquidationQuantity] = useState(0);
+
     const formik = useFormik<TLiquidationCreate>({
         initialValues,
-        validationSchema: schema,
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
+            if (liquidationQuantity > values.quantity) {
+                toast.error("Số lượng thanh lý không được lớn hơn số lượng hư hỏng.");
+                return;
+            }
+
             if (onSubmit) {
-                onSubmit(values, resetForm);
+                onSubmit({ ...values, liquidationQuantity }, resetForm);
             }
         },
     });
@@ -52,38 +52,6 @@ const FormEditLiquidation: FC<Props> = ({
         [formik]
     );
 
-    const total = (values?.publicationId as TPublications)?.quantity + (values?.publicationId as TPublications)?.shelvesQuantity
-    const [additionalQuantity, setAdditionalQuantity] = useState(0);
-    const [touchedMount, setTouchedMount] = useState({ additionalQuantity: false });
-    const [errorsMount, setErrorsMount] = useState({ additionalQuantity: '' });
-    const quantity = parseInt(getFieldProps("quantity").value, 10) || 0;
-
-    const validateAdditionalQuantity = (additionalQuantity, quantity) => {
-        const value = Number(additionalQuantity);
-
-        if (quantity < value) {
-            if (value <= 0) return "Số lượng phải lớn hơn 0";
-            if (value >= quantity) return `Số lượng thanh lý không được lớn hơn số lượng hư hỏng là ${quantity}`;
-        }
-        return null;
-    };
-
-    const handleQuantityChange = (e) => {
-        const value = e.target.value;
-    
-        const numericValue = Number(value);
-        if (numericValue < 0) {
-            setAdditionalQuantity(0);
-            setErrorsMount({ ...errorsMount, additionalQuantity: "Số lượng không được âm" });
-            return;
-        }
-    
-        setAdditionalQuantity(numericValue);
-        setTouchedMount({ ...touchedMount, additionalQuantity: true });
-    
-        const error = validateAdditionalQuantity(numericValue, quantity);
-        setErrorsMount({ ...errorsMount, additionalQuantity: error });
-    };
 
     return (
         <FormikProvider value={formik}>
@@ -117,10 +85,29 @@ const FormEditLiquidation: FC<Props> = ({
                             value={(values?.publicationId as TPublications)?.name}
                             disabled
                         />
+                        <Box sx={{ display: "flex", gap: 2 }}>
+                            <InputForm
+                                label="Tổng số lượng ấn phẩm sách"
+                                type="number"
+                                value={(values?.publicationId as TPublications)?.totalQuantity}
+                                disabled
+                            />
+                            <InputForm
+                                label="Vị trí hư hỏng"
+                                placeholder="Nhập vị trí hư hỏng"
+                                {...getFieldProps("position")}
+                                error={touched.position && Boolean(errors.position)}
+                                helperText={touched.position && errors.position}
+                                disabled
+                            />
+                        </Box>
+
                         <InputForm
-                            label="Tổng số lượng ấn phẩm sách"
-                            type="number"
-                            value={total}
+                            label="Lý do thanh lý"
+                            placeholder="Lý do thanh lý"
+                            {...getFieldProps("reason")}
+                            error={touched.reason && Boolean(errors.reason)}
+                            helperText={touched.reason && errors.reason}
                             disabled
                         />
                         <InputForm
@@ -136,10 +123,8 @@ const FormEditLiquidation: FC<Props> = ({
                             label="Số lượng thanh lý"
                             type="number"
                             placeholder="Nhập số lượng"
-                            value={additionalQuantity}
-                            onChange={handleQuantityChange}
-                            error={touchedMount.additionalQuantity && Boolean(errorsMount.additionalQuantity)} 
-                            helperText={touchedMount.additionalQuantity && errorsMount.additionalQuantity ? errorsMount.additionalQuantity : undefined} // Truyền helperText
+                            value={liquidationQuantity}
+                            onChange={(e) => setLiquidationQuantity(Number(e.target.value))}
                         />
                     </Form>
                 </DialogContent>

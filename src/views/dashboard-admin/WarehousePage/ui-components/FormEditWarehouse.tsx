@@ -90,7 +90,6 @@ const FormEditWarehouse: FC<Props> = ({
         () => formik,
         [formik]
     );
-    console.log("values", values);
 
     const shelvesQuantity = parseInt(getFieldProps("shelvesQuantity").value, 10) || 0;
     const stockQuantity = parseInt(getFieldProps("quantity").value, 10) || 0;

@@ -32,9 +32,10 @@ export type TPublications = TEntityAbstract & {
     quantityLiquidation?: number,
     quantityDamaged?: number,
     totalQuantity?: number,
+    mimetype?: string,
 };
 
-export type TPublicationsCreate = Partial<Pick<TPublications, "isPublic" | "isLink" | "name" | "barcode" | "description" | "note" | "quantity" | "shelvesQuantity" | "status" | "type" | "file" | "quantityLiquidation" | "quantityDamaged" | "totalQuantity" | "quantityLoan">> & {
+export type TPublicationsCreate = Partial<Pick<TPublications, "isPublic" | "isLink" | "name" | "barcode" | "description" | "note" | "quantity" | "shelvesQuantity" | "status" | "type" | "file" | "quantityLiquidation" | "quantityDamaged" | "totalQuantity" | "quantityLoan" | "mimetype">> & {
     categoryIds?: string[] | TCategory[] | null;
     authorIds?: string[] | TAuthor[] | null;
     shelvesId?: string | null;

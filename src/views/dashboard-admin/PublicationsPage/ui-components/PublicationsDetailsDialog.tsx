@@ -19,7 +19,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: bool
         setShowBook(false);
     };
 
-    const numberPage = publications?.images?.length;    
+    const numberPage = publications?.images?.length;     
     
     return (
         <>

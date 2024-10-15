@@ -62,10 +62,7 @@ const FormEditShelves: FC<Props> = ({
     const { errors, touched, values, setFieldValue, handleSubmit, getFieldProps } = useMemo(
         () => formik,
         [formik]
-    );
-
-    console.log(values);
-    
+    );    
 
     return (
         <FormikProvider value={formik}>

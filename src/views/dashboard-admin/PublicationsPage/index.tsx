@@ -1,7 +1,7 @@
-import { Chip, Switch } from "@mui/material";
+import { Chip, Switch, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
-import { IconEye, IconFileDownload, IconFileUpload, IconTrashXFilled } from "@tabler/icons-react";
+import { IconBook, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
+import { IconEye, IconFileDownload, IconFileUpload, IconFileWord, IconPdf, IconPhoto, IconPresentation, IconTrashXFilled, IconVideo } from "@tabler/icons-react";
 import axios from "axios";
 import { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
@@ -28,15 +28,15 @@ import { useFetchPublisher } from "../../../hooks/services/publisher/publisher-q
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TPublications, TPublicationsCreate } from "../../../types/models/publications.type";
+import { TShelves } from "../../../types/models/shelves";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
-import { typeOptions } from "../../../utils/constants.utils";
-import { parserParams } from "../../../utils/object";
+import { statusOptions, typeOptions } from "../../../utils/constants.utils";
+import { getLabelFromOptions, parserParams } from "../../../utils/object";
 import DialogImportFile from "./ui-components/DialogImportFile ";
 import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
-import { TShelves } from "../../../types/models/shelves";
 
 const PublicationsPage = () => {
     const queryString = useQueryString();
@@ -135,8 +135,6 @@ const PublicationsPage = () => {
         };
 
         if (selectedEdit) {
-            console.log(selectedEdit);
-            // return;
             mutationEdit.mutate(
                 { ...payload, _id: selectedEdit._id },
                 {
@@ -248,13 +246,6 @@ const PublicationsPage = () => {
                 sxRow: { px: 3, maxWidth: 150 },
             },
             {
-                id: "barcode",
-                disablePadding: "none",
-                label: "Mã (ISBN)",
-                align: "left",
-                sxRow: { px: 3, maxWidth: 200 },
-            },
-            {
                 id: "type",
                 disablePadding: "none",
                 label: "Loại ấn phẩm",
@@ -279,19 +270,100 @@ const PublicationsPage = () => {
             {
                 id: "isPublic",
                 disablePadding: "none",
-                label: "Chia sẻ lên thư viện",
-                align: "center",
+                label: "Thông tin ấn phẩm",
+                align: "left",
                 sxRow: {
                     px: 4,
-                    maxWidth: 100,
+                    maxWidth: 300,
                 },
                 render: (row) => {
                     return (
-                        <Switch
-                            checked={row?.isPublic}
-                            value={row?.isPublic}
-                            onChange={(event) => handleChangePublic(row, event.target.checked)}
-                        />
+                        <>
+                            {
+                                row?.barcode && (
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        Barcode: <Typography ml={1} fontWeight={600}>{row?.barcode}</Typography>
+                                    </Box>
+                                )
+                            }
+                            {
+                                !(row?.type === "ấn phẩm cứng") && (
+                                    <Box>
+                                        Chia sẽ lên thư viện:
+                                        <Switch
+                                            checked={row?.isPublic}
+                                            value={row?.isPublic}
+                                            onChange={(event) => handleChangePublic(row, event.target.checked)}
+                                        />
+                                    </Box>
+                                )
+                            }
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                Trạng thái: <Typography ml={1} fontWeight={600}>{getLabelFromOptions(statusOptions, row?.status)}</Typography>
+                            </Box>
+                            <Box mt={1}>
+                                {
+                                    (!row?.mimetype) && (
+                                        <IconBook
+                                            size={30}
+                                            stroke={1.5}
+                                            color="#007e43"
+                                        />
+                                    )
+                                }
+                                {
+                                    (row?.mimetype === "application/pdf") && (
+                                        <IconPdf
+                                            size={30}
+                                            stroke={1.5}
+                                            color="#fd6033"
+                                        />
+                                    )
+                                }
+                                {
+                                    (row?.mimetype === "application/msword" || row?.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && (
+                                        <IconFileWord
+                                            size={30}
+                                            stroke={1.5}
+                                            color="#007bff"
+                                        />
+                                    )
+                                }
+                                {
+                                    (row?.mimetype === "video/mp4" || row?.mimetype === "video/x-msvideo" || row?.mimetype === "video/x-matroska" || row?.mimetype === "video/webm") && (
+                                        <IconVideo
+                                            size={30}
+                                            stroke={1.5}
+                                            color="#ff5733"
+                                        />
+                                    )
+                                }
+                                {
+                                    (row?.mimetype === "application/vnd.ms-powerpoint" ||
+                                        row?.mimetype === "application/vnd.openxmlformats-officedocument.presentationml.presentation") && (
+                                        <IconPresentation
+                                            size={30}
+                                            stroke={1.5}
+                                            color="#ffc107"
+                                        />
+                                    )
+                                }
+                                {
+                                    (row?.mimetype === "image/jpeg" ||
+                                        row?.mimetype === "image/png" ||
+                                        row?.mimetype === "image/gif" ||
+                                        row?.mimetype === "image/bmp" ||
+                                        row?.mimetype === "image/webp") && (
+                                        <IconPhoto
+                                            size={30}
+                                            stroke={1.5}
+                                            color="#28a745"
+                                        />
+                                    )
+                                }
+                            </Box>
+
+                        </>
                     );
                 },
             },
@@ -465,7 +537,6 @@ const PublicationsPage = () => {
 
     const initialValues = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {
-            console.log(selectedEdit);
 
             return {
                 name: selectedEdit.name,
@@ -480,9 +551,10 @@ const PublicationsPage = () => {
                 file: selectedEdit.file || "",
                 categoryIds: selectedEdit.categoryIds || [],
                 authorIds: selectedEdit.authorIds || [],
-                shelvesId: (selectedEdit.shelvesId as TShelves)?._id || null, 
+                shelvesId: (selectedEdit.shelvesId as TShelves)?._id || null,
                 publisherIds: selectedEdit.publisherIds || [],
                 materialIds: selectedEdit.materialIds || [],
+                mimetype: selectedEdit.mimetype
             };
         }
 
@@ -538,6 +610,7 @@ const PublicationsPage = () => {
                                 ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
                                 : ""
                     }
+                    isFetching={mutationAdd.isPending || mutationEdit.isPending}
                 />
             )}
 

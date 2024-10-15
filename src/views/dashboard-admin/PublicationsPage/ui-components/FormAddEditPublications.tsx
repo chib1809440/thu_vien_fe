@@ -21,7 +21,6 @@ import { TCategory } from "../../../../types/models/category";
 import { TMaterial } from "../../../../types/models/material";
 import { TPublicationsCreate } from "../../../../types/models/publications.type";
 import { TPublisher } from "../../../../types/models/publisher";
-import { TShelves } from "../../../../types/models/shelves";
 import { statusOptions, typeOptions } from "../../../../utils/constants.utils";
 import FormAddCommonDialog from "./FormAddCommonDialog";
 
@@ -42,7 +41,13 @@ type Props = {
 const schema = (isEditMode: boolean) =>
     yup.object().shape({
         name: yup.string().required("Vui lòng nhập tên"),
-        barcode: yup.string().required("Vui lòng mã barcode"),
+        barcode: yup.string().when("type", {
+            is: "ấn phẩm cứng",
+            then: yup
+                .string()
+                .required("Vui lòng nhập barcode"),
+            otherwise: yup.string().notRequired(),
+        }),
         categoryIds: yup.array().when("type", {
             is: "ấn phẩm cứng",
             then: yup
@@ -81,12 +86,12 @@ const schema = (isEditMode: boolean) =>
         }),
         ...(!isEditMode
             ? {
-                  file: yup.mixed().when("type", {
-                      is: "ấn phẩm mềm",
-                      then: yup.mixed().required("Vui lòng upload file").nullable(),
-                      otherwise: yup.mixed().notRequired(),
-                  }),
-              }
+                file: yup.mixed().when("type", {
+                    is: "ấn phẩm mềm",
+                    then: yup.mixed().required("Vui lòng upload file").nullable(),
+                    otherwise: yup.mixed().notRequired(),
+                }),
+            }
             : { file: yup.mixed() }),
     });
 
@@ -126,7 +131,7 @@ const FormAddEditPublications: FC<Props> = ({
                 onSubmit(values, resetForm);
             }
         },
-    });    
+    });
 
     const { errors, touched, values, setFieldValue, handleSubmit, getFieldProps } = useMemo(
         () => formik,
@@ -149,7 +154,7 @@ const FormAddEditPublications: FC<Props> = ({
     const revalidatePublisher = useReFetchPublisher();
     const revalidateCategory = useReFetchCategory();
     const revalidateMaterial = useReFetchMaterial();
-    const revalidateAuthor = useReFetchAuthor();    
+    const revalidateAuthor = useReFetchAuthor();
 
     const isMounted = useRef(true);
 
@@ -287,8 +292,57 @@ const FormAddEditPublications: FC<Props> = ({
         setFieldValue?.("publisherIds", value);
     }, []);
 
+    const VALID_MIME_TYPES = {
+        pdf: ["application/pdf"],
+        word: [
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        ],
+        powerpoint: [
+            "application/vnd.ms-powerpoint",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        ],
+        image: [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/bmp",
+            "image/webp"
+        ],
+        video: [
+            "video/mp4",
+            "video/x-msvideo",
+            "video/x-matroska",
+            "video/webm"
+        ]
+    };
+
     // Xét ảnh
     const handleChangeImage = useCallback(async (file: File) => {
+
+        const mimetype = initialValues?.mimetype;
+
+        // Kiểm tra loại file
+        const isValidType = Object.values(VALID_MIME_TYPES).some(mimeArray =>
+            mimeArray.includes(file.type)
+        );
+
+        if (!isValidType) {
+            toast.error("Vui lòng chọn file có đúng định dạng: " + mimetype);
+            console.log("aaa");
+            
+            imageRef.current.clearState();
+            return;
+        }
+
+        if (file.type !== mimetype) {
+            toast.error("Vui lòng chọn file có đúng định dạng: " + mimetype);
+            console.log("bbbb");
+            
+            imageRef.current.clearState();
+            return;
+        }
+
         if (!typeHardPublications) {
             const reader = new FileReader();
             reader.onload = (event) => {
@@ -300,7 +354,8 @@ const FormAddEditPublications: FC<Props> = ({
         }
 
         setFieldValue("file", file);
-    }, []);    
+    }, [initialValues, setFieldValue]);
+
 
     return (
         <FormikProvider value={formik}>
@@ -368,7 +423,7 @@ const FormAddEditPublications: FC<Props> = ({
                                     <InputForm
                                         label="Barcode"
                                         placeholder="Nhập barcode"
-                                        required
+                                        required={values.type === "ấn phẩm cứng"}
                                         error={touched.barcode && Boolean(errors.barcode)}
                                         helperText={touched.barcode && errors.barcode}
                                         {...getFieldProps("barcode")}
@@ -485,11 +540,13 @@ const FormAddEditPublications: FC<Props> = ({
                             helperText={touched.note && errors.note}
                             {...getFieldProps("note")}
                         />
+
                         <SwitchForm
                             value={values?.isPublic ?? false}
                             onChange={(checked) => setFieldValue("isPublic", checked)}
                             label="Chia sẻ lên thư viện"
                         />
+
                         <SwitchForm
                             value={values?.isLink ?? false}
                             onChange={(checked) => {
@@ -516,7 +573,7 @@ const FormAddEditPublications: FC<Props> = ({
                         variant="contained"
                         color="primary"
                     >
-                        {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
+                        {isFetching ? "Đang thực hiện..." : isEditMode ? "Cập nhật" : "Thêm mới"}
                     </Button>
                 </DialogActions>
             </Dialog>

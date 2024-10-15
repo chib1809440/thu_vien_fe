@@ -139,7 +139,7 @@ class BaseApi {
                 }
 
                 // check is object
-                if (typeof payload[key] === "object") {
+                if (typeof payload[key] === "object" && payload[key] !== null) {
                     formData.append(key, JSON.stringify(payload[key]));
                     return;
                 }
@@ -163,14 +163,12 @@ class BaseApi {
                 }
 
                 // check is null
-                if (payload[key] === null) {
-                    formData.append(key, "");
-                    return;
-                }
-
-                // check is undefined
-                if (payload[key] === undefined) {
-                    formData.append(key, "");
+                if (
+                    payload[key] === null ||
+                    payload[key] === undefined ||
+                    payload[key] === "" ||
+                    typeof payload[key] === "undefined"
+                ) {
                     return;
                 }
 

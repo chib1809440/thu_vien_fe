@@ -60,7 +60,7 @@ const StockProductPage = () => {
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const mutationUpdateShelvesQty = useUpdateShelvesQuantity();
     const mutationUpdateStockQty = useUpdateStockQuantity();
-    const mutatioCreateLiquidation = useAddLiquidation();
+    const mutationCreateLiquidation = useAddLiquidation();
 
     const handleEditWarehouse = (row: TPublications) => {
         setSelectedEdit(row);
@@ -76,8 +76,6 @@ const StockProductPage = () => {
         if (!selectedEdit) return;
 
         const payload = { ...values, shelvesId: (selectedEdit?.shelvesId as TShelves)?._id, id: selectedEdit?._id, };
-
-        console.log(`payload:::`, payload);
 
         if (values.statusWarehouse === "trên kệ") {
 
@@ -112,7 +110,7 @@ const StockProductPage = () => {
                 );
             }
         } else if (values.statusWarehouse === "thanh lý") {
-            mutatioCreateLiquidation.mutate(
+            mutationCreateLiquidation.mutate(
                 {
                     position: payload.position as TPositionLiquidation,
                     publicationId: payload.id,
@@ -129,7 +127,7 @@ const StockProductPage = () => {
                 }
             );
         } else if (values.statusWarehouse === "hư hỏng") {
-            mutatioCreateLiquidation.mutate(
+            mutationCreateLiquidation.mutate(
                 {
                     position: payload.position as TPositionLiquidation,
                     publicationId: payload.id,
@@ -269,7 +267,6 @@ const StockProductPage = () => {
 
     const initialValues = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {
-            console.log(selectedEdit);
 
             return {
                 name: selectedEdit.name,

@@ -183,7 +183,6 @@ const ShelvesProductPage = () => {
 
     const initialValues = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {
-            console.log(selectedEdit);
             
             return {
                 name: selectedEdit.name,

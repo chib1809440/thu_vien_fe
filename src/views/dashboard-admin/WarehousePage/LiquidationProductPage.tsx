@@ -63,9 +63,8 @@ const LiquidationProductPage = () => {
     };
 
     const handleSubmit = (values: TLiquidationCreate & { liquidationQuantity?: number }) => {
-        console.log(values);
+
         if (selectedEdit) {
-            console.log(selectedEdit);
 
             mutationUpdateLiquidation.mutate(
                 {
@@ -218,7 +217,6 @@ const LiquidationProductPage = () => {
 
     const initialValues = useMemo((): TLiquidationCreate => {
         if (selectedEdit) {
-            console.log(selectedEdit);
 
             return {
                 note: selectedEdit.note,

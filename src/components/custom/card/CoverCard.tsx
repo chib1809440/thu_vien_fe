@@ -1,6 +1,8 @@
 import { Box, Chip, Paper, Typography, useTheme } from "@mui/material";
 import { IconBook } from "@tabler/icons-react";
 import useConfig from "../../../hooks/useConfig";
+import { statusOptions, typeOptions } from "../../../utils/constants.utils";
+import { getLabelFromOptions } from "../../../utils/object";
 import StyledButton from "../../default/button/StyledButton";
 import { StyledHeading } from "../../default/typography";
 import ImageCard from "./ImageCard";
@@ -41,9 +43,6 @@ interface CoverCardProps {
 const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, categoryNames, authorNames, publisherNames, handleOpenView, numberPage, quantityShelves, nameShelves }: CoverCardProps) => {
     const theme = useTheme()
     const { borderRadius } = useConfig();
-    console.log(nameShelves, quantityShelves);
-
-
 
     return (
         <Paper sx={{ border: `1px solid ${theme.palette.grey[200]}`, height: handleOpenView ? "500px" : "300px", position: "relative" }}>
@@ -78,7 +77,7 @@ const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, cat
                     position: "absolute",
                     pt: handleOpenView ? 2 : 1,
                     top: { xs: "50%", sm: handleOpenView ? "30%" : "50%" },
-                    left: { xs: "0", sm: handleOpenView ? "15%" : "15%" }, // Left sẽ là 30% trên màn hình nhỏ và 20% trên màn hình lớn hơn
+                    left: { xs: "0", sm: handleOpenView ? "20%" : "20%" },
                     display: "flex",
                     justifyContent: "flex-end",
                     gap: 1,
@@ -102,7 +101,7 @@ const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, cat
                     status && (
                         <Typography variant="h4" display={"flex"} >
                             Trạng thái:
-                            <StyledHeading ml={1} variant="h4" textTransform={"capitalize"}> {status}</StyledHeading>
+                            <StyledHeading ml={1} variant="h4"> {getLabelFromOptions(statusOptions, status)}</StyledHeading>
                             {
                                 nameShelves && (
                                     <Typography variant="h4" display={"flex"} ml={2} >
@@ -126,7 +125,7 @@ const CoverCard = ({ title, photo, subtitle, barcode, status, materialNames, cat
                 {subtitle && subtitle.length > 0 && (
                     <Typography variant="h4" display={"flex"} alignItems={"center"} >
                         Loại:
-                        <Chip variant="filled" label={subtitle} sx={{
+                        <Chip variant="filled" label={getLabelFromOptions(typeOptions, subtitle)} sx={{
                             ml: 2,
                             color: theme.palette.text.dark,
                             background: "linear-gradient(90deg, rgba(255, 159, 0, 1) 0%, rgba(255, 109, 0, 1) 100%)",

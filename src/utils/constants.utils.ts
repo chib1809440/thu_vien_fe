@@ -1,5 +1,5 @@
 export const typeOptions = [
-    { value: 'ấn phẩm cứng', label: 'Ấn phẩm cứng' },
+    { value: 'ấn phẩm cứng', label: 'Ấn phẩm truyền thống' },
     { value: 'ấn phẩm mềm', label: 'Ấn phẩm mềm' },
 ];
 

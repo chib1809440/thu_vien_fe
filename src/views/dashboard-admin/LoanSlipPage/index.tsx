@@ -1,4 +1,4 @@
-import { Button, Chip, Grid, Switch, useTheme } from "@mui/material";
+import { Button, Chip, FormControl, Grid, MenuItem, Select, Switch, useTheme } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconCalendar, IconPencil, IconPlus, IconPrinter, IconTrash, IconX } from "@tabler/icons";
 import { IconClockSearch, IconTrashXFilled } from "@tabler/icons-react";
@@ -40,7 +40,7 @@ function CustomInput({ value, onClick }: CustomInputProps) {
                 value={value}
                 onClick={onClick}
                 readOnly
-                style={{ width: '100%' }} // Giảm chiều rộng để có chỗ cho biểu tượng "X"
+                style={{ width: '100%', height: '20px !important' }} // Giảm chiều rộng để có chỗ cho biểu tượng "X"
             />
             <span className="icon-background" onClick={onClick}>
                 <IconCalendar color="white" />
@@ -57,15 +57,18 @@ const LoanSlipPage = () => {
     const [barcodeSearch, setBarcodeSearch] = useState("");
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
+    const [filterDateType, setFilterDateType] = useState<string | number>(0);
     const filter = useMemo(
         () =>
             parserParams([
                 { compare: "", target: { search } },
                 { compare: "", target: { barcode: barcodeSearch } },
+                { compare: 0, target: { type: filterDateType } },
             ]),
         [
             barcodeSearch,
             search,
+            filterDateType
         ]
     );
     const theme = useTheme();
@@ -76,6 +79,8 @@ const LoanSlipPage = () => {
         endDate,
         ...filter,
     });
+    console.log(filterDateType);
+
     const mutationAdd = useAddLoanSlip();
     const mutationApproval = useApprovalLoanSlip();
     const mutationReturn = useReturnLoanSlip();
@@ -235,20 +240,29 @@ const LoanSlipPage = () => {
                         <Box
                         >
                             {
-                                row.isReturn === false ? <>
-                                    <Chip
-                                        style={{ color: 'white', background: theme.palette.error.dark }}
-                                        label="Chưa trả"
-                                        variant="filled"
-                                    />
-                                </> : <>
-                                    <Chip
-                                        style={{ color: 'white', background: '#096A5E' }}
-                                        label="Đã trả"
-                                        variant="filled"
-                                    />
-                                </>
+                                row.isReturn === true && <Chip
+                                    style={{ color: 'white', background: '#096A5E' }}
+                                    label="Đã trả"
+                                    variant="filled"
+                                />
                             }
+                            {row.isReturn === false && (
+                                <>
+                                    {new Date(row.returnDay) >= new Date() ? (
+                                        <Chip
+                                            style={{ color: 'white', background: '#FF9800' }} // Màu cho "Đang mượn"
+                                            label="Đang mượn"
+                                            variant="filled"
+                                        />
+                                    ) : (
+                                        <Chip
+                                            style={{ color: 'white', background: theme.palette.error.dark }} // Màu cho "Quá hạn"
+                                            label="Quá hạn"
+                                            variant="filled"
+                                        />
+                                    )}
+                                </>
+                            )}
                         </Box>
                     );
                 },
@@ -299,7 +313,7 @@ const LoanSlipPage = () => {
                                 stroke={1.5}
                             />
                             {
-                                row.isAgree === true &&
+                                row.isAgree === false &&
                                 <IconTrash
                                     size={20}
                                     stroke={1.5}
@@ -448,6 +462,47 @@ const LoanSlipPage = () => {
                     <Grid item xs={12} sm={12} md={4} lg={3}>
                         <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
+                                Lọc theo:
+                            </span>
+                            <div className="date-picker-container">
+                                <FormControl fullWidth>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="filterDateType"
+                                        name="filterDateType"
+                                        type="filterDateType"
+                                        value={filterDateType}
+                                        onChange={(event) => {
+                                            setFilterDateType(event.target.value); // Lấy giá trị từ event
+                                        }}
+                                        sx={{ height: '40px', fontSize: '0.875rem' }}
+                                    >
+                                        <MenuItem
+                                            key={0}
+                                            value='0'
+                                        >
+                                            Tất cả
+                                        </MenuItem>
+                                        <MenuItem
+                                            key={1}
+                                            value="borrowedDay"
+                                        >
+                                            Ngày mượn
+                                        </MenuItem>
+                                        <MenuItem
+                                            key={2}
+                                            value="returnDay"
+                                        >
+                                            Ngày trả
+                                        </MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </div>
+                        </div>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={4} lg={3}>
+                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                            <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Từ ngày:
                             </span>
                             <div className="date-picker-container">
@@ -457,7 +512,7 @@ const LoanSlipPage = () => {
                                     dateFormat="dd/MM/yyyy" // Định dạng ngày tháng năm
                                     onChange={(date: Date | null) => setStartDate(date)}
                                     customInput={<CustomInput value={startDate ? startDate.toLocaleDateString() : ''} onClick={() => { }} />}
-                                /> 
+                                />
                                 {
                                     startDate && <span className="icon-clear" onClick={handleClearStartDate}>
                                         <IconX color="red" />

@@ -292,6 +292,15 @@ const FormAddEditLoanSlip: FC<Props> = ({
     const componentRef = useRef();
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
+        pageStyle: `
+            @page {
+                margin: 10mm; /* Thiết lập margin */
+                size: A6; /* Thiết lập kích thước */
+            }
+            body {
+                margin: 0; /* Đảm bảo không có margin thừa */
+            }
+        `,
     });
     return (
         <FormikProvider value={formik}>

@@ -358,25 +358,25 @@ select.react-datepicker__year-select {
     padding: 5px;
 
 }
-@media print {
-    @page {
-        margin:  10mm 10mm 10mm 10mm;
-        size: 80mm auto;
-    }
-    .order-content {
-        font-family: Arial, sans-serif;
-        font-size: 9px !important;
-        line-height: 1;
-        overflow: hidden;
-         page-break-after: avoid; /* Tránh ngắt trang sau phần tử này */
-        page-break-inside: avoid; /* Tránh ngắt trang bên trong phần tử này */
-    }
+// @media print {
+//     @page {
+//         margin:  10mm 10mm 10mm 10mm;
+//         size: 80mm auto;
+//     }
+//     .order-content {
+//         font-family: Arial, sans-serif;
+//         font-size: 9px !important;
+//         line-height: 1;
+//         overflow: hidden;
+//          page-break-after: avoid; /* Tránh ngắt trang sau phần tử này */
+//         page-break-inside: avoid; /* Tránh ngắt trang bên trong phần tử này */
+//     }
 
-    h2, p {
-        page-break-inside: avoid;
-        page-break-after: avoid;
-    }
-}
+//     h2, p {
+//         page-break-inside: avoid;
+//         page-break-after: avoid;
+//     }
+// }
 .input-group-text{
     height:43px;
     cursor: pointer;

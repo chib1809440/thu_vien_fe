@@ -172,6 +172,32 @@ const dashboardAdmin = {
             ]
         },
         {
+            id: 'quan-ly-nhap-kho',
+            title: "Quản lý nhập kho",
+            type: 'collapse',
+            url: '/quan-ly-nhap-kho',
+            icon: icons.IconBrowser,
+            breadcrumbs: false,
+            children: [
+                {
+                    id: 'nha-cung-cap',
+                    title: "Nhà cung cấp",
+                    type: 'item',
+                    url: '/quan-ly-nhap-kho/nha-cung-cap',
+                    icon: icons.IconEyeTable,
+                    breadcrumbs: false
+                },
+                {
+                    id: 'phieu-nhap-kho',
+                    title: "Phiếu nhập kho",
+                    type: 'item',
+                    url: '/quan-ly-nhap-kho/phieu-nhap-kho',
+                    icon: icons.IconEyeTable,
+                    breadcrumbs: false
+                },
+            ]
+        },
+        {
             id: 'quan-ly-muon-tra',
             title: "Quản lý mượn trả",
             type: 'collapse',

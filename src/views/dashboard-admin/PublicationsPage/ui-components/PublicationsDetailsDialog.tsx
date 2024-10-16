@@ -7,9 +7,16 @@ import CoverCard from '../../../../components/custom/card/CoverCard';
 import { TPublications } from '../../../../types/models/publications.type';
 import BookViewDialog from './BookViewDialog';
 import { TShelves } from '../../../../types/models/shelves';
+import VideoDetailPage from '../VideoDetailPage';
+import ImageDetailPage from '../ImageDetailPage';
 
 const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: boolean; onClose: () => void; publications: TPublications | null }) => {
     const [showBook, setShowBook] = useState(false);
+    const [showVideo, setShowVideo] = useState(false);
+    const [showImage, setShowImage] = useState(false);
+    const [showWord, setShowWord] = useState(false);
+    const [showPowerpoint, setShowPowerpoint] = useState(false);
+    const numberPage = publications?.images?.length;
 
     const handleOpenView = () => {
         setShowBook(true);
@@ -17,21 +24,46 @@ const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: bool
 
     const handleClose = () => {
         setShowBook(false);
+        setShowVideo(false);
+        setShowImage(false);
+        setShowPowerpoint(false);
+        setShowWord(false);
     };
 
-    const numberPage = publications?.images?.length;     
-    
+    const handleOpenVideo = () => {
+        setShowVideo(true)
+    }
+    const handleOpenImage = () => {
+        setShowImage(true)
+    }
+    const handleOpenPowerpoint = () => {
+        setShowPowerpoint(true)
+    }
+    const handleOpenWord = () => {
+        setShowWord(true)
+    }
+
     return (
         <>
             {
-                showBook && publications.images.length > 0 && (
+                showBook && numberPage > 0 && (
                     <BookViewDialog onClose={handleClose} open={showBook} publications={publications} />
+                )
+            }
+            {
+                showVideo && (
+                    <VideoDetailPage onClose={handleClose} open={showVideo} publications={publications} />
+                )
+            }
+            {
+                showImage && (
+                    <ImageDetailPage onClose={handleClose} open={showImage} publications={publications} />
                 )
             }
             <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
                 <DialogContent>
                     <IconButton
-                        aria-label="cl ose"
+                        aria-label="close"
                         onClick={onClose}
                         color='error'
                         sx={{ position: 'absolute', right: 8, top: 2 }}
@@ -40,22 +72,26 @@ const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: bool
                     </IconButton>
 
                     {publications ? (
-                        <Grid container spacing={2} >
+                        <Grid container >
                             <Grid item xs={12}>
                                 <CoverCard
+                                    mimetype={publications?.mimetype}
                                     title={publications?.name}
                                     subtitle={publications?.type}
                                     barcode={publications?.barcode}
                                     status={publications?.status}
-                                    materialNames={publications.materialIds.length > 0 ? publications.materialIds.map(material => material.name) : []}
-                                    categoryNames={publications.categoryIds.length > 0 ? publications.categoryIds.map(category => category.name) : []}
-                                    authorNames={publications.authorIds.length > 0 ? publications.authorIds.map(author => author.name) : []}
-                                    publisherNames={publications.publisherIds.length > 0 ? publications.publisherIds.map(publisher => publisher.name) : []}
+                                    materialNames={publications?.materialIds?.length > 0 ? publications?.materialIds.map(material => material?.name) : []}
+                                    categoryNames={publications?.categoryIds?.length > 0 ? publications?.categoryIds.map(category => category?.name) : []}
+                                    authorNames={publications?.authorIds?.length > 0 ? publications?.authorIds.map(author => author?.name) : []}
+                                    publisherNames={publications?.publisherIds?.length > 0 ? publications?.publisherIds.map(publisher => publisher?.name) : []}
                                     photo={publications?.priviewImage ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}` : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
                                     handleOpenView={handleOpenView}
-                                    numberPage={numberPage}
                                     nameShelves={(publications?.shelvesId as TShelves)?.name}
                                     quantityShelves={publications?.shelvesQuantity > 0 ? publications?.shelvesQuantity : 0}
+                                    handleOpenVideo={handleOpenVideo}
+                                    handleOpenImage={handleOpenImage}
+                                    handleOpenPowerpoint={handleOpenPowerpoint}
+                                    handleOpenWord={handleOpenWord}
                                 />
 
                             </Grid>

@@ -321,26 +321,29 @@ const FormAddEditPublications: FC<Props> = ({
     const handleChangeImage = useCallback(async (file: File) => {
 
         const mimetype = initialValues?.mimetype;
+        console.log(mimetype);
+
 
         // Kiểm tra loại file
         const isValidType = Object.values(VALID_MIME_TYPES).some(mimeArray =>
             mimeArray.includes(file.type)
         );
+        if (!mimetype) {
+            if (!isValidType) {
+                toast.error("Vui lòng chọn file có đúng định dạng: " + mimetype);
+                console.log("aaa");
 
-        if (!isValidType) {
-            toast.error("Vui lòng chọn file có đúng định dạng: " + mimetype);
-            console.log("aaa");
-            
-            imageRef.current.clearState();
-            return;
-        }
+                imageRef.current.clearState();
+                return;
+            }
+        } else {
+            if (!isValidType || file.type !== mimetype) {
+                toast.error("Vui lòng chọn file có đúng định dạng: " + mimetype);
+                console.log("bbbb");
 
-        if (file.type !== mimetype) {
-            toast.error("Vui lòng chọn file có đúng định dạng: " + mimetype);
-            console.log("bbbb");
-            
-            imageRef.current.clearState();
-            return;
+                imageRef.current.clearState();
+                return;
+            }
         }
 
         if (!typeHardPublications) {
@@ -480,6 +483,7 @@ const FormAddEditPublications: FC<Props> = ({
                                 handleAdd={handleAddMaterial}
                                 limitTags={1}
                                 limitText={10}
+                                noOptionsText="Vui lòng thêm dạng học liệu mới"
                             />
 
                             <AutocompleteForm
@@ -494,6 +498,7 @@ const FormAddEditPublications: FC<Props> = ({
                                 handleAdd={handleAddCategory}
                                 limitTags={1}
                                 limitText={10}
+                                noOptionsText="Vui lòng thêm lĩnh vực mới"
                             />
 
                             <AutocompleteForm
@@ -508,6 +513,7 @@ const FormAddEditPublications: FC<Props> = ({
                                 handleAdd={handleAddAuthor}
                                 limitTags={1}
                                 limitText={10}
+                                noOptionsText="Vui lòng thêm tác giả mới"
                             />
 
                             <AutocompleteForm
@@ -522,6 +528,7 @@ const FormAddEditPublications: FC<Props> = ({
                                 handleAdd={handleAddPublisher}
                                 limitTags={1}
                                 limitText={10}
+                                noOptionsText="Vui lòng thêm nhà xuất bản mới"
                             />
                         </Box>
 

@@ -1,51 +1,36 @@
-import {
-    Avatar,
-    Box,
-    Divider,
-    FormControl,
-    Grid,
-    IconButton,
-    InputLabel,
-    ListItemIcon,
-    Menu,
-    MenuItem,
-    Modal,
-    Pagination,
-    PaginationItem,
-    Paper,
-    Select,
-    SelectChangeEvent,
-    Stack,
-    Typography,
-    useTheme,
-} from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+import {
+    Box,
+    IconButton,
+    Menu,
+    Modal,
+    Paper,
+    Typography,
+    useTheme
+} from "@mui/material";
+import { useCallback, useEffect, useState } from "react";
 import GradientLoading from "../../default/loading/GradientLoading/GradientLoading";
-import StyledIconButton from "../../default/button/StyledIconButton";
-import { IconBrandRedux, IconVolume, IconZoomReplace } from "@tabler/icons-react";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 interface ImageCardProps {
     id: number | string,
     photo: string,
     isViewPhoto?: string,
-    aspectRatio: string,
+    aspectRatio?: string,
     title?: string,
     description?: string,
     limitDescription?: number,
     href?: string,
     isView?: boolean,
     isEffect?: boolean,
-    objectFit?: "contain" | "fill",
+    objectFit?: "contain" | "fill" | "cover",
     isBorderRadius?: boolean,
     sound_us?: string,
     sound_uk?: string,
     filterTypeVoiceId?: number;
 }
 
-const ImageCard: React.FC<ImageCardProps> = ({ id, filterTypeVoiceId, isBorderRadius, objectFit, photo, isViewPhoto, title, isView, isEffect, href, description, limitDescription, aspectRatio }) => {
+const ImageCard: React.FC<ImageCardProps> = ({ id, filterTypeVoiceId, isBorderRadius, objectFit, photo, isViewPhoto, title, isView, isEffect, href, description, limitDescription, aspectRatio = "16/9" }) => {
     const [currentImage, setCurrentImage] = useState(0);
     const [isViewerOpen, setIsViewerOpen] = useState(false);
     const [scale, setScale] = useState(1);
@@ -239,7 +224,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ id, filterTypeVoiceId, isBorderRa
                             position: 'absolute',
                             top: 0,
                             left: 0,
-                            borderRadius: `${!isBorderRadius ? 0 : '8px'}`
+                            borderRadius: `${!isBorderRadius ? 0 : '16px'}`
                         }}
                     />
                 </Box>

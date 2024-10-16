@@ -11,6 +11,7 @@ import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
+import { useAuth } from "../../../contexts/JWTContext";
 import { useFetchAuthor } from "../../../hooks/services/author/author-query";
 import { useFetchCategory } from "../../../hooks/services/category/category-query";
 import { useFetchMaterial } from "../../../hooks/services/material/material-query";
@@ -37,6 +38,7 @@ import DialogImportFile from "./ui-components/DialogImportFile ";
 import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
+import { AddPermissionToRoleModel, CreateRoleModel } from "../../../interfaces/role";
 
 const PublicationsPage = () => {
     const queryString = useQueryString();
@@ -50,6 +52,21 @@ const PublicationsPage = () => {
     const [selectedCategory, setSelectedCategory] = useState(0);
     const [selectedPublisher, setSelectedPublisher] = useState(0);
     const [barcodeSearch, setBarcodeSearch] = useState("");
+    const [selectedValuePublication, setSelectedValue] = useState("thuvien");
+
+    const { user } = useAuth();
+
+    const userId = useMemo(() => {
+        if (!user) return null;
+        const _user = { ...user } as any;
+        return _user?.data?._id;
+    }, [user]);
+
+    const userRole = useMemo(() => {
+        if (!user) return null;
+        const _user = { ...user } as any;
+        return _user?.data?.roleId?.name;
+    }, [user]);    
 
     const filter = useMemo(
         () =>
@@ -77,6 +94,11 @@ const PublicationsPage = () => {
         limit,
         page,
         ...filter,
+        ...(selectedValuePublication === "thuvien"
+            ? { isPublic: true }
+            : selectedValuePublication !== "all"
+                ? { isPublic: false, createBy: userId }
+                : {}),
     });
 
     const { data: categoryData } = useFetchCategory();
@@ -236,6 +258,10 @@ const PublicationsPage = () => {
         setBarcodeSearch(value);
     };
 
+    const handleValuePublication = (event) => {
+        setSelectedValue(event.target.value);
+    };
+
     const columns: TColumn<TPublications>[] = useMemo(
         () => [
             {
@@ -294,6 +320,7 @@ const PublicationsPage = () => {
                                             checked={row?.isPublic}
                                             value={row?.isPublic}
                                             onChange={(event) => handleChangePublic(row, event.target.checked)}
+                                            disabled={row?.isLink === true}
                                         />
                                     </Box>
                                 )
@@ -576,6 +603,8 @@ const PublicationsPage = () => {
         };
     }, [selectedEdit]);
 
+
+
     return (
         <div>
             <IBreadcrumsCustom
@@ -663,7 +692,13 @@ const PublicationsPage = () => {
                     barcode={true}
                     barcodeSearch={barcodeSearch}
                     handleBarcodeSearch={handleBarcodeSearch}
+                    // nếu người dùng là thủ thư hoặc giáo viên
+                    {...((userRole === "Admin" || userRole === "Teacher") ? {
+                        selectedValuePublication: selectedValuePublication,
+                        handleValuePublication: handleValuePublication
+                    } : {})}
                 />
+
                 <FilterByItems
                     selectedPublications={selectedPublications}
                     handlePublicationsFilterChange={handlePublicationsFilterChange}

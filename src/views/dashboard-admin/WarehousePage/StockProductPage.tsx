@@ -75,7 +75,8 @@ const StockProductPage = () => {
     const handleSubmit = (values: TPublicationsCreate & { operation: string, statusWarehouse: string, position?: TPositionLiquidation, reason?: string }) => {
         if (!selectedEdit) return;
 
-        const payload = { ...values, shelvesId: (selectedEdit?.shelvesId as TShelves)?._id, id: selectedEdit?._id, };
+        const payload = { ...values, id: selectedEdit?._id, };
+        console.log(payload);
 
         if (values.statusWarehouse === "trên kệ") {
 

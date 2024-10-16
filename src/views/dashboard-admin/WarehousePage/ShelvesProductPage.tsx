@@ -2,9 +2,11 @@ import { Box } from "@mui/system";
 import { IconPencil } from "@tabler/icons";
 import { IconFileExcel } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import {
+    useEditPublications,
     useUpdateShelvesQuantity
 } from "../../../hooks/services/publications/publications-mutation";
 import {
@@ -54,7 +56,7 @@ const ShelvesProductPage = () => {
     const [selectedEdit, setSelectedEdit] = useState<TPublications | null>(null);
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
-    const mutationUpdateShelvesQty = useUpdateShelvesQuantity();
+    const mutationEdit = useEditPublications();
 
     const handleEditWarehouse = (row: TPublications) => {
         setSelectedEdit(row);
@@ -68,12 +70,18 @@ const ShelvesProductPage = () => {
 
     const handleSubmit = (values: TPublicationsCreate) => {
         if (!selectedEdit) return;
-
-        const payload = { ...values, shelvesId: selectedEdit?.shelvesId, id: selectedEdit?._id };
-
-        console.log(`payload:::`, payload);
-
         
+        mutationEdit.mutate(
+            { ...values, _id: selectedEdit._id },
+            {
+                onSuccess: () => {
+                    revalidate();
+                    toast.success("Chuyển tủ kệ thành công.");
+                    handleClose();
+                },
+            }
+        );
+
         return;
     };
 
@@ -169,7 +177,7 @@ const ShelvesProductPage = () => {
         return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
     }, [checkedDelete, data]);
 
-    const handleExcelExport = () => {};
+    const handleExcelExport = () => { };
 
     const actionMenus = useMemo((): TMenuOption[] => {
         return [
@@ -183,11 +191,11 @@ const ShelvesProductPage = () => {
 
     const initialValues = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {
-            
+
             return {
                 name: selectedEdit.name,
                 quantity: selectedEdit.quantity,
-                shelvesId: ((selectedEdit.shelvesId as TShelves)?._id) || "",
+                shelvesId: ((selectedEdit.shelvesId as TShelves)?._id),
                 shelvesQuantity: selectedEdit.shelvesQuantity,
                 quantityLoan: selectedEdit.quantityLoan,
             };
@@ -218,6 +226,7 @@ const ShelvesProductPage = () => {
                     onSubmit={handleSubmit}
                     isEditMode={selectedEdit ? true : false}
                     shelfOptions={shelfData?.data?.result || []}
+                    isFetching={mutationEdit?.isPending}
                 />
             )}
 
@@ -232,7 +241,7 @@ const ShelvesProductPage = () => {
                 <TableList
                     checked={checkedDelete}
                     columns={columns}
-                    rows={data?.data?.result || []}
+                    rows={data?.data?.result?.filter((t) => t.shelvesId !== null && t.shelvesId !== undefined) || []}
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}

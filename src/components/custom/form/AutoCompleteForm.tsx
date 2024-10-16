@@ -33,6 +33,7 @@ type Props<Type> = {
     handleAdd?: () => void;
     limitTags?: number;
     limitText?: number;
+    noOptionsText?: string;
 };
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -52,6 +53,7 @@ const AutocompleteForm = <Type extends Record<string, any>>({
     handleAdd,
     limitTags = LIMIT_TAGS,
     limitText = LIMIT_TEXT,
+    noOptionsText = "Không có dữ liệu",
 }: Props<Type>) => {
     return (
         <FormControl
@@ -84,6 +86,7 @@ const AutocompleteForm = <Type extends Record<string, any>>({
                 limitTags={limitTags}
                 id="multiple-limit-tags"
                 options={options}
+                noOptionsText={noOptionsText}
                 value={value}
                 onChange={(_, value) => onChange?.(value)}
                 getOptionLabel={(option) => option?.[keyLabel]}

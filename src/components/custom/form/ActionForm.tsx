@@ -1,4 +1,4 @@
-import { Box, Grid, Menu, MenuItem } from "@mui/material";
+import { Box, Grid, Menu, MenuItem, Select } from "@mui/material";
 import { IconSettings } from "@tabler/icons";
 import { FC, MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -6,16 +6,19 @@ import useDebounce from "../../../hooks/useDebounce";
 import SearchNoButtonSection from "../search/SearchNoButton";
 import StyledButton from "../../default/button/StyledButton";
 import { TMenuOption } from "../../../types/common/table";
+import CustomInput from "../../default/input/CustomInput";
 
 type Props = {
     actions?: TMenuOption[];
     barcodeSearch?: string;
     handleBarcodeSearch?: (e: any) => void;
+    selectedValuePublication?: string;
+    handleValuePublication?: (e: any) => void;
     barcode?: boolean;
     placeholder?: string;
 };
 
-const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSearch, barcode = false, placeholder = 'Tìm kiếm theo mã ấn phẩm' }) => {
+const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSearch, barcode = false, placeholder = 'Tìm kiếm theo mã ấn phẩm', selectedValuePublication, handleValuePublication }) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const querySearch = searchParams.get("q") || "";
 
@@ -53,7 +56,7 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
 
     return (
         <Grid container pl={4} pr={4} pt={2}>
-            <Grid item xs={12} sm={12} md={barcode ? 6 : 3} lg={barcode ? 6 : 4} marginBottom={4} sx={{ display: "flex" }} gap={2} >
+            <Grid item xs={12} sm={12} md={barcode ? 8 : 3} lg={barcode ? 8 : 4} marginBottom={4} sx={{ display: "flex" }} gap={2} >
                 <SearchNoButtonSection
                     fullwidth
                     contentSearch={contentSearch}
@@ -69,10 +72,22 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
                         />)
                         : ""
                 }
+                {
+                    selectedValuePublication ? (<Select
+                        labelId="publications-select"
+                        label="Ấn phẩm"
+                        value={selectedValuePublication}
+                        onChange={handleValuePublication}
+                        input={<CustomInput size="small" label="Ấn phẩm" />}
+                    >
+                        <MenuItem value="thuvien">Ấn phẩm của thư viện</MenuItem>
+                        <MenuItem value="canhan">Ấn phẩm cá nhân</MenuItem>
+                    </Select>) : ""
+                }
             </Grid>
 
             {actions.length > 0 && (
-                <Grid item xs={12} sm={6} md={barcode ? 6 : 9} lg={barcode ? 6 : 8} marginBottom={4}>
+                <Grid item xs={12} sm={6} md={barcode ? 4 : 9} lg={barcode ? 4 : 8} marginBottom={4}>
                     <Box
                         sx={{
                             display: "flex",

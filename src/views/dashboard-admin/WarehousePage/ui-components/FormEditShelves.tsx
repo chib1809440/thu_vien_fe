@@ -14,6 +14,7 @@ import InputForm from "../../../../components/custom/form/InputForm";
 import SelectForm from "../../../../components/custom/form/SelectForm";
 import { TPublicationsCreate } from "../../../../types/models/publications.type";
 import { TShelves } from "../../../../types/models/shelves";
+import * as yup from "yup";
 
 type Props = {
     open: boolean;
@@ -24,6 +25,14 @@ type Props = {
     isEditMode?: boolean;
     shelfOptions?: TShelves[];
 };
+
+const schema = yup.object().shape({
+    name: yup.string().required("Vui lòng nhập tên"),
+    quantity: yup.number().required("Vui lòng nhập số lượng"),
+    shelvesQuantity: yup.number().required("Vui lòng nhập số lượng trên kệ"),
+    shelvesId: yup.string().required("Vui lòng chọn kệ"),
+});
+
 
 const FormEditShelves: FC<Props> = ({
     open,
@@ -43,6 +52,7 @@ const FormEditShelves: FC<Props> = ({
 
     const formik = useFormik<TPublicationsCreate>({
         initialValues,
+        validationSchema: schema,
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
 
@@ -78,7 +88,7 @@ const FormEditShelves: FC<Props> = ({
                 disableEscapeKeyDown
             >
                 <DialogTitle>
-                    Cập nhật thông tin kho
+                    Cập nhật thông tin tủ - kệ
                     <IconButton
                         aria-label="close"
                         onClick={onClose}

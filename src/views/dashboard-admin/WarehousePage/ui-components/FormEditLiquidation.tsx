@@ -36,13 +36,9 @@ const FormEditLiquidation: FC<Props> = ({
         initialValues,
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
-            if (liquidationQuantity > values.quantity) {
-                toast.error("Số lượng thanh lý không được lớn hơn số lượng hư hỏng.");
-                return;
-            }
 
             if (onSubmit) {
-                onSubmit({ ...values, liquidationQuantity }, resetForm);
+                onSubmit({ ...values, liquidationQuantity: values.quantity }, resetForm);
             }
         },
     });
@@ -108,7 +104,6 @@ const FormEditLiquidation: FC<Props> = ({
                             {...getFieldProps("reason")}
                             error={touched.reason && Boolean(errors.reason)}
                             helperText={touched.reason && errors.reason}
-                            disabled
                         />
                         <InputForm
                             label="Số lượng hư hỏng"
@@ -123,8 +118,8 @@ const FormEditLiquidation: FC<Props> = ({
                             label="Số lượng thanh lý"
                             type="number"
                             placeholder="Nhập số lượng"
-                            value={liquidationQuantity}
-                            onChange={(e) => setLiquidationQuantity(Number(e.target.value))}
+                            {...getFieldProps("quantity")}
+                            disabled
                         />
                     </Form>
                 </DialogContent>

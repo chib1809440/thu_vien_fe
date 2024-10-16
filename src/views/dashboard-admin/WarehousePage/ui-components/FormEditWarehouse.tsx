@@ -10,13 +10,20 @@ import {
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { Form, FormikProvider, useFormik } from "formik";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useMemo, useState } from "react";
+import * as yup from "yup";
 import InputForm from "../../../../components/custom/form/InputForm";
 import SelectForm from "../../../../components/custom/form/SelectForm";
 import { TPublicationsCreate } from "../../../../types/models/publications.type";
 import { TShelves } from "../../../../types/models/shelves";
 import { positionLiquidationDamaged, stockStatusOptions } from "../../../../utils/constants.utils";
-import { toast } from "react-toastify";
+
+const schema = yup.object().shape({
+    name: yup.string().required("Vui lòng nhập tên"),
+    quantity: yup.number().required("Vui lòng nhập số lượng"),
+    shelvesQuantity: yup.number().required("Vui lòng nhập số lượng trên kệ"),
+    shelvesId: yup.string().required("Vui lòng chọn kệ"),
+});
 
 type Props = {
     open: boolean;
@@ -32,6 +39,7 @@ const FormEditWarehouse: FC<Props> = ({
     open,
     onClose,
     onSubmit,
+
     shelfOptions,
     initialValues = {
         name: "",
@@ -57,6 +65,7 @@ const FormEditWarehouse: FC<Props> = ({
 
     const formik = useFormik<TPublicationsCreate>({
         initialValues,
+        validationSchema: schema,
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
             if (touchedMount.additionalQuantity && errorsMount.additionalQuantity) {
@@ -74,7 +83,6 @@ const FormEditWarehouse: FC<Props> = ({
                         statusWarehouse: statusWarehouse,
                         shelvesQuantity: changeAmount,
                         quantity: changeAmount,
-                        shelvesId: values?.shelvesId,
                         quantityLiquidation: changeLiquidation,
                         position: positionLD,
                         reason: reasonLD
@@ -255,7 +263,6 @@ const FormEditWarehouse: FC<Props> = ({
                                         {...getFieldProps("shelvesId")}
                                         error={touched.shelvesId && Boolean(errors.shelvesId)}
                                         helperText={touched.shelvesId && errors.shelvesId}
-                                        disabled={Boolean(getFieldProps("shelvesId").value)}
                                     />
 
                                     <InputForm

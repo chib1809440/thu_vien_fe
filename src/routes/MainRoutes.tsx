@@ -28,6 +28,9 @@ const ContactPage = Loadable(
 const AccountPage = Loadable(
   lazy(() => import("../views/dashboard-admin/SystemPage/AccountPage"))
 );
+const AccountTrashPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/SystemPage/AccountPage/AccountTrashPage"))
+);
 const RolePage = Loadable(
   lazy(() => import("../views/dashboard-admin/SystemPage/RolePage"))
 );
@@ -210,6 +213,11 @@ const MainRoutes = {
       path: "/quan-ly-tai-khoan",
       element: <AccountPage />,
     },
+    {
+      path: "/quan-ly-tai-khoan/thung-rac",
+      element: <AccountTrashPage />,
+    },
+
     {
       path: "/vai-tro",
       element: <RolePage />,

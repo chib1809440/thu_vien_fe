@@ -46,6 +46,7 @@
         "draft-js": "^0.11.7",
         "emoji-picker-react": "^3.5.1",
         "env-cmd": "^10.1.0",
+        "exceljs": "^4.4.0",
         "file-saver": "^2.0.5",
         "firebase": "^9.8.1",
         "formik": "^2.2.9",

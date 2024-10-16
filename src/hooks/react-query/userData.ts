@@ -5,8 +5,8 @@
 // import { ErrorResponse } from 'react-router-dom';
 
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createUser, deleteUser, deleteUserSelected, getAllUsers, getUserById, updateUser } from "../../_apis/user.api";
-import { RQ_USER, RQ_USERLIST } from "./constants_react_query";
+import { createUser, deleteUser, deleteUserSelected, getAllUsers, getAllUsersDeleted, getUserById, restoreUserSelected, softDeleteUser, softDeleteUserSelected, updateUser } from "../../_apis/user.api";
+import { RQ_USER, RQ_USERLIST, RQ_USERTRASHLIST } from "./constants_react_query";
 import { CreateUserModel, User } from "../../interfaces/user";
 
 // // useUsersData Hook
@@ -129,20 +129,7 @@ export function useCreateUser(onSuccess, onError) {
         },
     });
 }
-export function useDeleteUser() {
-    const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: (id: string) => deleteUser(id),
-        onSettled: async (_, error) => {
-            if (error) {
-                console.log(error);
-            } else {
-                await queryClient.invalidateQueries({ queryKey: [RQ_USERLIST] });
-            }
-        },
-    });
-}
 // Hook để cập nhật người dùng
 export function useUpdateUser(onSuccess, onError) {
     const queryClient = useQueryClient();
@@ -178,6 +165,42 @@ export function useUser(ids: (string | undefined)[] | undefined) {
         }),
     });
 }
+export function useSoftDeleteUserSelected() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (ids: string[]) => softDeleteUserSelected(ids),
+        onSettled: async (_, error) => {
+            if (error) {
+                console.log(error);
+            } else {
+                await queryClient.invalidateQueries({ queryKey: [RQ_USERLIST] });
+            }
+        },
+    });
+}
+export function useSoftDeleteUser() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: string) => softDeleteUser(id),
+        onSettled: async (_, error) => {
+            if (error) {
+                console.log(error);
+            } else {
+                await queryClient.invalidateQueries({ queryKey: [RQ_USERLIST] });
+            }
+        },
+    });
+}
+export function useUserTrashList(page?: number, limit?: number, search?: string) {
+
+    return useQuery({
+        queryKey: [RQ_USERTRASHLIST, { page, limit, search }],
+        queryFn: () => getAllUsersDeleted(page, limit, search),
+        placeholderData: keepPreviousData,  // Sử dụng dữ liệu trước đó để tránh loading
+    });
+}
 export function useDeleteUserSelected() {
     const queryClient = useQueryClient();
 
@@ -187,7 +210,34 @@ export function useDeleteUserSelected() {
             if (error) {
                 console.log(error);
             } else {
-                await queryClient.invalidateQueries({ queryKey: [RQ_USERLIST] });
+                await queryClient.invalidateQueries({ queryKey: [RQ_USERTRASHLIST] });
+            }
+        },
+    });
+}
+export function useDeleteUser() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: string) => deleteUser(id),
+        onSettled: async (_, error) => {
+            if (error) {
+                console.log(error);
+            } else {
+                await queryClient.invalidateQueries({ queryKey: [RQ_USERTRASHLIST] });
+            }
+        },
+    });
+}
+export function useRestoreUserSelected() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (ids: string[]) => restoreUserSelected(ids),
+        onSettled: async (_, error) => {
+            if (error) {
+                console.log(error);
+            } else {
+                await queryClient.invalidateQueries({ queryKey: [RQ_USERTRASHLIST] });
             }
         },
     });

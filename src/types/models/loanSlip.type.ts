@@ -2,7 +2,7 @@ import { User } from "../../interfaces/user";
 import { TEntityAbstract } from "./entity-common.type";
 import { TPublications } from "./publications.type";
 
-export type TStatusLoanSlip = 'không duyệt' | 'đang xử lý' | 'duyệt';
+export type TStatusLoanSlip = 'đang mượn' | 'quá hạn' | 'đã trả' | 'đang xử lý';
 
 export type TLoanSlip = TEntityAbstract & {
     note: string | null;

@@ -14,7 +14,7 @@ import { DataType, HeadCell, Order } from "../../../../../components/custom/tabl
 import { EntityResponse } from "../../../../../interfaces/entityResponse";
 import { User } from "../../../../../interfaces/user";
 import useDebounce, { searchDelay } from "../../../../../hooks/useDebounce";
-import { useDeleteUser, useDeleteUserSelected, useUserList } from "../../../../../hooks/react-query/userData";
+import { useDeleteUser, useDeleteUserSelected, useSoftDeleteUser, useUserList } from "../../../../../hooks/react-query/userData";
 import { SearchAndFilter } from "../../../../../components/custom/table/TableSearchAndFilter";
 import { EnhancedTableHead } from "../../../../../components/custom/table/TableHead";
 import { StyledTableCell, StyledTableRow } from "../../../../../components/custom/table/style";
@@ -62,8 +62,8 @@ function TableUserList<T extends DataType>({
         useUserList(page, rowsPerPage, debouncedSearch);
 
 
-    const { mutate: deleteUser, isPending: isPendingUpdate } = useDeleteUser();
-    const { mutate: deleteUserSelected } = useDeleteUserSelected();
+    const { mutate: softDeleteUser, isPending: isPendingUpdate } = useSoftDeleteUser();
+    const { mutate: softDeleteUserSelected } = useDeleteUserSelected();
 
     const handleCheckedAll = async () => {
         const newCheckedAll = !checkedAll;
@@ -155,7 +155,7 @@ function TableUserList<T extends DataType>({
     const handleConfirmDeleteItem = async () => {
         if (selectedDeleteID)
             try {
-                deleteUser(selectedDeleteID);
+                softDeleteUser(selectedDeleteID);
                 setSelectedDeleteID(undefined);
                 if (page !== 1 && users.data.result.length === 1) {
                     setPage(page - 1);
@@ -179,7 +179,7 @@ function TableUserList<T extends DataType>({
     };
     const handleConfirmDeleteItemSelected = async () => {
         try {
-            deleteUserSelected(checked)
+            softDeleteUserSelected(checked)
             setChecked([]);
             if (page !== 1 && users.data.result.length === checked.length) {
                 setPage(page - 1)

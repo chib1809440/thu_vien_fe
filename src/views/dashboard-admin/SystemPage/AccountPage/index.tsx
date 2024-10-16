@@ -3,11 +3,13 @@ import MainCard from '../../../../ui-component/cards/MainCard';
 import { Box, Stack } from '@mui/system';
 import { CsFlexRowBetween } from '../../../../components/default/flex';
 import StyledButton from '../../../../components/default/button/StyledButton';
-import { IconPlus } from '@tabler/icons';
+import { IconPlus, IconTrash } from '@tabler/icons';
 import TableUserList from './ui-components/TableUserList';
 import { User } from '../../../../interfaces/user';
 import { HeadCell } from '../../../../components/custom/table/type';
 import IBreadcrumsCustom from '../../../../ui-component/breadcrums';
+import { useNavigate } from 'react-router-dom';
+import { useTheme } from '@mui/material';
 
 const headCells: HeadCell[] = [
     {
@@ -46,7 +48,11 @@ export default function AccountPage() {
 
     const [isOpenAddDilog, setIsOpenAddDialog] = useState<boolean>(false);
     const [selected, setSelected] = useState<number[]>([]);
-
+    const theme = useTheme()
+    const navigate = useNavigate();
+    const handleClickNavigateTrash = () => {
+        navigate('/quan-ly-tai-khoan/thung-rac');
+    };
     return (
         <>
             <IBreadcrumsCustom
@@ -66,6 +72,15 @@ export default function AccountPage() {
                                 onClick={() => setIsOpenAddDialog(true)}
                             >
                                 Thêm tài khoản
+                            </StyledButton>
+                            <StyledButton
+                                sx={{ marginLeft: 2, backgroundColor: theme.palette.error.dark, color: theme.palette.common.white }}
+                                size="small"
+                                startIcon={<IconTrash stroke={2} />}
+                                variant="contained"
+                                onClick={() => handleClickNavigateTrash()}
+                            >
+                                Thùng rác
                             </StyledButton>
                         </Box>
 

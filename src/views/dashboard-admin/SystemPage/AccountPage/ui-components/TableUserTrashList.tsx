@@ -212,7 +212,7 @@ function TableUserTrashList<T extends DataType>({
     };
     return (
         <>
-            <SearchAndFilter onHandleDeleteSelectedItem={handleDeleteItemSelected} actionDeleteSelectedItem={true} onHandleRestoreSelectedItem={handleRestoreItemSelected} actionRestoreSelectedItem={true} contentSearch={contentSearch} handleContentSearch={setContentSearch} />
+            <SearchAndFilter onHandleRestoreSelectedItem={handleRestoreItemSelected} actionRestoreSelectedItem={true} contentSearch={contentSearch} handleContentSearch={setContentSearch} />
             {/* Table */}
             <Box p={4} pt={0}>
                 {
@@ -276,6 +276,7 @@ function TableUserTrashList<T extends DataType>({
                                                         </StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.fullname}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.phoneNumber}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.roleId?.name}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.gender}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{formatDate(row?.birthday)}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center">
@@ -286,7 +287,7 @@ function TableUserTrashList<T extends DataType>({
                                                                 gap: 1
                                                             }}>
                                                                 <IconRestore onClick={() => handleClickRestore(row?._id)} size={20} stroke={1.5} />
-                                                                <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
+                                                                {/* <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} /> */}
                                                             </Box>
                                                         </StyledTableCell>
                                                     </StyledTableRow>

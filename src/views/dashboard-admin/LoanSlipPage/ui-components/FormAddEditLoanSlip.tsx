@@ -93,6 +93,8 @@ const FormAddEditLoanSlip: FC<Props> = ({
     isEditMode = false,
     loanSlip,
 }) => {
+    const [arrayError, setArrayError] = useState<{ name: string; position: string }[]>([]);
+
     const formik = useFormik<TLoanSlipCreate>({
         initialValues,
         validationSchema: schema,
@@ -101,7 +103,33 @@ const FormAddEditLoanSlip: FC<Props> = ({
             const filteredPublications = publications.filter(
                 (publication) => publication.publicationId !== ''
             );
+            // Reset mảng lỗi trước khi kiểm tra
+            setArrayError([]);
+
+            const errors = filteredPublications.reduce((acc, item) => {
+                if (item.position === "trong kho" && item.quantity <= 0) {
+                    acc.push({
+                        name: item.name,
+                        position: item.position,
+                    });
+                } else if (item.position === "trên kệ" && item.shelvesQuantity <= 0) {
+                    acc.push({
+                        name: item.name,
+                        position: item.position,
+                    });
+                }
+                return acc;
+            }, []);
+            console.log('sdsds', errors);
+            console.log('sdsds', filteredPublications);
+
+            // Nếu có lỗi, cập nhật state và không thực hiện onSubmit
+            if (errors.length > 0) {
+                setArrayError(errors);
+                return; // Dừng thực hiện onSubmit
+            }
             if (onSubmit) {
+
                 const createLoanSlip: TLoanSlipCreate = {
                     note: values.note,
                     userId: userData?.data?.result._id,
@@ -158,7 +186,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
         if (loanSlip) {
             setbarcodeUserId(loanSlip.userId.barcode);
             setBorrowedDay(new Date(loanSlip.borrowedDay));
-            console.log(loanSlip.borrowedDay);
             setReturnDay(new Date(loanSlip.returnDay));
             let editPublications: CreatePublication[] = [];
             // Giả sử loanSlip.publications là mảng chứa các đối tượng cần đẩy vào
@@ -190,7 +217,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
     };
     // Use custom hook to debounce array of barcodes
     const debouncedBarcode = useDebounce(searchBarCode, 500);
-    console.log(publications);
 
     useEffect(() => {
         if (debouncedBarcode) {
@@ -206,8 +232,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             const existingPublication = prevPublications.find(
                                 (pub) => pub.publicationId === publicationData._id
                             );
-                            console.log('id', publicationData._id);
-                            console.log('list', prevPublications);
 
                             if (existingPublication) {
                                 // If it exists, update the quantityLoan
@@ -227,13 +251,13 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                 let newPublications = [...publications];
                                 newPublications = newPublications.map((pub) =>
                                     pub.barcode === publicationData.barcode
-                                        ? { name: publicationData.name, publicationId: publicationData._id, quantityLoan: 1, position: '', barcode: publicationData.barcode, quantity: publicationData.quantity, shelvesQuantity: publicationData.shelvesQuantity } // Increment the quantityLoan
+                                        ? { name: publicationData.name, publicationId: publicationData._id, quantityLoan: 1, position: 'trên kệ', barcode: publicationData.barcode, quantity: publicationData.quantity, shelvesQuantity: publicationData.shelvesQuantity } // Increment the quantityLoan
                                         : pub
                                 );
                                 newPublications.push({
                                     name: '',
                                     publicationId: '',
-                                    position: '',
+                                    position: 'trên kệ',
                                     quantityLoan: 1,
                                     quantity: 0,
                                     shelvesQuantity: 0,
@@ -252,7 +276,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
             fetchPublicationByBarCode();
         }
     }, [debouncedBarcode]);
-    console.log(publications);
 
     const barcodeUserIdRef = useRef(null);
 
@@ -481,6 +504,20 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                     stroke={1.5}
                                 />
                             </Box>
+                            {arrayError.length > 0 && (
+                                <div>
+                                    <Typography variant="h4" className="required-text" sx={{ color: 'red', mt: 2 }}>
+                                        Số lượng không đủ:
+                                    </Typography>
+                                    <ul>
+                                        {arrayError.map((error, index) => (
+                                            <li key={index}>
+                                                {error.name} - {error.position}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                             <TableContainer component={Paper} sx={{ mt: 4 }}>
                                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
                                     <TableHead>

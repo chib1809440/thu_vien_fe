@@ -14,14 +14,20 @@ export const createUser = async (formData: FormData): Promise<EntityResponse<Use
     return response.data;
 };
 // Read all
-export const getAllUsers = async (page?: number, limit?: number, search?: string, order: string = "ASC"): Promise<EntityResponse<User[]>> => {
+export const getAllUsers = async (page?: number, limit?: number, search?: string, roleId?: string | number, order: string = "ASC"): Promise<EntityResponse<User[]>> => {
     let url = `${USER_API}?order=${order}`;
 
     if (page !== undefined && limit !== undefined) {
         url += `&page=${page}&limit=${limit}`;
     }
+    console.log(page);
+    console.log(limit);
+
     if (search && search.trim() !== '') {
         url += `&search=${encodeURIComponent(search.trim())}`;
+    }
+    if (roleId !== undefined && roleId != 0) {
+        url += `&roleId=${roleId.toString()}`; // Chuyển đổi thành chuỗi
     }
     const response = await axios.get<EntityResponse<User[]>>(url);
     return response.data;

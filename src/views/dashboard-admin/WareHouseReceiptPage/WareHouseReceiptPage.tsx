@@ -207,7 +207,7 @@ const WareHouseReceiptPage = () => {
                                 stroke={1.5}
                             />
                             {
-                                row.isAccept && <IconTrash
+                                !row.isAccept && <IconTrash
                                     size={20}
                                     stroke={1.5}
                                     onClick={() => handleOpenConfirmDialog(row)}

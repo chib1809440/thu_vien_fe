@@ -12,25 +12,31 @@ import TableUserTrashList from './ui-components/TableUserTrashList';
 import { User } from '../../../../interfaces/user';
 const headCells: HeadCell[] = [
     {
-        id: 'example_name',
+        id: 'user_name',
         numeric: false,
         disablePadding: true,
         label: 'Tên tài khoản',
     },
     {
-        id: 'example_phoneNumber',
+        id: 'user_phoneNumber',
         numeric: false,
         disablePadding: true,
         label: 'Số điện thoại',
     },
     {
-        id: 'example_gender',
+        id: 'user_role',
+        numeric: false,
+        disablePadding: true,
+        label: 'Vai trò',
+    },
+    {
+        id: 'user_gender',
         numeric: false,
         disablePadding: true,
         label: 'Giới tính',
     },
     {
-        id: 'example_birthday',
+        id: 'user_birthday',
         numeric: false,
         disablePadding: true,
         label: 'Ngày sinh',

@@ -93,11 +93,11 @@ import { CreateUserModel, User } from "../../interfaces/user";
 //         }
 //     );
 // };
-export function useUserList(page?: number, limit?: number, search?: string) {
+export function useUserList(page?: number, limit?: number, search?: string, roleId?: string | number) {
 
     return useQuery({
         queryKey: [RQ_USERLIST, { page, limit, search }],
-        queryFn: () => getAllUsers(page, limit, search),
+        queryFn: () => getAllUsers(page, limit, search, roleId.toString()),
         placeholderData: keepPreviousData,  // Sử dụng dữ liệu trước đó để tránh loading
     });
 }

@@ -1,0 +1,4 @@
+export const GET_VOICE = "GET_VOICE";
+export const GET_VOICE_ID = "GET_VOICE_ID";
+export const GET_VOICE_DELETED = "GET_VOICE_DELETED";
+export const GET_VOICE_DELETED_ID = "GET_VOICE_DELETED_ID";

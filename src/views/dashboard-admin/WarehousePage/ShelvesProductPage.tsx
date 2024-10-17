@@ -6,8 +6,7 @@ import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import {
-    useEditPublications,
-    useUpdateShelvesQuantity
+    useEditPublications
 } from "../../../hooks/services/publications/publications-mutation";
 import {
     useFetchPublications,
@@ -106,7 +105,7 @@ const ShelvesProductPage = () => {
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
-                id: "shelvesQuantity",
+                id: "shelvesName",
                 disablePadding: "none",
                 label: "Tên kệ",
                 align: "left",

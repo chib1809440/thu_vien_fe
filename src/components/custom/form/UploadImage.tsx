@@ -130,7 +130,7 @@ const Uploadimage = forwardRef<UploadAvatarRefProps, UploadAvatarProps>(
                         />
                     ) : (
                         <input
-                            accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.mp4,.avi,.mov"
+                            accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.mp4,.avi,.mov,.mp3"
                             multiple={false}
                             type="file"
                             tabIndex={-1}
@@ -139,7 +139,7 @@ const Uploadimage = forwardRef<UploadAvatarRefProps, UploadAvatarProps>(
                             onChange={handleChangeImage}
                         />
                     )}
-                    
+
                     {typeHardPublications ? (
                         imageBlob ? (
                             <img

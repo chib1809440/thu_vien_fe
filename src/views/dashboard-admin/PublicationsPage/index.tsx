@@ -38,7 +38,6 @@ import DialogImportFile from "./ui-components/DialogImportFile ";
 import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
-import { AddPermissionToRoleModel, CreateRoleModel } from "../../../interfaces/role";
 
 const PublicationsPage = () => {
     const queryString = useQueryString();
@@ -715,8 +714,6 @@ const PublicationsPage = () => {
                     selectedPublisher={selectedPublisher}
                     handlePublisherFilterChange={handlePublisherFilterChange}
                     publisherData={publisherData}
-                    barcodeSearch={barcodeSearch}
-                    handleBarcodeSearch={handleBarcodeSearch}
                 />
                 <TableList
                     checked={checkedDelete}

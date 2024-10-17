@@ -1,4 +1,3 @@
-import { FormattedMessage } from 'react-intl';
 import {
     IconArticle,
     IconBrandWechat,
@@ -11,10 +10,12 @@ import {
     IconDeviceAnalytics,
     IconDevices,
     IconEyeTable,
+    IconFileText,
     IconForklift,
     IconHome2,
     IconHomeSearch,
     IconLocation,
+    IconMicrophone,
     IconNotes,
     IconPrinter,
     IconReceipt, IconReceiptRefund,
@@ -24,7 +25,7 @@ import {
     IconSmartHome,
     IconUserPlus,
     IconUsers,
-    IconVocabulary
+    IconVocabulary, IconBook
 } from '@tabler/icons';
 import { VERSION } from '../config';
 
@@ -34,7 +35,7 @@ const icons = {
     IconCloudComputing, IconCategory, IconPrinter, IconForklift, IconBuildingWarehouse,
     IconHomeSearch, IconDevices, IconEyeTable, IconSmartHome, IconUserPlus,
     IconReceipt, IconReceiptRefund, IconShare, IconLocation, IconBuildingCastle,
-    IconReportMoney, IconReportAnalytics, IconBrowserPlus, IconBrowser, IconNotes, IconBrandWechat
+    IconReportMoney, IconReportAnalytics, IconBrowserPlus, IconBrowser, IconNotes, IconBrandWechat, IconMicrophone, IconFileText, IconBook
 };
 
 
@@ -112,30 +113,12 @@ const dashboardAdmin = {
             breadcrumbs: false
         },
         {
-            id: 'thu-vien',
-            title: "Thư viện",
-            type: 'collapse',
-            url: '/thu-vien',
-            icon: icons.IconBrowser,
-            breadcrumbs: false,
-            children: [
-                {
-                    id: 'an-pham',
-                    title: "Ấn phẩm",
-                    type: 'item',
-                    url: '/thu-vien/an-pham',
-                    icon: icons.IconEyeTable,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'hoc-lieu',
-                    title: "Học liệu điện tử",
-                    type: 'item',
-                    url: '/thu-vien/hoc-lieu',
-                    icon: icons.IconDevices,
-                    breadcrumbs: false
-                },
-            ]
+            id: 'an-pham',
+            title: "Ấn phẩm",
+            type: 'item',
+            url: '/thu-vien/an-pham',
+            icon: icons.IconBook,
+            breadcrumbs: false
         },
         {
             id: 'quan-ly-kho',
@@ -201,20 +184,12 @@ const dashboardAdmin = {
             type: 'collapse',
             icon: icons.IconBrowser,
             children: [
-                //     {
-                //     id: 'loai-hoc-lieu',
-                //     title:"Loại học liệu" ,
-                //     type: 'item',
-                //     url: '/quan-ly-danh-muc/loai-hoc-lieu',
-                //     icon: icons.IconArticle,
-                //     breadcrumbs: false
-                // },
                 {
                     id: 'dang-hoc-lieu',
                     title: "Dạng học liệu",
                     type: 'item',
                     url: 'quan-ly-danh-muc/dang-hoc-lieu',
-                    icon: icons.IconBrowserPlus,
+                    icon: icons.IconFileText,
                     breadcrumbs: false,
                 },
                 {
@@ -222,7 +197,7 @@ const dashboardAdmin = {
                     title: "Lĩnh vực",
                     type: 'item',
                     url: '/quan-ly-danh-muc/linh-vuc',
-                    icon: icons.IconBrowserPlus,
+                    icon: icons.IconBrowser,
                     breadcrumbs: false,
                 },
                 {
@@ -248,7 +223,24 @@ const dashboardAdmin = {
                     url: '/quan-ly-danh-muc/nha-san-xuat',
                     icon: icons.IconUsers,
                     breadcrumbs: false
-                }]
+                },
+                {
+                    id: 'loai-voice',
+                    title: "Loại voice",
+                    type: 'item',
+                    url: '/quan-ly-danh-muc/loai-voice',
+                    icon: icons.IconMicrophone,
+                    breadcrumbs: false
+                },
+                {
+                    id: 'voice',
+                    title: "Voice",
+                    type: 'item',
+                    url: '/quan-ly-danh-muc/voice',
+                    icon: icons.IconMicrophone,
+                    breadcrumbs: false
+                }
+            ]
         },
         {
             id: 'thong-tin',

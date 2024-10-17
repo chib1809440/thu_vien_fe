@@ -79,6 +79,18 @@ const ShelfPage = Loadable(
 const ShelfDeleteListPage = Loadable(
   lazy(() => import("../views/dashboard-admin/ShelfPage/ShelfDeleteListPage"))
 );
+const TypeVoicePage = Loadable(
+  lazy(() => import("../views/dashboard-admin/TypeVoicePage"))
+);
+const TypeVoiceDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/TypeVoicePage/TypeVoiceDeleteListPage"))
+);
+const VoicePage = Loadable(
+  lazy(() => import("../views/dashboard-admin/VoicePage"))
+);
+const VoiceDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/VoicePage/VoiceDeleteListPage"))
+);
 
 // PublicationsPage
 const PublicationsPage = Loadable(
@@ -244,6 +256,22 @@ const MainRoutes = {
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-tu-ke",
       element: <ShelfDeleteListPage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/loai-voice",
+      element: <TypeVoicePage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/danh-sach-xoa-loai-voice",
+      element: <TypeVoiceDeleteListPage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/voice",
+      element: <VoicePage />,
+    },
+    {
+      path: "/quan-ly-danh-muc/danh-sach-xoa-voice",
+      element: <VoiceDeleteListPage />,
     },
 
     // sách

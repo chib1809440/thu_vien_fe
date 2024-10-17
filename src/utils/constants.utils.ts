@@ -21,3 +21,8 @@ export const positionLiquidationDamaged = [
     { value: 'trên kệ', label: 'Từ trên kệ' },
     { value: 'trong kho', label: 'Từ trong kho' },
 ]
+
+export const statusVoiceImage = [
+    { value: false, label: 'Chung' },
+    { value: true, label: 'Riêng' },
+]

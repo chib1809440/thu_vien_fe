@@ -28,7 +28,7 @@ export const VideoJS = ({ src, handleDuration }: VideoProps) => {
     }
   };
   return (
-    <Player poster="images/nodata/video-logo.png" ref={playerRef} onLoadedMetadata={handleLoadedMetadata} >
+    <Player poster="/images/video-logo.png" ref={playerRef} onLoadedMetadata={handleLoadedMetadata} >
       <source src={src} />
       <BigPlayButton position="center" />
       <LoadingSpinner />

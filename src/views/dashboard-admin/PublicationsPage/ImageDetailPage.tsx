@@ -5,22 +5,26 @@ import { IconVolume } from '@tabler/icons-react';
 import { useState } from 'react';
 import ImageCard from '../../../components/custom/card/ImageCard';
 import StyledIconButton from '../../../components/default/button/StyledIconButton';
+import { useFetchVoice } from '../../../hooks/services/voice/voice-query';
 import { TPublications } from "../../../types/models/publications.type";
 import MenuAddVoice from './ui-components/MenuAddVoice';
 
+
 const ImageDetailPage = ({ open, onClose, publications }: { open: boolean; onClose: () => void; publications: TPublications | null }) => {
     const theme = useTheme();
-    const [openAddVoice, setOpenAddVoice] = useState(false)
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const { data: voiceData } = useFetchVoice();
 
-    const handleClickChangeMenu = (event) => {
-        console.log(event);
-        setOpenAddVoice(true)
+    const handleClickChangeMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
     };
 
     return (
         <>
-            {openAddVoice && (<MenuAddVoice />)}
-
             <Dialog
                 open={open}
                 onClose={(event, reason) => {
@@ -98,16 +102,25 @@ const ImageDetailPage = ({ open, onClose, publications }: { open: boolean; onClo
                                         background: "none",
                                     }}
                                 >
-                                    <IconVolume fontSize="small" style={{ color: theme.palette.text.primary }} />     <MoreVertIcon sx={{ color: theme.palette.text.primary }} />
+                                    <IconVolume fontSize="small" style={{ color: theme.palette.text.primary }} />
+                                    <MoreVertIcon sx={{ color: theme.palette.text.primary }} />
                                 </StyledIconButton>
-
-
+                                {
+                                    anchorEl && (
+                                        <MenuAddVoice anchorEl={anchorEl}
+                                            onClose={handleClose}
+                                            voiceData={voiceData?.data?.result.filter(voice => ((voice?.publicationId as TPublications)?._id === publications._id) && voice?.isPublic) || []}
+                                            publicationsData={publications}
+                                        />
+                                    )
+                                }
                             </Box>
                         </Paper>
+
                     </Grid>
 
                 </DialogContent>
-            </Dialog>
+            </Dialog >
         </>
     );
 }

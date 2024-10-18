@@ -16,20 +16,30 @@ import { Icon12Hours, Icon3dCubeSphereOff, IconBook, IconUsersGroup } from '@tab
 import { useFetchStatistical } from '../../../hooks/services/statistical/statistical-query';
 import { IconAB } from '@tabler/icons';
 import { PieChart } from '@mui/x-charts/PieChart';
+import { BarChart } from '@mui/x-charts';
 
 export default function HomePage() {
     const { data: statisticals } = useFetchStatistical();
     console.log(statisticals);
     // Prepare data for PieChart
-    const pieChartData = useMemo(() => {
+    // const pieChartData = useMemo(() => {
+    //     if (!statisticals?.data?.result) return [];
+
+
+    //     // Return the formatted data if not all percentages are zero or null
+    //     return statisticals.data.result.TopBorrowedBooksInMonth.map((item, index) => ({
+    //         id: index,
+    //         value: item.totalBorrowed,
+    //         label: item.name,
+    //     }));
+    // }, [statisticals]);
+    const barChartData = useMemo(() => {
         if (!statisticals?.data?.result) return [];
 
-
-        // Return the formatted data if not all percentages are zero or null
-        return statisticals.data.result.totalPublication.map((item, index) => ({
-            id: index,
-            value: item.count,
-            label: item.type,
+        // Chuyển đổi dữ liệu từ TopBorrowedBooksInMonth sang định dạng cho BarChart
+        return statisticals.data.result.TopBorrowedBooksInMonth.map(item => ({
+            x: item.name,      // Nhóm
+            y: item.totalBorrowed, // Giá trị tương ứng
         }));
     }, [statisticals]);
     return (
@@ -58,29 +68,22 @@ export default function HomePage() {
                 </Grid>
             </Grid>
             <Grid container spacing={2} sx={{ mt: 3 }}>
-                <Grid item xs={7}>
+                <Grid item xs={12}>
                     <Typography variant="h3" fontWeight="bold" gutterBottom>
                         Top sách mượn trong tháng
                     </Typography>
-                    <Box p={4} display="flex" justifyContent="center" alignItems="center"  >
-                        {
-                            pieChartData?.length > 0 ? <> <PieChart
-                                series={[
-                                    {
-                                        data: pieChartData,
-                                    },
-                                ]}
-                                slotProps={{
-                                    legend: {
-
-                                        itemGap: 30, // Adds space between legend items
-                                    },
-                                }}
-                                width={800}
-                                height={400}
-                            /></> : <>Chưa có điểm thi nào</>
-                        }
-
+                    <Box p={4} >
+                        <BarChart
+                            xAxis={[{ scaleType: 'band', data: barChartData.map(item => item.x) }]}
+                            series={[
+                                {
+                                    label: 'Quyển',
+                                    data: barChartData.map(item => item.y), // Dữ liệu biểu đồ
+                                },
+                            ]}
+                            width={800}
+                            height={400}
+                        />
                     </Box>
                 </Grid>
 

@@ -79,7 +79,7 @@ export default function AccountPage() {
                             >
                                 Thêm tài khoản
                             </StyledButton>
-                            <StyledButton
+                            {/* <StyledButton
                                 sx={{ marginLeft: 2, backgroundColor: theme.palette.error.dark, color: theme.palette.common.white }}
                                 size="small"
                                 startIcon={<IconTrash stroke={2} />}
@@ -87,7 +87,7 @@ export default function AccountPage() {
                                 onClick={() => handleClickNavigateTrash()}
                             >
                                 Thùng rác
-                            </StyledButton>
+                            </StyledButton> */}
                         </Box>
 
                     </CsFlexRowBetween>

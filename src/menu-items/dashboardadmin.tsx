@@ -85,6 +85,14 @@ const dashboardAdmin = {
                     icon: icons.IconDeviceAnalytics,
                     breadcrumbs: false
                 },
+                {
+                    id: 'quan-ly-tai-khoan-admin',
+                    title: "Tài khoản admin thư viện",
+                    type: 'item',
+                    url: '/he-thong/quan-ly-tai-khoan-admin',
+                    icon: icons.IconDeviceAnalytics,
+                    breadcrumbs: false
+                },
             ]
         },
         {
@@ -211,14 +219,14 @@ const dashboardAdmin = {
                     icon: icons.IconReceipt,
                     breadcrumbs: false
                 },
-                {
-                    id: 'phieu-tra',
-                    title: "Phiếu trả",
-                    type: 'item',
-                    url: '/quan-ly-muon-tra/phieu-tra',
-                    icon: icons.IconReceiptRefund,
-                    breadcrumbs: false
-                },
+                // {
+                //     id: 'phieu-tra',
+                //     title: "Phiếu trả",
+                //     type: 'item',
+                //     url: '/quan-ly-muon-tra/phieu-tra',
+                //     icon: icons.IconReceiptRefund,
+                //     breadcrumbs: false
+                // },
             ]
         },
         {

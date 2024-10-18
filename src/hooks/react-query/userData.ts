@@ -7,7 +7,8 @@
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createUser, deleteUser, deleteUserSelected, getAllUsers, getAllUsersDeleted, getUserById, restoreUserSelected, softDeleteUser, softDeleteUserSelected, updateUser } from "../../_apis/user.api";
 import { RQ_USER, RQ_USERLIST, RQ_USERTRASHLIST } from "./constants_react_query";
-import { CreateUserModel, User } from "../../interfaces/user";
+import { CreateAdminModel, CreateUserModel, User } from "../../interfaces/user";
+import { createAdminAcount, updateAdminAcount } from "../../_apis/auth.api";
 
 // // useUsersData Hook
 // export const useUsersData = (
@@ -238,6 +239,60 @@ export function useRestoreUserSelected() {
                 console.log(error);
             } else {
                 await queryClient.invalidateQueries({ queryKey: [RQ_USERTRASHLIST] });
+            }
+        },
+    });
+}
+export function useCreateAdminAccount(onSuccess, onError) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (data: CreateAdminModel) => createAdminAcount(data),
+        onMutate: () => {
+            console.log("mutate");
+        },
+
+        onError: (data) => {
+            onError(data)
+        },
+
+        onSuccess: (data) => {
+            onSuccess(data)
+
+        },
+        onSettled: async (_, error) => {
+            console.log("settled");
+            if (error) {
+                console.log(error);
+            } else {
+                await queryClient.invalidateQueries({ queryKey: [RQ_USERLIST] });
+            }
+        },
+    });
+}
+export function useUpdateAdminAccount(onSuccess, onError) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (data: CreateAdminModel) => updateAdminAcount(data),
+        onMutate: () => {
+            console.log("mutate");
+        },
+
+        onError: (data) => {
+            onError(data)
+        },
+
+        onSuccess: (data) => {
+            onSuccess(data)
+
+        },
+        onSettled: async (_, error) => {
+            console.log("settled");
+            if (error) {
+                console.log(error);
+            } else {
+                await queryClient.invalidateQueries({ queryKey: [RQ_USERLIST] });
             }
         },
     });

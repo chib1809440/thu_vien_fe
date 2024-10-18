@@ -1,36 +1,56 @@
-import CloseIcon from '@mui/icons-material/Close';
-import ZoomInIcon from '@mui/icons-material/ZoomIn';
-import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+import CloseIcon from "@mui/icons-material/Close";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ZoomInIcon from "@mui/icons-material/ZoomIn";
+import ZoomOutIcon from "@mui/icons-material/ZoomOut";
 import {
     Box,
     IconButton,
-    Menu,
     Modal,
     Paper,
+    Tooltip,
     Typography,
     useTheme
 } from "@mui/material";
+import { IconVolume } from "@tabler/icons-react";
 import { useCallback, useEffect, useState } from "react";
+import { TPublications } from "../../../types/models/publications.type";
+import { TVoice } from "../../../types/models/voice";
 import GradientLoading from "../../default/loading/GradientLoading/GradientLoading";
 interface ImageCardProps {
-    id: number | string,
-    photo: string,
-    isViewPhoto?: string,
-    aspectRatio?: string,
-    title?: string,
-    description?: string,
-    limitDescription?: number,
-    href?: string,
-    isView?: boolean,
-    isEffect?: boolean,
-    objectFit?: "contain" | "fill" | "cover",
-    isBorderRadius?: boolean,
-    sound_us?: string,
-    sound_uk?: string,
+    id: number | string;
+    photo: string;
+    isViewPhoto?: string;
+    aspectRatio?: string;
+    title?: string;
+    description?: string;
+    limitDescription?: number;
+    href?: string;
+    isView?: boolean;
+    isEffect?: boolean;
+    objectFit?: "contain" | "fill" | "cover";
+    isBorderRadius?: boolean;
+    voices?: TVoice[];
+    sound_us?: string;
+    sound_uk?: string;
     filterTypeVoiceId?: number;
+    publications?: TPublications;
+    handleClickChangeMenu?: (event: React.MouseEvent<HTMLElement>) => void
 }
 
-const ImageCard: React.FC<ImageCardProps> = ({ id, filterTypeVoiceId, isBorderRadius, objectFit, photo, isViewPhoto, title, isView, isEffect, href, description, limitDescription, aspectRatio = "16/9" }) => {
+const ImageCard: React.FC<ImageCardProps> = ({
+    filterTypeVoiceId,
+    isBorderRadius,
+    objectFit,
+    photo,
+    isViewPhoto,
+    title,
+    isView,
+    isEffect,
+    description,
+    limitDescription,
+    aspectRatio = "16/9",
+    handleClickChangeMenu
+}) => {
     const [currentImage, setCurrentImage] = useState(0);
     const [isViewerOpen, setIsViewerOpen] = useState(false);
     const [scale, setScale] = useState(1);
@@ -39,30 +59,29 @@ const ImageCard: React.FC<ImageCardProps> = ({ id, filterTypeVoiceId, isBorderRa
     const [startPos, setStartPos] = useState({ x: 0, y: 0 });
     const theme = useTheme();
     const [loading, setLoading] = useState<boolean>(true);
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [typeVoiceId, setTypeVoiceId] = useState<number>(filterTypeVoiceId);
-    const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+    const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);    
 
     const handleImageLoaded = () => {
         if (loading) {
             setLoading(false);
-
         }
     };
-    const open = Boolean(anchorEl);
 
-    const openImageViewer = useCallback((index: number) => {
-        if (isView) {
-            setCurrentImage(index);
-            setIsViewerOpen(true);
-        }
-    }, [isView]);
+    const openImageViewer = useCallback(
+        (index: number) => {
+            if (isView) {
+                setCurrentImage(index);
+                setIsViewerOpen(true);
+            }
+        },
+        [isView]
+    );
     useEffect(() => {
         if (photo && loading === false) {
-
             setLoading(true);
         }
-    }, [photo])
+    }, [photo]);
 
     const closeImageViewer = () => {
         setIsViewerOpen(false);
@@ -155,39 +174,27 @@ const ImageCard: React.FC<ImageCardProps> = ({ id, filterTypeVoiceId, isBorderRa
     };
 
     const zoomIn = () => {
-        setScale(prevScale => Math.min(prevScale + 0.3, 3));
+        setScale((prevScale) => Math.min(prevScale + 0.3, 3));
         setTranslate({ x: 0, y: 0 });
     };
 
     const zoomOut = () => {
-        setScale(prevScale => Math.max(prevScale - 0.4, 0.5));
+        setScale((prevScale) => Math.max(prevScale - 0.4, 0.5));
         setTranslate({ x: 0, y: 0 });
     };
 
-    const handleClickChangeMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+  
     const handleChangeVoice = (id: number) => {
         setTypeVoiceId(id);
     };
     const handleClickVoice = (audioUrl: string) => {
-        // Stop the currently playing audio if it exists
         if (currentAudio) {
             currentAudio.pause();
-            currentAudio.currentTime = 0; // Optional: Reset to start
+            currentAudio.currentTime = 0; 
         }
 
-        // Create a new Audio object for the new audio URL
         const newAudio = new Audio(process.env.REACT_APP_BASE_API_URL_FILE + audioUrl);
-
-        // Play the new audio
         newAudio.play();
-
-        // Update the currentAudio state to the new audio
         setCurrentAudio(newAudio);
     };
     return (
@@ -195,43 +202,60 @@ const ImageCard: React.FC<ImageCardProps> = ({ id, filterTypeVoiceId, isBorderRa
             <Paper
                 sx={{
                     aspectRatio: aspectRatio,
-                    overflow: 'hidden',
-                    position: 'relative',
+                    overflow: "hidden",
+                    position: "relative",
 
                     cursor: "pointer",
-                    borderRadius: `${!isBorderRadius ? 0 : '8px'}`,
+                    borderRadius: `${!isBorderRadius ? 0 : "8px"}`,
                     transition: "transform 0.3s, box-shadow 0.3s",
                     backgroundColor: "transparent",
-                    ':hover': {
+                    ":hover": {
                         transform: isEffect ? "scale(1.02)" : "none",
-                    }
+                    },
                 }}
             >
-                {loading && <div className="placeholder">
-                    <GradientLoading />
-
-                </div>}
-                <Box sx={{ display: loading ? 'none' : 'block' }}>
-                    <img
-                        src={photo}
-                        alt="Example"
-                        onClick={() => openImageViewer(0)}
-                        onLoad={handleImageLoaded}
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: objectFit,
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            borderRadius: `${!isBorderRadius ? 0 : '16px'}`
-                        }}
-                    />
-                </Box>
-
+                {loading && (
+                    <div className="placeholder">
+                        <GradientLoading />
+                    </div>
+                )}
+                <Tooltip title={"Nhấn vào để xem chi tiết"} arrow placement="top">
+                    <Box sx={{ display: loading ? "none" : "block" }}>
+                        <img
+                            src={photo}
+                            alt="Example"
+                            onClick={() => openImageViewer(0)}
+                            onLoad={handleImageLoaded}
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: objectFit,
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                borderRadius: `${!isBorderRadius ? 0 : "16px"}`,
+                            }}
+                        />
+                    </Box>
+                </Tooltip>
             </Paper>
-            {title && <Typography pt={2} textAlign={description ? "left" : "center"} variant="h6" fontSize={"16px !important"}>{title}</Typography>}
-            {description && <Typography py={2} textAlign={"center"} variant="body2">{description.length > limitDescription! ? description.slice(0, limitDescription!) : description}</Typography>}
+            {title && (
+                <Typography
+                    pt={2}
+                    textAlign={description ? "left" : "center"}
+                    variant="h6"
+                    fontSize={"16px !important"}
+                >
+                    {title}
+                </Typography>
+            )}
+            {description && (
+                <Typography py={2} textAlign={"center"} variant="body2">
+                    {description.length > limitDescription!
+                        ? description.slice(0, limitDescription!)
+                        : description}
+                </Typography>
+            )}
 
             <Modal
                 open={isViewerOpen}
@@ -239,8 +263,11 @@ const ImageCard: React.FC<ImageCardProps> = ({ id, filterTypeVoiceId, isBorderRa
                 aria-labelledby="image-modal-title"
                 aria-describedby="image-modal-description"
                 sx={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'black', // Đặt nền modal thành màu đen
-                    border: '5px solid black',
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "black", // Đặt nền modal thành màu đen
+                    border: "5px solid black",
                 }}
             >
                 <Box
@@ -253,30 +280,30 @@ const ImageCard: React.FC<ImageCardProps> = ({ id, filterTypeVoiceId, isBorderRa
                     onTouchEnd={handleTouchEnd}
                     onWheel={handleWheel}
                     sx={{
-                        position: 'relative',
-                        width: '90vw',
-                        height: '90vh',
-                        backgroundColor: 'black',
-                        border: '5px solid black',
-                        outline: 'none',
-                        overflow: 'hidden', // Đảm bảo phần tử không bị kéo ra ngoài
-                        cursor: isDragging ? 'grabbing' : 'grab',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
+                        position: "relative",
+                        width: "90vw",
+                        height: "90vh",
+                        backgroundColor: "black",
+                        border: "5px solid black",
+                        outline: "none",
+                        overflow: "hidden", // Đảm bảo phần tử không bị kéo ra ngoài
+                        cursor: isDragging ? "grabbing" : "grab",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
                     }}
                 >
                     <IconButton
                         onClick={closeImageViewer}
                         sx={{
-                            position: 'fixed',
+                            position: "fixed",
                             top: 16,
                             right: 16,
-                            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                            color: 'white',
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                            color: "white",
                             zIndex: 1,
-                            ':hover': {
-                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                            ":hover": {
+                                backgroundColor: "rgba(0, 0, 0, 0.7)",
                             },
                         }}
                     >
@@ -285,14 +312,14 @@ const ImageCard: React.FC<ImageCardProps> = ({ id, filterTypeVoiceId, isBorderRa
                     <IconButton
                         onClick={zoomIn}
                         sx={{
-                            position: 'fixed',
+                            position: "fixed",
                             top: 16,
                             right: 105,
-                            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                            color: 'white',
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                            color: "white",
                             zIndex: 1,
-                            ':hover': {
-                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                            ":hover": {
+                                backgroundColor: "rgba(0, 0, 0, 0.7)",
                             },
                         }}
                     >
@@ -302,80 +329,52 @@ const ImageCard: React.FC<ImageCardProps> = ({ id, filterTypeVoiceId, isBorderRa
                     <IconButton
                         onClick={zoomOut}
                         sx={{
-                            position: 'fixed',
+                            position: "fixed",
                             top: 16,
                             right: 60,
-                            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                            color: 'white',
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                            color: "white",
                             zIndex: 1,
-                            ':hover': {
-                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                            ":hover": {
+                                backgroundColor: "rgba(0, 0, 0, 0.7)",
                             },
                         }}
                     >
                         <ZoomOutIcon />
                     </IconButton>
+                    <IconButton
+                        sx={{
+                            position: "fixed",
+                            top: 16,
+                            right: 150,
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                            color: "white",
+                            zIndex: 1,
+                            ":hover": {
+                                backgroundColor: "rgba(0, 0, 0, 0.7)",
+                            },
+                        }}
+                        onClick={handleClickChangeMenu}
+                    >
+                        <IconVolume fontSize="small" />
+                        <MoreVertIcon />
+                    </IconButton>
                     <img
                         src={isViewPhoto}
                         alt="Large view"
                         style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'contain',
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "contain",
                             transform: `scale(${scale}) translate(${translate.x}px, ${translate.y}px)`,
-                            transition: 'transform 0.1s ease-out',
-                            borderRadius: `${!isBorderRadius ? 0 : '8px'}`
+                            transition: "transform 0.1s ease-out",
+                            borderRadius: `${!isBorderRadius ? 0 : "8px"}`,
                         }}
                     />
-                    {
-                        <Menu
-                            anchorEl={anchorEl}
-                            id="account-menu"
-                            open={open}
-                            onClose={handleClose}
-                            //  onClick={handleClose}
-                            PaperProps={{
-                                elevation: 0,
-                                sx: {
-                                    overflow: 'visible',
-                                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                                    mt: 1.5,
-                                    '& .MuiAvatar-root': {
-                                        width: 32,
-                                        height: 32,
-                                        ml: -0.5,
-                                        mr: 1,
-                                    },
-                                    '&::before': {
-                                        content: '""',
-                                        display: 'block',
-                                        position: 'absolute',
-                                        top: 0,
-                                        right: 14,
-                                        width: 10,
-                                        height: 10,
-                                        bgcolor: 'background.paper',
-                                        transform: 'translateY(-50%) rotate(45deg)',
-                                        zIndex: 0,
-                                    },
-                                },
-                            }}
-                            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                        >
-                            {/* <MenuItem onClick={handleOpenAddVoiceToDialog}>
-                            <ListItemIcon>
-                                <IconPlus />
-                            </ListItemIcon>
-                            Thêm voice
-                        </MenuItem> */}
-
-                        </Menu>
-                    }
                 </Box>
             </Modal>
         </>
     );
-}
+};
 
 export default ImageCard;

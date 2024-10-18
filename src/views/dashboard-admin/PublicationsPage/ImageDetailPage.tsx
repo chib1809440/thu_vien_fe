@@ -1,16 +1,23 @@
-import CloseIcon from '@mui/icons-material/Close';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import CloseIcon from "@mui/icons-material/Close";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Box, Dialog, DialogContent, Grid, IconButton, Paper, useTheme } from "@mui/material";
-import { IconVolume } from '@tabler/icons-react';
-import { useState } from 'react';
-import ImageCard from '../../../components/custom/card/ImageCard';
-import StyledIconButton from '../../../components/default/button/StyledIconButton';
-import { useFetchVoice } from '../../../hooks/services/voice/voice-query';
+import { IconVolume } from "@tabler/icons-react";
+import { useState } from "react";
+import ImageCard from "../../../components/custom/card/ImageCard";
+import StyledIconButton from "../../../components/default/button/StyledIconButton";
+import { useFetchVoice } from "../../../hooks/services/voice/voice-query";
 import { TPublications } from "../../../types/models/publications.type";
-import MenuAddVoice from './ui-components/MenuAddVoice';
+import MenuAddVoice from "./ui-components/MenuAddVoice";
 
-
-const ImageDetailPage = ({ open, onClose, publications }: { open: boolean; onClose: () => void; publications: TPublications | null }) => {
+const ImageDetailPage = ({
+    open,
+    onClose,
+    publications,
+}: {
+    open: boolean;
+    onClose: () => void;
+    publications: TPublications | null;
+}) => {
     const theme = useTheme();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const { data: voiceData } = useFetchVoice();
@@ -28,7 +35,7 @@ const ImageDetailPage = ({ open, onClose, publications }: { open: boolean; onClo
             <Dialog
                 open={open}
                 onClose={(event, reason) => {
-                    if (reason === 'backdropClick') {
+                    if (reason === "backdropClick") {
                         return;
                     }
                     onClose();
@@ -39,10 +46,9 @@ const ImageDetailPage = ({ open, onClose, publications }: { open: boolean; onClo
                 <IconButton
                     aria-label="close"
                     onClick={onClose}
-                    color='error'
-                    sx={{ position: 'absolute', right: 8, top: 2 }}
+                    color="error"
+                    sx={{ position: "absolute", right: 8, top: 2 }}
                 >
-
                     <CloseIcon />
                 </IconButton>
                 <DialogContent>
@@ -67,17 +73,32 @@ const ImageDetailPage = ({ open, onClose, publications }: { open: boolean; onClo
                                 }}
                             >
                                 <Paper sx={{ width: "100%", position: "relative" }}>
-                                    <Box >
+                                    <Box>
                                         <ImageCard
                                             id={publications?._id}
                                             photo={
-                                                publications?.priviewImage ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}` : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`
+                                                publications?.priviewImage
+                                                    ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}`
+                                                    : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`
                                             }
                                             isViewPhoto={
-                                                publications?.priviewImage ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}` : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`
+                                                publications?.priviewImage
+                                                    ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}`
+                                                    : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`
                                             }
                                             aspectRatio={"16/9"}
                                             objectFit="contain"
+                                            isView={true}
+                                            voices={
+                                                voiceData?.data?.result.filter(
+                                                    (voice) =>
+                                                        (voice?.publicationId as TPublications)
+                                                            ?._id === publications._id &&
+                                                        voice?.isPublic
+                                                ) || []
+                                            }
+                                            publications={publications}
+                                            handleClickChangeMenu={handleClickChangeMenu}
                                         />
                                     </Box>
                                 </Paper>
@@ -102,27 +123,33 @@ const ImageDetailPage = ({ open, onClose, publications }: { open: boolean; onClo
                                         background: "none",
                                     }}
                                 >
-                                    <IconVolume fontSize="small" style={{ color: theme.palette.text.primary }} />
+                                    <IconVolume
+                                        fontSize="small"
+                                        style={{ color: theme.palette.text.primary }}
+                                    />
                                     <MoreVertIcon sx={{ color: theme.palette.text.primary }} />
                                 </StyledIconButton>
-                                {
-                                    anchorEl && (
-                                        <MenuAddVoice anchorEl={anchorEl}
-                                            onClose={handleClose}
-                                            voiceData={voiceData?.data?.result.filter(voice => ((voice?.publicationId as TPublications)?._id === publications._id) && voice?.isPublic) || []}
-                                            publicationsData={publications}
-                                        />
-                                    )
-                                }
+                                {anchorEl && (
+                                    <MenuAddVoice
+                                        anchorEl={anchorEl}
+                                        onClose={handleClose}
+                                        voiceData={
+                                            voiceData?.data?.result.filter(
+                                                (voice) =>
+                                                    (voice?.publicationId as TPublications)?._id ===
+                                                    publications._id && voice?.isPublic
+                                            ) || []
+                                        }
+                                        publicationsData={publications}
+                                    />
+                                )}
                             </Box>
                         </Paper>
-
                     </Grid>
-
                 </DialogContent>
-            </Dialog >
+            </Dialog>
         </>
     );
-}
+};
 
 export default ImageDetailPage;

@@ -6,9 +6,10 @@ type Props = {
     value: boolean;
     onChange?: (checked: boolean) => void;
     sx?: SxProps<Theme>;
+    disable?: boolean;
 };
 
-const SwitchForm: FC<Props> = ({ value, label, sx, onChange }) => {
+const SwitchForm: FC<Props> = ({ value, label, sx, onChange, disable = false }) => {
     return (
         <FormControlLabel
             sx={{ my: 1, ...sx }}
@@ -17,6 +18,7 @@ const SwitchForm: FC<Props> = ({ value, label, sx, onChange }) => {
                     value={value}
                     checked={value}
                     onChange={(e) => onChange?.(e.target.checked)}
+                    disabled={disable}
                 />
             }
             label={label}

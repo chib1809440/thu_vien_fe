@@ -112,7 +112,7 @@ const FormAddEditPublications: FC<Props> = ({
         shelvesQuantity: 0,
         status: "không có sẵn",
         type: "ấn phẩm cứng",
-        isPublic: false,
+        isPublic: true,
         isLink: false,
         categoryIds: [],
         authorIds: [],
@@ -549,9 +549,16 @@ const FormAddEditPublications: FC<Props> = ({
                         />
 
                         <SwitchForm
-                            value={values?.isPublic ?? false}
-                            onChange={(checked) => setFieldValue("isPublic", checked)}
+                             value={values.type === "ấn phẩm cứng" ? true : values?.isPublic ?? false}
+                            onChange={(checked) => {
+                                if (values.type === "ấn phẩm cứng") {
+                                    setFieldValue("isPublic", true);
+                                } else {
+                                    setFieldValue("isPublic", checked);
+                                }
+                            }}
                             label="Chia sẻ lên thư viện"
+                            disable={values.type === "ấn phẩm cứng"} 
                         />
 
                         <SwitchForm

@@ -5,17 +5,15 @@ import DialogContent from '@mui/material/DialogContent';
 import { useState } from 'react';
 import CoverCard from '../../../../components/custom/card/CoverCard';
 import { TPublications } from '../../../../types/models/publications.type';
-import BookViewDialog from './BookViewDialog';
 import { TShelves } from '../../../../types/models/shelves';
-import VideoDetailPage from '../VideoDetailPage';
 import ImageDetailPage from '../ImageDetailPage';
+import VideoDetailPage from '../VideoDetailPage';
+import BookViewDialog from './BookViewDialog';
 
 const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: boolean; onClose: () => void; publications: TPublications | null }) => {
     const [showBook, setShowBook] = useState(false);
     const [showVideo, setShowVideo] = useState(false);
     const [showImage, setShowImage] = useState(false);
-    const [showWord, setShowWord] = useState(false);
-    const [showPowerpoint, setShowPowerpoint] = useState(false);
     const numberPage = publications?.images?.length;
 
     const handleOpenView = () => {
@@ -26,8 +24,6 @@ const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: bool
         setShowBook(false);
         setShowVideo(false);
         setShowImage(false);
-        setShowPowerpoint(false);
-        setShowWord(false);
     };
 
     const handleOpenVideo = () => {
@@ -36,13 +32,6 @@ const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: bool
     const handleOpenImage = () => {
         setShowImage(true)
     }
-    const handleOpenPowerpoint = () => {
-        setShowPowerpoint(true)
-    }
-    const handleOpenWord = () => {
-        setShowWord(true)
-    }
-
     return (
         <>
             {
@@ -90,8 +79,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: bool
                                     quantityShelves={publications?.shelvesQuantity > 0 ? publications?.shelvesQuantity : 0}
                                     handleOpenVideo={handleOpenVideo}
                                     handleOpenImage={handleOpenImage}
-                                    handleOpenPowerpoint={handleOpenPowerpoint}
-                                    handleOpenWord={handleOpenWord}
+                                    path={`${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
                                 />
 
                             </Grid>

@@ -46,9 +46,8 @@ interface CoverCardProps {
     nameShelves?: string;
     mimetype?: string;
     handleOpenVideo?: () => void;
-    handleOpenPowerpoint?: () => void;
     handleOpenImage?: () => void;
-    handleOpenWord?: () => void;
+    path?: string;
 }
 
 const CoverCard = ({
@@ -66,9 +65,8 @@ const CoverCard = ({
     nameShelves,
     mimetype,
     handleOpenVideo,
-    handleOpenPowerpoint,
     handleOpenImage,
-    handleOpenWord
+    path
 }: CoverCardProps) => {
     const theme = useTheme();
     const { borderRadius } = useConfig();
@@ -104,7 +102,7 @@ const CoverCard = ({
             >
                 <Paper
                     sx={{
-                        aspectRatio: 3 / 4,
+                        aspectRatio: 3/4,
                         height: "255px",
                         borderRadius: "16px",
                         // border: `2px solid ${theme.palette.grey[300]}`,
@@ -290,9 +288,10 @@ const CoverCard = ({
                                     startIcon={<IconFileWord stroke={2} />}
                                     variant="contained"
                                     sx={{ marginTop: 1, width: "150px" }}
-                                    onClick={handleOpenWord}
                                 >
-                                    Xem word
+                                    <a href={path} download style={{ color: "white" }}>
+                                        Tải word
+                                    </a>
                                 </StyledButton>
                             )}
                         {[
@@ -322,9 +321,10 @@ const CoverCard = ({
                                     startIcon={<IconPresentation stroke={2} />}
                                     variant="contained"
                                     sx={{ marginTop: 1, width: "150px" }}
-                                    onClick={handleOpenPowerpoint}
                                 >
-                                    Xem powerpoint
+                                    <a href={path} download style={{ color: "white" }}>
+                                        Tải powerpoint
+                                    </a>
                                 </StyledButton>
                             )}
                         {[

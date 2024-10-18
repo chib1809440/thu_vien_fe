@@ -108,7 +108,7 @@ const FormAddEditGroup: FC<Props> = ({
                     onClose={handleClose}
                     initialValues={initialValuesLibrary}
                     onSubmit={handleSubmitLibrary}
-                    isEditMode={true}
+                    isEditMode={false}
                 />
             )}
             <FormikProvider value={formik}>

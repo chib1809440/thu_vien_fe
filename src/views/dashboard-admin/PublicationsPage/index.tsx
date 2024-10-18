@@ -146,7 +146,7 @@ const PublicationsPage = () => {
         setPublicationsDetails(null);
     };
 
-    const handleSubmit = (values: TPublicationsCreate) => {
+    const handleSubmit = (values: TPublicationsCreate) => {        
         const payload = {
             ...values,
             categoryIds: values.categoryIds.map((t: any) => t?._id),
@@ -592,7 +592,7 @@ const PublicationsPage = () => {
             shelvesQuantity: 0,
             status: "không có sẵn",
             type: "ấn phẩm cứng",
-            isPublic: false,
+            isPublic: true,
             isLink: false,
             file: "",
             categoryIds: [],

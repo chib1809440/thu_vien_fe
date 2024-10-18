@@ -18,12 +18,12 @@ export type TVoice = TEntityAbstract & {
     name?:string
 };
 
-export type TVoiceCreate = Partial<Pick<TVoice, "isPublic" | "isLink" | "note" | "file" | "isPrivate" | "order">> & {
+export type TVoiceCreate = Partial<Pick<TVoice, "isPublic" | "isLink" | "note" | "file" | "isPrivate" | "order" | "name">> & {
     publicationId?: string | null;
     typeVoiceId?: string | null;
 };
 
-export type TVoiceEdit = Partial<Pick<TVoice, "isPublic" | "isLink" | "note" | "file" | "isPrivate" | "order">> & {
+export type TVoiceEdit = Partial<Pick<TVoice, "isPublic" | "isLink" | "note" | "file" | "isPrivate" | "order" | "name">> & {
     _id: string;
     publicationId?: string | null;
     typeVoiceId?: string | null;

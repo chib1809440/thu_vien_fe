@@ -12,6 +12,7 @@ import { getLabelFromOptions } from "../../../utils/object";
 import StyledButton from "../../default/button/StyledButton";
 import { StyledHeading } from "../../default/typography";
 import ImageCard from "./ImageCard";
+import Barcode from 'react-barcode';
 
 const pastelGradients = [
     "linear-gradient(90deg, rgba(144, 238, 144, 1) 0%, rgba(173, 216, 230, 1) 100%)",
@@ -102,7 +103,7 @@ const CoverCard = ({
             >
                 <Paper
                     sx={{
-                        aspectRatio: 3/4,
+                        aspectRatio: 3 / 4,
                         height: "255px",
                         borderRadius: "16px",
                         // border: `2px solid ${theme.palette.grey[300]}`,
@@ -128,24 +129,30 @@ const CoverCard = ({
                     ml: handleOpenView ? 5 : 3,
                 }}
             >
-                <Typography variant="h4" display={"flex"}>
+                <Typography variant="h4" display={"flex"} alignItems={"center"}>
                     Tên ấn phẩm:
                     <StyledHeading ml={1} variant="h4">
                         {" "}
                         {title}
                     </StyledHeading>
+
+                    {barcode && (
+                        <div style={{ textAlign: "center", marginLeft: 35 }}>
+                            <Typography variant="h4" display={"flex"} alignItems={"center"}>
+                                Barcode:
+                                <Barcode
+                                    value={barcode}
+                                    width={1}
+                                    height={30}
+                                    fontSize={10}
+                                />
+                            </Typography>
+                        </div>
+                    )}
                 </Typography>
-                {barcode && (
-                    <Typography variant="h4" display={"flex"}>
-                        Barcode:
-                        <StyledHeading ml={1} variant="h4">
-                            {" "}
-                            {barcode}
-                        </StyledHeading>
-                    </Typography>
-                )}
+
                 {status && (
-                    <Typography variant="h4" display={"flex"}>
+                    <Typography variant="h4" display={"flex"} mb={1}>
                         Trạng thái:
                         <StyledHeading ml={1} variant="h4">
                             {" "}

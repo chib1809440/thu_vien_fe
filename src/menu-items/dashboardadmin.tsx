@@ -112,14 +112,14 @@ const dashboardAdmin = {
             icon: icons.IconBrowserPlus,
             breadcrumbs: false
         },
-        {
-            id: 'quan-ly-thanh-vien',
-            title: "Thành viên",
-            type: 'item',
-            url: '/quan-ly-thanh-vien',
-            icon: icons.IconDeviceAnalytics,
-            breadcrumbs: false
-        },
+        // {
+        //     id: 'quan-ly-thanh-vien',
+        //     title: "Thành viên",
+        //     type: 'item',
+        //     url: '/quan-ly-thanh-vien',
+        //     icon: icons.IconDeviceAnalytics,
+        //     breadcrumbs: false
+        // },
         {
             id: 'an-pham',
             title: "Ấn phẩm",

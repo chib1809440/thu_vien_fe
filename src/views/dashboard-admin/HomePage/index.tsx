@@ -17,6 +17,8 @@ import { useFetchStatistical } from '../../../hooks/services/statistical/statist
 import { IconAB } from '@tabler/icons';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { BarChart } from '@mui/x-charts';
+import { getLabelFromOptions } from '../../../utils/object';
+import { typeOptions } from '../../../utils/constants.utils';
 
 export default function HomePage() {
     const { data: statisticals } = useFetchStatistical();
@@ -49,10 +51,10 @@ export default function HomePage() {
             </Typography>
             <Grid container spacing={2} sx={{ mt: 1 }}>
                 <Grid item xs={3}>
-                    <TotalCard title={statisticals?.data?.result?.totalPublication[0]?.type} count={statisticals?.data?.result?.totalPublication[0]?.count} icon={IconBook} bgColor="#1e88e5" bgColorIcon="#014ea6" />
+                    <TotalCard title={getLabelFromOptions(typeOptions, statisticals?.data?.result?.totalPublication[0]?.type)} count={statisticals?.data?.result?.totalPublication[0]?.count} icon={IconBook} bgColor="#1e88e5" bgColorIcon="#014ea6" />
                 </Grid>
                 <Grid item xs={3}>
-                    <TotalCard title={statisticals?.data?.result?.totalPublication[1]?.type} count={statisticals?.data?.result?.totalPublication[1]?.count} icon={IconBook} bgColor="#ff4d4d" bgColorIcon="#cc0000" />
+                    <TotalCard title={getLabelFromOptions(typeOptions, statisticals?.data?.result?.totalPublication[1]?.type)} count={statisticals?.data?.result?.totalPublication[1]?.count} icon={IconBook} bgColor="#ff4d4d" bgColorIcon="#cc0000" />
                 </Grid>
                 <Grid item xs={3}>
                     <TotalCard title="Số lượng sách có sẵn" count={statisticals?.data?.result?.totalBorrowable} icon={IconBook} bgColor="#ffb84d" bgColorIcon="#cc7a00" />

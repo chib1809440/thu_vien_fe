@@ -1,6 +1,4 @@
-import { ChevronRight } from "@mui/icons-material";
-import { Box, Divider, ListItemIcon, Menu, MenuItem, useTheme } from "@mui/material";
-import { IconZoomReplace } from "@tabler/icons";
+import { Box, Divider, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import { IconFlag, IconPlus, IconVolume, IconVolumeOff } from "@tabler/icons-react";
 import { FC, useMemo, useState } from "react";
 import { toast } from "react-toastify";
@@ -218,7 +216,7 @@ const MenuAddVoice: FC<Props> = ({
                                                         <IconVolumeOff fontSize="small" />
                                                     )}
                                                 </ListItemIcon>
-                                                Hội thoại name {child.name} {child.isPrivate}
+                                                Hội thoại {child.name}
                                             </MenuItem>
                                         </Box>
                                     </Box>

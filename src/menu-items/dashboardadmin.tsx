@@ -54,14 +54,14 @@ const dashboardAdmin = {
             icon: icons.IconHome2,
             breadcrumbs: false
         },
-        {
-            id: 'vi-du',
-            title: "Ví dụ",
-            type: 'item',
-            url: '/vi-du',
-            icon: icons.IconCategory,
-            breadcrumbs: false
-        },
+        // {
+        //     id: 'vi-du',
+        //     title: "Ví dụ",
+        //     type: 'item',
+        //     url: '/vi-du',
+        //     icon: icons.IconCategory,
+        //     breadcrumbs: false
+        // },
         {
             id: 'thu-vien',
             title: "Hệ thống",

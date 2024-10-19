@@ -1,4 +1,4 @@
-import { FormControl, MenuItem, Box, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme, CircularProgress, Alert, IconButton } from "@mui/material"
+import { FormControl, MenuItem, Box, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme, CircularProgress, Alert, IconButton, Grid } from "@mui/material"
 import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconPencil, IconTrash } from "@tabler/icons-react";
 import { useEffect, useMemo, useState } from "react";
 import Checkbox from '@mui/material/Checkbox';
@@ -14,7 +14,7 @@ import { DataType, HeadCell, Order } from "../../../../../components/custom/tabl
 import { EntityResponse } from "../../../../../interfaces/entityResponse";
 import { User } from "../../../../../interfaces/user";
 import useDebounce, { searchDelay } from "../../../../../hooks/useDebounce";
-import { useDeleteUser, useDeleteUserSelected, useUserList } from "../../../../../hooks/react-query/userData";
+import { useDeleteUser, useDeleteUserSelected, useSoftDeleteUser, useUserList } from "../../../../../hooks/react-query/userData";
 import { SearchAndFilter } from "../../../../../components/custom/table/TableSearchAndFilter";
 import { EnhancedTableHead } from "../../../../../components/custom/table/TableHead";
 import { StyledTableCell, StyledTableRow } from "../../../../../components/custom/table/style";
@@ -24,6 +24,8 @@ import CustomInput from "../../../../../components/default/input/CustomInput";
 import AlertConfirmDialog from "../../../../../components/default/alert/confirmAlertDialog";
 import UserDialog from "../../../../../components/default/dialog/UserDialog";
 import { formatDate } from "../../../../../helpers/formatDate";
+import { useRoleList } from "../../../../../hooks/react-query/roleData";
+import { filterBreakpointKeys } from "@mui/system/Unstable_Grid/traverseBreakpoints";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -55,15 +57,19 @@ function TableUserList<T extends DataType>({
     const [isOpenConfirmDialog, setIsOpenConfirmDialog] = useState(false);
     const [isOpenConfirmDeleteSelectedDialog, setIsOpenConfirmDeleteSelectedDialog] = useState(false);
     const [selectedDeleteID, setSelectedDeleteID] = useState<string>()
+    const [filterRoleId, setFilterRoleId] = useState<string | number>(0)
     const debouncedSearch = useDebounce<string>(contentSearch, searchDelay);
     const [checked, setChecked] = useState<string[]>([]);
     const [checkedAll, setCheckedAll] = useState<boolean>(false);
     const { data: users, isPending, error, isError, isPlaceholderData, isFetching, refetch } =
-        useUserList(page, rowsPerPage, debouncedSearch);
+        useUserList(page, rowsPerPage, debouncedSearch, filterRoleId);
+    useEffect(() => {
+        refetch()
+    }, [filterRoleId])
 
-
-    const { mutate: deleteUser, isPending: isPendingUpdate } = useDeleteUser();
-    const { mutate: deleteUserSelected } = useDeleteUserSelected();
+    const { mutate: softDeleteUser, isPending: isPendingUpdate } = useSoftDeleteUser();
+    const { mutate: softDeleteUserSelected } = useDeleteUserSelected();
+    const { data: roles } = useRoleList();
 
     const handleCheckedAll = async () => {
         const newCheckedAll = !checkedAll;
@@ -155,7 +161,7 @@ function TableUserList<T extends DataType>({
     const handleConfirmDeleteItem = async () => {
         if (selectedDeleteID)
             try {
-                deleteUser(selectedDeleteID);
+                softDeleteUser(selectedDeleteID);
                 setSelectedDeleteID(undefined);
                 if (page !== 1 && users.data.result.length === 1) {
                     setPage(page - 1);
@@ -179,7 +185,7 @@ function TableUserList<T extends DataType>({
     };
     const handleConfirmDeleteItemSelected = async () => {
         try {
-            deleteUserSelected(checked)
+            softDeleteUserSelected(checked)
             setChecked([]);
             if (page !== 1 && users.data.result.length === checked.length) {
                 setPage(page - 1)
@@ -192,9 +198,32 @@ function TableUserList<T extends DataType>({
             toast.error(error.message);
         }
     };
+    console.log(filterRoleId);
+
     return (
         <>
             <SearchAndFilter onHandleDeleteSelectedItem={handleDeleteItemSelected} actionDeleteSelectedItem={true} contentSearch={contentSearch} handleContentSearch={setContentSearch} />
+            <Grid container pl={4} pr={4} xs={12} sm={12} md={12} lg={12} gap={2} sx={{ display: "flex", mb: 1, flexWrap: "wrap", mt: 1 }}>
+                <Grid item xs={12} sm={12} md={2} lg={2}>
+                    <Select
+                        labelId="roles-select"
+                        label="Vai trof"
+                        value={filterRoleId}
+                        onChange={(event) => {
+                            setFilterRoleId(event.target.value)
+                        }}
+                        input={<CustomInput size="small" label="Vai trò" />}
+                    >
+                        <MenuItem value={0}>Tất cả vai trò</MenuItem>
+                        {roles?.data.result.map((item, index) => (
+                            <MenuItem key={index} value={item._id}>
+                                {item.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </Grid>
+
+            </Grid>
             {/* Table */}
             <Box p={4} pt={0}>
                 {
@@ -258,6 +287,7 @@ function TableUserList<T extends DataType>({
                                                         </StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.fullname}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.phoneNumber}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.roleId?.name}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.gender}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{formatDate(row?.birthday)}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center">

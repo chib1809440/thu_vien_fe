@@ -1,4 +1,4 @@
-import { Switch } from "@mui/material";
+import { Button, Chip, Switch, useTheme } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconArrowBack, IconArrowBackUp, IconTrash } from "@tabler/icons";
 import { IconRestore, IconTrashXFilled } from "@tabler/icons-react";
@@ -10,13 +10,15 @@ import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
 import { CsFlexRowBetween } from "../../../components/default/flex";
-import { useDeleteLoanSlip, useDeleteManyLoanSlip, useRestoreManyLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-mutation";
+import { useApprovalLoanSlip, useDeleteLoanSlip, useDeleteManyLoanSlip, useRestoreManyLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-mutation";
 import { useFetchLoanSlipDeleteList, useReFetchLoanSlipDeleteList } from "../../../hooks/services/loanSlip/loanSlip-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TLoanSlip } from "../../../types/models/loanSlip.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
+import { formatDate } from "../../../helpers/formatDate";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 
 const LoanSlipDeleteListPage = () => {
@@ -30,6 +32,7 @@ const LoanSlipDeleteListPage = () => {
     const mutationDelete = useDeleteLoanSlip();
     const mutationDeleteMany = useDeleteManyLoanSlip();
     const mutationRestoreMany = useRestoreManyLoanSlip();
+    const theme = useTheme();
 
     const revalidate = useReFetchLoanSlipDeleteList();
 
@@ -37,6 +40,7 @@ const LoanSlipDeleteListPage = () => {
     const [loanSlipToDelete, setLoanSlipToDelete] = useState<TLoanSlip | null>(null);
     const [openConfirmRestoreDialog, setOpenConfirmRestoreDialog] = useState(false);
     const [loanSlipToRestore, setLoanSlipToRestore] = useState<TLoanSlip | null>(null);
+    const mutationApproval = useApprovalLoanSlip();
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmDeleteMultiple, setOpenConfirmDeleteMultiple] = useState(false);
@@ -80,26 +84,135 @@ const LoanSlipDeleteListPage = () => {
             });
         }
     };
-
+    const getStatusStyles = (status) => {
+        switch (status) {
+            case "đang mượn":
+                return { color: 'white', background: '#FF9800' }; // Màu cho "Đang mượn"
+            case "quá hạn":
+                return { color: 'white', background: '#F44336' }; // Màu cho "Quá hạn"
+            case "đã trả":
+                return { color: 'white', background: '#4CAF50' }; // Màu cho "Đã trả"
+            default:
+                return { color: 'black', background: '#E0E0E0' }; // Màu mặc định nếu không có trạng thái phù hợp
+        }
+    };
     const handleCloseConfirmRestoreDialog = () => {
         setOpenConfirmRestoreDialog(false);
     };
-
+    const handleApprovalLoanSlip = (row: TLoanSlip) => {
+        mutationApproval.mutate(row._id, {
+            onSuccess: () => {
+                revalidate();
+                toast.success('Duyệt phiếu mượn thành công.');
+            },
+        });
+    };
     const columns: TColumn<TLoanSlip>[] = useMemo(
         () => [
             {
-                id: "name",
+                id: "barcode",
                 disablePadding: "none",
-                label: "Tên phiếu mượn",
+                label: "Barcode",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
-                id: "description",
+                id: "borrowedDay",
                 disablePadding: "none",
-                label: "Mô tả",
+                label: "Ngày mượn",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => {
+                    return (
+                        <Box
+                        >
+                            {formatDate(row.borrowedDay)}
+                        </Box>
+                    );
+                },
+            },
+            {
+                id: "returnDay",
+                disablePadding: "none",
+                label: "Ngày trả",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => {
+                    return (
+                        <Box
+                        >
+                            {formatDate(row.returnDay)}
+                        </Box>
+                    );
+                },
+            },
+            {
+                id: "isReturn",
+                disablePadding: "none",
+                label: "Tình trạng trả",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => {
+                    return (
+                        <Box
+                        >
+                            {/* {
+                                row.isReturn === true && <Chip
+                                    style={{ color: 'white', background: '#096A5E' }}
+                                    label="Đã trả"
+                                    variant="filled"
+                                />
+                            }
+                            {row.isReturn === false && (
+                                <>
+                                    {new Date(row.returnDay).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0) ? (
+                                        <Chip
+                                            style={getStatusStyles(row.isAgree)}// Màu cho "Đang mượn"
+                                            label={row.isAgree === true ? 'Đang mượn' : 'Đang xử lý'}
+                                            variant="filled"
+                                        />
+                                    ) : (
+                                        <Chip
+                                            style={{ color: 'white', background: theme.palette.error.dark }} // Màu cho "Quá hạn"
+                                            label="Quá hạn"
+                                            variant="filled"
+                                        />
+                                    )}
+                                </>
+                            )} */}
+                            <Chip
+                                style={getStatusStyles(row.status)} // Màu cho "Quá hạn"
+                                label={capitalizeFirstLetter(row.status)}
+                                variant="filled"
+                            />
+                        </Box>
+                    );
+                },
+            },
+            {
+                id: "isAgree",
+                disablePadding: "none",
+                label: "Duyệt",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => {
+                    return (
+                        <Box
+                        >
+                            {
+                                row.isAgree === true ? <>
+                                    <Chip
+                                        style={{ color: 'white', background: '#096A5E' }}
+                                        label="Đã duyệt"
+                                        variant="filled"
+                                    />
+                                </> : <>
+                                    <Button variant="contained" sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }} onClick={() => handleApprovalLoanSlip(row)}>Chưa duyệt</Button>
+                                </>
+                            }
+                        </Box>
+                    );
+                },
             },
 
 

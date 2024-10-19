@@ -28,6 +28,12 @@ const ContactPage = Loadable(
 const AccountPage = Loadable(
   lazy(() => import("../views/dashboard-admin/SystemPage/AccountPage"))
 );
+const AdminAccountPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/AdminPage"))
+);
+const AccountTrashPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/SystemPage/AccountPage/AccountTrashPage"))
+);
 const RolePage = Loadable(
   lazy(() => import("../views/dashboard-admin/SystemPage/RolePage"))
 );
@@ -176,7 +182,20 @@ const LibPayment = Loadable(
 const LibAccount = Loadable(
   lazy(() => import("../views/dashboard-admin/LienThong/LIB/Account"))
 );
-
+//Supplier
+const SupplierPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/WareHouseReceiptPage/SupplierPage"))
+);
+const SupplierDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/WareHouseReceiptPage/SupplierDeleteListPage"))
+);
+//WareHouseReceipt
+const WareHouseReceiptPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/WareHouseReceiptPage/WareHouseReceiptPage"))
+);
+const WareHouseReceiptDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/WareHouseReceiptPage/WareHouseDeleteListPage"))
+);
 const MainRoutes = {
   path: "/",
   element: (
@@ -209,6 +228,15 @@ const MainRoutes = {
       path: "/quan-ly-tai-khoan",
       element: <AccountPage />,
     },
+    {
+      path: "/he-thong/quan-ly-tai-khoan-admin",
+      element: <AdminAccountPage />,
+    },
+    {
+      path: "/quan-ly-tai-khoan/thung-rac",
+      element: <AccountTrashPage />,
+    },
+
     {
       path: "/vai-tro",
       element: <RolePage />,
@@ -306,7 +334,23 @@ const MainRoutes = {
       path: "/quan-ly-thanh-vien",
       element: <UserProfilePage />,
     },
-
+    // Nhập kho
+    {
+      path: "/quan-ly-nhap-kho/nha-cung-cap",
+      element: <SupplierPage />,
+    },
+    {
+      path: "/quan-ly-nhap-kho/nha-cung-cap/danh-sach-xoa-nha-cung-cap",
+      element: <SupplierDeleteListPage />,
+    },
+    {
+      path: "/quan-ly-nhap-kho/phieu-nhap-kho",
+      element: <WareHouseReceiptPage />,
+    },
+    {
+      path: "/quan-ly-nhap-kho/phieu-nhap-kho/danh-sach-xoa-phieu-nhap-kho",
+      element: <WareHouseReceiptDeleteListPage />,
+    },
     {
       path: "/nhom-phan-quyen",
       element: <DistributionOfPowers />,

@@ -86,6 +86,14 @@ const dashboardAdmin = {
                     icon: icons.IconDeviceAnalytics,
                     breadcrumbs: false
                 },
+                {
+                    id: 'quan-ly-tai-khoan-admin',
+                    title: "Tài khoản admin thư viện",
+                    type: 'item',
+                    url: '/he-thong/quan-ly-tai-khoan-admin',
+                    icon: icons.IconDeviceAnalytics,
+                    breadcrumbs: false
+                },
             ]
         },
         {
@@ -155,6 +163,32 @@ const dashboardAdmin = {
             ]
         },
         {
+            id: 'quan-ly-nhap-kho',
+            title: "Quản lý nhập kho",
+            type: 'collapse',
+            url: '/quan-ly-nhap-kho',
+            icon: icons.IconBrowser,
+            breadcrumbs: false,
+            children: [
+                {
+                    id: 'nha-cung-cap',
+                    title: "Nhà cung cấp",
+                    type: 'item',
+                    url: '/quan-ly-nhap-kho/nha-cung-cap',
+                    icon: icons.IconEyeTable,
+                    breadcrumbs: false
+                },
+                {
+                    id: 'phieu-nhap-kho',
+                    title: "Phiếu nhập kho",
+                    type: 'item',
+                    url: '/quan-ly-nhap-kho/phieu-nhap-kho',
+                    icon: icons.IconEyeTable,
+                    breadcrumbs: false
+                },
+            ]
+        },
+        {
             id: 'quan-ly-muon-tra',
             title: "Quản lý mượn trả",
             type: 'collapse',
@@ -168,14 +202,14 @@ const dashboardAdmin = {
                     icon: icons.IconReceipt,
                     breadcrumbs: false
                 },
-                {
-                    id: 'phieu-tra',
-                    title: "Phiếu trả",
-                    type: 'item',
-                    url: '/quan-ly-muon-tra/phieu-tra',
-                    icon: icons.IconReceiptRefund,
-                    breadcrumbs: false
-                },
+                // {
+                //     id: 'phieu-tra',
+                //     title: "Phiếu trả",
+                //     type: 'item',
+                //     url: '/quan-ly-muon-tra/phieu-tra',
+                //     icon: icons.IconReceiptRefund,
+                //     breadcrumbs: false
+                // },
             ]
         },
         {

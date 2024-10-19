@@ -1,6 +1,6 @@
-import { Button, Chip, Grid, Switch, useTheme } from "@mui/material";
+import { Button, Chip, FormControl, Grid, MenuItem, Select, Switch, useTheme } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { IconCalendar, IconPencil, IconPlus, IconPrinter, IconTrash, IconX } from "@tabler/icons";
+import { IconCalendar, IconFileExport, IconPencil, IconPlus, IconPrinter, IconTrash, IconX } from "@tabler/icons";
 import { IconClockSearch, IconTrashXFilled } from "@tabler/icons-react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -26,6 +26,7 @@ import PrintLoanSlip from "./ui-components/PrintLoanSlip";
 import { parserParams } from "../../../utils/object";
 import { useFetchPublications } from "../../../hooks/services/publications/publications-query";
 import DatePicker from "react-datepicker";
+import ExcelJS from 'exceljs';
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -40,7 +41,7 @@ function CustomInput({ value, onClick }: CustomInputProps) {
                 value={value}
                 onClick={onClick}
                 readOnly
-                style={{ width: '100%' }} // Giảm chiều rộng để có chỗ cho biểu tượng "X"
+                style={{ width: '100%', height: '20px !important' }} // Giảm chiều rộng để có chỗ cho biểu tượng "X"
             />
             <span className="icon-background" onClick={onClick}>
                 <IconCalendar color="white" />
@@ -57,15 +58,21 @@ const LoanSlipPage = () => {
     const [barcodeSearch, setBarcodeSearch] = useState("");
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
+    const [filterDateType, setFilterDateType] = useState<string | number>(0);
+    const [filterStatus, setFilterStatus] = useState<string | number>(0);
     const filter = useMemo(
         () =>
             parserParams([
                 { compare: "", target: { search } },
                 { compare: "", target: { barcode: barcodeSearch } },
+                { compare: 0, target: { type: filterDateType } },
+                { compare: 0, target: { status: filterStatus } },
             ]),
         [
             barcodeSearch,
             search,
+            filterDateType,
+            filterStatus
         ]
     );
     const theme = useTheme();
@@ -76,6 +83,8 @@ const LoanSlipPage = () => {
         endDate,
         ...filter,
     });
+    console.log(filterDateType);
+
     const mutationAdd = useAddLoanSlip();
     const mutationApproval = useApprovalLoanSlip();
     const mutationReturn = useReturnLoanSlip();
@@ -102,6 +111,8 @@ const LoanSlipPage = () => {
     const addLoanSlip = () => {
         setOpenAddEdit(true);
     };
+
+
 
     const handleEditLoanSlip = (row: TLoanSlip) => {
         setSelectedEdit(row);
@@ -183,8 +194,18 @@ const LoanSlipPage = () => {
     };
     const componentRef = useRef();
     // Hàm xử lý in
-
-
+    const getStatusStyles = (status) => {
+        switch (status) {
+            case "đang mượn":
+                return { color: 'white', background: '#FF9800' }; // Màu cho "Đang mượn"
+            case "quá hạn":
+                return { color: 'white', background: '#F44336' }; // Màu cho "Quá hạn"
+            case "đã trả":
+                return { color: 'white', background: '#4CAF50' }; // Màu cho "Đã trả"
+            default:
+                return { color: 'black', background: '#E0E0E0' }; // Màu mặc định nếu không có trạng thái phù hợp
+        }
+    };
     const columns: TColumn<TLoanSlip>[] = useMemo(
         () => [
             {
@@ -234,21 +255,35 @@ const LoanSlipPage = () => {
                     return (
                         <Box
                         >
-                            {
-                                row.isReturn === false ? <>
-                                    <Chip
-                                        style={{ color: 'white', background: theme.palette.error.dark }}
-                                        label="Chưa trả"
-                                        variant="filled"
-                                    />
-                                </> : <>
-                                    <Chip
-                                        style={{ color: 'white', background: '#096A5E' }}
-                                        label="Đã trả"
-                                        variant="filled"
-                                    />
-                                </>
+                            {/* {
+                                row.isReturn === true && <Chip
+                                    style={{ color: 'white', background: '#096A5E' }}
+                                    label="Đã trả"
+                                    variant="filled"
+                                />
                             }
+                            {row.isReturn === false && (
+                                <>
+                                    {new Date(row.returnDay).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0) ? (
+                                        <Chip
+                                            style={getStatusStyles(row.isAgree)}// Màu cho "Đang mượn"
+                                            label={row.isAgree === true ? 'Đang mượn' : 'Đang xử lý'}
+                                            variant="filled"
+                                        />
+                                    ) : (
+                                        <Chip
+                                            style={{ color: 'white', background: theme.palette.error.dark }} // Màu cho "Quá hạn"
+                                            label="Quá hạn"
+                                            variant="filled"
+                                        />
+                                    )}
+                                </>
+                            )} */}
+                            <Chip
+                                style={getStatusStyles(row.status)} // Màu cho "Quá hạn"
+                                label={capitalizeFirstLetter(row.status)}
+                                variant="filled"
+                            />
                         </Box>
                     );
                 },
@@ -299,7 +334,7 @@ const LoanSlipPage = () => {
                                 stroke={1.5}
                             />
                             {
-                                row.isAgree === true &&
+                                row.isAgree === false &&
                                 <IconTrash
                                     size={20}
                                     stroke={1.5}
@@ -315,7 +350,11 @@ const LoanSlipPage = () => {
         ],
         [handleEditLoanSlip, handleOpenConfirmDialog]
     );
-
+    const formatDateWithDayMonthYear = (dateString) => {
+        // Hàm định dạng ngày
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-GB'); // Định dạng dd/mm/yyyy
+    };
     const handleCheckedDelete = useCallback((row: TLoanSlip, checked: boolean) => {
         setCheckedDelete((prev) => {
             if (prev.includes(row._id)) {
@@ -357,6 +396,125 @@ const LoanSlipPage = () => {
             },
         });
     }, [checkedDelete]);
+    const handleExportLoanSlipExcel = () => {
+        // Tạo một workbook mới
+        console.log(data);
+        console.log(isLoading);
+
+        if (data) {
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Loan Slips');
+
+            // Thêm hàng tiêu đề chính
+            worksheet.addRow(['Danh sách phiếu mượn']).font = { bold: true, size: 14 };
+            worksheet.addRow([]); // Thêm hàng trống
+
+            // Thêm hàng từ ngày đến ngày
+            const startDateExcel = startDate ? formatDate(startDate) : '';
+            const endDateExcel = endDate ? formatDate(endDate) : '';
+            worksheet.addRow([`Từ ngày: ${startDateExcel} đến ngày: ${endDateExcel}`]).font = { bold: true };
+
+            // Đặt header cho bảng
+            worksheet.addRow([
+                'Mã phiếu',
+                'Tên người mượn',
+                'Số điện thoại',
+                'Địa chỉ',
+                'Ngày mượn',
+                'Ngày trả',
+                'Trạng thái',
+                'Sách mượn'
+            ]);
+
+            // Đặt kiểu định dạng cho các cột
+            worksheet.getColumn('A').width = 15;
+            worksheet.getColumn('B').width = 30;
+            worksheet.getColumn('C').width = 15;
+            worksheet.getColumn('D').width = 15;
+            worksheet.getColumn('E').width = 20;
+            worksheet.getColumn('F').width = 20;
+            worksheet.getColumn('G').width = 15;
+            worksheet.getColumn('H').width = 50;
+
+            // Lấy dữ liệu từ API
+            const loanSlipsData = data?.data?.result?.map((loanSlip) => {
+                const bookTitles = loanSlip?.publications?.map(publication => {
+                    return `${publication.name} (${publication.quantityLoan} quyển)`;
+                }).join('\n');
+
+                return {
+                    barcode: loanSlip?.barcode,
+                    borrowerName: loanSlip?.userId?.fullname,
+                    phoneNumber: loanSlip?.userId?.phoneNumber,
+                    address: loanSlip?.userId?.address,
+                    borrowDate: formatDate(loanSlip?.borrowedDay),
+                    returnDate: formatDate(loanSlip?.returnDay),
+                    status: capitalizeFirstLetter(loanSlip?.status),
+                    bookTitle: bookTitles || '',
+                };
+            });
+
+            console.log(loanSlipsData); // Kiểm tra dữ liệu đã chuyển đổi
+
+            // Thêm dữ liệu vào worksheet và kẻ đường viền
+            loanSlipsData.forEach((dataRow) => {
+                const row = worksheet.addRow([]);
+                row.values = [
+                    dataRow.barcode,
+                    dataRow.borrowerName,
+                    dataRow.phoneNumber,
+                    dataRow.address,
+                    dataRow.borrowDate,
+                    dataRow.returnDate,
+                    dataRow.status,
+                    dataRow.bookTitle
+                ];
+                row.eachCell((cell) => {
+                    cell.border = {
+                        top: { style: 'thin' },
+                        left: { style: 'thin' },
+                        bottom: { style: 'thin' },
+                        right: { style: 'thin' }
+                    };
+                });
+            });
+
+            // Kẻ đường viền cho header và thêm định dạng
+            const headerRow = worksheet.getRow(4); // Header bắt đầu ở hàng 4
+            headerRow.eachCell((cell) => {
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' }
+                };
+                cell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FFCCCCCC' } // Màu xám
+                };
+                cell.font = {
+                    bold: true,
+                    color: { argb: 'FF000000' } // Màu chữ đen
+                };
+            });
+
+            // Tạo file Excel và lưu
+            workbook.xlsx.writeBuffer().then((buffer) => {
+                const blob = new Blob([buffer], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'loan_slips.xlsx'; // Tên file xuất
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        } else {
+            toast.error("Không có dữ liệu để xuất excel");
+        }
+    };
+
+
 
     const actionMenus = useMemo((): TMenuOption[] => {
         return [
@@ -365,8 +523,13 @@ const LoanSlipPage = () => {
                 icon: <IconTrashXFilled size={20} stroke={1.5} />,
                 onClick: handleDeleteMultiple,
             },
+            {
+                label: "Xuất excel",
+                icon: <IconFileExport size={20} stroke={1.5} />,
+                onClick: handleExportLoanSlipExcel,
+            },
         ];
-    }, [handleDeleteMultiple]);
+    }, [handleDeleteMultiple, handleExportLoanSlipExcel]);
 
     const initialValues = useMemo((): TLoanSlipCreate => {
         if (selectedEdit) {
@@ -390,7 +553,6 @@ const LoanSlipPage = () => {
             userId: ''
         };
     }, [selectedEdit]);
-
     return (
         <div>
             <IBreadcrumsCustom
@@ -445,7 +607,48 @@ const LoanSlipPage = () => {
                     barcodeSearch={barcodeSearch}
                     handleBarcodeSearch={handleBarcodeSearch} placeholder="Tìm kiếm theo barcode" />
                 <Grid container pl={4} pr={4} xs={12} sm={12} md={12} lg={12} gap={2} sx={{ display: "flex", mb: 3, flexWrap: "wrap" }}>
-                    <Grid item xs={12} sm={12} md={4} lg={3}>
+                    <Grid item xs={12} sm={12} md={2} lg={2}>
+                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                            <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
+                                Lọc theo:
+                            </span>
+                            <div className="date-picker-container">
+                                <FormControl fullWidth>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="filterDateType"
+                                        name="filterDateType"
+                                        type="filterDateType"
+                                        value={filterDateType}
+                                        onChange={(event) => {
+                                            setFilterDateType(event.target.value); // Lấy giá trị từ event
+                                        }}
+                                        sx={{ height: '40px', fontSize: '0.875rem' }}
+                                    >
+                                        <MenuItem
+                                            key={0}
+                                            value={0}
+                                        >
+                                            Tất cả
+                                        </MenuItem>
+                                        <MenuItem
+                                            key={1}
+                                            value="borrowedDay"
+                                        >
+                                            Ngày mượn
+                                        </MenuItem>
+                                        <MenuItem
+                                            key={2}
+                                            value="returnDay"
+                                        >
+                                            Ngày trả
+                                        </MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </div>
+                        </div>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={3} lg={3}>
                         <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Từ ngày:
@@ -457,7 +660,7 @@ const LoanSlipPage = () => {
                                     dateFormat="dd/MM/yyyy" // Định dạng ngày tháng năm
                                     onChange={(date: Date | null) => setStartDate(date)}
                                     customInput={<CustomInput value={startDate ? startDate.toLocaleDateString() : ''} onClick={() => { }} />}
-                                /> 
+                                />
                                 {
                                     startDate && <span className="icon-clear" onClick={handleClearStartDate}>
                                         <IconX color="red" />
@@ -466,7 +669,7 @@ const LoanSlipPage = () => {
                             </div>
                         </div>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={4} lg={3}>
+                    <Grid item xs={12} sm={12} md={3} lg={3}>
                         <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Đến ngày:
@@ -485,6 +688,53 @@ const LoanSlipPage = () => {
                                 }
                             </div>
 
+                        </div>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={3} lg={3}>
+                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                            <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
+                                Trạng thái:
+                            </span>
+                            <div className="date-picker-container">
+                                <FormControl fullWidth>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="filterStatus"
+                                        name="filterStatus"
+                                        type="filterStatus"
+                                        value={filterStatus}
+                                        onChange={(event) => {
+                                            setFilterStatus(event.target.value); // Lấy giá trị từ event
+                                        }}
+                                        sx={{ height: '40px', fontSize: '0.875rem' }}
+                                    >
+                                        <MenuItem
+                                            key={0}
+                                            value={0}
+                                        >
+                                            Tất cả
+                                        </MenuItem>
+                                        <MenuItem
+                                            key={1}
+                                            value="currently-borrowed"
+                                        >
+                                            Đang mượn
+                                        </MenuItem>
+                                        <MenuItem
+                                            key={2}
+                                            value="overdue"
+                                        >
+                                            Quá hạn
+                                        </MenuItem>
+                                        <MenuItem
+                                            key={2}
+                                            value="returned"
+                                        >
+                                            Đã trả
+                                        </MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </div>
                         </div>
                     </Grid>
                 </Grid>

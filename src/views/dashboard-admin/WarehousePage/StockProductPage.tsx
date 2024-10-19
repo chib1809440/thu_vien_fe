@@ -272,7 +272,7 @@ const StockProductPage = () => {
             return {
                 name: selectedEdit.name,
                 quantity: selectedEdit.quantity,
-                shelvesId: ((selectedEdit.shelvesId as TShelves)?._id) || "",
+                shelvesId: ((selectedEdit.shelvesId as TShelves)?._id),
                 shelvesQuantity: selectedEdit.shelvesQuantity,
                 quantityLiquidation: selectedEdit.quantityLiquidation,
                 quantityDamaged: selectedEdit.quantityDamaged,
@@ -289,7 +289,7 @@ const StockProductPage = () => {
             quantityDamaged: 0,
             quantityLoan: 0,
             totalQuantity: 0,
-            shelvesId: "",
+            shelvesId: null,
         };
     }, [selectedEdit]);
 

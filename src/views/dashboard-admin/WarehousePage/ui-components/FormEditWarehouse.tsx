@@ -22,7 +22,7 @@ const schema = yup.object().shape({
     name: yup.string().required("Vui lòng nhập tên"),
     quantity: yup.number().required("Vui lòng nhập số lượng"),
     shelvesQuantity: yup.number().required("Vui lòng nhập số lượng trên kệ"),
-    shelvesId: yup.string().required("Vui lòng chọn kệ"),
+    shelvesId: yup.string().required("Vui lòng chọn kệ").nullable(),
 });
 
 type Props = {
@@ -235,7 +235,9 @@ const FormEditWarehouse: FC<Props> = ({
                                 options={stockStatusOptions}
                                 value={statusWarehouse}
                                 onChange={(event) => {
-                                    setStatusWarehouse(event.target.value);
+                                    setStatusWarehouse(event?.target?.value);
+                                    console.log(event?.target?.value);
+                                    
                                 }}
                             />
                         </Box>
@@ -256,8 +258,8 @@ const FormEditWarehouse: FC<Props> = ({
                                         text="Kệ - tủ:"
                                         options={
                                             shelfOptions?.map((item) => ({
-                                                value: item._id,
-                                                label: item.name,
+                                                value: item?._id,
+                                                label: item?.name,
                                             })) || []
                                         }
                                         {...getFieldProps("shelvesId")}

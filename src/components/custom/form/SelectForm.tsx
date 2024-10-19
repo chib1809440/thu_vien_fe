@@ -39,8 +39,8 @@ const SelectForm: FC<Props> = ({
     endAdornment,
     disabled,
     handleAdd,
-    text=""
-}) => {    
+    text = ""
+}) => {
     return (
         <FormControl sx={{ my: 1, ...sx }} error={error} fullWidth>
             <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -61,21 +61,21 @@ const SelectForm: FC<Props> = ({
                     )}
             </Box>
 
-            <Select name={name} value={ value ?? ""} onChange={onChange} onBlur={onBlur}
+            <Select name={name} value={value ?? ""} onChange={onChange} onBlur={onBlur}
                 endAdornment={endAdornment} disabled={disabled}
                 renderValue={(selectedValue) => {
-                    const selectedOption = options.find(option => option.value === selectedValue);
-                    return selectedOption ? `${text} ${selectedOption.label}` : text;
+                    const selectedOption = options.find(option => option?.value === selectedValue);
+                    return selectedOption ? `${text} ${selectedOption?.label}` : text;
                 }}
             >
                 <MenuItem value="">
                     <em>Chọn</em>
                 </MenuItem>
 
-                {options.length &&
-                    options.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.label}
+                {options?.length > 0 &&
+                    options?.map((option) => (
+                        <MenuItem key={option?.value} value={option.value}>
+                            {option?.label}
                         </MenuItem>
                     ))}
             </Select>

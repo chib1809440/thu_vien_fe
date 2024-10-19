@@ -8,6 +8,7 @@ import StyledIconButton from "../../../components/default/button/StyledIconButto
 import { useFetchVoice } from "../../../hooks/services/voice/voice-query";
 import { TPublications } from "../../../types/models/publications.type";
 import MenuAddVoice from "./ui-components/MenuAddVoice";
+import { useFetchTypeVoice } from "../../../hooks/services/type-voice/type-voice-query";
 
 const ImageDetailPage = ({
     open,
@@ -21,6 +22,8 @@ const ImageDetailPage = ({
     const theme = useTheme();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const { data: voiceData } = useFetchVoice();
+    const { data: typeVoiceData } = useFetchTypeVoice();
+    console.log("typeVoiceData", typeVoiceData);
 
     const handleClickChangeMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -137,10 +140,11 @@ const ImageDetailPage = ({
                                             voiceData?.data?.result.filter(
                                                 (voice) =>
                                                     (voice?.publicationId as TPublications)?._id ===
-                                                    publications._id && voice?.isPublic
+                                                        publications._id && voice?.isPublic
                                             ) || []
                                         }
                                         publicationsData={publications}
+                                        typeVoiceData={typeVoiceData?.data?.result}
                                     />
                                 )}
                             </Box>

@@ -150,10 +150,25 @@ const Print = Loadable(
 const LibraryConnection = Loadable(
   lazy(() => import("../views/dashboard-admin/LibraryConnection"))
 );
-
-const LoginLienThong = Loadable(
-  lazy(() => import("../views/dashboard-admin/LienThong/AuthLT/index"))
+// lienthong
+const LibraryPublicationsPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/LienThong/LIB/LibraryPublicationsPage"))
 );
+const LibMaterialPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/LienThong/LIB/LibMaterialPage"))
+);
+const LibCategoryPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/LienThong/LIB/LibCategoryPage"))
+);
+const LibAuthorPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/LienThong/LIB/LibAuthorPage"))
+);
+const LibPublisherPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/LienThong/LIB/LibPublisherPage"))
+);
+
+
+
 const LibraryOriginal = Loadable(
   lazy(() => import("../views/dashboard-admin/LienThong/LIB/Library/Original"))
 );
@@ -411,49 +426,43 @@ const MainRoutes = {
   ],
 };
 
+// lien thong
 export const MainRoutesV2 = {
   path: "/",
   element: (
-    <AuthGuardV2>
+    // <AuthGuardV2>
       <MainLayoutV2 />
-    </AuthGuardV2>
+    // </AuthGuardV2>
   ),
   children: [
     {
       path: "lien-thong",
-      element: <LoginLienThong />,
+      element: <LibraryPublicationsPage />,
     },
     {
-      path: "chia-se-thu-vien",
-      element: <LibraryConnection />,
-    },
-    {
-      path: "chia-se-thu-vien/an-pham",
-      element: <LibraryOriginal />,
+      path: "chia-se-an-pham",
+      element: <LibraryPublicationsPage />,
     },
     {
       path: "chia-se-thu-vien/hoc-lieu",
       element: <LibraryElectronic />,
     },
+    // danh mục chia sẽ liên thông
     {
       path: "chia-se-danh-muc/dang-hoc-lieu",
-      element: <LibCategory />,
+      element: <LibMaterialPage />,
     },
     {
       path: "chia-se-danh-muc/linh-vuc",
-      element: <LibTypeOfSupplies />,
+      element: <LibCategoryPage />,
     },
-    // {
-    //   path: "chia-se-danh-muc/tu-ke",
-    //   element: <LibraryConnection />,
-    // },
     {
       path: "chia-se-danh-muc/tac-gia",
-      element: <LibAuthor />,
+      element: <LibAuthorPage />,
     },
     {
       path: "chia-se-danh-muc/nha-san-xuat",
-      element: <LibPublisher />,
+      element: <LibPublisherPage />,
     },
     {
       path: "danh-sach-muon-tra-lien-thong/dang-ky",

@@ -9,6 +9,7 @@ export type TTypePublications = 'ấn phẩm cứng' | 'ấn phẩm mềm';
 export type TStatusPublications = 'trên kệ' | 'thanh lý' | 'bị hư hại' | 'có sẵn' | 'không có sẵn';
 
 export type TPublications = TEntityAbstract & {
+    createBy: string | null;
     isPublic: boolean;
     isLink: boolean;
     note?: string;

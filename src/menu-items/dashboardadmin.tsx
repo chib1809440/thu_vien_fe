@@ -325,6 +325,14 @@ export const dashboardAdminV2 = {
             breadcrumbs: false
         },
         {
+            id: 'chia-se-an-pham',
+            title: "Chia sẻ ấn phẩm",
+            type: 'item',
+            url: '/chia-se-an-pham',
+            icon: icons.IconBook,
+            breadcrumbs: false
+        },
+        {
             id: 'chia-se-danh-muc',
             title: "Chia sẻ danh mục",
             url: 'chia-se-danh-muc',
@@ -337,7 +345,7 @@ export const dashboardAdminV2 = {
                     title: "Dạng học liệu",
                     type: 'item',
                     url: 'chia-se-danh-muc/dang-hoc-lieu',
-                    icon: icons.IconBrowserPlus,
+                    icon: icons.IconFileText,
                     breadcrumbs: false,
                 },
                 {
@@ -345,7 +353,7 @@ export const dashboardAdminV2 = {
                     title: "Lĩnh vực",
                     type: 'item',
                     url: 'chia-se-danh-muc/linh-vuc',
-                    icon: icons.IconBrowserPlus,
+                    icon: icons.IconBrowser,
                     breadcrumbs: false,
                 },
                 {
@@ -364,32 +372,6 @@ export const dashboardAdminV2 = {
                     icon: icons.IconUsers,
                     breadcrumbs: false
                 }]
-        },
-        {
-            id: 'chia-se-thu-vien',
-            title: "Chia sẻ thư viện",
-            url: 'chia-se-thu-vien',
-            breadcrumbs: false,
-            type: 'collapse',
-            icon: icons.IconBrowser,
-            children: [
-                {
-                    id: '/chia-se-thu-vien/an-pham',
-                    title: "Ấn phẩm",
-                    type: 'item',
-                    url: '/chia-se-thu-vien/an-pham',
-                    icon: icons.IconBrowserPlus,
-                    breadcrumbs: false,
-                },
-                {
-                    id: 'chia-se-thu-vien/hoc-lieu',
-                    title: "Học liệu điện tử",
-                    type: 'item',
-                    url: 'chia-se-thu-vien/hoc-lieu',
-                    icon: icons.IconBrowserPlus,
-                    breadcrumbs: false,
-                },
-            ]
         },
         {
             id: 'danh-sach-muon-tra-lien-thong',

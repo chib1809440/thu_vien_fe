@@ -8,6 +8,7 @@ import { TPublications } from "../../../../types/models/publications.type";
 import { TTypeVoice } from "../../../../types/models/type-voice";
 import { TVoice, TVoiceCreate } from "../../../../types/models/voice";
 import DialogAddEditVoice from "./DialogAddEditVoice";
+import { useAuth } from "../../../../contexts/JWTContext";
 
 type Props = {
     anchorEl?: HTMLElement | null;
@@ -15,6 +16,7 @@ type Props = {
     voiceData: TVoice[];
     publicationsData?: TPublications;
     typeVoiceData?: TTypeVoice[];
+    currentUserId?: string;
 };
 
 const MenuAddVoice: FC<Props> = ({
@@ -23,6 +25,7 @@ const MenuAddVoice: FC<Props> = ({
     voiceData,
     publicationsData,
     typeVoiceData,
+    currentUserId
 }) => {
     const [selectedEdit, setSelectedEdit] = useState<TVoice | null>(null);
     const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
@@ -32,6 +35,14 @@ const MenuAddVoice: FC<Props> = ({
     const revalidate = useReFetchVoice();
     const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
     const [hoveredTypeId, setHoveredTypeId] = useState<string | null>(null);
+    const [activeTypeVoiceId, setActiveTypeVoiceId] = useState<string | null>(null);
+    const { user } = useAuth();
+
+    const userId = useMemo(() => {
+        if (!user) return null;
+        const _user = { ...user } as any;
+        return _user?.data?._id;
+    }, [user]);
 
     const handleOpenAddVoice = () => {
         setOpenAddEdit(true);
@@ -96,7 +107,7 @@ const MenuAddVoice: FC<Props> = ({
         };
     }, [selectedEdit]);
 
-    const handleClickVoice = (audioUrl: string, voiceId: string) => {
+    const handleClickVoice = (audioUrl: string, voiceId: string, typeId: string) => {
         if (currentAudio) {
             currentAudio.pause();
             currentAudio.currentTime = 0;
@@ -105,14 +116,17 @@ const MenuAddVoice: FC<Props> = ({
         newAudio.play();
         setCurrentAudio(newAudio);
         setPlayingVoiceId(voiceId);
+        setActiveTypeVoiceId(typeId);
     };
 
     const filterByTypeVoiceId = typeVoiceData?.map((typeVoice) => {
         return {
             ...typeVoice,
-            voices: voiceData.filter((voice) => (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id),
+            voices: voiceData.filter((voice) => (publicationsData?.createBy === userId ? (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id : (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id &&
+                voice.isPublic === true)),
         };
     });
+    const canAddVoice = publicationsData?.createBy === currentUserId;
 
     return (
         <>
@@ -131,13 +145,18 @@ const MenuAddVoice: FC<Props> = ({
                 transformOrigin={{ horizontal: "right", vertical: "top" }}
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             >
-                <MenuItem onClick={handleOpenAddVoice}>
-                    <ListItemIcon>
-                        <IconPlus size={20} />
-                    </ListItemIcon>
-                    Thêm voice
-                </MenuItem>
-                {filterByTypeVoiceId?.length > 0 && <Divider sx={{ margin: 0 }} />}
+                {
+                    canAddVoice && (
+                        <MenuItem onClick={handleOpenAddVoice}>
+                            <ListItemIcon>
+                                <IconPlus size={20} />
+                            </ListItemIcon>
+                            Thêm voice
+                        </MenuItem>
+                    )
+                }
+
+                {canAddVoice && <Divider sx={{ margin: 0 }} />}
 
                 {filterByTypeVoiceId?.map((type) => (
                     <li
@@ -159,7 +178,7 @@ const MenuAddVoice: FC<Props> = ({
                                 },
                             }}
                         >
-                            <MenuItem key={type._id} selected={playingVoiceId === type._id}>
+                            <MenuItem key={type._id} selected={activeTypeVoiceId === type._id}>
                                 <ListItemIcon>
                                     <IconFlag />
                                 </ListItemIcon>
@@ -205,7 +224,7 @@ const MenuAddVoice: FC<Props> = ({
                                             <MenuItem
                                                 key={child._id}
                                                 onClick={() =>
-                                                    handleClickVoice(child.path, child._id)
+                                                    handleClickVoice(child.path, child._id, type._id)
                                                 }
                                                 selected={playingVoiceId === child._id}
                                             >

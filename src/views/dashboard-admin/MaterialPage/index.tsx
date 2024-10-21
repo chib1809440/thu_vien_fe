@@ -137,7 +137,7 @@ const MaterialPage = () => {
             {
                 id: "isLink",
                 disablePadding: "none",
-                label: "Hiển thị",
+                label: "Chia sẻ liên thông",
                 sxRow: { paddingRight: 4 },
                 render: (row) => {
                     return (

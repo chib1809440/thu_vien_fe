@@ -14,6 +14,12 @@ import TableAdminList from './ui-components/TableAdminList';
 
 const headCells: HeadCell[] = [
     {
+        id: 'user_barcode',
+        numeric: false,
+        disablePadding: true,
+        label: 'Barcode',
+    },
+    {
         id: 'user_name',
         numeric: false,
         disablePadding: true,

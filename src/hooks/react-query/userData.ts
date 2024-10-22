@@ -9,6 +9,7 @@ import { createUser, deleteUser, deleteUserSelected, getAllUsers, getAllUsersDel
 import { RQ_USER, RQ_USERLIST, RQ_USERTRASHLIST } from "./constants_react_query";
 import { CreateAdminModel, CreateUserModel, User } from "../../interfaces/user";
 import { createAdminAcount, updateAdminAcount } from "../../_apis/auth.api";
+import { getQueryKeys } from "../../utils/object";
 
 // // useUsersData Hook
 // export const useUsersData = (
@@ -156,15 +157,15 @@ export function useUpdateUser(onSuccess, onError) {
     });
 }
 
-export function useUser(ids: (string | undefined)[] | undefined) {
-    return useQueries({
-        queries: (ids ?? []).map((id) => {
-            return {
-                queryKey: [RQ_USER, { id }],
-                queryFn: () => getUserById(id),
-            };
-        }),
-    });
+
+export const useUser = (_id: string) => {
+    return useQuery({
+        queryKey: getQueryKeys({ key: RQ_USER, _id }),
+        queryFn: async () => {
+            return await getUserById(_id);
+        },
+        placeholderData: keepPreviousData,
+    })
 }
 export function useSoftDeleteUserSelected() {
     const queryClient = useQueryClient();

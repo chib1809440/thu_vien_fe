@@ -5,6 +5,7 @@ import { Role } from "./role";
 export interface User extends AbstractEntity {
     email: string;
     username: string;
+    first: string;
     fullname: string;
     phoneNumber: string;
     address: string;
@@ -13,6 +14,7 @@ export interface User extends AbstractEntity {
     gender: string;
     barcode: string;
     roleId: Role;
+    passwordFirst: string;
     libraryId: string | TLibrary;
 }
 export interface CreateUserModel {

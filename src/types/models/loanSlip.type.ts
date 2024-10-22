@@ -19,13 +19,13 @@ export type TLoanSlip = TEntityAbstract & {
 };
 
 export type CreatePublication = {
-
     publicationId: string;
     name: string;
     quantityLoan: number;
     quantity: number,
     shelvesQuantity: number,
     position: string;
+    quantityReturn?: number;
     barcode: string;
 };
 export type TLoanSlipCreate = {

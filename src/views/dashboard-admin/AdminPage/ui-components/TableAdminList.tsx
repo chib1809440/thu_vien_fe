@@ -1,5 +1,5 @@
 import { FormControl, MenuItem, Box, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme, CircularProgress, Alert, IconButton, Grid } from "@mui/material"
-import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconPencil, IconTrash } from "@tabler/icons-react";
+import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconEye, IconPencil, IconTrash } from "@tabler/icons-react";
 import { useEffect, useMemo, useState } from "react";
 import Checkbox from '@mui/material/Checkbox';
 import Table from '@mui/material/Table';
@@ -28,6 +28,8 @@ import UserDialog from "../../../../components/default/dialog/UserDialog";
 import AlertConfirmDialog from "../../../../components/default/alert/confirmAlertDialog";
 import AdminAccountDialog from "../../../../components/default/dialog/AdminAccountDialog";
 import { TLibrary } from "../../../../types/models/library.type";
+import AdminDetailDialog from "./AdminDetailDialog";
+import AccountDetailDialog from "../../../../components/default/dialog/AccountDetailPage";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -55,7 +57,8 @@ function TableAdminList<T extends DataType>({
     const [rowsPerPage, setRowsPerPage] = useState<number>(Number(searchParams.get("limit")) || 10); // get rowsPerPage from URL or default to 10
     const [schools, setUsers] = useState<EntityResponse<User[]>>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isOpenUpdateDilog, setIsOpenUpdateDialog] = useState<boolean>(false);
+    const [isOpenUpdateDialog, setIsOpenUpdateDialog] = useState<boolean>(false);
+    const [isOpenDetailDialog, setIsOpenDetailDialog] = useState<boolean>(false);
     const [isOpenConfirmDialog, setIsOpenConfirmDialog] = useState(false);
     const [isOpenConfirmDeleteSelectedDialog, setIsOpenConfirmDeleteSelectedDialog] = useState(false);
     const [selectedDeleteID, setSelectedDeleteID] = useState<string>()
@@ -157,6 +160,11 @@ function TableAdminList<T extends DataType>({
         console.log(id);
         setUser(user)
         setIsOpenUpdateDialog(true)
+    }
+    const handleClickDetail = (id: string) => {
+        let user: User = users.data.result.find(x => x._id === id)
+        setUser(user)
+        setIsOpenDetailDialog(true)
     }
     const [user, setUser] = useState<User>();
     const pageCount = useMemo(() => {
@@ -276,6 +284,7 @@ function TableAdminList<T extends DataType>({
                                                         >
                                                             {(page - 1) * rowsPerPage + index + 1}
                                                         </StyledTableCell>
+                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.barcode}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.fullname}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.phoneNumber}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.roleId?.name}</StyledTableCell>
@@ -289,6 +298,7 @@ function TableAdminList<T extends DataType>({
                                                                 alignItems: "center",
                                                                 gap: 1
                                                             }}>
+                                                                <IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} />
                                                                 <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
                                                                 <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
                                                             </Box>
@@ -378,13 +388,22 @@ function TableAdminList<T extends DataType>({
                         handleOpen={setIsOpenAddDialog}
                     />
                 }
+                {
+                    isOpenDetailDialog === true && <AccountDetailDialog
+                        title={"Chi tiết tài khoản"}
+                        open={isOpenDetailDialog}
+                        user={user}
+                        roleId={filterRoleId as string}
+                        handleOpen={setIsOpenDetailDialog}
+                    />
+                }
             </Box>
 
             {
-                isOpenUpdateDilog && user && <AdminAccountDialog
+                isOpenUpdateDialog && user && <AdminAccountDialog
                     id={user._id}
                     title={"Cập nhật tài khoản Admin"}
-                    open={isOpenUpdateDilog}
+                    open={isOpenUpdateDialog}
                     user={user}
                     roleId={filterRoleId as string}
                     handleOpen={setIsOpenUpdateDialog}

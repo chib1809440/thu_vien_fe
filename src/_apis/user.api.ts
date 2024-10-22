@@ -1,4 +1,4 @@
-import { EntityResponse } from '../interfaces/entityResponse';
+import { EntityResponse, SingleRecordResponse } from '../interfaces/entityResponse';
 import { CreateUserModel, User } from '../interfaces/user';
 import axios from '../utils/axios';
 
@@ -34,8 +34,8 @@ export const getAllUsers = async (page?: number, limit?: number, search?: string
 };
 
 // Read by ID
-export const getUserById = async (id: string): Promise<EntityResponse<User>> => {
-    const response = await axios.get<EntityResponse<User>>(`${USER_API}/${id}`);
+export const getUserById = async (id: string): Promise<SingleRecordResponse<User>> => {
+    const response = await axios.get<SingleRecordResponse<User>>(`${USER_API}/${id}`);
     return response.data;
 };
 // Read by ID

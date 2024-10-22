@@ -26,6 +26,8 @@ import UserDialog from "../../../../../components/default/dialog/UserDialog";
 import { formatDate } from "../../../../../helpers/formatDate";
 import { useRoleList } from "../../../../../hooks/react-query/roleData";
 import { filterBreakpointKeys } from "@mui/system/Unstable_Grid/traverseBreakpoints";
+import AccountDetailDialog from "../../../../../components/default/dialog/AccountDetailPage";
+import { IconEye } from "@tabler/icons";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -59,6 +61,7 @@ function TableUserList<T extends DataType>({
     const [selectedDeleteID, setSelectedDeleteID] = useState<string>()
     const [filterRoleId, setFilterRoleId] = useState<string | number>(0)
     const debouncedSearch = useDebounce<string>(contentSearch, searchDelay);
+    const [isOpenDetailDialog, setIsOpenDetailDialog] = useState<boolean>(false);
     const [checked, setChecked] = useState<string[]>([]);
     const [checkedAll, setCheckedAll] = useState<boolean>(false);
     const { data: users, isPending, error, isError, isPlaceholderData, isFetching, refetch } =
@@ -70,7 +73,11 @@ function TableUserList<T extends DataType>({
     const { mutate: softDeleteUser, isPending: isPendingUpdate } = useSoftDeleteUser();
     const { mutate: softDeleteUserSelected } = useDeleteUserSelected();
     const { data: roles } = useRoleList();
-
+    const handleClickDetail = (id: string) => {
+        let user: User = users.data.result.find(x => x._id === id)
+        setUser(user)
+        setIsOpenDetailDialog(true)
+    }
     const handleCheckedAll = async () => {
         const newCheckedAll = !checkedAll;
         setCheckedAll(newCheckedAll);
@@ -285,6 +292,7 @@ function TableUserList<T extends DataType>({
                                                         >
                                                             {(page - 1) * rowsPerPage + index + 1}
                                                         </StyledTableCell>
+                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.barcode}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.fullname}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.phoneNumber}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.roleId?.name}</StyledTableCell>
@@ -297,6 +305,7 @@ function TableUserList<T extends DataType>({
                                                                 alignItems: "center",
                                                                 gap: 1
                                                             }}>
+                                                                <IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} />
                                                                 <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
                                                                 <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
                                                             </Box>
@@ -394,6 +403,15 @@ function TableUserList<T extends DataType>({
                     open={isOpenUpdateDilog}
                     user={user}
                     handleOpen={setIsOpenUpdateDialog}
+                />
+            }
+            {
+                isOpenDetailDialog === true && <AccountDetailDialog
+                    title={"Chi tiết tài khoản"}
+                    open={isOpenDetailDialog}
+                    user={user}
+                    roleId={filterRoleId as string}
+                    handleOpen={setIsOpenDetailDialog}
                 />
             }
             {

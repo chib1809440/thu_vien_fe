@@ -22,7 +22,9 @@ export interface SingleRecordResponse<T> {
     statusCode: number;
     success: boolean;
     message?: string | string[];
-    data: T;
+    data: {
+        result: T;  // Chỉnh sửa ở đây
+    };
 }
 export interface AbstractEntity {
     _id?: string;

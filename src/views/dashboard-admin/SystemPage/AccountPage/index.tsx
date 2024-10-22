@@ -13,6 +13,12 @@ import { useTheme } from '@mui/material';
 
 const headCells: HeadCell[] = [
     {
+        id: 'user_barcode',
+        numeric: false,
+        disablePadding: true,
+        label: 'BarCode',
+    },
+    {
         id: 'user_name',
         numeric: false,
         disablePadding: true,

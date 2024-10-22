@@ -25,6 +25,7 @@ import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconCirclePlusFilled } from "@tabler/icons-react";
 import PrintLoanSlip from "./PrintLoanSlip";
 import { useReactToPrint } from "react-to-print";
+import { toast } from "react-toastify";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -107,12 +108,12 @@ const FormAddEditLoanSlip: FC<Props> = ({
             setArrayError([]);
 
             const errors = filteredPublications.reduce((acc, item) => {
-                if (item.position === "trong kho" && item.quantity <= 0) {
+                if (item.position === "trong kho" && item.quantity < item.quantityLoan) {
                     acc.push({
                         name: item.name,
                         position: item.position,
                     });
-                } else if (item.position === "trên kệ" && item.shelvesQuantity <= 0) {
+                } else if (item.position === "trên kệ" && item.shelvesQuantity < item.quantityLoan) {
                     acc.push({
                         name: item.name,
                         position: item.position,
@@ -120,13 +121,14 @@ const FormAddEditLoanSlip: FC<Props> = ({
                 }
                 return acc;
             }, []);
-            console.log('sdsds', errors);
-            console.log('sdsds', filteredPublications);
 
             // Nếu có lỗi, cập nhật state và không thực hiện onSubmit
             if (errors.length > 0) {
                 setArrayError(errors);
                 return; // Dừng thực hiện onSubmit
+            }
+            if (!userData?.data?.result._id) {
+                toast.error('Vui lòng quét barcode thông tin người mượn')
             }
             if (onSubmit) {
 
@@ -362,17 +364,29 @@ const FormAddEditLoanSlip: FC<Props> = ({
                         <Grid container spacing={2}>
                             <Grid item xs={2}>
                                 <Box style={{ width: "100%" }} sx={{ mt: 2, mb: 2, ml: 2 }}>
-                                    <TextField
-                                        variant="outlined"
-                                        fullWidth
-                                        id="barcodeUserId"
-                                        name="barcodeUserId"
-                                        placeholder="Nhập barcode người dùng"
-                                        value={barcodeUserId}
-                                        onChange={(e) => setbarcodeUserId(e.target.value)}
-                                        inputRef={barcodeUserIdRef}
-                                        autoFocus
-                                    />
+                                    {
+                                        isEditMode ? <>
+                                            <Typography sx={{ ml: 1, mt: 2, fontWeight: "bold" }}>
+                                                Barcode:
+                                                <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
+                                                    {userData?.data?.result?.barcode || "Không có dữ liệu"}
+                                                </span>
+                                            </Typography>
+                                        </> : <>
+                                            <TextField
+                                                variant="outlined"
+                                                fullWidth
+                                                id="barcodeUserId"
+                                                name="barcodeUserId"
+                                                placeholder="Nhập barcode người dùng"
+                                                value={barcodeUserId}
+                                                onChange={(e) => setbarcodeUserId(e.target.value)}
+                                                inputRef={barcodeUserIdRef}
+                                                autoFocus
+                                            />
+                                        </>
+                                    }
+
                                 </Box>
                             </Grid>
                             <Grid item xs={3}>
@@ -528,8 +542,10 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                 isEditMode === false && <>  <StyledTableCell align="left" width='15%'>Số lượng trong kho</StyledTableCell>
                                                     <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell></>
                                             }
+                                            {
 
-                                            <StyledTableCell align="center" width='15%'>Số lượng</StyledTableCell>
+                                                isEditMode && loanSlip.isAgree == true ? <>  <StyledTableCell align="center" width='15%'>Số lượng trả/mượn</StyledTableCell></> : <>  <StyledTableCell align="center" width='15%'>Số lượng mượn</StyledTableCell></>
+                                            }
                                             <StyledTableCell align="center" width='15%'>Vị trí</StyledTableCell>
                                             <StyledTableCell align="center" width='15%'>Hành động</StyledTableCell>
                                         </TableRow>
@@ -565,19 +581,40 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                 }
 
                                                 <StyledTableCell align="center">
-                                                    <Box style={{ width: "100%" }}>
-                                                        <TextField
-                                                            variant="outlined"
-                                                            fullWidth
-                                                            placeholder="Số lượng"
-                                                            value={row.quantityLoan}
-                                                            onChange={(e) => {
-                                                                const updatedPublications = [...publications];
-                                                                updatedPublications[index].quantityLoan = Number(e.target.value);
-                                                                setPublications(updatedPublications);
-                                                            }}
-                                                        />
-                                                    </Box>
+                                                    {
+                                                        isEditMode ? <>
+                                                            <Box style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                                                                <TextField
+                                                                    variant="outlined"
+                                                                    fullWidth
+                                                                    placeholder="Số lượng"
+                                                                    value={row.quantityLoan}
+                                                                    onChange={(e) => {
+                                                                        const updatedPublications = [...publications];
+                                                                        updatedPublications[index].quantityLoan = Number(e.target.value);
+                                                                        setPublications(updatedPublications);
+                                                                    }}
+                                                                    sx={{ flexShrink: 1, width: '40%', mr: 1 }} // Điều chỉnh width và margingjgvhjghghghghghgutytyt phải
+                                                                />
+                                                                <Typography variant="h6">{`/${row.quantityLoan}`}</Typography> {/* Hiển thị giá trị bên cạnh */}
+                                                            </Box>
+                                                        </> : <>
+                                                            <Box style={{ width: "100%" }}>
+                                                                <TextField
+                                                                    variant="outlined"
+                                                                    fullWidth
+                                                                    placeholder="Số lượng"
+                                                                    value={row.quantityLoan}
+                                                                    onChange={(e) => {
+                                                                        const updatedPublications = [...publications];
+                                                                        updatedPublications[index].quantityLoan = Number(e.target.value);
+                                                                        setPublications(updatedPublications);
+                                                                    }}
+                                                                />
+                                                            </Box>
+                                                        </>
+                                                    }
+
                                                 </StyledTableCell>
                                                 <StyledTableCell align="center">
                                                     <FormControl fullWidth>

@@ -318,17 +318,9 @@ export const dashboardAdminV2 = {
     children: [
         {
             id: 'lien-thong',
-            title: "Trang chủ",
-            type: 'item',
-            url: '/lien-thong',
-            icon: icons.IconHome2,
-            breadcrumbs: false
-        },
-        {
-            id: 'chia-se-an-pham',
             title: "Chia sẻ ấn phẩm",
             type: 'item',
-            url: '/chia-se-an-pham',
+            url: '/lien-thong',
             icon: icons.IconBook,
             breadcrumbs: false
         },

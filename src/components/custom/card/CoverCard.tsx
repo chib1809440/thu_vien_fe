@@ -48,6 +48,7 @@ interface CoverCardProps {
     mimetype?: string;
     handleOpenVideo?: () => void;
     handleOpenImage?: () => void;
+    handleOpenWord?: () => void;
     path?: string;
 }
 
@@ -67,6 +68,7 @@ const CoverCard = ({
     mimetype,
     handleOpenVideo,
     handleOpenImage,
+    handleOpenWord,
     path
 }: CoverCardProps) => {
     const theme = useTheme();
@@ -289,17 +291,29 @@ const CoverCard = ({
                             "application/msword",
                             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                         ].includes(mimetype) && (
-                                <StyledButton
-                                    color="primary"
-                                    size="small"
-                                    startIcon={<IconFileWord stroke={2} />}
-                                    variant="contained"
-                                    sx={{ marginTop: 1, width: "150px" }}
-                                >
-                                    <a href={path} download style={{ color: "white" }}>
-                                        Tải word
-                                    </a>
-                                </StyledButton>
+                                <Box>
+                                    <StyledButton
+                                        color="primary"
+                                        size="small"
+                                        startIcon={<IconFileWord stroke={2} />}
+                                        variant="contained"
+                                        sx={{ marginTop: 1, width: "150px" }}
+                                    >
+                                        <a href={path} download style={{ color: "white" }}>
+                                            Tải word
+                                        </a>
+                                    </StyledButton>
+                                    <StyledButton
+                                        color="primary"
+                                        size="small"
+                                        startIcon={<IconFileWord stroke={2} />}
+                                        variant="contained"
+                                        sx={{ marginTop: 1, width: "150px" }}
+                                        onClick={handleOpenWord}
+                                    >
+                                        Xem word
+                                    </StyledButton>
+                                </Box>
                             )}
                         {[
                             "video/mp4",

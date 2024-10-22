@@ -9,11 +9,13 @@ import { TShelves } from '../../../../types/models/shelves';
 import ImageDetailPage from '../ImageDetailPage';
 import VideoDetailPage from '../VideoDetailPage';
 import BookViewDialog from './BookViewDialog';
+import WordDetailPage from '../WordDetailPage';
 
 const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: boolean; onClose: () => void; publications: TPublications | null }) => {
     const [showBook, setShowBook] = useState(false);
     const [showVideo, setShowVideo] = useState(false);
     const [showImage, setShowImage] = useState(false);
+    const [showWord, setShowWord] = useState(false);
     const numberPage = publications?.images?.length;
 
     const handleOpenView = () => {
@@ -24,6 +26,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: bool
         setShowBook(false);
         setShowVideo(false);
         setShowImage(false);
+        setShowWord(false);
     };
 
     const handleOpenVideo = () => {
@@ -31,6 +34,9 @@ const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: bool
     }
     const handleOpenImage = () => {
         setShowImage(true)
+    }
+    const handleOpenWord = () => {
+        setShowWord(true)
     }
     return (
         <>
@@ -47,6 +53,11 @@ const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: bool
             {
                 showImage && (
                     <ImageDetailPage onClose={handleClose} open={showImage} publications={publications} />
+                )
+            }
+            {
+                showWord && (
+                    <WordDetailPage onClose={handleClose} open={showWord} publications={publications} />
                 )
             }
             <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
@@ -79,6 +90,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: bool
                                     quantityShelves={publications?.shelvesQuantity > 0 ? publications?.shelvesQuantity : 0}
                                     handleOpenVideo={handleOpenVideo}
                                     handleOpenImage={handleOpenImage}
+                                    handleOpenWord={handleOpenWord}
                                     path={`${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
                                 />
 

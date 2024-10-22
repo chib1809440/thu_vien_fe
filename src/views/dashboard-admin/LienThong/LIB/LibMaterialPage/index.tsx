@@ -4,15 +4,17 @@ import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../../../components/custom/form/ActionForm";
 import TableList from "../../../../../components/custom/table-list/TableList";
+import StyledButton from "../../../../../components/default/button/StyledButton";
+import ConfirmDeleteDialog from "../../../../../components/default/dialog/ConfirmDeleteDialog";
 import { useAddMaterial, useDeleteSoftManyMaterial, useDeleteSoftMaterial } from "../../../../../hooks/services/material/material-mutation";
-import { useFetchMaterial, useReFetchMaterial } from "../../../../../hooks/services/material/material-query";
+import { useFetchMaterialLink, useReFetchMaterial } from "../../../../../hooks/services/material/material-query";
 import useQueryString from "../../../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../../../types/common/table";
 import { TMaterial } from "../../../../../types/models/material";
 import IBreadcrumsCustom from "../../../../../ui-component/breadcrums";
 import MainCard from "../../../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../../../utils/object";
-import StyledButton from "../../../../../components/default/button/StyledButton";
+import { TLibrary } from "../../../../../types/models/library.type";
 
 
 const LibMaterialPage = () => {
@@ -30,11 +32,11 @@ const LibMaterialPage = () => {
             search,
         ]
     );
-    const { data, isLoading } = useFetchMaterial({
+    const { data, isLoading } = useFetchMaterialLink({
         limit,
         page,
         ...filter,
-    });
+    });    
     const mutationAdd = useAddMaterial();
     const mutationSoftDelete = useDeleteSoftMaterial();
     const mutationSoftDeleteMany = useDeleteSoftManyMaterial();
@@ -42,6 +44,9 @@ const LibMaterialPage = () => {
 
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [materialToDelete, setMaterialToDelete] = useState<TMaterial | null>(null);
+    const [openConfirmToggleDialog, setOpenConfirmToggleDialog] = useState(false);
+    const [materialToToggle, setMaterialToToggle] = useState<TMaterial | null>(null);
+    const [toggleChecked, setToggleChecked] = useState<boolean>(false);
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmDeleteMultiple, setOpenConfirmDeleteMultiple] = useState(false);
@@ -71,8 +76,12 @@ const LibMaterialPage = () => {
         setOpenConfirmDialog(false);
     };
 
-    const handleDataBack = (row: TMaterial, checked: boolean) => {
+    const handleDataBack = (row: TMaterial) => {
+        console.log(row);
+        
         console.log("kéo dữ liệu");
+        setMaterialToToggle(row);
+        setOpenConfirmToggleDialog(true);
 
         // mutationAdd.mutate(
         //     { isLink: checked },
@@ -86,7 +95,16 @@ const LibMaterialPage = () => {
         // return;
     };
 
-    const columns: TColumn<TMaterial>[] = useMemo(
+    const handleConfirmToggle = () => {
+        //xu ly
+        setOpenConfirmToggleDialog(false);
+    };
+
+    const handleCloseToggleDialog = () => {
+        setOpenConfirmToggleDialog(false);
+    };
+
+    const columns: TColumn<TMaterial & {libraryDetails?: TLibrary}>[] = useMemo(
         () => [
             {
                 id: "name",
@@ -104,22 +122,26 @@ const LibMaterialPage = () => {
             },
 
             {
-                id: "isLink",
+                id: "libraryDetails",
+                disablePadding: "none",
+                label: "Thư viện",
+                sxRow: { paddingRight: 4 },
+                render: (row) => (row.libraryDetails as TLibrary)?.name,
+            },
+            {
+                id: "action",
                 disablePadding: "none",
                 label: "Trạng thái",
+                align: "center",
                 sxRow: { paddingRight: 4 },
                 render: (row) => {
                     return (
                         <Switch
-                            checked={row?.isLink}
-                            value={row?.isLink}
-                            onChange={(event) => handleDataBack(row, event.target.checked)}
+                            onClick={() => handleDataBack(row)}
                         />
                     );
                 },
             },
-
-
         ],
         [handleDataBack]
     );
@@ -219,6 +241,15 @@ const LibMaterialPage = () => {
                     isLoading={isLoading}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
+                />
+
+                <ConfirmDeleteDialog
+                    key={"convertItem"}
+                    open={openConfirmToggleDialog}
+                    onClose={handleCloseToggleDialog}
+                    onConfirm={handleConfirmToggle}
+                    title="Xác nhận liên thông các mục đã chọn"
+                    description={`Bạn có chắc chắn muốn liên thông?`}
                 />
             </MainCard>
         </div>

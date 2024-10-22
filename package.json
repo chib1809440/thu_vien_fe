@@ -44,6 +44,8 @@
         "chance": "^1.1.8",
         "csstype": "^3.0.11",
         "date-fns": "^2.30.0",
+        "devexpress-richedit": "^24.1.6",
+        "devextreme": "^24.1.6",
         "draft-js": "^0.11.7",
         "emoji-picker-react": "^3.5.1",
         "env-cmd": "^10.1.0",

@@ -1,4 +1,4 @@
-import { TApiMultipleRecords } from "../../types/api/api.type";
+import { TApiModifyRecord, TApiMultipleRecords } from "../../types/api/api.type";
 import { TFilter } from "../../types/models/entity-common.type";
 import BaseApi from "./base-api";
 
@@ -9,7 +9,13 @@ class MaterialService extends BaseApi {
         });
         return response.data as TApiMultipleRecords<DynamicType>;
     }
- }
+
+    public async createPullLink<DynamicType>(data: { ids: string[], note: string, isPublic: boolean }) {
+        const response = await this.httpClient.post(`${this.endpoint}/pull-link`, data);
+
+        return response.data as TApiModifyRecord<DynamicType>;
+    }
+}
 
 const materialService = new MaterialService("/material");
 

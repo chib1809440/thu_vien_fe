@@ -327,40 +327,39 @@ export const dashboardAdminV2 = {
         {
             id: 'chia-se-danh-muc',
             title: "Chia sẻ danh mục",
-            url: 'chia-se-danh-muc',
             breadcrumbs: false,
             type: 'collapse',
             icon: icons.IconBrowser,
             children: [
                 {
-                    id: 'chia-se-danh-muc/dang-hoc-lieu',
+                    id: 'dang-hoc-lieu',
                     title: "Dạng học liệu",
                     type: 'item',
-                    url: 'chia-se-danh-muc/dang-hoc-lieu',
+                    url: '/lien-thong/chia-se-danh-muc/dang-hoc-lieu',
                     icon: icons.IconFileText,
                     breadcrumbs: false,
                 },
                 {
-                    id: 'chia-se-danh-muc/linh-vuc',
+                    id: 'linh-vuc',
                     title: "Lĩnh vực",
                     type: 'item',
-                    url: 'chia-se-danh-muc/linh-vuc',
+                    url: '/lien-thong/chia-se-danh-muc/linh-vuc',
                     icon: icons.IconBrowser,
                     breadcrumbs: false,
                 },
                 {
-                    id: 'chia-se-danh-muc/tac-gia',
+                    id: 'tac-gia',
                     title: "Tác giả",
                     type: 'item',
-                    url: 'chia-se-danh-muc/tac-gia',
+                    url: '/lien-thong/chia-se-danh-muc/tac-gia',
                     icon: icons.IconUserPlus,
                     breadcrumbs: false
                 },
                 {
-                    id: 'chia-se-danh-muc/nha-san-xuat',
+                    id: 'nha-san-xuat',
                     title: "Nhà xuất bản",
                     type: 'item',
-                    url: 'chia-se-danh-muc/nha-san-xuat',
+                    url: '/lien-thong/chia-se-danh-muc/nha-san-xuat',
                     icon: icons.IconUsers,
                     breadcrumbs: false
                 }]

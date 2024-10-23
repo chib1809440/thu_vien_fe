@@ -1,18 +1,21 @@
-import { Box, Stack, Switch } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { IconLink } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../../../components/custom/form/ActionForm";
 import TableList from "../../../../../components/custom/table-list/TableList";
-import { useAddMaterial, useDeleteSoftManyMaterial, useDeleteSoftMaterial } from "../../../../../hooks/services/material/material-mutation";
-import { useFetchMaterial, useReFetchMaterial } from "../../../../../hooks/services/material/material-query";
+import StyledButton from "../../../../../components/default/button/StyledButton";
+import ConfirmDeleteDialog from "../../../../../components/default/dialog/ConfirmDeleteDialog";
+import { useAddAuthorPullLink } from "../../../../../hooks/services/author/author-mutation";
+import { useFetchAuthorLink, useReFetchAuthorLink } from "../../../../../hooks/services/author/author-query";
 import useQueryString from "../../../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../../../types/common/table";
-import { TMaterial } from "../../../../../types/models/material";
+import { TAuthor } from "../../../../../types/models/author";
+import { TLibrary } from "../../../../../types/models/library.type";
 import IBreadcrumsCustom from "../../../../../ui-component/breadcrums";
 import MainCard from "../../../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../../../utils/object";
-import StyledButton from "../../../../../components/default/button/StyledButton";
+
 
 const LibAuthorPage = () => {
     const queryString = useQueryString();
@@ -29,101 +32,91 @@ const LibAuthorPage = () => {
             search,
         ]
     );
-    const { data, isLoading } = useFetchMaterial({
+    const { data, isLoading } = useFetchAuthorLink({
         limit,
         page,
         ...filter,
     });
-    const mutationAdd = useAddMaterial();
-    const mutationSoftDelete = useDeleteSoftMaterial();
-    const mutationSoftDeleteMany = useDeleteSoftManyMaterial();
-    const revalidate = useReFetchMaterial();
-
-    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-    const [materialToDelete, setMaterialToDelete] = useState<TMaterial | null>(null);
-
+    
+    const mutationPullLink = useAddAuthorPullLink();
+    const revalidate = useReFetchAuthorLink();
+    const [openConfirmPullLinkMultiple, setOpenConfirmPullLinkMultiple] = useState(false);
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
-    const [openConfirmDeleteMultiple, setOpenConfirmDeleteMultiple] = useState(false);
+    const [authorPullLink, setAuthorPullLink] = useState<TAuthor | null>(null);
+    const [openConfirmPullLink, setOpenConfirmPullLink] = useState(false);
 
-
-    const handleOpenConfirmDialog = (row: TMaterial) => {
-        setMaterialToDelete(row);
-        setOpenConfirmDialog(true);
+    // liên thông 1
+    const handleOneConfirmPullLink = (row: TAuthor) => {
+        setAuthorPullLink(row);
+        setOpenConfirmPullLink(true);
     };
 
-    const handleConfirmDelete = () => {
-        if (materialToDelete) {
-            mutationSoftDelete.mutate(materialToDelete._id, {
+    const handleConfirmPullLink = () => {
+        if (authorPullLink) {
+            mutationPullLink.mutate({
+                isPublic: false,
+                note: "",
+                ids: [authorPullLink?._id]
+            }, {
                 onSuccess: () => {
-                    revalidate();
-                    toast.success('Xóa tác giả thành công.');
-                    setOpenConfirmDialog(false);
-                },
-                onError: () => {
-                    toast.error('Xóa tác giả thất bại.');
+                    revalidate({ limit, page, search });
+                    toast.success('Liên thông thành công.');
+                    setOpenConfirmPullLink(false);
                 },
             });
         }
     };
 
-    const handleCloseConfirmDialog = () => {
-        setOpenConfirmDialog(false);
+    const handleCloseConfirmRestoreDialog = () => {
+        setOpenConfirmPullLink(false);
     };
 
-    const handleDataBack = (row: TMaterial, checked: boolean) => {
-        console.log("kéo dữ liệu");
-
-        // mutationAdd.mutate(
-        //     { isLink: checked },
-        //     {
-        //         onSuccess: (data) => {
-        //             revalidate();
-        //             toast.success('Kéo dữ liệu thành công thành công.');
-        //         },
-        //     }
-        // );
-        // return;
-    };
-
-    const columns: TColumn<TMaterial>[] = useMemo(
+    const columns: TColumn<TAuthor & { libraryDetails?: TLibrary }>[] = useMemo(
         () => [
             {
                 id: "name",
                 disablePadding: "none",
-                label: "Tên dạng học liệu",
+                label: "Tên tác giả",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
-                id: "description",
+                id: "libraryDetails",
                 disablePadding: "none",
-                label: "Mô tả",
-                align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
-            },
-
-            {
-                id: "isLink",
-                disablePadding: "none",
-                label: "Trạng thái",
+                label: "Thư viện",
                 sxRow: { paddingRight: 4 },
+                render: (row) => (row.libraryDetails as TLibrary)?.name,
+            },
+            {
+                id: "action",
+                disablePadding: "none",
+                align: "center",
+                label: "Liên thông mục",
                 render: (row) => {
                     return (
-                        <Switch
-                            checked={row?.isLink}
-                            value={row?.isLink}
-                            onChange={(event) => handleDataBack(row, event.target.checked)}
-                        />
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                gap: 1,
+                            }}
+                        >
+                            <IconLink
+                                size={25}
+                                stroke={1.5}
+                                onClick={() => handleOneConfirmPullLink(row)}
+                            />
+
+                        </Box>
                     );
                 },
             },
-
-
         ],
-        [handleDataBack]
+        [handleOneConfirmPullLink]
     );
 
-    const handleCheckedDelete = useCallback((row: TMaterial, checked: boolean) => {
+    const handleCheckedDelete = useCallback((row: TAuthor, checked: boolean) => {
         setCheckedDelete((prev) => {
             if (prev.includes(row._id)) {
                 return prev.filter((t) => t !== row._id);
@@ -145,42 +138,56 @@ const LibAuthorPage = () => {
         return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
     }, [checkedDelete, data]);
 
-    const handleDeleteMultiple = useCallback(() => {
+    // Hàm mở dialog liên thông
+    const handlePullLinkMultiple = useCallback(() => {
         if (checkedDelete.length === 0) {
-            toast.error("Vui lòng chọn dữ liệu để xóa");
+            toast.error("Vui lòng chọn dữ liệu để liên thông");
             return;
         }
-        setOpenConfirmDeleteMultiple(true);
+        setOpenConfirmPullLinkMultiple(true);
     }, [checkedDelete]);
 
-    const handleConfirmDeleteMultiple = useCallback(() => {
+    // Hàm xác nhận liên thông nhiều ấn phẩm
+    const handleConfirmPullLinkMultiple = useCallback(() => {
         if (checkedDelete.length === 0) return;
-        mutationSoftDeleteMany.mutate(checkedDelete, {
+        mutationPullLink.mutate({
+            ids: checkedDelete,
+            isPublic: false,
+            note: ""
+        }, {
             onSuccess: () => {
-                revalidate();
-                toast.success("Xóa các mục đã chọn thành công.");
-                setOpenConfirmDeleteMultiple(false);
+                revalidate({ limit, page, search });
+                toast.success("Liên thông các mục đã chọn thành công.");
+                setOpenConfirmPullLinkMultiple(false);
                 setCheckedDelete([]);
             },
         });
-    }, [checkedDelete]);
+    }, [checkedDelete, mutationPullLink, revalidate, limit, page, search]);
 
     const actionMenus = useMemo((): TMenuOption[] => {
         return [
             {
                 label: "Liên thông dữ liệu đã chọn",
                 icon: <IconLink size={20} stroke={1.5} />,
-                onClick: handleDeleteMultiple,
+                onClick: handlePullLinkMultiple,
             },
         ];
-    }, [handleDeleteMultiple]);
+    }, [handlePullLinkMultiple]);
+
+    const handleLinkAll = useCallback(() => {
+        if (data?.data?.result?.length === 0) return;
+
+        const allCheckedIds = data.data.result.map(item => item._id);
+        setCheckedDelete(allCheckedIds);
+        setOpenConfirmPullLinkMultiple(true); 
+    }, [data]);
 
     return (
         <div>
             <IBreadcrumsCustom
                 profile="Chia sẻ danh mục"
                 mainProfile="Danh sách tác giả"
-                link="chia-se-danh-muc/tac-gia"
+                link="/lien-thong/chia-se-danh-muc/tac-gia"
             />
 
             <MainCard>
@@ -199,6 +206,7 @@ const LibAuthorPage = () => {
                                 size="small"
                                 startIcon={<IconLink stroke={2} />}
                                 variant="contained"
+                                onClick={handleLinkAll}
                             >
                                 Liên thông tất cả
                             </StyledButton>
@@ -218,6 +226,24 @@ const LibAuthorPage = () => {
                     isLoading={isLoading}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
+                />
+
+                <ConfirmDeleteDialog
+                    key={"pullLink"}
+                    open={openConfirmPullLink}
+                    onClose={handleCloseConfirmRestoreDialog}
+                    onConfirm={handleConfirmPullLink}
+                    title="Xác nhận liên thông?"
+                    description={`Bạn có chắc chắn muốn liên thông mục "${authorPullLink?.name}"?`}
+                />
+
+                <ConfirmDeleteDialog
+                    key={"pullLinkMultiple"}
+                    open={openConfirmPullLinkMultiple}
+                    onClose={() => setOpenConfirmPullLinkMultiple(false)}
+                    onConfirm={handleConfirmPullLinkMultiple}
+                    title="Xác nhận liên thông các mục đã chọn?"
+                    description={`Bạn có chắc chắn muốn liên thông các mục đã chọn?`}
                 />
             </MainCard>
         </div>

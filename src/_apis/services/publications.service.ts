@@ -1,4 +1,4 @@
-import { TApiModifyRecord, TApiOneRecord } from "../../types/api/api.type";
+import { TApiModifyRecord, TApiMultipleRecords, TApiOneRecord } from "../../types/api/api.type";
 import { TFilter } from "../../types/models/entity-common.type";
 import BaseApi from "./base-api";
 
@@ -28,6 +28,22 @@ class PublicationsService extends BaseApi {
     public async updateStockQuantity(data: {id: string; quantity: number }) {
         const response = await this.httpClient.patch(`${this.endpoint}/move-stock`, data);
         return response.data;
+    }
+
+    public async updateFilePublications<DynamicResponse>(id: string, formData: FormData){
+        const response = await this.httpClient.patch(`${this.endpoint}/${id}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        });;
+        return response.data as TApiModifyRecord<DynamicResponse>;
+    };
+
+    public async getAllLink<DynamicType>(params?: TFilter) {
+        const response = await this.httpClient.get(`${this.endpoint}/link`, {
+            params,
+        });
+        return response.data as TApiMultipleRecords<DynamicType>;
     }
 }
 

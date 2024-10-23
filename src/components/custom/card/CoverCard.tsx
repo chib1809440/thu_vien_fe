@@ -50,6 +50,7 @@ interface CoverCardProps {
     handleOpenImage?: () => void;
     handleOpenWord?: () => void;
     path?: string;
+    openLT?: boolean
 }
 
 const CoverCard = ({
@@ -69,7 +70,8 @@ const CoverCard = ({
     handleOpenVideo,
     handleOpenImage,
     handleOpenWord,
-    path
+    path,
+    openLT = false
 }: CoverCardProps) => {
     const theme = useTheme();
     const { borderRadius } = useConfig();
@@ -291,19 +293,24 @@ const CoverCard = ({
                             "application/msword",
                             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                         ].includes(mimetype) && (
-                                <Box>
-                                    <StyledButton
-                                        color="primary"
-                                        size="small"
-                                        startIcon={<IconFileWord stroke={2} />}
-                                        variant="contained"
-                                        sx={{ marginTop: 1, width: "150px" }}
-                                    >
-                                        <a href={path} download style={{ color: "white" }}>
-                                            Tải word
-                                        </a>
-                                    </StyledButton>
-                                    <StyledButton
+                                <>
+                                    {
+                                        openLT === false ?
+                                            <StyledButton
+                                                color="primary"
+                                                size="small"
+                                                startIcon={<IconFileWord stroke={2} />}
+                                                variant="contained"
+                                                sx={{ marginTop: 1, width: "150px" }}
+                                            >
+                                                <a href={path} download style={{ color: "white" }}>
+                                                    Tải xuống
+                                                </a>
+                                            </StyledButton>
+
+                                            : ""
+                                    }
+                                    {/* <StyledButton
                                         color="primary"
                                         size="small"
                                         startIcon={<IconFileWord stroke={2} />}
@@ -312,8 +319,8 @@ const CoverCard = ({
                                         onClick={handleOpenWord}
                                     >
                                         Xem word
-                                    </StyledButton>
-                                </Box>
+                                    </StyledButton> */}
+                                </>
                             )}
                         {[
                             "video/mp4",
@@ -336,17 +343,22 @@ const CoverCard = ({
                             "application/vnd.ms-powerpoint",
                             "application/vnd.openxmlformats-officedocument.presentationml.presentation",
                         ].includes(mimetype) && (
-                                <StyledButton
-                                    color="primary"
-                                    size="small"
-                                    startIcon={<IconPresentation stroke={2} />}
-                                    variant="contained"
-                                    sx={{ marginTop: 1, width: "150px" }}
-                                >
-                                    <a href={path} download style={{ color: "white" }}>
-                                        Tải powerpoint
-                                    </a>
-                                </StyledButton>
+                                <>
+                                    {
+                                        openLT === false ? <StyledButton
+                                            color="primary"
+                                            size="small"
+                                            startIcon={<IconPresentation stroke={2} />}
+                                            variant="contained"
+                                            sx={{ marginTop: 1, width: "150px" }}
+                                        >
+                                            <a href={path} download style={{ color: "white" }}>
+                                                Tải xuống
+                                            </a>
+                                        </StyledButton>
+                                            : ""
+                                    }
+                                </>
                             )}
                         {[
                             "image/jpeg",

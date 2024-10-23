@@ -3,16 +3,13 @@ import { Box } from "@mui/system";
 import { IconBook } from "@tabler/icons";
 import { IconEye, IconFileWord, IconPdf, IconPhoto, IconPresentation, IconVideo } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
-import { toast } from "react-toastify";
 import ActionsForm from "../../../../../components/custom/form/ActionForm";
 import TableList from "../../../../../components/custom/table-list/TableList";
-import StyledButton from "../../../../../components/default/button/StyledButton";
-import { useFetchAuthor } from "../../../../../hooks/services/author/author-query";
-import { useFetchCategory } from "../../../../../hooks/services/category/category-query";
-import { useFetchMaterial } from "../../../../../hooks/services/material/material-query";
-import { useAddPublications, useDeleteSoftManyPublications, useDeleteSoftPublications, useEditPublications } from "../../../../../hooks/services/publications/publications-mutation";
-import { useFetchPublications, useReFetchPublications } from "../../../../../hooks/services/publications/publications-query";
-import { useFetchPublisher } from "../../../../../hooks/services/publisher/publisher-query";
+import { useFetchAuthorLink } from "../../../../../hooks/services/author/author-query";
+import { useFetchCategoryLink } from "../../../../../hooks/services/category/category-query";
+import { useFetchMaterialLink } from "../../../../../hooks/services/material/material-query";
+import { useFetchPublicationsLink } from "../../../../../hooks/services/publications/publications-query";
+import { useFetchPublisherLink } from "../../../../../hooks/services/publisher/publisher-query";
 import useQueryString from "../../../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../../../types/common/table";
 import { TPublications } from "../../../../../types/models/publications.type";
@@ -22,13 +19,13 @@ import { statusOptions, typeOptions } from "../../../../../utils/constants.utils
 import { getLabelFromOptions, parserParams } from "../../../../../utils/object";
 import FilterByItems from "../../../PublicationsPage/ui-components/FilterByItems";
 import PublicationsDetailsDialog from "../../../PublicationsPage/ui-components/PublicationsDetailsDialog";
+import { TLibrary } from "../../../../../types/models/library.type";
 
 const LibraryPublicationsPage = () => {
     const queryString = useQueryString();
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
-    const status = "";
 
     const [selectedMaterial, setSelectedMaterial] = useState(0);
     const [selectedPublications, setSelectedPublications] = useState(0);
@@ -47,7 +44,6 @@ const LibraryPublicationsPage = () => {
                 { compare: "", target: { search } },
                 { compare: 0, target: { type: selectedPublications } },
                 { compare: "", target: { barcode: barcodeSearch } },
-                { compare: "", target: { status: "có sẵn" } },
             ]),
         [
             selectedMaterial,
@@ -57,32 +53,18 @@ const LibraryPublicationsPage = () => {
             selectedPublications,
             barcodeSearch,
             search,
-            status,
         ]
     );
-
-    const { data, isLoading } = useFetchPublications({
+    const { data, isLoading } = useFetchPublicationsLink({
         limit,
         page,
         ...filter,
     });
 
-    const { data: categoryData } = useFetchCategory();
-    const { data: materialData } = useFetchMaterial();
-    const { data: authorData } = useFetchAuthor();
-    const { data: publisherData } = useFetchPublisher();
-
-    const mutationAdd = useAddPublications();
-    const mutationEdit = useEditPublications();
-    const mutationSoftDelete = useDeleteSoftPublications();
-    const mutationSoftDeleteMany = useDeleteSoftManyPublications();
-    const revalidate = useReFetchPublications();
-
-    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-    const [publicationsToDelete, setPublicationsToDelete] = useState<TPublications | null>(null);
-
-    const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
-    const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
+    const { data: categoryData } = useFetchCategoryLink();
+    const { data: materialData } = useFetchMaterialLink();
+    const { data: authorData } = useFetchAuthorLink();
+    const { data: publisherData } = useFetchPublisherLink();
     const [openViewDetails, setOpenViewDetails] = useState(false);
     const [publicationsDetails, setPublicationsDetails] = useState<TPublications | null>(null);
 
@@ -94,27 +76,6 @@ const LibraryPublicationsPage = () => {
     const handleCloseViewDetails = () => {
         setOpenViewDetails(false);
         setPublicationsDetails(null);
-    };
-
-    const handleOpenConfirmDialog = (row: TPublications) => {
-        setPublicationsToDelete(row);
-        setOpenConfirmDialog(true);
-    };
-
-    const handleConfirmDelete = () => {
-        if (publicationsToDelete) {
-            mutationSoftDelete.mutate(publicationsToDelete._id, {
-                onSuccess: () => {
-                    revalidate();
-                    toast.success("Xóa ấn phẩm thành công.");
-                    setOpenConfirmDialog(false);
-                },
-            });
-        }
-    };
-
-    const handleCloseConfirmDialog = () => {
-        setOpenConfirmDialog(false);
     };
 
     // lọc
@@ -141,7 +102,7 @@ const LibraryPublicationsPage = () => {
         setBarcodeSearch(value);
     };
 
-    const columns: TColumn<TPublications>[] = useMemo(
+    const columns: TColumn<TPublications & { libraryDetails?: TLibrary }>[] = useMemo(
         () => [
             {
                 id: "name",
@@ -185,7 +146,7 @@ const LibraryPublicationsPage = () => {
                     return (
                         <>
                             <Box sx={{ display: "flex", alignItems: "center" }}>
-                                Thư viện:
+                                Thư viện:  <Typography textTransform={"capitalize"} ml={1} fontWeight={600}>{(row?.libraryDetails as TLibrary)?.name}</Typography>
                             </Box>
 
                             {
@@ -280,29 +241,11 @@ const LibraryPublicationsPage = () => {
                                 gap: 1,
                             }}
                         >
-                            {row?.type === "ấn phẩm mềm" ? (
-                                <IconEye
-                                    size={20}
-                                    stroke={1.5}
-                                    onClick={() => handleViewDetails(row)}
-                                />
-                            ) : (
-                                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                                    <IconEye
-                                        size={20}
-                                        stroke={1.5}
-                                        onClick={() => handleViewDetails(row)}
-                                    />
-                                    <StyledButton
-                                        color="primary"
-                                        size="small"
-                                        variant="contained"
-                                    >
-                                        Đăng ký mượn
-                                    </StyledButton>
-                                </Box>
-
-                            )}
+                            <IconEye
+                                size={25}
+                                stroke={1.5}
+                                onClick={() => handleViewDetails(row)}
+                            />
                         </Box>
                     );
                 },
@@ -329,6 +272,7 @@ const LibraryPublicationsPage = () => {
                     open={openViewDetails}
                     onClose={handleCloseViewDetails}
                     publications={publicationsDetails}
+                    openLT={true}
                 />
             )}
 
@@ -359,7 +303,6 @@ const LibraryPublicationsPage = () => {
                     publisherData={publisherData}
                 />
                 <TableList
-                    checked={checkedDelete}
                     columns={columns}
                     rows={data?.data?.result || []}
                     isLoading={isLoading}

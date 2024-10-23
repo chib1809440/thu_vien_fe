@@ -3,7 +3,6 @@ import { lazy } from "react";
 import MainLayout, { MainLayoutV2 } from "../layout/MainLayout";
 import Loadable from "../ui-component/Loadable";
 import AuthGuard from "../utils/route-guard/AuthGuard";
-import AuthGuardV2 from "../utils/route-guard/AuthGuardV2";
 const LoanSlipDeleteListPage = Loadable(
   lazy(() => import("../views/dashboard-admin/LoanSlipPage/LoanSlipDeleteListPage"))
 );
@@ -22,9 +21,9 @@ const AssetTrashPage = Loadable(
 const LibInformationPage = Loadable(
   lazy(() => import("../views/dashboard-admin/LibInformationPage"))
 );
-const ContactPage = Loadable(
-  lazy(() => import("../views/dashboard-admin/Contact"))
-);
+// const ContactPage = Loadable(
+//   lazy(() => import("../views/dashboard-admin/Contact"))
+// );
 const AccountPage = Loadable(
   lazy(() => import("../views/dashboard-admin/SystemPage/AccountPage"))
 );
@@ -37,15 +36,15 @@ const AccountTrashPage = Loadable(
 const RolePage = Loadable(
   lazy(() => import("../views/dashboard-admin/SystemPage/RolePage"))
 );
-const UserProfilePage = Loadable(
-  lazy(() => import("../views/dashboard-admin/ProfileUser"))
-);
-const DistributionOfPowers = Loadable(
-  lazy(() => import("../views/dashboard-admin/SystemPage/DistributionOfPowers"))
-);
-const ControlPower = Loadable(
-  lazy(() => import("../views/dashboard-admin/SystemPage/ControlPower"))
-);
+// const UserProfilePage = Loadable(
+//   lazy(() => import("../views/dashboard-admin/ProfileUser"))
+// );
+// const DistributionOfPowers = Loadable(
+//   lazy(() => import("../views/dashboard-admin/SystemPage/DistributionOfPowers"))
+// );
+// const ControlPower = Loadable(
+//   lazy(() => import("../views/dashboard-admin/SystemPage/ControlPower"))
+// );
 
 const GroupPage = Loadable(
   lazy(() => import("../views/dashboard-admin/GroupPage"))
@@ -117,30 +116,30 @@ const LiquidationProductPage = Loadable(
   lazy(() => import("../views/dashboard-admin/WarehousePage/LiquidationProductPage"))
 );
 
-const DetailsPublicationsPage = Loadable(
-  lazy(() => import("../views/dashboard-admin/DetailsPublications"))
-);
-const DetailsDirectoryPage = Loadable(
-  lazy(() => import("../views/dashboard-admin/DetailsDirectory"))
-);
+// const DetailsPublicationsPage = Loadable(
+//   lazy(() => import("../views/dashboard-admin/DetailsPublications"))
+// );
+// const DetailsDirectoryPage = Loadable(
+//   lazy(() => import("../views/dashboard-admin/DetailsDirectory"))
+// );
 const LoanSlipPage = Loadable(
   lazy(() => import("../views/dashboard-admin/LoanSlipPage"))
 );
-const PayPage = Loadable(
-  lazy(() => import("../views/dashboard-admin/BorrowToPayPage/PayPage"))
-);
-const RegistrationPage = Loadable(
-  lazy(() => import("../views/dashboard-admin/BorrowToPayPage/RegistrationPage"))
-);
-const Documents = Loadable(
-  lazy(() => import("../views/dashboard-admin/Documents"))
-);
-const TaiKhoan = Loadable(
-  lazy(() => import("../views/dashboard-admin/Documents/taikhoan/taikhoan"))
-);
-const LoaiSach = Loadable(
-  lazy(() => import("../views/dashboard-admin/Documents/danhmuc/loaisach"))
-);
+// const PayPage = Loadable(
+//   lazy(() => import("../views/dashboard-admin/BorrowToPayPage/PayPage"))
+// );
+// const RegistrationPage = Loadable(
+//   lazy(() => import("../views/dashboard-admin/BorrowToPayPage/RegistrationPage"))
+// );
+// const Documents = Loadable(
+//   lazy(() => import("../views/dashboard-admin/Documents"))
+// );
+// const TaiKhoan = Loadable(
+//   lazy(() => import("../views/dashboard-admin/Documents/taikhoan/taikhoan"))
+// );
+// const LoaiSach = Loadable(
+//   lazy(() => import("../views/dashboard-admin/Documents/danhmuc/loaisach"))
+// );
 const AIBOX = Loadable(
   lazy(() => import("../views/dashboard-admin/AI"))
 );
@@ -169,24 +168,24 @@ const LibPublisherPage = Loadable(
 
 
 
-const LibraryOriginal = Loadable(
-  lazy(() => import("../views/dashboard-admin/LienThong/LIB/Library/Original"))
-);
-const LibraryElectronic = Loadable(
-  lazy(() => import("../views/dashboard-admin/LienThong/LIB/Library/Electronic"))
-);
-const LibAuthor = Loadable(
-  lazy(() => import("../views/dashboard-admin/LienThong/LIB/Author"))
-);
-const LibCategory = Loadable(
-  lazy(() => import("../views/dashboard-admin/LienThong/LIB/Category"))
-);
-const LibTypeOfSupplies = Loadable(
-  lazy(() => import("../views/dashboard-admin/LienThong/LIB/LibTypeOfSupplies"))
-);
-const LibPublisher = Loadable(
-  lazy(() => import("../views/dashboard-admin/LienThong/LIB/Publisher"))
-);
+// const LibraryOriginal = Loadable(
+//   lazy(() => import("../views/dashboard-admin/LienThong/LIB/Library/Original"))
+// );
+// const LibraryElectronic = Loadable(
+//   lazy(() => import("../views/dashboard-admin/LienThong/LIB/Library/Electronic"))
+// );
+// const LibAuthor = Loadable(
+//   lazy(() => import("../views/dashboard-admin/LienThong/LIB/Author"))
+// );
+// const LibCategory = Loadable(
+//   lazy(() => import("../views/dashboard-admin/LienThong/LIB/Category"))
+// );
+// const LibTypeOfSupplies = Loadable(
+//   lazy(() => import("../views/dashboard-admin/LienThong/LIB/LibTypeOfSupplies"))
+// );
+// const LibPublisher = Loadable(
+//   lazy(() => import("../views/dashboard-admin/LienThong/LIB/Publisher"))
+// );
 
 const LibLoan = Loadable(
   lazy(() => import("../views/dashboard-admin/LienThong/LIB/LoanPayment/Loan"))
@@ -345,10 +344,6 @@ const MainRoutes = {
       path: "/tai-san-thu-vien/thung-rac",
       element: <AssetTrashPage />,
     },
-    {
-      path: "/quan-ly-thanh-vien",
-      element: <UserProfilePage />,
-    },
     // Nhập kho
     {
       path: "/quan-ly-nhap-kho/nha-cung-cap",
@@ -367,49 +362,12 @@ const MainRoutes = {
       element: <WareHouseReceiptDeleteListPage />,
     },
     {
-      path: "/nhom-phan-quyen",
-      element: <DistributionOfPowers />,
-    },
-    {
-      path: "/phan-quyen",
-      element: <ControlPower />,
-    },
-    {
-      path: "/chi-tiet-hoc-lieu",
-      element: <DetailsPublicationsPage />,
-    },
-    {
-      path: "/chi-tiet-danh-muc",
-      element: <DetailsDirectoryPage />,
-    },
-
-    {
       path: "/quan-ly-muon-tra/phieu-muon",
       element: <LoanSlipPage />,
     },
     {
       path: "/quan-ly-muon-tra/phieu-muon/danh-sach-xoa-phieu-muon",
       element: <LoanSlipDeleteListPage />,
-    },
-    {
-      path: "/quan-ly-muon-tra/phieu-tra",
-      element: <PayPage />,
-    },
-    {
-      path: "/quan-ly-muon-tra/phieu-dang-ky-muon",
-      element: <RegistrationPage />,
-    },
-    {
-      path: "/Documents",
-      element: <Documents />,
-    },
-    {
-      path: "/Documents/tai-khoan",
-      element: <TaiKhoan />,
-    },
-    {
-      path: "/Documents/danh-muc/linh-vuc",
-      element: <LoaiSach />,
     },
     {
       path: "/ho-tro-ai",
@@ -430,38 +388,30 @@ const MainRoutes = {
 export const MainRoutesV2 = {
   path: "/",
   element: (
-    // <AuthGuardV2>
+    <AuthGuard>
       <MainLayoutV2 />
-    // </AuthGuardV2>
+    </AuthGuard>
   ),
   children: [
     {
       path: "lien-thong",
       element: <LibraryPublicationsPage />,
     },
-    {
-      path: "chia-se-an-pham",
-      element: <LibraryPublicationsPage />,
-    },
-    {
-      path: "chia-se-thu-vien/hoc-lieu",
-      element: <LibraryElectronic />,
-    },
     // danh mục chia sẽ liên thông
     {
-      path: "chia-se-danh-muc/dang-hoc-lieu",
+      path: "lien-thong/chia-se-danh-muc/dang-hoc-lieu",
       element: <LibMaterialPage />,
     },
     {
-      path: "chia-se-danh-muc/linh-vuc",
+      path: "lien-thong/chia-se-danh-muc/linh-vuc",
       element: <LibCategoryPage />,
     },
     {
-      path: "chia-se-danh-muc/tac-gia",
+      path: "lien-thong/chia-se-danh-muc/tac-gia",
       element: <LibAuthorPage />,
     },
     {
-      path: "chia-se-danh-muc/nha-san-xuat",
+      path: "lien-thong/chia-se-danh-muc/nha-san-xuat",
       element: <LibPublisherPage />,
     },
     {

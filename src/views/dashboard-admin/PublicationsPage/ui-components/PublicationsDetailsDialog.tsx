@@ -11,7 +11,7 @@ import VideoDetailPage from '../VideoDetailPage';
 import BookViewDialog from './BookViewDialog';
 import WordDetailPage from '../WordDetailPage';
 
-const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: boolean; onClose: () => void; publications: TPublications | null }) => {
+const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { open: boolean; onClose: () => void; publications: TPublications | null, openLT?: boolean }) => {
     const [showBook, setShowBook] = useState(false);
     const [showVideo, setShowVideo] = useState(false);
     const [showImage, setShowImage] = useState(false);
@@ -92,6 +92,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications }: { open: bool
                                     handleOpenImage={handleOpenImage}
                                     handleOpenWord={handleOpenWord}
                                     path={`${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
+                                    openLT={openLT}
                                 />
 
                             </Grid>

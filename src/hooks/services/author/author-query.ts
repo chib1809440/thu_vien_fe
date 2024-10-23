@@ -3,7 +3,7 @@ import authorService from "../../../_apis/services/author.service";
 import { TAuthor } from "../../../types/models/author";
 import { TFilter } from "../../../types/models/entity-common.type";
 import { getQueryKeys } from "../../../utils/object";
-import { GET_AUTHOR, GET_AUTHOR_DELETED, GET_AUTHOR_DELETED_ID, GET_AUTHOR_ID } from "./author-key";
+import { GET_AUTHOR, GET_AUTHOR_DELETED, GET_AUTHOR_DELETED_ID, GET_AUTHOR_ID, GET_AUTHOR_LINK } from "./author-key";
 
 export const useFetchAuthor = (params?:TFilter)=>{
     return useQuery({
@@ -67,4 +67,27 @@ export const useFetchAuthorDeleteListById = (_id: string)=>{
         },
         placeholderData: keepPreviousData,
     })
+}
+
+// get link
+export const useFetchAuthorLink = (params?:TFilter)=>{
+    return useQuery({
+        queryKey: getQueryKeys({ key: GET_AUTHOR_LINK, ...params }),
+        queryFn: async()=>{
+            return await authorService.getAllLink<TAuthor>(params);
+        },
+         placeholderData: keepPreviousData,
+    })
+}
+
+export const useReFetchAuthorLink = ()=>{
+    const queryClient = useQueryClient();
+
+    const revalidate = (params?:TFilter)=>{
+        queryClient.invalidateQueries({
+            queryKey: getQueryKeys({ key: GET_AUTHOR_LINK, ...params }),
+        })
+    }
+
+    return revalidate;
 }

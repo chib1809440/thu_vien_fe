@@ -38,7 +38,7 @@ type Props = {
     open: boolean;
     onClose: () => void;
     onSubmit?: (values: TVoiceCreate, resetForm: () => void) => void;
-    onSelectedVoice?: (voice: TVoice) => void;
+    onSelectedVoice?: (voice: TVoice | null) => void;
     isFetching?: boolean;
     initialValues: TVoiceCreate;
     isEditMode?: boolean;
@@ -54,7 +54,7 @@ const schema = (isEditMode: boolean) =>
                 file: yup.mixed().required("Vui lòng upload file").nullable(),
             }
             : { file: yup.mixed() }),
-        order: yup.number().required("Vui lòng chọn số thứ tự"),
+        order: yup.number().min(1, "Vui lòng nhập số thứ tự").required("Vui lòng chọn số thứ tự"),
         isPrivate: yup.string().required("Vui lòng chọn loại hội thoại"),
         note: yup.string().nullable(),
     });
@@ -259,8 +259,9 @@ const DialogAddEditVoice: FC<Props> = ({
     );
 
     const handleAddNew = () => {
-        resetForm();
+        onSelectedVoice(null);
         setSelectEdit(false);
+        imageRef.current.clearState();
     };
 
     const handleAddTypeVoice = () => {

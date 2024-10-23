@@ -13,7 +13,7 @@ import { useAddLoanSlip, useApprovalLoanSlip, useDeleteSoftLoanSlip, useDeleteSo
 import { useFetchLoanSlip, useReFetchLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
-import { TLoanSlip, TLoanSlipCreate } from "../../../types/models/loanSlip.type";
+import { CreatePublication, TLoanSlip, TLoanSlipCreate } from "../../../types/models/loanSlip.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditLoanSlip from "./ui-components/FormAddEditLoanSlip";
@@ -133,13 +133,19 @@ const LoanSlipPage = () => {
             },
         });
     };
-    const handleReturnLoanSlip = (row: TLoanSlip) => {
-        mutationReturn.mutate(row._id, {
-            onSuccess: () => {
-                revalidate();
-                toast.success('Trả sách thành công.');
-            },
-        });
+    const handleReturnLoanSlip = (row: TLoanSlip, publications: CreatePublication[]) => {
+        mutationReturn.mutate(
+            { id: row._id, publications },  // Chuyển đổi tham số thành đối tượng
+            {
+                onSuccess: (data) => {
+                    revalidate(); // Hàm này cần phải được định nghĩa trong component
+                    if (data?.data?.result) {
+                        setSelectedEdit(data.data.result);
+                    }
+                    toast.success('Trả sách thành công.');
+                },
+            }
+        );
     };
     const handleClose = () => {
         setOpenAddEdit(false);

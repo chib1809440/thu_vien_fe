@@ -15,7 +15,7 @@ export type TLoanSlip = TEntityAbstract & {
     isReturn: boolean,
     receiptDate: string;
     status: TStatusLoanSlip;
-    publications: (TPublications & { quantityLoan: number, position: string, publicationId: string })[];
+    publications: (TPublications & { quantityLoan: number, position: string, publicationId: string, quantityReturn?: number, quantityModify?: number })[];
 };
 
 export type CreatePublication = {
@@ -26,6 +26,7 @@ export type CreatePublication = {
     shelvesQuantity: number,
     position: string;
     quantityReturn?: number;
+    quantityModify?: number;
     barcode: string;
 };
 export type TLoanSlipCreate = {
@@ -37,7 +38,7 @@ export type TLoanSlipCreate = {
     barcode?: string;
     isPrint: boolean;
     receiptDate: string;
-    status: TStatusLoanSlip;
+    status?: TStatusLoanSlip;
     publications?: CreatePublication[],
 
 };

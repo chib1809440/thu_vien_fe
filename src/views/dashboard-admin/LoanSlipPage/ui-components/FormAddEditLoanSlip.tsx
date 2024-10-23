@@ -62,7 +62,7 @@ function createData(
 type Props = {
     open: boolean;
     onClose: () => void;
-    onHandleReturnLoanSlip: (loanSlip: TLoanSlip) => void;
+    onHandleReturnLoanSlip: (loanSlip: TLoanSlip, publications: CreatePublication[]) => void;
     onSubmit?: (values: TLoanSlipCreate, resetForm: () => void) => void;
     isFetching?: boolean;
     initialValues: TLoanSlipCreate;
@@ -101,33 +101,36 @@ const FormAddEditLoanSlip: FC<Props> = ({
         validationSchema: schema,
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
-            const filteredPublications = publications.filter(
+            let filteredPublications = publications.filter(
                 (publication) => publication.publicationId !== ''
             );
             // Reset mảng lỗi trước khi kiểm tra
             setArrayError([]);
 
-            const errors = filteredPublications.reduce((acc, item) => {
-                if (item.position === "trong kho" && item.quantity < item.quantityLoan) {
-                    acc.push({
-                        name: item.name,
-                        position: item.position,
-                    });
-                } else if (item.position === "trên kệ" && item.shelvesQuantity < item.quantityLoan) {
-                    acc.push({
-                        name: item.name,
-                        position: item.position,
-                    });
+            if (!isEditMode) {
+                const errors = filteredPublications.reduce((acc, item) => {
+                    if (item.position === "trong kho" && item.quantity < item.quantityLoan) {
+                        acc.push({
+                            name: item.name,
+                            position: item.position,
+                        });
+                    } else if (item.position === "trên kệ" && item.shelvesQuantity < item.quantityLoan) {
+                        acc.push({
+                            name: item.name,
+                            position: item.position,
+                        });
+                    }
+                    return acc;
+                }, []);
+                // Nếu có lỗi, cập nhật state và không thực hiện onSubmit
+                if (errors.length > 0) {
+                    setArrayError(errors);
+                    return; // Dừng thực hiện onSubmit
                 }
-                return acc;
-            }, []);
-
-            // Nếu có lỗi, cập nhật state và không thực hiện onSubmit
-            if (errors.length > 0) {
-                setArrayError(errors);
-                return; // Dừng thực hiện onSubmit
             }
-            if (!userData?.data?.result._id) {
+
+
+            if (!userData?.data?.result?._id) {
                 toast.error('Vui lòng quét barcode thông tin người mượn')
             }
             if (onSubmit) {
@@ -139,7 +142,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     returnDay: returnDay.toDateString(),
                     isPrint: false,
                     receiptDate: new Date().toDateString(),
-                    status: 'đang xử lý',
                     // Sử dụng danh sách publications đã lọc
                     publications: filteredPublications,
                 }
@@ -196,6 +198,8 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     publicationId: publication.publicationId,
                     name: publication.name,
                     quantityLoan: publication.quantityLoan,
+                    quantityReturn: publication?.quantityReturn,
+                    quantityModify: publication.quantityReturn === 0 ? publication.quantityLoan : (publication.quantityLoan - publication.quantityReturn),
                     quantity: publication.quantity,
                     shelvesQuantity: publication.shelvesQuantity,
                     position: publication.position,
@@ -205,7 +209,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
                 editPublications.push(newPublication);
             });
             setPublications(editPublications);
-
         }
     }, [loanSlip])
     const handleBarCodeChange = (index: number, newBarCode: string) => {
@@ -215,7 +218,11 @@ const FormAddEditLoanSlip: FC<Props> = ({
         setPublications(updatedPublications);
     };
     const handleReturnLoanSlip = () => {
-        onHandleReturnLoanSlip(loanSlip)
+        const filteredPublications = publications.map((publication) => ({
+            ...publication,           // Giữ nguyên tất cả các thuộc tính hiện có
+            quantityReturn: publication.quantityModify, // Gán quantityReturn
+        }));
+        onHandleReturnLoanSlip(loanSlip, filteredPublications)
     };
     // Use custom hook to debounce array of barcodes
     const debouncedBarcode = useDebounce(searchBarCode, 500);
@@ -327,6 +334,9 @@ const FormAddEditLoanSlip: FC<Props> = ({
             }
         `,
     });
+    console.log('isEditMode', isEditMode);
+    console.log('publications', publications);
+
     return (
         <FormikProvider value={formik}>
             <Dialog
@@ -443,7 +453,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
                             <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
 
-
                                 <Grid container spacing={2}>
                                     <Grid item xs={6}>
                                         <Box style={{ width: "100%" }} sx={{ mt: 2 }}>
@@ -451,6 +460,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                 Ngày mượn  <span className="required_text">(*)</span>{" "}
                                             </Typography>
                                             <DatePicker
+                                                disabled={isEditMode}
                                                 locale={vi}
                                                 className="react-date-picker"
                                                 selected={borrowedDay}
@@ -544,7 +554,15 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                             }
                                             {
 
-                                                isEditMode && loanSlip.isAgree == true ? <>  <StyledTableCell align="center" width='15%'>Số lượng trả/mượn</StyledTableCell></> : <>  <StyledTableCell align="center" width='15%'>Số lượng mượn</StyledTableCell></>
+                                                isEditMode && loanSlip.isAgree == true ? <>  <StyledTableCell align="left" width='15%'>Số lượng mượn</StyledTableCell></> : <> </>
+                                            }
+                                            {
+
+                                                isEditMode && loanSlip.isAgree == true ? <>  <StyledTableCell align="left" width='15%'>Số lượng đã trả</StyledTableCell></> : <> </>
+                                            }
+                                            {
+
+                                                isEditMode && loanSlip?.isAgree == true ? <>  <StyledTableCell align="left" width='15%'>Số lượng cần trả</StyledTableCell></> : <> <StyledTableCell align="left" width='15%'>Số lượng cần trả</StyledTableCell></>
                                             }
                                             <StyledTableCell align="center" width='15%'>Vị trí</StyledTableCell>
                                             <StyledTableCell align="center" width='15%'>Hành động</StyledTableCell>
@@ -579,24 +597,43 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                             {row.shelvesQuantity}
                                                         </StyledTableCell></>
                                                 }
+                                                {
+                                                    isEditMode && loanSlip?.isAgree === true && <>
+                                                        <StyledTableCell align="left">
+                                                            {row?.quantityLoan || 0}
+                                                        </StyledTableCell>
+                                                        <StyledTableCell align="left">
+                                                            {row?.quantityReturn || 0}
+                                                        </StyledTableCell>
+                                                    </>
+                                                }
 
                                                 <StyledTableCell align="center">
                                                     {
-                                                        isEditMode ? <>
+                                                        isEditMode && loanSlip?.isAgree === true ? <>
                                                             <Box style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                                                                 <TextField
                                                                     variant="outlined"
                                                                     fullWidth
                                                                     placeholder="Số lượng"
-                                                                    value={row.quantityLoan}
+                                                                    type="number"
+                                                                    value={isEditMode && loanSlip.isAgree == true ? row.quantityModify : row.quantityLoan}
                                                                     onChange={(e) => {
                                                                         const updatedPublications = [...publications];
-                                                                        updatedPublications[index].quantityLoan = Number(e.target.value);
+                                                                        if (isEditMode && loanSlip.isAgree == true) {
+                                                                            if (Number(e.target.value) > updatedPublications[index].quantityLoan - updatedPublications[index].quantityReturn) {
+                                                                                toast.error("Số lượng trả không lớn hơn số lượng mượn")
+                                                                                return;
+                                                                            }
+                                                                            updatedPublications[index].quantityModify = Number(e.target.value);
+                                                                        } else {
+                                                                            updatedPublications[index].quantityLoan = Number(e.target.value);
+                                                                        }
                                                                         setPublications(updatedPublications);
                                                                     }}
                                                                     sx={{ flexShrink: 1, width: '40%', mr: 1 }} // Điều chỉnh width và margingjgvhjghghghghghgutytyt phải
                                                                 />
-                                                                <Typography variant="h6">{`/${row.quantityLoan}`}</Typography> {/* Hiển thị giá trị bên cạnh */}
+                                                                <Typography variant="h6">{`/${row.quantityLoan - row.quantityReturn}`}</Typography> {/* Hiển thị giá trị bên cạnh */}
                                                             </Box>
                                                         </> : <>
                                                             <Box style={{ width: "100%" }}>
@@ -677,7 +714,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     </Button>
                     {
 
-                        isEditMode && <Button onClick={handleReturnLoanSlip} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                        isEditMode && !loanSlip?.isReturn && <Button onClick={handleReturnLoanSlip} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
                             Trả sách
                         </Button>
                     }
@@ -687,17 +724,20 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             In
                         </Button>
                     }
-                    <Button
-                        disabled={isFetching}
-                        onClick={handleSubmit as () => void}
-                        variant="contained"
-                        color="primary"
-                    >
-                        {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
-                    </Button>
+                    {
+                        !loanSlip?.isReturn && <Button
+                            disabled={isFetching}
+                            onClick={handleSubmit as () => void}
+                            variant="contained"
+                            color="primary"
+                        >
+                            {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
+                        </Button>
+                    }
+
                 </DialogActions>
             </Dialog>
-        </FormikProvider>
+        </FormikProvider >
     );
 };
 

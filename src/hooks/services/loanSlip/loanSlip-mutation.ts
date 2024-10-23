@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import loanSlipsService from "../../../_apis/services/loanSlip.service";
-import { TLoanSlip, TLoanSlipCreate, TLoanSlipEdit } from "../../../types/models/loanSlip.type";
+import { CreatePublication, TLoanSlip, TLoanSlipCreate, TLoanSlipEdit } from "../../../types/models/loanSlip.type";
 import { translationMap } from "../../../helpers/translate";
 
 export const useAddLoanSlip = () => {
@@ -42,14 +42,14 @@ export const useApprovalLoanSlip = () => {
 }
 export const useReturnLoanSlip = () => {
     return useMutation({
-        mutationFn: async (id: string) => {
-            return await loanSlipsService.returnLoanSlip<TLoanSlip>(id);
+        mutationFn: async ({ id, publications }: { id: string; publications: CreatePublication[] }) => {
+            return await loanSlipsService.returnLoanSlip<TLoanSlip>(id, publications);
         },
         onError: (error: any) => {
-            toast.error(error.message)
+            toast.error(error.message);
         },
-    })
-}
+    });
+};
 export const useEditLoanSlip = () => {
     return useMutation({
         mutationFn: async (data: TLoanSlipEdit) => {

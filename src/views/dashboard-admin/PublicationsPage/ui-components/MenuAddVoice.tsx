@@ -268,7 +268,7 @@ const MenuAddVoice: FC<Props> = ({
                                             boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
                                             zIndex: 10,
                                             right: "100%",
-                                            bottom: "-90%",
+                                            top: canAddVoice ? "48%" : "90%",
                                             listStyle: "none",
                                             padding: 0,
                                             margin: 0,

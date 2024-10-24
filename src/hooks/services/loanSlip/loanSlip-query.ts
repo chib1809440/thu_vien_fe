@@ -3,7 +3,7 @@ import loanSlipsService from "../../../_apis/services/loanSlip.service";
 import { TFilter } from "../../../types/models/entity-common.type";
 import { TLoanSlip } from "../../../types/models/loanSlip.type";
 import { getQueryKeys } from "../../../utils/object";
-import { GET_LOANSLIP, GET_LOANSLIP_DELETED, GET_LOANSLIP_DELETED_ID, GET_LOANSLIP_ID } from "./loanSlip-key";
+import { GET_LOANSLIP, GET_LOANSLIP_DELETED, GET_LOANSLIP_DELETED_ID, GET_LOANSLIP_ID, GET_LOANSLIP_LINK } from "./loanSlip-key";
 
 export const useFetchLoanSlip = (params?: TFilter) => {
     return useQuery({
@@ -68,4 +68,26 @@ export const useFetchLoanSlipsDeleteListById = (_id: string) => {
         },
         placeholderData: keepPreviousData,
     })
+}
+
+// get link
+export const useFetchLoanSlipLink = (params?: TFilter) => {
+    return useQuery({
+        queryKey: getQueryKeys({ key: GET_LOANSLIP_LINK, ...params }),
+        queryFn: async () => {
+            return await loanSlipsService.getAllLink<TLoanSlip>(params);
+        },
+        placeholderData: keepPreviousData,
+    })
+}
+export const useReFetchLoanSlipLink = () => {
+    const queryClient = useQueryClient();
+
+    const revalidate = (params?: TFilter) => {
+        queryClient.invalidateQueries({
+            queryKey: getQueryKeys({ key: GET_LOANSLIP_LINK, ...params }),
+        })
+    }
+
+    return revalidate;
 }

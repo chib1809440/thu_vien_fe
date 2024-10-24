@@ -26,6 +26,7 @@ import { IconCirclePlusFilled } from "@tabler/icons-react";
 import PrintLoanSlip from "./PrintLoanSlip";
 import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
+import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -142,6 +143,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     returnDay: returnDay.toDateString(),
                     isPrint: false,
                     receiptDate: new Date().toDateString(),
+                    status: isEditMode ? loanSlip?.status : 'đang xử lý',
                     // Sử dụng danh sách publications đã lọc
                     publications: filteredPublications,
                 }
@@ -335,7 +337,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
         `,
     });
     console.log('isEditMode', isEditMode);
-    console.log('publications', publications);
+    console.log('loanSlip', loanSlip);
 
     return (
         <FormikProvider value={formik}>
@@ -487,6 +489,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                 Ngày trả  <span className="required_text">(*)</span>{" "}
                                             </Typography>
                                             <DatePicker
+                                                disabled={loanSlip?.isReturn === true}
                                                 locale={vi}
                                                 className="react-date-picker"
                                                 selected={returnDay}
@@ -554,15 +557,20 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                             }
                                             {
 
-                                                isEditMode && loanSlip.isAgree == true ? <>  <StyledTableCell align="left" width='15%'>Số lượng mượn</StyledTableCell></> : <> </>
+                                                isEditMode ? <>  <StyledTableCell align="left" width='10%'>Số lượng mượn</StyledTableCell></> : <> </>
                                             }
                                             {
 
-                                                isEditMode && loanSlip.isAgree == true ? <>  <StyledTableCell align="left" width='15%'>Số lượng đã trả</StyledTableCell></> : <> </>
+                                                isEditMode && loanSlip?.isAgree == true ? <>  <StyledTableCell align="left" width='10%'>Số lượng đã trả</StyledTableCell></> : <> </>
+                                            }
+                                            {
+                                                isEditMode && loanSlip?.isAgree === true && loanSlip?.isReturn === false ? (
+                                                    <StyledTableCell align="left" width='30%'>Số lượng cần trả</StyledTableCell>
+                                                ) : null
                                             }
                                             {
 
-                                                isEditMode && loanSlip?.isAgree == true ? <>  <StyledTableCell align="left" width='15%'>Số lượng cần trả</StyledTableCell></> : <> <StyledTableCell align="left" width='15%'>Số lượng cần trả</StyledTableCell></>
+                                                !isEditMode ? <>  <StyledTableCell align="left" width='15%'>Số lượng mượn</StyledTableCell></> : <> </>
                                             }
                                             <StyledTableCell align="center" width='15%'>Vị trí</StyledTableCell>
                                             <StyledTableCell align="center" width='15%'>Hành động</StyledTableCell>
@@ -608,34 +616,42 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                     </>
                                                 }
 
-                                                <StyledTableCell align="center">
-                                                    {
-                                                        isEditMode && loanSlip?.isAgree === true ? <>
-                                                            <Box style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                                                                <TextField
-                                                                    variant="outlined"
-                                                                    fullWidth
-                                                                    placeholder="Số lượng"
-                                                                    type="number"
-                                                                    value={isEditMode && loanSlip.isAgree == true ? row.quantityModify : row.quantityLoan}
-                                                                    onChange={(e) => {
-                                                                        const updatedPublications = [...publications];
-                                                                        if (isEditMode && loanSlip.isAgree == true) {
-                                                                            if (Number(e.target.value) > updatedPublications[index].quantityLoan - updatedPublications[index].quantityReturn) {
-                                                                                toast.error("Số lượng trả không lớn hơn số lượng mượn")
-                                                                                return;
+
+                                                {
+                                                    isEditMode && loanSlip?.isAgree === true ? <>
+                                                        {
+                                                            loanSlip?.isReturn === false &&
+                                                            <StyledTableCell align="center">
+
+                                                                <Box style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                                                                    <TextField
+                                                                        variant="outlined"
+                                                                        fullWidth
+                                                                        placeholder="Số lượng"
+                                                                        type="number"
+                                                                        value={isEditMode && loanSlip.isAgree == true ? row.quantityModify : row.quantityLoan}
+                                                                        onChange={(e) => {
+                                                                            const updatedPublications = [...publications];
+                                                                            if (isEditMode && loanSlip.isAgree == true) {
+                                                                                if (Number(e.target.value) > updatedPublications[index].quantityLoan - updatedPublications[index].quantityReturn) {
+                                                                                    toast.error("Số lượng trả không lớn hơn số lượng mượn")
+                                                                                    return;
+                                                                                }
+                                                                                updatedPublications[index].quantityModify = Number(e.target.value);
+                                                                            } else {
+                                                                                updatedPublications[index].quantityLoan = Number(e.target.value);
                                                                             }
-                                                                            updatedPublications[index].quantityModify = Number(e.target.value);
-                                                                        } else {
-                                                                            updatedPublications[index].quantityLoan = Number(e.target.value);
-                                                                        }
-                                                                        setPublications(updatedPublications);
-                                                                    }}
-                                                                    sx={{ flexShrink: 1, width: '40%', mr: 1 }} // Điều chỉnh width và margingjgvhjghghghghghgutytyt phải
-                                                                />
-                                                                <Typography variant="h6">{`/${row.quantityLoan - row.quantityReturn}`}</Typography> {/* Hiển thị giá trị bên cạnh */}
-                                                            </Box>
-                                                        </> : <>
+                                                                            setPublications(updatedPublications);
+                                                                        }}
+                                                                        sx={{ flexShrink: 1, width: '40%', mr: 1 }} // Điều chỉnh width và margingjgvhjghghghghghgutytyt phải
+                                                                    />
+                                                                    <Typography variant="h6">{`/${row.quantityLoan - row.quantityReturn}`}</Typography> {/* Hiển thị giá trị bên cạnh */}
+                                                                </Box>
+                                                            </StyledTableCell>
+                                                        }
+                                                    </> : <>
+                                                        <StyledTableCell align="center">
+
                                                             <Box style={{ width: "100%" }}>
                                                                 <TextField
                                                                     variant="outlined"
@@ -649,12 +665,13 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                                     }}
                                                                 />
                                                             </Box>
-                                                        </>
-                                                    }
+                                                        </StyledTableCell>
 
-                                                </StyledTableCell>
+                                                    </>
+                                                }
+
                                                 <StyledTableCell align="center">
-                                                    <FormControl fullWidth>
+                                                    {(!isEditMode || (isEditMode && loanSlip?.isAgree === false)) ? (
                                                         <Select
                                                             value={row.position || 'trên kệ'} // Default value is "trên kệ"
                                                             onChange={(e) => {
@@ -666,7 +683,9 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                             <MenuItem value="trong kho">Trong kho</MenuItem>
                                                             <MenuItem value="trên kệ">Trên kệ</MenuItem>
                                                         </Select>
-                                                    </FormControl>
+                                                    ) : (
+                                                        capitalizeFirstLetter(row?.position)
+                                                    )}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="center">
                                                     <IconTrash

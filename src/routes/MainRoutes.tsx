@@ -137,7 +137,9 @@ const LibPublisherPage = Loadable(
   lazy(() => import("../views/dashboard-admin/LienThong/LIB/LibPublisherPage"))
 );
 
-
+const LibLoanSlipPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/LienThong/LIB/LibLoanSlipPage"))
+);
 
 
 
@@ -361,6 +363,10 @@ export const MainRoutesV2 = {
     {
       path: "lien-thong/chia-se-danh-muc/nha-san-xuat",
       element: <LibPublisherPage />,
+    },
+    {
+      path: "lien-thong/chia-se-danh-muc/phieu-muon-lien-thong",
+      element: <LibLoanSlipPage />,
     },
     {
       path: "tai-khoan-lien-thong",

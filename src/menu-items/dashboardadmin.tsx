@@ -373,18 +373,10 @@ export const dashboardAdminV2 = {
             icon: icons.IconBrowser,
             children: [
                 {
-                    id: 'danh-sach-muon-tra-lien-thong/dang-ky',
-                    title: "Danh sách đăng ký",
-                    type: 'item',
-                    url: 'danh-sach-muon-tra-lien-thong/dang-ky',
-                    icon: icons.IconBrowserPlus,
-                    breadcrumbs: false,
-                },
-                {
-                    id: 'danh-sach-muon-tra-lien-thong/muon',
+                    id: 'phieu-muon-lien-thong',
                     title: "Danh sách mượn",
                     type: 'item',
-                    url: 'danh-sach-muon-tra-lien-thong/muon',
+                    url: '/lien-thong/chia-se-danh-muc/phieu-muon-lien-thong',
                     icon: icons.IconBrowserPlus,
                     breadcrumbs: false,
                 },

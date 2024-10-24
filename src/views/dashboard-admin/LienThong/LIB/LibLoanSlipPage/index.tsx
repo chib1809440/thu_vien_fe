@@ -544,6 +544,7 @@ const LoanSlipPage = () => {
                 returnDay: selectedEdit.returnDay,
                 receiptDate: selectedEdit.receiptDate,
                 isPrint: selectedEdit.isPrint,
+                libraryId: selectedEdit.libraryId,
                 status: 'đang xử lý',
                 userId: ''
             };
@@ -553,6 +554,7 @@ const LoanSlipPage = () => {
             borrowedDay: "",
             returnDay: "",
             receiptDate: "",
+            libraryId: '0',
             isPrint: false,
             status: 'đang xử lý',
             userId: ''

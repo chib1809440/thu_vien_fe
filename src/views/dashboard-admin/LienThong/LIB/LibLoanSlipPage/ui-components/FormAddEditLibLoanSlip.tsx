@@ -26,6 +26,7 @@ import { IconCirclePlusFilled } from "@tabler/icons-react";
 import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
 import { capitalizeFirstLetter } from "../../../../../../helpers/capitalizeFirstLetter";
+import { useFetchLibrariesFromGroup } from "../../../../../../hooks/services/group/group-query";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -73,7 +74,10 @@ type Props = {
 
 const schema = yup.object().shape({
     note: yup
+        .string(),
+    libraryId: yup
         .string()
+        .required("Vui lòng chọn thư viện").notOneOf(['0'], "Vui lòng chọn thư viện"),
 });
 
 const FormAddEditLoanSlip: FC<Props> = ({
@@ -88,6 +92,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
         userId: "",
         isPrint: false,
         receiptDate: '',
+        libraryId: '0',
         status: 'đang xử lý',
     },
     isFetching = false,
@@ -156,6 +161,8 @@ const FormAddEditLoanSlip: FC<Props> = ({
         [formik]
     );
     const [borrowedDay, setBorrowedDay] = useState(new Date());
+    const { data: dataGroups, isLoading } = useFetchLibrariesFromGroup();
+
     const [returnDay, setReturnDay] = useState(new Date());
     const [barcodeUserId, setbarcodeUserId] = useState<string>('');
     const [searchBarCode, setSearchBarCode] = useState<string>('');
@@ -232,9 +239,11 @@ const FormAddEditLoanSlip: FC<Props> = ({
         if (debouncedBarcode) {
             const fetchPublicationByBarCode = async () => {
                 try {
-                    const barcode = debouncedBarcode.split(' ')[0];
-                    const index = Number(debouncedBarcode.split(' ')[1]);
-                    const result = await publicationsService.getByBarcode<TPublications>(barcode);
+                    const parts = debouncedBarcode.split(' '); // Tách chuỗi theo dấu cách
+                    const barcode = parts.slice(0, parts.length - 1).join(' '); // Lấy tất cả các phần ngoại trừ phần cuối cùng và ghép lại
+                    const index = Number(parts[parts.length - 1]); // Lấy phần cuối cùng và chuyển đổi thành số
+
+                    const result = await publicationsService.getByName<TPublications>({ searchBarCode: barcode, libraryId: formik?.values?.libraryId });
                     const publicationData = result.data.result; // Assuming result.data.result contains the publication info
                     if (publicationData) {
                         setPublications((prevPublications) => {
@@ -335,8 +344,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
             }
         `,
     });
-    console.log('isEditMode', isEditMode);
-    console.log('loanSlip', loanSlip);
 
     return (
         <FormikProvider value={formik}>
@@ -509,216 +516,270 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             </Form>
                         </Grid>
                     </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <Box sx={{ mt: 4, display: 'flex', alignItems: 'center' }}>
-                                <Chip
-                                    color='primary'
-                                    label="Thông tin sách"
-                                    variant="filled"
-                                />
-                                <IconCirclePlusFilled
-                                    style={{ cursor: 'pointer', marginLeft: '10px' }} // Khoảng cách giữa Chip và Icon
-                                    onClick={() => handleAddPublication()} // Gọi hàm thêm
-                                    color="green"
-                                    size={30}
-                                    stroke={1.5}
-                                />
-                            </Box>
-                            {arrayError.length > 0 && (
-                                <div>
-                                    <Typography variant="h4" className="required-text" sx={{ color: 'red', mt: 2 }}>
-                                        Số lượng không đủ:
-                                    </Typography>
-                                    <ul>
-                                        {arrayError.map((error, index) => (
-                                            <li key={index}>
-                                                {error.name} - {error.position}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-                            <TableContainer component={Paper} sx={{ mt: 4 }}>
-                                <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                                    <TableHead>
-                                        <TableRow>
-                                            <StyledTableCell align="left" width='20%'>BarCode</StyledTableCell>
-                                            <StyledTableCell align="left" width='40%'>Tên sách</StyledTableCell>
-                                            {
-                                                isEditMode === false && <>  <StyledTableCell align="left" width='15%'>Số lượng trong kho</StyledTableCell>
-                                                    <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell></>
-                                            }
-                                            {
-
-                                                isEditMode ? <>  <StyledTableCell align="left" width='10%'>Số lượng mượn</StyledTableCell></> : <> </>
-                                            }
-                                            {
-
-                                                isEditMode && loanSlip?.isAgree == true ? <>  <StyledTableCell align="left" width='10%'>Số lượng đã trả</StyledTableCell></> : <> </>
-                                            }
-                                            {
-                                                isEditMode && loanSlip?.isAgree === true && loanSlip?.isReturn === false ? (
-                                                    <StyledTableCell align="left" width='30%'>Số lượng cần trả</StyledTableCell>
-                                                ) : null
-                                            }
-                                            {
-
-                                                !isEditMode ? <>  <StyledTableCell align="left" width='15%'>Số lượng mượn</StyledTableCell></> : <> </>
-                                            }
-                                            <StyledTableCell align="center" width='15%'>Vị trí</StyledTableCell>
-                                            <StyledTableCell align="center" width='15%'>Hành động</StyledTableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {publications?.map((row, index) => (
-                                            <StyledTableRow key={index}>
-                                                <StyledTableCell align="left">
-                                                    <Box style={{ width: "100%" }} >
-                                                        {
-                                                            row.publicationId !== '' ? <>{row.barcode}</> : <>   <TextField
-                                                                variant="outlined"
-                                                                fullWidth
-                                                                placeholder="Nhập barcode sách"
-                                                                value={row.barcode}
-                                                                onChange={(e) => handleBarCodeChange(index, e.target.value)}
-                                                                inputRef={index === publications.length - 1 ? lastInputRef : null} // Focus on the last input
-                                                            /></>
-                                                        }
-
-                                                    </Box>
-                                                </StyledTableCell>
-                                                <StyledTableCell align="left">
-                                                    {row.name || "Không có dữ liệu"}
-                                                </StyledTableCell>
-                                                {
-                                                    isEditMode === false && <> <StyledTableCell align="left">
-                                                        {row.quantity}
-                                                    </StyledTableCell>
-                                                        <StyledTableCell align="left">
-                                                            {row.shelvesQuantity}
-                                                        </StyledTableCell></>
-                                                }
-                                                {
-                                                    isEditMode && loanSlip?.isAgree === true && <>
-                                                        <StyledTableCell align="left">
-                                                            {row?.quantityLoan || 0}
-                                                        </StyledTableCell>
-                                                        <StyledTableCell align="left">
-                                                            {row?.quantityReturn || 0}
-                                                        </StyledTableCell>
-                                                    </>
-                                                }
-
-
-                                                {
-                                                    isEditMode && loanSlip?.isAgree === true ? <>
-                                                        {
-                                                            loanSlip?.isReturn === false &&
-                                                            <StyledTableCell align="center">
-
-                                                                <Box style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                                                                    <TextField
-                                                                        variant="outlined"
-                                                                        fullWidth
-                                                                        placeholder="Số lượng"
-                                                                        type="number"
-                                                                        value={isEditMode && loanSlip.isAgree == true ? row.quantityModify : row.quantityLoan}
-                                                                        onChange={(e) => {
-                                                                            const updatedPublications = [...publications];
-                                                                            if (isEditMode && loanSlip.isAgree == true) {
-                                                                                if (Number(e.target.value) > updatedPublications[index].quantityLoan - updatedPublications[index].quantityReturn) {
-                                                                                    toast.error("Số lượng trả không lớn hơn số lượng mượn")
-                                                                                    return;
-                                                                                }
-                                                                                updatedPublications[index].quantityModify = Number(e.target.value);
-                                                                            } else {
-                                                                                updatedPublications[index].quantityLoan = Number(e.target.value);
-                                                                            }
-                                                                            setPublications(updatedPublications);
-                                                                        }}
-                                                                        sx={{ flexShrink: 1, width: '40%', mr: 1 }} // Điều chỉnh width và margingjgvhjghghghghghgutytyt phải
-                                                                    />
-                                                                    <Typography variant="h6">{`/${row.quantityLoan - row.quantityReturn}`}</Typography> {/* Hiển thị giá trị bên cạnh */}
-                                                                </Box>
-                                                            </StyledTableCell>
-                                                        }
-                                                    </> : <>
-                                                        <StyledTableCell align="center">
-
-                                                            <Box style={{ width: "100%" }}>
-                                                                <TextField
-                                                                    variant="outlined"
-                                                                    fullWidth
-                                                                    placeholder="Số lượng"
-                                                                    value={row.quantityLoan}
-                                                                    onChange={(e) => {
-                                                                        const updatedPublications = [...publications];
-                                                                        updatedPublications[index].quantityLoan = Number(e.target.value);
-                                                                        setPublications(updatedPublications);
-                                                                    }}
-                                                                />
-                                                            </Box>
-                                                        </StyledTableCell>
-
-                                                    </>
-                                                }
-
-                                                <StyledTableCell align="center">
-                                                    {(!isEditMode || (isEditMode && loanSlip?.isAgree === false)) ? (
-                                                        <Select
-                                                            value={row.position || 'trên kệ'} // Default value is "trên kệ"
-                                                            onChange={(e) => {
-                                                                const updatedPublications = [...publications];
-                                                                updatedPublications[index].position = e.target.value; // Update the position field
-                                                                setPublications(updatedPublications);
-                                                            }}
-                                                        >
-                                                            <MenuItem value="trong kho">Trong kho</MenuItem>
-                                                            <MenuItem value="trên kệ">Trên kệ</MenuItem>
-                                                        </Select>
-                                                    ) : (
-                                                        capitalizeFirstLetter(row?.position)
-                                                    )}
-                                                </StyledTableCell>
-                                                <StyledTableCell align="center">
-                                                    <IconTrash
-                                                        style={{ cursor: 'pointer', color: 'red' }}
-                                                        onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
-                                                        color="red"
-                                                        size={20}
-                                                        stroke={1.5}
-                                                    />
-                                                </StyledTableCell>
-                                            </StyledTableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                            <Box sx={{ mt: 4 }}>
-                                <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                    Ghi chú
+                    <Grid container spacing={3} sx={{ mt: 1 }}>
+                        <Grid item md={12}>
+                            <Box style={{ width: "100%" }} sx={{ mb: 1.5 }}>
+                                <Typography sx={{ display: 'flex', alignItems: 'center', mb: 1.5, fontWeight: "bold" }}>
+                                    <span style={{ marginRight: '8px' }}>Nhóm thư viện</span>
+                                    <span className="required_text">(*)</span>
                                 </Typography>
-                                <TextareaAutosize
-                                    id="note"
-                                    name="note"
-                                    value={formik.values.note}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    minRows={4}
-                                />
-                                {formik.touched.note &&
-                                    Boolean(formik.errors.note) && (
+                                <FormControl fullWidth>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="libraryId"
+                                        name="libraryId"
+                                        type="libraryId"
+                                        value={formik.values.libraryId}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        error={
+                                            formik.touched.libraryId &&
+                                            Boolean(formik.errors.libraryId)
+                                        }
+                                    >
+                                        <MenuItem value='0' disabled>
+                                            Nhóm thư viện
+                                        </MenuItem>
+                                        {dataGroups?.data?.result?.libraries?.length > 0 ? (
+                                            dataGroups?.data?.result?.libraries?.map((item, index) => (
+                                                <MenuItem key={index} value={item._id}>
+                                                    {item.name}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <MenuItem value="0" disabled>
+                                                Nhóm thư viện
+                                            </MenuItem>
+                                        )}
+
+                                    </Select>
+                                </FormControl>
+                                {formik.touched.libraryId &&
+                                    Boolean(formik.errors.libraryId) && (
                                         <FormHelperText className="required_text">
                                             {" "}
-                                            {formik.errors.note
-                                                ? formik.errors.note.toString()
+                                            {formik.errors.libraryId
+                                                ? formik.errors.libraryId.toString()
                                                 : ""}
                                         </FormHelperText>
                                     )}
                             </Box>
                         </Grid>
                     </Grid>
+                    {
+                        formik.values.libraryId !== '0' &&
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
+                                    <Chip
+                                        color='primary'
+                                        label="Thông tin sách"
+                                        variant="filled"
+                                    />
+                                    <IconCirclePlusFilled
+                                        style={{ cursor: 'pointer', marginLeft: '10px' }} // Khoảng cách giữa Chip và Icon
+                                        onClick={() => handleAddPublication()} // Gọi hàm thêm
+                                        color="green"
+                                        size={30}
+                                        stroke={1.5}
+                                    />
+                                </Box>
+                                {arrayError.length > 0 && (
+                                    <div>
+                                        <Typography variant="h4" className="required-text" sx={{ color: 'red', mt: 2 }}>
+                                            Số lượng không đủ:
+                                        </Typography>
+                                        <ul>
+                                            {arrayError.map((error, index) => (
+                                                <li key={index}>
+                                                    {error.name} - {error.position}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                                <TableContainer component={Paper} sx={{ mt: 4 }}>
+                                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                                        <TableHead>
+                                            <TableRow>
+                                                <StyledTableCell align="left" width='20%'>BarCode</StyledTableCell>
+                                                <StyledTableCell align="left" width='40%'>Tên sách</StyledTableCell>
+                                                {
+                                                    isEditMode === false && <>  <StyledTableCell align="left" width='15%'>Số lượng trong kho</StyledTableCell>
+                                                        <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell></>
+                                                }
+                                                {
+
+                                                    isEditMode ? <>  <StyledTableCell align="left" width='10%'>Số lượng mượn</StyledTableCell></> : <> </>
+                                                }
+                                                {
+
+                                                    isEditMode && loanSlip?.isAgree == true ? <>  <StyledTableCell align="left" width='10%'>Số lượng đã trả</StyledTableCell></> : <> </>
+                                                }
+                                                {
+                                                    isEditMode && loanSlip?.isAgree === true && loanSlip?.isReturn === false ? (
+                                                        <StyledTableCell align="left" width='30%'>Số lượng cần trả</StyledTableCell>
+                                                    ) : null
+                                                }
+                                                {
+
+                                                    !isEditMode ? <>  <StyledTableCell align="left" width='15%'>Số lượng mượn</StyledTableCell></> : <> </>
+                                                }
+                                                <StyledTableCell align="center" width='15%'>Vị trí</StyledTableCell>
+                                                <StyledTableCell align="center" width='15%'>Hành động</StyledTableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {publications?.map((row, index) => (
+                                                <StyledTableRow key={index}>
+                                                    <StyledTableCell align="left">
+                                                        <Box style={{ width: "100%" }} >
+                                                            {
+                                                                row.publicationId !== '' ? <>{row.barcode}</> : <>   <TextField
+                                                                    variant="outlined"
+                                                                    fullWidth
+                                                                    placeholder="Nhập barcode sách"
+                                                                    value={row.barcode}
+                                                                    onChange={(e) => handleBarCodeChange(index, e.target.value)}
+                                                                    inputRef={index === publications.length - 1 ? lastInputRef : null} // Focus on the last input
+                                                                /></>
+                                                            }
+
+                                                        </Box>
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="left">
+                                                        {row.name || "Không có dữ liệu"}
+                                                    </StyledTableCell>
+                                                    {
+                                                        isEditMode === false && <> <StyledTableCell align="left">
+                                                            {row.quantity}
+                                                        </StyledTableCell>
+                                                            <StyledTableCell align="left">
+                                                                {row.shelvesQuantity}
+                                                            </StyledTableCell></>
+                                                    }
+                                                    {
+                                                        isEditMode && loanSlip?.isAgree === true && <>
+                                                            <StyledTableCell align="left">
+                                                                {row?.quantityLoan || 0}
+                                                            </StyledTableCell>
+                                                            <StyledTableCell align="left">
+                                                                {row?.quantityReturn || 0}
+                                                            </StyledTableCell>
+                                                        </>
+                                                    }
+
+
+                                                    {
+                                                        isEditMode && loanSlip?.isAgree === true ? <>
+                                                            {
+                                                                loanSlip?.isReturn === false &&
+                                                                <StyledTableCell align="center">
+
+                                                                    <Box style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                                                                        <TextField
+                                                                            variant="outlined"
+                                                                            fullWidth
+                                                                            placeholder="Số lượng"
+                                                                            type="number"
+                                                                            value={isEditMode && loanSlip.isAgree == true ? row.quantityModify : row.quantityLoan}
+                                                                            onChange={(e) => {
+                                                                                const updatedPublications = [...publications];
+                                                                                if (isEditMode && loanSlip.isAgree == true) {
+                                                                                    if (Number(e.target.value) > updatedPublications[index].quantityLoan - updatedPublications[index].quantityReturn) {
+                                                                                        toast.error("Số lượng trả không lớn hơn số lượng mượn")
+                                                                                        return;
+                                                                                    }
+                                                                                    updatedPublications[index].quantityModify = Number(e.target.value);
+                                                                                } else {
+                                                                                    updatedPublications[index].quantityLoan = Number(e.target.value);
+                                                                                }
+                                                                                setPublications(updatedPublications);
+                                                                            }}
+                                                                            sx={{ flexShrink: 1, width: '40%', mr: 1 }} // Điều chỉnh width và margingjgvhjghghghghghgutytyt phải
+                                                                        />
+                                                                        <Typography variant="h6">{`/${row.quantityLoan - row.quantityReturn}`}</Typography> {/* Hiển thị giá trị bên cạnh */}
+                                                                    </Box>
+                                                                </StyledTableCell>
+                                                            }
+                                                        </> : <>
+                                                            <StyledTableCell align="center">
+
+                                                                <Box style={{ width: "100%" }}>
+                                                                    <TextField
+                                                                        variant="outlined"
+                                                                        fullWidth
+                                                                        placeholder="Số lượng"
+                                                                        value={row.quantityLoan}
+                                                                        onChange={(e) => {
+                                                                            const updatedPublications = [...publications];
+                                                                            updatedPublications[index].quantityLoan = Number(e.target.value);
+                                                                            setPublications(updatedPublications);
+                                                                        }}
+                                                                    />
+                                                                </Box>
+                                                            </StyledTableCell>
+
+                                                        </>
+                                                    }
+
+                                                    <StyledTableCell align="center">
+                                                        {(!isEditMode || (isEditMode && loanSlip?.isAgree === false)) ? (
+                                                            <Select
+                                                                value={row.position || 'trên kệ'} // Default value is "trên kệ"
+                                                                onChange={(e) => {
+                                                                    const updatedPublications = [...publications];
+                                                                    updatedPublications[index].position = e.target.value; // Update the position field
+                                                                    setPublications(updatedPublications);
+                                                                }}
+                                                            >
+                                                                <MenuItem value="trong kho">Trong kho</MenuItem>
+                                                                <MenuItem value="trên kệ">Trên kệ</MenuItem>
+                                                            </Select>
+                                                        ) : (
+                                                            capitalizeFirstLetter(row?.position)
+                                                        )}
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="center">
+                                                        <IconTrash
+                                                            style={{ cursor: 'pointer', color: 'red' }}
+                                                            onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
+                                                            color="red"
+                                                            size={20}
+                                                            stroke={1.5}
+                                                        />
+                                                    </StyledTableCell>
+                                                </StyledTableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                                <Box sx={{ mt: 4 }}>
+                                    <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
+                                        Ghi chú
+                                    </Typography>
+                                    <TextareaAutosize
+                                        id="note"
+                                        name="note"
+                                        value={formik.values.note}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        minRows={4}
+                                    />
+                                    {formik.touched.note &&
+                                        Boolean(formik.errors.note) && (
+                                            <FormHelperText className="required_text">
+                                                {" "}
+                                                {formik.errors.note
+                                                    ? formik.errors.note.toString()
+                                                    : ""}
+                                            </FormHelperText>
+                                        )}
+                                </Box>
+                            </Grid>
+                        </Grid>
+                    }
+
                 </DialogContent>
 
                 <DialogActions sx={{ p: 4 }}>

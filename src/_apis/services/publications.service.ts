@@ -8,7 +8,11 @@ class PublicationsService extends BaseApi {
         const response = await httpClientInstance.get(`${this.endpoint}/barcode/${id}`, { params });
         return response.data as TApiOneRecord<DynamicType>;
     }
-
+    public async getByName<DynamicType>(params?: TFilter) {
+        const httpClientInstance = this.getHttpClient();
+        const response = await httpClientInstance.get(`${this.endpoint}/barcode/name`, { params });
+        return response.data as TApiOneRecord<DynamicType>;
+    }
     public async importExcel(file: File) {
         const formData = new FormData();
         formData.append("file", file);
@@ -25,12 +29,12 @@ class PublicationsService extends BaseApi {
         return response.data;
     }
 
-    public async updateStockQuantity(data: {id: string; quantity: number }) {
+    public async updateStockQuantity(data: { id: string; quantity: number }) {
         const response = await this.httpClient.patch(`${this.endpoint}/move-stock`, data);
         return response.data;
     }
 
-    public async updateFilePublications<DynamicResponse>(id: string, formData: FormData){
+    public async updateFilePublications<DynamicResponse>(id: string, formData: FormData) {
         const response = await this.httpClient.patch(`${this.endpoint}/${id}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',

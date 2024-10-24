@@ -74,7 +74,8 @@ type Props = {
 
 const schema = yup.object().shape({
     note: yup
-        .string()
+        .string(),
+       
 });
 
 const FormAddEditLoanSlip: FC<Props> = ({

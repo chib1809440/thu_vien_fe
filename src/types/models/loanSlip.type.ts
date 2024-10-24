@@ -11,6 +11,7 @@ export type TLoanSlip = TEntityAbstract & {
     returnDay: string;
     barcode: string;
     isPrint: boolean;
+    libraryId?: string;
     isAgree: boolean;
     isReturn: boolean,
     receiptDate: string;
@@ -32,6 +33,7 @@ export type CreatePublication = {
 export type TLoanSlipCreate = {
     note: string | null;
     userId: string;
+    libraryId?: string;
     borrowedDay: string;
     barcodeUserId?: string;
     returnDay: string;

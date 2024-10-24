@@ -105,7 +105,7 @@ const LibInformationPage = () => {
                             />
                             {/* {preview === '' ? <img style={{ borderRadius: '5px' }} width='256px' height='256px' src="../../logo.png" /> : <img style={{ borderRadius: '5px' }} width='256px' height='auto' src={preview} />} */}
                         </Grid>
-                        <Grid lg={12} container gap={2}>
+                        {/* <Grid lg={12} container gap={2}>
                             <InputLabel
                                 sx={{ fontWeight: "700", fontSize: "16px" }}
                                 id="upload-photo"
@@ -121,10 +121,10 @@ const LibInformationPage = () => {
                                 // onChange={handleImageInput}
                                 />
                             </InputLabel>
-                            {/* {preview !== '' &&  onClick={handlClickUpLogo} */}
-                            {/* <ButtonGD title="Xác nhận"></ButtonGD> */}
-                            {/* } */}
-                        </Grid>
+                             {preview !== '' &&  onClick={handlClickUpLogo} 
+                             <ButtonGD title="Xác nhận"></ButtonGD> 
+                             } 
+                        </Grid> */}
                     </Grid>
                     <Grid md={8} container justifyContent="flex-start" alignItems="flex-start">
                         <Grid container justifyContent="space-between">

@@ -2,6 +2,7 @@ import { Box, Divider, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import { IconFlag, IconPlus, IconVolume, IconVolumeOff } from "@tabler/icons-react";
 import { FC, useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import { useAuth } from "../../../../contexts/JWTContext";
 import { useAddVoice, useEditVoice } from "../../../../hooks/services/voice/voice-mutation";
 import { useReFetchVoice } from "../../../../hooks/services/voice/voice-query";
 import { TPublications } from "../../../../types/models/publications.type";
@@ -15,6 +16,7 @@ type Props = {
     voiceData: TVoice[];
     publicationsData?: TPublications;
     typeVoiceData?: TTypeVoice[];
+    currentUserId?: string;
 };
 
 const MenuAddVoice: FC<Props> = ({
@@ -23,6 +25,7 @@ const MenuAddVoice: FC<Props> = ({
     voiceData,
     publicationsData,
     typeVoiceData,
+    currentUserId
 }) => {
     const [selectedEdit, setSelectedEdit] = useState<TVoice | null>(null);
     const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
@@ -32,6 +35,15 @@ const MenuAddVoice: FC<Props> = ({
     const revalidate = useReFetchVoice();
     const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
     const [hoveredTypeId, setHoveredTypeId] = useState<string | null>(null);
+    const [activeTypeVoiceId, setActiveTypeVoiceId] = useState<string | null>(null);
+    const [openVoices, setOpenVoices] = useState<string | null>(null);
+    const { user } = useAuth();
+
+    const userId = useMemo(() => {
+        if (!user) return null;
+        const _user = { ...user } as any;
+        return _user?.data?._id;
+    }, [user]);
 
     const handleOpenAddVoice = () => {
         setOpenAddEdit(true);
@@ -42,7 +54,7 @@ const MenuAddVoice: FC<Props> = ({
         setSelectedEdit(null);
     };
 
-    const handleSelectedVoice = (row: TVoice) => {
+    const handleSelectedVoice = (row: TVoice | null) => {
         setSelectedEdit(row);
     };
 
@@ -91,28 +103,85 @@ const MenuAddVoice: FC<Props> = ({
             isLink: false,
             file: null,
             typeVoiceId: null,
-            isPrivate: "false" as unknown as boolean,
+            isPrivate: false,
             name: "",
+            order: 0
         };
     }, [selectedEdit]);
 
-    const handleClickVoice = (audioUrl: string, voiceId: string) => {
+    const handleClickVoice = (audioUrl: string, voiceId: string, typeId: string) => {
         if (currentAudio) {
             currentAudio.pause();
             currentAudio.currentTime = 0;
         }
         const newAudio = new Audio(`${process.env.REACT_APP_BASE_API_FILE_URL}/${audioUrl}`);
-        newAudio.play();
+        newAudio.play().catch((error) => {
+            console.error("Error playing audio:", error);
+            toast.error("Unable to play audio.");
+        });
+
         setCurrentAudio(newAudio);
         setPlayingVoiceId(voiceId);
+        setActiveTypeVoiceId(typeId);
+
+        newAudio.onended = () => {
+            setPlayingVoiceId(null);
+            setCurrentAudio(null);
+        };
     };
+
+    const playVoicesSequentially = (voices) => {
+        if (voices.length === 0) return;
+
+        let currentVoiceIndex = 0;
+
+        const playNextVoice = () => {
+            if (currentVoiceIndex < voices.length) {
+                const voice = voices[currentVoiceIndex];
+                const newAudio = new Audio(`${process.env.REACT_APP_BASE_API_FILE_URL}/${voice.path}`);
+                newAudio.play().catch((error) => {
+                    console.error("Error playing audio:", error);
+                    toast.error("Unable to play audio.");
+                });
+
+                setCurrentAudio(newAudio);
+                setPlayingVoiceId(voice.id);
+                currentVoiceIndex++;
+
+                newAudio.onended = () => {
+                    setPlayingVoiceId(null);
+                    playNextVoice(); 
+                };
+            } else {
+                setCurrentAudio(null);
+                setPlayingVoiceId(null);
+            }
+        };
+
+        playNextVoice();
+    };
+
+    const handleClickTypeVoice = (type) => {
+        setActiveTypeVoiceId(type._id);
+        setOpenVoices(openVoices === type._id ? null : type._id);
+
+        const voicesToPlay = type.voices.map((child) => ({
+            id: child._id,
+            path: child.path,
+        }));
+
+        playVoicesSequentially(voicesToPlay);
+    };
+
 
     const filterByTypeVoiceId = typeVoiceData?.map((typeVoice) => {
         return {
             ...typeVoice,
-            voices: voiceData.filter((voice) => (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id),
+            voices: voiceData.filter((voice) => (publicationsData?.createBy === userId ? (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id : (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id &&
+                voice.isPublic === true)),
         };
     });
+    const canAddVoice = publicationsData?.createBy === currentUserId;
 
     return (
         <>
@@ -131,19 +200,24 @@ const MenuAddVoice: FC<Props> = ({
                 transformOrigin={{ horizontal: "right", vertical: "top" }}
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             >
-                <MenuItem onClick={handleOpenAddVoice}>
-                    <ListItemIcon>
-                        <IconPlus size={20} />
-                    </ListItemIcon>
-                    Thêm voice
-                </MenuItem>
-                {filterByTypeVoiceId?.length > 0 && <Divider sx={{ margin: 0 }} />}
+                {
+                    canAddVoice && (
+                        <MenuItem onClick={handleOpenAddVoice}>
+                            <ListItemIcon>
+                                <IconPlus size={20} />
+                            </ListItemIcon>
+                            Thêm voice
+                        </MenuItem>
+                    )
+                }
+
+                {canAddVoice && <Divider sx={{ margin: 0 }} />}
 
                 {filterByTypeVoiceId?.map((type) => (
                     <li
                         key={type._id}
-                        onMouseEnter={() => setHoveredTypeId(type._id)}
-                        onMouseLeave={() => setHoveredTypeId(null)}
+                        // onMouseEnter={() => setHoveredTypeId(type._id)}
+                        // onMouseLeave={() => setHoveredTypeId(null)}
                     >
                         <Box
                             sx={{
@@ -159,7 +233,7 @@ const MenuAddVoice: FC<Props> = ({
                                 },
                             }}
                         >
-                            <MenuItem key={type._id} selected={playingVoiceId === type._id}>
+                            <MenuItem  onClick={() => handleClickTypeVoice(type)} key={type._id} selected={activeTypeVoiceId === type._id}>
                                 <ListItemIcon>
                                     <IconFlag />
                                 </ListItemIcon>
@@ -167,7 +241,8 @@ const MenuAddVoice: FC<Props> = ({
                             </MenuItem>
                         </Box>
 
-                        {hoveredTypeId === type._id && type?.voices?.length > 0 && (
+                        {/* {hoveredTypeId === type._id && type?.voices?.length > 0 && ( */}
+                        {openVoices === type._id && type?.voices?.length > 0 && (
                             <ul
                                 style={{
                                     position: "absolute",
@@ -185,8 +260,8 @@ const MenuAddVoice: FC<Props> = ({
                                 {type?.voices?.map((child) => (
                                     <Box
                                         key={child._id}
-                                        onMouseEnter={() => setHoveredTypeId(type._id)}
-                                        onMouseLeave={() => setHoveredTypeId(null)}
+                                        // onMouseEnter={() => setHoveredTypeId(type._id)}
+                                        // onMouseLeave={() => setHoveredTypeId(null)}
                                     >
                                         <Box
                                             sx={{
@@ -205,7 +280,7 @@ const MenuAddVoice: FC<Props> = ({
                                             <MenuItem
                                                 key={child._id}
                                                 onClick={() =>
-                                                    handleClickVoice(child.path, child._id)
+                                                    handleClickVoice(child.path, child._id, type._id)
                                                 }
                                                 selected={playingVoiceId === child._id}
                                             >

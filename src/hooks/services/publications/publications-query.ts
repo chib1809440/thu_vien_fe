@@ -3,7 +3,7 @@ import publicationsService from "../../../_apis/services/publications.service";
 import { TFilter } from "../../../types/models/entity-common.type";
 import { TPublications } from "../../../types/models/publications.type";
 import { getQueryKeys } from "../../../utils/object";
-import { GET_PUBLICATIONS, GET_PUBLICATIONS_DELETED, GET_PUBLICATIONS_DELETED_ID, GET_PUBLICATIONS_ID } from "./publications-key";
+import { GET_PUBLICATIONS, GET_PUBLICATIONS_DELETED, GET_PUBLICATIONS_DELETED_ID, GET_PUBLICATIONS_ID, GET_PUBLICATIONS_LINK } from "./publications-key";
 
 export const useFetchPublications = (params?: TFilter) => {
     return useQuery({
@@ -68,4 +68,27 @@ export const useFetchPublicationsDeleteListById = (_id: string)=>{
         },
         placeholderData: keepPreviousData,
     })
+}
+
+// get link
+export const useFetchPublicationsLink = (params?:TFilter)=>{
+    return useQuery({
+        queryKey: getQueryKeys({ key: GET_PUBLICATIONS_LINK, ...params }),
+        queryFn: async()=>{
+            return await publicationsService.getAllLink<TPublications>(params);
+        },
+         placeholderData: keepPreviousData,
+    })
+}
+
+export const useReFetchPublicationsLink = ()=>{
+    const queryClient = useQueryClient();
+
+    const revalidate = (params?:TFilter)=>{
+        queryClient.invalidateQueries({
+            queryKey: getQueryKeys({ key: GET_PUBLICATIONS_LINK, ...params }),
+        })
+    }
+
+    return revalidate;
 }

@@ -3,7 +3,7 @@ import materialService from "../../../_apis/services/material.service";
 import { TFilter } from "../../../types/models/entity-common.type";
 import { TMaterial } from "../../../types/models/material";
 import { getQueryKeys } from "../../../utils/object";
-import { GET_MATERIAL_DELETED, GET_MATERIAL_DELETED_ID, GET_MATERIAL_ID, GET_MATERIALS } from "./material-key";
+import { GET_MATERIAL_DELETED, GET_MATERIAL_DELETED_ID, GET_MATERIAL_ID, GET_MATERIALS, GET_MATERIALS_LINK } from "./material-key";
 
 export const useFetchMaterial = (params?:TFilter)=>{
     return useQuery({
@@ -68,4 +68,27 @@ export const useFetchMaterialDeleteListById = (_id: string)=>{
         },
          placeholderData: keepPreviousData,
     })
+}
+
+// get link
+export const useFetchMaterialLink = (params?:TFilter)=>{
+    return useQuery({
+        queryKey: getQueryKeys({ key: GET_MATERIALS_LINK, ...params }),
+        queryFn: async()=>{
+            return await materialService.getAllLink<TMaterial>(params);
+        },
+         placeholderData: keepPreviousData,
+    })
+}
+
+export const useReFetchMaterialLink = ()=>{
+    const queryClient = useQueryClient();
+
+    const revalidate = (params?:TFilter)=>{
+        queryClient.invalidateQueries({
+            queryKey: getQueryKeys({ key: GET_MATERIALS_LINK, ...params }),
+        })
+    }
+
+    return revalidate;
 }

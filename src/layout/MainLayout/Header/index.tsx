@@ -12,6 +12,7 @@ import ProfileSection from "./ProfileSection";
 import { useNavigate } from "react-router-dom";
 import React from "react";
 import { isLoginWaiting } from "../../../store/slices/isLoginLT";
+import { useAuth } from "../../../contexts/JWTContext";
 
 
 // ==============================|| MAIN NAVBAR / HEADER ||============================== //
@@ -19,6 +20,7 @@ import { isLoginWaiting } from "../../../store/slices/isLoginLT";
 
 const Header = () => {
   const theme = useTheme();
+  const { logout } = useAuth();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -27,13 +29,15 @@ const Header = () => {
 
   const { isLogin } = useSelector((state) => state.isLogin);
   React.useEffect(() => {
-      dispatch(isLoginWaiting());
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+    dispatch(isLoginWaiting());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async() => {
+    // localStorage.removeItem('serviceTokenLT');
+    // navigate('trang-chu', { replace: true });
+    await logout();
     localStorage.removeItem('serviceTokenLT');
-    navigate('trang-chu', { replace: true });
   };
 
   return (
@@ -94,11 +98,11 @@ const Header = () => {
       <ProfileSection />
       <Box sx={{ flexGrow: 0.01 }} />
       {isLogin &&
-      <Grid item>
-        <Button variant="outlined" onClick={handleLogout} startIcon={<IconLogout />}>
-          Đăng xuất Liên thông
-        </Button>
-      </Grid>
+        <Grid item>
+          <Button variant="outlined" onClick={handleLogout} startIcon={<IconLogout />}>
+            Đăng xuất Liên thông
+          </Button>
+        </Grid>
       }
       <Customization />
 

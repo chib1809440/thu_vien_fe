@@ -81,3 +81,15 @@ export const useRestoreManyMaterial = () => {
         },
     })
 };
+
+// pull-link
+export const useAddMaterialPullLink = () => {
+    return useMutation({
+        mutationFn: async (data: { ids: string[], note: string, isPublic: boolean }) => {
+            return await materialService.createPullLink<TMaterial>(data)
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+}

@@ -220,7 +220,7 @@ const VoicePage = () => {
                                     </Box>
                                 )
                             }
-                            <Box>
+                             <Box>
                                 Chia sẽ lên thư viện:
                                 <Switch
                                     checked={row?.isPublic}
@@ -369,11 +369,11 @@ const VoicePage = () => {
                     handleBarcodeSearch={handleBarcodeSearch}
                 />
 
-                <FilterByItems
+                {/* <FilterByItems
                     selectedTypeVoice={selectedTypeVoice}
                     handleTypeVoiceFilterChange={handleTypeVoicelFilterChange}
                     typeVoiceData={typeVoiceData}
-                />
+                /> */}
 
                 <TableList
                     checked={checkedDelete}

@@ -2,13 +2,14 @@ import CloseIcon from "@mui/icons-material/Close";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Box, Dialog, DialogContent, Grid, IconButton, Paper, useTheme } from "@mui/material";
 import { IconVolume } from "@tabler/icons-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ImageCard from "../../../components/custom/card/ImageCard";
 import StyledIconButton from "../../../components/default/button/StyledIconButton";
 import { useFetchVoice } from "../../../hooks/services/voice/voice-query";
 import { TPublications } from "../../../types/models/publications.type";
 import MenuAddVoice from "./ui-components/MenuAddVoice";
 import { useFetchTypeVoice } from "../../../hooks/services/type-voice/type-voice-query";
+import { useAuth } from "../../../contexts/JWTContext";
 
 const ImageDetailPage = ({
     open,
@@ -23,7 +24,13 @@ const ImageDetailPage = ({
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const { data: voiceData } = useFetchVoice();
     const { data: typeVoiceData } = useFetchTypeVoice();
-    console.log("typeVoiceData", typeVoiceData);
+    const { user } = useAuth();
+
+    const userId = useMemo(() => {
+        if (!user) return null;
+        const _user = { ...user } as any;
+        return _user?.data?._id;
+    }, [user]);    
 
     const handleClickChangeMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -145,6 +152,7 @@ const ImageDetailPage = ({
                                         }
                                         publicationsData={publications}
                                         typeVoiceData={typeVoiceData?.data?.result}
+                                        currentUserId={userId}
                                     />
                                 )}
                             </Box>

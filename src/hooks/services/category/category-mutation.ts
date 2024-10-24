@@ -81,3 +81,16 @@ export const useRestoreManyCategory = () => {
         },
     })
 };
+
+
+// pull-link
+export const useAddCategoryPullLink = () => {
+    return useMutation({
+        mutationFn: async (data: { ids: string[], note: string, isPublic: boolean }) => {
+            return await categoryService.createPullLink<TCategory>(data)
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+}

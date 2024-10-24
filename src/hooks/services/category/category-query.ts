@@ -3,7 +3,7 @@ import categoryService from "../../../_apis/services/category.service";
 import { TCategory } from "../../../types/models/category";
 import { TFilter } from "../../../types/models/entity-common.type";
 import { getQueryKeys } from "../../../utils/object";
-import { GET_CATEGORIES, GET_CATEGORY_DELETED, GET_CATEGORY_DELETED_ID, GET_CATEGORY_ID } from "./category-key";
+import { GET_CATEGORIES, GET_CATEGORIES_LINK, GET_CATEGORY_DELETED, GET_CATEGORY_DELETED_ID, GET_CATEGORY_ID } from "./category-key";
 
 export const useFetchCategory = (params?:TFilter)=>{
     return useQuery({
@@ -69,3 +69,27 @@ export const useFetchCategoryDeleteListById = (_id: string)=>{
         placeholderData: keepPreviousData,
     })
 }
+
+// get link
+export const useFetchCategoryLink = (params?:TFilter)=>{
+    return useQuery({
+        queryKey: getQueryKeys({ key: GET_CATEGORIES_LINK, ...params }),
+        queryFn: async()=>{
+            return await categoryService.getAllLink<TCategory>(params);
+        },
+         placeholderData: keepPreviousData,
+    })
+}
+
+export const useReFetchCategoryLink = ()=>{
+    const queryClient = useQueryClient();
+
+    const revalidate = (params?:TFilter)=>{
+        queryClient.invalidateQueries({
+            queryKey: getQueryKeys({ key: GET_CATEGORIES_LINK, ...params }),
+        })
+    }
+
+    return revalidate;
+}
+

@@ -293,7 +293,7 @@ const LibraryPublicationsPage = () => {
                     handleBarcodeSearch={handleBarcodeSearch}
                     selectedLibrary={selectedLibrary}
                     handleLibraryFilterChange={handleLibraryFilterChange}
-                    libraryData={libraryData?.data?.result[0]?.libraries}
+                    libraryData={libraryData?.data?.result?.libraries}
                 />
 
                 <FilterByItems

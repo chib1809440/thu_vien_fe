@@ -87,7 +87,7 @@ export const useRestoreManyPublisher = () => {
 export const useAddPublisherPullLink = () => {
     return useMutation({
         mutationFn: async (data: { ids: string[], note: string, isPublic: boolean }) => {
-            return await publisherService.createPullLink<TPublisher>(data)
+            return await publisherService.createPullLink<{ data: TPublisher; errors?: any }>(data)
         },
         onError: (error: any) => {
             toast.error(error.message);

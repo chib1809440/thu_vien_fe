@@ -61,10 +61,19 @@ const LibPublisherPage = () => {
                 note: "",
                 ids: [publisherPullLink?._id]
             }, {
-                onSuccess: () => {
-                    revalidate({ limit, page, search });
-                    toast.success('Liên thông thành công.');
+                onSuccess: (data) => {
+                    revalidate({
+                        limit,
+                        page,
+                        ...filter,
+                    });
                     setOpenConfirmPullLink(false);
+                    if (data.data.errors) {
+                        console.log(data);
+                        toast.error("Tên đã tồn tại");
+                    } else {
+                        toast.success("Liên thông thành công");
+                    }
                 },
             });
         }
@@ -225,7 +234,7 @@ const LibPublisherPage = () => {
                 <ActionsForm actions={actionMenus}
                     selectedLibrary={selectedLibrary}
                     handleLibraryFilterChange={handleLibraryFilterChange}
-                    libraryData={libraryData?.data?.result[0]?.libraries}
+                    libraryData={libraryData?.data?.result?.libraries}
                 />
 
                 <TableList

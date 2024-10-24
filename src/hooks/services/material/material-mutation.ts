@@ -91,13 +91,5 @@ export const useAddMaterialPullLink = () => {
         onError: (error: any) => {
             toast.error(error.message);
         },
-        onSuccess(data) {
-            if (data.data.errors) {
-                console.log(data);
-                toast.error("Tên đã tồn tại");
-            } else {
-                toast.success("Liên thông thành công");
-            }
-        },
     })
 }

@@ -236,7 +236,6 @@ const MenuAddVoice: FC<Props> = ({
                                         display: "flex",
                                         justifyContent: "space-between",
                                         alignItems: "center",
-                                        padding: 1,
                                         backgroundColor: "white",
                                         transition: "all 0.3s",
                                         "&:hover": {
@@ -245,12 +244,18 @@ const MenuAddVoice: FC<Props> = ({
                                         },
                                     }}
                                 >
-                                    <MenuItem onClick={() => handleClickTypeVoice(type)} key={type._id} selected={activeTypeVoiceId === type._id}>
-                                        <ListItemIcon>
-                                            <IconFlag />
-                                        </ListItemIcon>
-                                        {type?.name}
-                                    </MenuItem>
+                                    {type?.voices?.length > 0 && (
+                                        <MenuItem
+                                            onClick={() => handleClickTypeVoice(type)}
+                                            key={type._id}
+                                            selected={activeTypeVoiceId === type._id}
+                                        >
+                                            <ListItemIcon>
+                                                <IconFlag />
+                                            </ListItemIcon>
+                                            {type.name}
+                                        </MenuItem>
+                                    )}
                                 </Box>
 
                                 {/* {hoveredTypeId === type._id && type?.voices?.length > 0 && ( */}
@@ -263,7 +268,7 @@ const MenuAddVoice: FC<Props> = ({
                                             boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
                                             zIndex: 10,
                                             right: "100%",
-                                            top: "29%",
+                                            bottom: "-90%",
                                             listStyle: "none",
                                             padding: 0,
                                             margin: 0,
@@ -280,7 +285,7 @@ const MenuAddVoice: FC<Props> = ({
                                                         display: "flex",
                                                         justifyContent: "space-between",
                                                         alignItems: "center",
-                                                        padding: 1.5,
+                                                        padding: 1,
                                                         backgroundColor: "white",
                                                         transition: "all 0.3s",
                                                         "&:hover": {
@@ -325,7 +330,6 @@ const MenuAddVoice: FC<Props> = ({
                                         display: "flex",
                                         justifyContent: "space-between",
                                         alignItems: "center",
-                                        padding: 1,
                                         backgroundColor: "white",
                                         transition: "all 0.3s",
                                         "&:hover": {
@@ -334,12 +338,18 @@ const MenuAddVoice: FC<Props> = ({
                                         },
                                     }}
                                 >
-                                    <MenuItem onClick={() => handleClickTypeVoice(type)} key={type._id} selected={activeTypeVoiceId === type._id}>
-                                        <ListItemIcon>
-                                            <IconFlag />
-                                        </ListItemIcon>
-                                        {type?.name}
-                                    </MenuItem>
+                                    {type?.voices?.length > 0 && (
+                                        <MenuItem
+                                            onClick={() => handleClickTypeVoice(type)}
+                                            key={type._id}
+                                            selected={activeTypeVoiceId === type._id}
+                                        >
+                                            <ListItemIcon>
+                                                <IconFlag />
+                                            </ListItemIcon>
+                                            {type.name}
+                                        </MenuItem>
+                                    )}
                                 </Box>
 
                                 {openVoices === type._id && type?.voices?.length > 0 && (

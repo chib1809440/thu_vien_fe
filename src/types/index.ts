@@ -42,10 +42,10 @@ import { UsbStateProps } from './usb';
 import { UserLTStateProps } from './userLT';
 import { SuppliesLTStateProps } from './suppliesLT';
 
-declare module '@mui/styles/defaultTheme' {
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface DefaultTheme extends Theme {}
-}
+// declare module '@mui/styles/defaultTheme' {
+//     // eslint-disable-next-line @typescript-eslint/no-empty-interface
+//     interface DefaultTheme extends Theme {}
+// }
 
 export type ArrangementOrder = 'asc' | 'desc' | undefined;
 
@@ -75,8 +75,8 @@ export interface GenericCardProps {
 
 export type OverrideIcon =
     | (OverridableComponent<SvgIconTypeMap<{}, 'svg'>> & {
-          muiName: string;
-      })
+        muiName: string;
+    })
     | React.ComponentClass<any>
     | FunctionComponent<any>
     | TablerIcon;
@@ -143,7 +143,7 @@ export interface DefaultRootStateProps {
     calendar: CalendarStateProps;
     mail: MailStateProps;
     user: UserStateProps;
-    getlistprojectwaiting:ProjectWaitingStateProps;
+    getlistprojectwaiting: ProjectWaitingStateProps;
 }
 export interface LibRootStateProps {
     allAccount: AllAccountStateProps;
@@ -162,11 +162,11 @@ export interface LibRootStateProps {
     getStateOfBook: StateOfBookStateProps;
     getRegisterSlip: RegisterSlipStateProps
     getAssetsLib: AssetsLibStateProps;
-    getUsb : UsbStateProps;
-    getBarcode : BarcodeStateProps;
-    getApiLT : ApiStateProps;
-    isLogin : IsAuthLTStateProps;
-    getUserLT : UserLTStateProps;
+    getUsb: UsbStateProps;
+    getBarcode: BarcodeStateProps;
+    getApiLT: ApiStateProps;
+    isLogin: IsAuthLTStateProps;
+    getUserLT: UserLTStateProps;
 }
 
 export interface ColorProps {

@@ -24,7 +24,6 @@ import Sidebar, { SidebarV2 } from "./Sidebar";
 
 // assets
 import { IconChevronRight } from "@tabler/icons";
-import ModalUser from "../../views/dashboard-admin/ModalUser";
 interface MainStyleProps {
   theme: Theme;
   open: boolean;
@@ -140,7 +139,6 @@ const MainLayout = () => {
           )}
         </Main>
         {/* {openBC && <ModalUser isOpen={openBC} userID={userID}/>} */}
-        <ModalUser isOpen={openBC} userID={userID} />
       </>
       {/* <Customization /> */}
       {/* <ModalTraSach isOpen={isOpenV2} userID={props.userID} isClose={(newIs) => setOpenV2(newIs)} /> */}

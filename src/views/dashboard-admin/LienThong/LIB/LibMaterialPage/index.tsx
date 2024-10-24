@@ -181,7 +181,8 @@ const LibMaterialPage = () => {
         setCheckedDelete(allCheckedIds);
         setOpenConfirmPullLinkMultiple(true); 
     }, [data]);
-
+    console.log("ds", data?.data?.meta );
+    
     return (
         <div>
             <IBreadcrumsCustom

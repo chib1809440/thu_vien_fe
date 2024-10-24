@@ -21,9 +21,7 @@ const AssetTrashPage = Loadable(
 const LibInformationPage = Loadable(
   lazy(() => import("../views/dashboard-admin/LibInformationPage"))
 );
-// const ContactPage = Loadable(
-//   lazy(() => import("../views/dashboard-admin/Contact"))
-// );
+
 const AccountPage = Loadable(
   lazy(() => import("../views/dashboard-admin/SystemPage/AccountPage"))
 );
@@ -36,15 +34,6 @@ const AccountTrashPage = Loadable(
 const RolePage = Loadable(
   lazy(() => import("../views/dashboard-admin/SystemPage/RolePage"))
 );
-// const UserProfilePage = Loadable(
-//   lazy(() => import("../views/dashboard-admin/ProfileUser"))
-// );
-// const DistributionOfPowers = Loadable(
-//   lazy(() => import("../views/dashboard-admin/SystemPage/DistributionOfPowers"))
-// );
-// const ControlPower = Loadable(
-//   lazy(() => import("../views/dashboard-admin/SystemPage/ControlPower"))
-// );
 
 const GroupPage = Loadable(
   lazy(() => import("../views/dashboard-admin/GroupPage"))
@@ -116,29 +105,11 @@ const LiquidationProductPage = Loadable(
   lazy(() => import("../views/dashboard-admin/WarehousePage/LiquidationProductPage"))
 );
 
-// const DetailsPublicationsPage = Loadable(
-//   lazy(() => import("../views/dashboard-admin/DetailsPublications"))
-// );
-// const DetailsDirectoryPage = Loadable(
-//   lazy(() => import("../views/dashboard-admin/DetailsDirectory"))
-// );
+
 const LoanSlipPage = Loadable(
   lazy(() => import("../views/dashboard-admin/LoanSlipPage"))
 );
-// const PayPage = Loadable(
-//   lazy(() => import("../views/dashboard-admin/BorrowToPayPage/PayPage"))
-// );
-// const RegistrationPage = Loadable(
-//   lazy(() => import("../views/dashboard-admin/BorrowToPayPage/RegistrationPage"))
-// );
-// const Documents = Loadable(
-//   lazy(() => import("../views/dashboard-admin/Documents"))
-// );
-// const TaiKhoan = Loadable(
-//   lazy(() => import("../views/dashboard-admin/Documents/taikhoan/taikhoan"))
-// );
-// const LoaiSach = Loadable(
-//   lazy(() => import("../views/dashboard-admin/Documents/danhmuc/loaisach"))
+
 // );
 const AIBOX = Loadable(
   lazy(() => import("../views/dashboard-admin/AI"))
@@ -168,31 +139,8 @@ const LibPublisherPage = Loadable(
 
 
 
-// const LibraryOriginal = Loadable(
-//   lazy(() => import("../views/dashboard-admin/LienThong/LIB/Library/Original"))
-// );
-// const LibraryElectronic = Loadable(
-//   lazy(() => import("../views/dashboard-admin/LienThong/LIB/Library/Electronic"))
-// );
-// const LibAuthor = Loadable(
-//   lazy(() => import("../views/dashboard-admin/LienThong/LIB/Author"))
-// );
-// const LibCategory = Loadable(
-//   lazy(() => import("../views/dashboard-admin/LienThong/LIB/Category"))
-// );
-// const LibTypeOfSupplies = Loadable(
-//   lazy(() => import("../views/dashboard-admin/LienThong/LIB/LibTypeOfSupplies"))
-// );
-// const LibPublisher = Loadable(
-//   lazy(() => import("../views/dashboard-admin/LienThong/LIB/Publisher"))
-// );
 
-const LibLoan = Loadable(
-  lazy(() => import("../views/dashboard-admin/LienThong/LIB/LoanPayment/Loan"))
-);
-const LibPayment = Loadable(
-  lazy(() => import("../views/dashboard-admin/LienThong/LIB/LoanPayment/Payment"))
-);
+
 const LibAccount = Loadable(
   lazy(() => import("../views/dashboard-admin/LienThong/LIB/Account"))
 );
@@ -413,14 +361,6 @@ export const MainRoutesV2 = {
     {
       path: "lien-thong/chia-se-danh-muc/nha-san-xuat",
       element: <LibPublisherPage />,
-    },
-    {
-      path: "danh-sach-muon-tra-lien-thong/dang-ky",
-      element: <LibLoan />,
-    },
-    {
-      path: "danh-sach-muon-tra-lien-thong/muon",
-      element: <LibPayment />,
     },
     {
       path: "tai-khoan-lien-thong",

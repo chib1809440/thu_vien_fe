@@ -8,6 +8,7 @@ import StyledButton from "../../../../../components/default/button/StyledButton"
 import ConfirmDeleteDialog from "../../../../../components/default/dialog/ConfirmDeleteDialog";
 import { useAddCategoryPullLink } from "../../../../../hooks/services/category/category-mutation";
 import { useFetchCategoryLink, useReFetchCategoryLink } from "../../../../../hooks/services/category/category-query";
+import { useFetchLibrariesFromGroup } from "../../../../../hooks/services/group/group-query";
 import useQueryString from "../../../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../../../types/common/table";
 import { TCategory } from "../../../../../types/models/category";
@@ -22,14 +23,16 @@ const LibCategoryPage = () => {
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
+    const [selectedLibrary, setSelectedLibrary] = useState(0);
 
     const filter = useMemo(
         () =>
             parserParams([
                 { compare: "", target: { search } },
+                { compare: 0, target: { libraryId: selectedLibrary } },
             ]),
         [
-            search,
+            search, selectedLibrary
         ]
     );
     const { data, isLoading } = useFetchCategoryLink({
@@ -37,7 +40,7 @@ const LibCategoryPage = () => {
         page,
         ...filter,
     });
-    
+    const { data: libraryData } = useFetchLibrariesFromGroup();
     const mutationPullLink = useAddCategoryPullLink();
     const revalidate = useReFetchCategoryLink();
     const [openConfirmPullLinkMultiple, setOpenConfirmPullLinkMultiple] = useState(false);
@@ -69,6 +72,11 @@ const LibCategoryPage = () => {
 
     const handleCloseConfirmRestoreDialog = () => {
         setOpenConfirmPullLink(false);
+    };
+
+    // lọc
+    const handleLibraryFilterChange = (event) => {
+        setSelectedLibrary(event.target.value);
     };
 
     const columns: TColumn<TCategory & { libraryDetails?: TLibrary }>[] = useMemo(
@@ -179,7 +187,7 @@ const LibCategoryPage = () => {
 
         const allCheckedIds = data.data.result.map(item => item._id);
         setCheckedDelete(allCheckedIds);
-        setOpenConfirmPullLinkMultiple(true); 
+        setOpenConfirmPullLinkMultiple(true);
     }, [data]);
 
     return (
@@ -214,7 +222,11 @@ const LibCategoryPage = () => {
                     </Box>
                 </Stack>
 
-                <ActionsForm actions={actionMenus} />
+                <ActionsForm actions={actionMenus}
+                    selectedLibrary={selectedLibrary}
+                    handleLibraryFilterChange={handleLibraryFilterChange}
+                    libraryData={libraryData?.data?.result[0]?.libraries}
+                />
 
                 <TableList
                     checked={checkedDelete}

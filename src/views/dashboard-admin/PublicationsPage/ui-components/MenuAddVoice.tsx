@@ -1,10 +1,10 @@
-import { Box, Divider, ListItemIcon, Menu, MenuItem } from "@mui/material";
+import { Box, Divider, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material";
 import { IconFlag, IconPlus, IconVolume, IconVolumeOff } from "@tabler/icons-react";
 import { FC, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "../../../../contexts/JWTContext";
 import { useAddVoice, useEditVoice } from "../../../../hooks/services/voice/voice-mutation";
-import { useReFetchVoice } from "../../../../hooks/services/voice/voice-query";
+import { useFetchVoiceLink, useReFetchVoice } from "../../../../hooks/services/voice/voice-query";
 import { TPublications } from "../../../../types/models/publications.type";
 import { TTypeVoice } from "../../../../types/models/type-voice";
 import { TVoice, TVoiceCreate } from "../../../../types/models/voice";
@@ -38,6 +38,7 @@ const MenuAddVoice: FC<Props> = ({
     const [activeTypeVoiceId, setActiveTypeVoiceId] = useState<string | null>(null);
     const [openVoices, setOpenVoices] = useState<string | null>(null);
     const { user } = useAuth();
+    const { data: voiceLinkData } = useFetchVoiceLink();
 
     const userId = useMemo(() => {
         if (!user) return null;
@@ -150,7 +151,7 @@ const MenuAddVoice: FC<Props> = ({
 
                 newAudio.onended = () => {
                     setPlayingVoiceId(null);
-                    playNextVoice(); 
+                    playNextVoice();
                 };
             } else {
                 setCurrentAudio(null);
@@ -177,11 +178,20 @@ const MenuAddVoice: FC<Props> = ({
     const filterByTypeVoiceId = typeVoiceData?.map((typeVoice) => {
         return {
             ...typeVoice,
-            voices: voiceData.filter((voice) => (publicationsData?.createBy === userId ? (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id : (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id &&
+            voices: voiceData?.filter((voice) => (publicationsData?.createBy === userId ? (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id : (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id &&
                 voice.isPublic === true)),
         };
     });
+    const filterByTypeVoiceIdPullLink = typeVoiceData?.map((typeVoice) => {
+        return {
+            ...typeVoice,
+            voices: voiceLinkData?.data?.result?.filter((voice) => (publicationsData?.createBy === userId ? voice.typeVoiceId === (typeVoice as TTypeVoice)?._id : (voice.typeVoiceId === (typeVoice as TTypeVoice)?._id &&
+                voice.isPublic === true && voice.isLink === true))),
+        };
+    });
+
     const canAddVoice = publicationsData?.createBy === currentUserId;
+    const currentPath = window.location.pathname;
 
     return (
         <>
@@ -213,93 +223,184 @@ const MenuAddVoice: FC<Props> = ({
 
                 {canAddVoice && <Divider sx={{ margin: 0 }} />}
 
-                {filterByTypeVoiceId?.map((type) => (
-                    <li
-                        key={type._id}
-                        // onMouseEnter={() => setHoveredTypeId(type._id)}
-                        // onMouseLeave={() => setHoveredTypeId(null)}
-                    >
-                        <Box
-                            sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                padding: 1,
-                                backgroundColor: "white",
-                                transition: "all 0.3s",
-                                "&:hover": {
-                                    color: "#1791e2",
-                                    backgroundColor: "rgba(248, 248, 248, 0.5)",
-                                },
-                            }}
-                        >
-                            <MenuItem  onClick={() => handleClickTypeVoice(type)} key={type._id} selected={activeTypeVoiceId === type._id}>
-                                <ListItemIcon>
-                                    <IconFlag />
-                                </ListItemIcon>
-                                {type?.name}
-                            </MenuItem>
-                        </Box>
-
-                        {/* {hoveredTypeId === type._id && type?.voices?.length > 0 && ( */}
-                        {openVoices === type._id && type?.voices?.length > 0 && (
-                            <ul
-                                style={{
-                                    position: "absolute",
-                                    minWidth: "300px",
-                                    backgroundColor: "white",
-                                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                                    zIndex: 10,
-                                    right: "100%",
-                                    top: "29%",
-                                    listStyle: "none",
-                                    padding: 0,
-                                    margin: 0,
-                                }}
+                {currentPath === '/lien-thong'
+                    ? (filterByTypeVoiceIdPullLink.length > 0 ? (
+                        filterByTypeVoiceIdPullLink.map((type) => (
+                            <li
+                                key={type._id}
+                            // onMouseEnter={() => setHoveredTypeId(type._id)}
+                            // onMouseLeave={() => setHoveredTypeId(null)}
                             >
-                                {type?.voices?.map((child) => (
-                                    <Box
-                                        key={child._id}
-                                        // onMouseEnter={() => setHoveredTypeId(type._id)}
-                                        // onMouseLeave={() => setHoveredTypeId(null)}
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        padding: 1,
+                                        backgroundColor: "white",
+                                        transition: "all 0.3s",
+                                        "&:hover": {
+                                            color: "#1791e2",
+                                            backgroundColor: "rgba(248, 248, 248, 0.5)",
+                                        },
+                                    }}
+                                >
+                                    <MenuItem onClick={() => handleClickTypeVoice(type)} key={type._id} selected={activeTypeVoiceId === type._id}>
+                                        <ListItemIcon>
+                                            <IconFlag />
+                                        </ListItemIcon>
+                                        {type?.name}
+                                    </MenuItem>
+                                </Box>
+
+                                {/* {hoveredTypeId === type._id && type?.voices?.length > 0 && ( */}
+                                {openVoices === type._id && type?.voices?.length > 0 && (
+                                    <ul
+                                        style={{
+                                            position: "absolute",
+                                            minWidth: "300px",
+                                            backgroundColor: "white",
+                                            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                                            zIndex: 10,
+                                            right: "100%",
+                                            top: "29%",
+                                            listStyle: "none",
+                                            padding: 0,
+                                            margin: 0,
+                                        }}
                                     >
-                                        <Box
-                                            sx={{
-                                                display: "flex",
-                                                justifyContent: "space-between",
-                                                alignItems: "center",
-                                                padding: 1.5,
-                                                backgroundColor: "white",
-                                                transition: "all 0.3s",
-                                                "&:hover": {
-                                                    color: "#1791e2",
-                                                    backgroundColor: "rgba(248, 248, 248, 0.5)",
-                                                },
-                                            }}
-                                        >
-                                            <MenuItem
+                                        {type?.voices?.map((child) => (
+                                            <Box
                                                 key={child._id}
-                                                onClick={() =>
-                                                    handleClickVoice(child.path, child._id, type._id)
-                                                }
-                                                selected={playingVoiceId === child._id}
+                                            // onMouseEnter={() => setHoveredTypeId(type._id)}
+                                            // onMouseLeave={() => setHoveredTypeId(null)}
                                             >
-                                                <ListItemIcon>
-                                                    {playingVoiceId === child._id ? (
-                                                        <IconVolume fontSize="small" className="animate" />
-                                                    ) : (
-                                                        <IconVolumeOff fontSize="small" />
-                                                    )}
-                                                </ListItemIcon>
-                                                Hội thoại {child.name}
-                                            </MenuItem>
-                                        </Box>
-                                    </Box>
-                                ))}
-                            </ul>
-                        )}
-                    </li>
-                ))}
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        justifyContent: "space-between",
+                                                        alignItems: "center",
+                                                        padding: 1.5,
+                                                        backgroundColor: "white",
+                                                        transition: "all 0.3s",
+                                                        "&:hover": {
+                                                            color: "#1791e2",
+                                                            backgroundColor: "rgba(248, 248, 248, 0.5)",
+                                                        },
+                                                    }}
+                                                >
+                                                    <MenuItem
+                                                        key={child._id}
+                                                        onClick={() =>
+                                                            handleClickVoice(child.path, child._id, type._id)
+                                                        }
+                                                        selected={playingVoiceId === child._id}
+                                                    >
+                                                        <ListItemIcon>
+                                                            {playingVoiceId === child._id ? (
+                                                                <IconVolume fontSize="small" className="animate" />
+                                                            ) : (
+                                                                <IconVolumeOff fontSize="small" />
+                                                            )}
+                                                        </ListItemIcon>
+                                                        Hội thoại {child?.name}
+                                                    </MenuItem>
+                                                </Box>
+                                            </Box>
+                                        ))}
+                                    </ul>
+                                )}
+                            </li>
+                        ))
+                    ) : (
+                        <Typography p={1}>Không có âm thanh cho tranh</Typography>
+                    ))
+                    : (filterByTypeVoiceId?.length > 0 ? (
+                        filterByTypeVoiceId.map((type) => (
+                            <li
+                                key={type._id}
+                            >
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        padding: 1,
+                                        backgroundColor: "white",
+                                        transition: "all 0.3s",
+                                        "&:hover": {
+                                            color: "#1791e2",
+                                            backgroundColor: "rgba(248, 248, 248, 0.5)",
+                                        },
+                                    }}
+                                >
+                                    <MenuItem onClick={() => handleClickTypeVoice(type)} key={type._id} selected={activeTypeVoiceId === type._id}>
+                                        <ListItemIcon>
+                                            <IconFlag />
+                                        </ListItemIcon>
+                                        {type?.name}
+                                    </MenuItem>
+                                </Box>
+
+                                {openVoices === type._id && type?.voices?.length > 0 && (
+                                    <ul
+                                        style={{
+                                            position: "absolute",
+                                            minWidth: "300px",
+                                            backgroundColor: "white",
+                                            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                                            zIndex: 10,
+                                            right: "100%",
+                                            top: "29%",
+                                            listStyle: "none",
+                                            padding: 0,
+                                            margin: 0,
+                                        }}
+                                    >
+                                        {type?.voices?.map((child) => (
+                                            <Box
+                                                key={child._id}
+                                            >
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        justifyContent: "space-between",
+                                                        alignItems: "center",
+                                                        padding: 1.5,
+                                                        backgroundColor: "white",
+                                                        transition: "all 0.3s",
+                                                        "&:hover": {
+                                                            color: "#1791e2",
+                                                            backgroundColor: "rgba(248, 248, 248, 0.5)",
+                                                        },
+                                                    }}
+                                                >
+                                                    <MenuItem
+                                                        key={child._id}
+                                                        onClick={() =>
+                                                            handleClickVoice(child.path, child._id, type._id)
+                                                        }
+                                                        selected={playingVoiceId === child._id}
+                                                    >
+                                                        <ListItemIcon>
+                                                            {playingVoiceId === child._id ? (
+                                                                <IconVolume fontSize="small" className="animate" />
+                                                            ) : (
+                                                                <IconVolumeOff fontSize="small" />
+                                                            )}
+                                                        </ListItemIcon>
+                                                        Hội thoại {child?.name}
+                                                    </MenuItem>
+                                                </Box>
+                                            </Box>
+                                        ))}
+                                    </ul>
+                                )}
+                            </li>
+                        ))
+                    ) : (
+                        <Typography p={1}>Không có âm thanh cho tranh</Typography>
+                    ))}
 
                 {openAddEdit && (
                     <DialogAddEditVoice

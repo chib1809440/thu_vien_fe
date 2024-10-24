@@ -6,6 +6,7 @@ import ActionsForm from "../../../../../components/custom/form/ActionForm";
 import TableList from "../../../../../components/custom/table-list/TableList";
 import StyledButton from "../../../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../../../components/default/dialog/ConfirmDeleteDialog";
+import { useFetchLibrariesFromGroup } from "../../../../../hooks/services/group/group-query";
 import { useAddMaterialPullLink } from "../../../../../hooks/services/material/material-mutation";
 import { useFetchMaterialLink, useReFetchMaterialLink } from "../../../../../hooks/services/material/material-query";
 import useQueryString from "../../../../../hooks/services/useQueryString";
@@ -22,14 +23,16 @@ const LibMaterialPage = () => {
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
+    const [selectedLibrary, setSelectedLibrary] = useState(0);
 
     const filter = useMemo(
         () =>
             parserParams([
                 { compare: "", target: { search } },
+                { compare: 0, target: { libraryId: selectedLibrary } },
             ]),
         [
-            search,
+            search, selectedLibrary
         ]
     );
     const { data, isLoading } = useFetchMaterialLink({
@@ -37,7 +40,7 @@ const LibMaterialPage = () => {
         page,
         ...filter,
     });
-    
+    const { data: libraryData } = useFetchLibrariesFromGroup();
     const mutationPullLink = useAddMaterialPullLink();
     const revalidate = useReFetchMaterialLink();
     const [openConfirmPullLinkMultiple, setOpenConfirmPullLinkMultiple] = useState(false);
@@ -60,7 +63,6 @@ const LibMaterialPage = () => {
             }, {
                 onSuccess: () => {
                     revalidate({ limit, page, search });
-                    toast.success('Liên thông thành công.');
                     setOpenConfirmPullLink(false);
                 },
             });
@@ -69,6 +71,11 @@ const LibMaterialPage = () => {
 
     const handleCloseConfirmRestoreDialog = () => {
         setOpenConfirmPullLink(false);
+    };
+
+    // lọc
+    const handleLibraryFilterChange = (event) => {
+        setSelectedLibrary(event.target.value);
     };
 
     const columns: TColumn<TMaterial & { libraryDetails?: TLibrary }>[] = useMemo(
@@ -179,10 +186,9 @@ const LibMaterialPage = () => {
 
         const allCheckedIds = data.data.result.map(item => item._id);
         setCheckedDelete(allCheckedIds);
-        setOpenConfirmPullLinkMultiple(true); 
+        setOpenConfirmPullLinkMultiple(true);
     }, [data]);
-    console.log("ds", data?.data?.meta );
-    
+
     return (
         <div>
             <IBreadcrumsCustom
@@ -215,7 +221,11 @@ const LibMaterialPage = () => {
                     </Box>
                 </Stack>
 
-                <ActionsForm actions={actionMenus} />
+                <ActionsForm actions={actionMenus}
+                    selectedLibrary={selectedLibrary}
+                    handleLibraryFilterChange={handleLibraryFilterChange}
+                    libraryData={libraryData?.data?.result[0]?.libraries}
+                />
 
                 <TableList
                     checked={checkedDelete}

@@ -20,6 +20,7 @@ import { getLabelFromOptions, parserParams } from "../../../../../utils/object";
 import FilterByItems from "../../../PublicationsPage/ui-components/FilterByItems";
 import PublicationsDetailsDialog from "../../../PublicationsPage/ui-components/PublicationsDetailsDialog";
 import { TLibrary } from "../../../../../types/models/library.type";
+import { useFetchLibrariesFromGroup } from "../../../../../hooks/services/group/group-query";
 
 const LibraryPublicationsPage = () => {
     const queryString = useQueryString();
@@ -27,6 +28,7 @@ const LibraryPublicationsPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
 
+    const [selectedLibrary, setSelectedLibrary] = useState(0);
     const [selectedMaterial, setSelectedMaterial] = useState(0);
     const [selectedPublications, setSelectedPublications] = useState(0);
     const [selectedAuthor, setSelectedAuthor] = useState(0);
@@ -44,6 +46,7 @@ const LibraryPublicationsPage = () => {
                 { compare: "", target: { search } },
                 { compare: 0, target: { type: selectedPublications } },
                 { compare: "", target: { barcode: barcodeSearch } },
+                { compare: 0, target: { libraryId: selectedLibrary } },
             ]),
         [
             selectedMaterial,
@@ -53,6 +56,7 @@ const LibraryPublicationsPage = () => {
             selectedPublications,
             barcodeSearch,
             search,
+            selectedLibrary
         ]
     );
     const { data, isLoading } = useFetchPublicationsLink({
@@ -60,7 +64,7 @@ const LibraryPublicationsPage = () => {
         page,
         ...filter,
     });
-
+    const { data: libraryData } = useFetchLibrariesFromGroup();
     const { data: categoryData } = useFetchCategoryLink();
     const { data: materialData } = useFetchMaterialLink();
     const { data: authorData } = useFetchAuthorLink();
@@ -100,6 +104,10 @@ const LibraryPublicationsPage = () => {
 
     const handleBarcodeSearch = (value) => {
         setBarcodeSearch(value);
+    };
+
+    const handleLibraryFilterChange = (event) => {
+        setSelectedLibrary(event.target.value);
     };
 
     const columns: TColumn<TPublications & { libraryDetails?: TLibrary }>[] = useMemo(
@@ -283,6 +291,9 @@ const LibraryPublicationsPage = () => {
                     barcode={true}
                     barcodeSearch={barcodeSearch}
                     handleBarcodeSearch={handleBarcodeSearch}
+                    selectedLibrary={selectedLibrary}
+                    handleLibraryFilterChange={handleLibraryFilterChange}
+                    libraryData={libraryData?.data?.result[0]?.libraries}
                 />
 
                 <FilterByItems

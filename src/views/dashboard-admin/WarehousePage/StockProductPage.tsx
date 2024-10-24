@@ -254,16 +254,8 @@ const StockProductPage = () => {
         return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
     }, [checkedDelete, data]);
 
-    const handleExcelExport = () => { };
-
     const actionMenus = useMemo((): TMenuOption[] => {
-        return [
-            {
-                label: "Xuất excel",
-                icon: <IconFileExcel size={20} stroke={1.5} />,
-                onClick: handleExcelExport,
-            },
-        ];
+        return [];
     }, []);
 
     const initialValues = useMemo((): TPublicationsCreate => {

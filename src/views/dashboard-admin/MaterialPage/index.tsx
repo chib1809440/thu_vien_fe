@@ -250,7 +250,6 @@ const MaterialPage = () => {
             isLink: false,
         };
     }, [selectedEdit]);
-    console.log("ds", data?.data?.meta);
 
     return (
         <div>

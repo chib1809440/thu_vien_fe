@@ -15,6 +15,7 @@ import { TPublisher } from "../../../../../types/models/publisher";
 import IBreadcrumsCustom from "../../../../../ui-component/breadcrums";
 import MainCard from "../../../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../../../utils/object";
+import { useFetchLibrariesFromGroup } from "../../../../../hooks/services/group/group-query";
 
 
 const LibPublisherPage = () => {
@@ -22,14 +23,16 @@ const LibPublisherPage = () => {
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
+    const [selectedLibrary, setSelectedLibrary] = useState(0);
 
     const filter = useMemo(
         () =>
             parserParams([
                 { compare: "", target: { search } },
+                { compare: 0, target: { libraryId: selectedLibrary } },
             ]),
         [
-            search,
+            search, selectedLibrary
         ]
     );
     const { data, isLoading } = useFetchPublisherLink({
@@ -37,7 +40,7 @@ const LibPublisherPage = () => {
         page,
         ...filter,
     });
-    
+    const { data: libraryData } = useFetchLibrariesFromGroup();
     const mutationPullLink = useAddPublisherPullLink();
     const revalidate = useReFetchPublisherLink();
     const [openConfirmPullLinkMultiple, setOpenConfirmPullLinkMultiple] = useState(false);
@@ -69,6 +72,11 @@ const LibPublisherPage = () => {
 
     const handleCloseConfirmRestoreDialog = () => {
         setOpenConfirmPullLink(false);
+    };
+
+    // lọc
+    const handleLibraryFilterChange = (event) => {
+        setSelectedLibrary(event.target.value);
     };
 
     const columns: TColumn<TPublisher & { libraryDetails?: TLibrary }>[] = useMemo(
@@ -179,7 +187,7 @@ const LibPublisherPage = () => {
 
         const allCheckedIds = data.data.result.map(item => item._id);
         setCheckedDelete(allCheckedIds);
-        setOpenConfirmPullLinkMultiple(true); 
+        setOpenConfirmPullLinkMultiple(true);
     }, [data]);
 
     return (
@@ -214,7 +222,11 @@ const LibPublisherPage = () => {
                     </Box>
                 </Stack>
 
-                <ActionsForm actions={actionMenus} />
+                <ActionsForm actions={actionMenus}
+                    selectedLibrary={selectedLibrary}
+                    handleLibraryFilterChange={handleLibraryFilterChange}
+                    libraryData={libraryData?.data?.result[0]?.libraries}
+                />
 
                 <TableList
                     checked={checkedDelete}

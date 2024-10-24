@@ -7,6 +7,7 @@ import SearchNoButtonSection from "../search/SearchNoButton";
 import StyledButton from "../../default/button/StyledButton";
 import { TMenuOption } from "../../../types/common/table";
 import CustomInput from "../../default/input/CustomInput";
+import { TLibrary } from "../../../types/models/library.type";
 
 type Props = {
     actions?: TMenuOption[];
@@ -16,9 +17,14 @@ type Props = {
     handleValuePublication?: (e: any) => void;
     barcode?: boolean;
     placeholder?: string;
+    selectedLibrary?: number;
+    handleLibraryFilterChange?: (event: any) => void;
+    libraryData?: TLibrary[];
 };
 
-const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSearch, barcode = false, placeholder = 'Tìm kiếm theo mã ấn phẩm', selectedValuePublication, handleValuePublication }) => {
+const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSearch, barcode = false, placeholder = 'Tìm kiếm theo mã ấn phẩm', selectedValuePublication, handleValuePublication, selectedLibrary,
+    handleLibraryFilterChange,
+    libraryData }) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const querySearch = searchParams.get("q") || "";
 
@@ -56,7 +62,7 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
 
     return (
         <Grid container pl={4} pr={4} pt={2}>
-            <Grid item xs={12} sm={12} md={barcode ? 8 : 3} lg={barcode ? 8 : 4} marginBottom={4} sx={{ display: "flex" }} gap={2} >
+            <Grid item xs={12} sm={12} md={barcode || libraryData ? 8 : 3} lg={barcode || libraryData ? 8 : 4} marginBottom={4} sx={{ display: "flex" }} gap={2} >
                 <SearchNoButtonSection
                     fullwidth
                     contentSearch={contentSearch}
@@ -84,10 +90,28 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
                         <MenuItem value="canhan">Ấn phẩm cá nhân</MenuItem>
                     </Select>) : ""
                 }
+                {
+                    libraryData ? (
+                        <Select
+                            labelId="library-select"
+                            label="Thư Viện"
+                            value={selectedLibrary}
+                            onChange={handleLibraryFilterChange}
+                            input={<CustomInput size="small" label="Thư Viện" />}
+                        >
+                            <MenuItem value={0}>Tất cả thư viện</MenuItem>
+                            {libraryData?.map((item, index) => (
+                                <MenuItem key={index} value={item._id}>
+                                    {item.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    ) : ""
+                }
             </Grid>
 
             {actions.length > 0 && (
-                <Grid item xs={12} sm={6} md={barcode ? 4 : 9} lg={barcode ? 4 : 8} marginBottom={4}>
+                <Grid item xs={12} sm={6} md={barcode || libraryData ? 4 : 9} lg={barcode || libraryData ? 4 : 8} marginBottom={4}>
                     <Box
                         sx={{
                             display: "flex",

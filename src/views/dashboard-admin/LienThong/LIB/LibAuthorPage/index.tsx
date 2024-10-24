@@ -8,6 +8,7 @@ import StyledButton from "../../../../../components/default/button/StyledButton"
 import ConfirmDeleteDialog from "../../../../../components/default/dialog/ConfirmDeleteDialog";
 import { useAddAuthorPullLink } from "../../../../../hooks/services/author/author-mutation";
 import { useFetchAuthorLink, useReFetchAuthorLink } from "../../../../../hooks/services/author/author-query";
+import { useFetchLibrariesFromGroup } from "../../../../../hooks/services/group/group-query";
 import useQueryString from "../../../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../../../types/common/table";
 import { TAuthor } from "../../../../../types/models/author";
@@ -22,14 +23,16 @@ const LibAuthorPage = () => {
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
+    const [selectedLibrary, setSelectedLibrary] = useState(0);
 
     const filter = useMemo(
         () =>
             parserParams([
                 { compare: "", target: { search } },
+                { compare: 0, target: { libraryId: selectedLibrary } },
             ]),
         [
-            search,
+            search, selectedLibrary
         ]
     );
     const { data, isLoading } = useFetchAuthorLink({
@@ -37,7 +40,7 @@ const LibAuthorPage = () => {
         page,
         ...filter,
     });
-    
+    const { data: libraryData } = useFetchLibrariesFromGroup();
     const mutationPullLink = useAddAuthorPullLink();
     const revalidate = useReFetchAuthorLink();
     const [openConfirmPullLinkMultiple, setOpenConfirmPullLinkMultiple] = useState(false);
@@ -63,12 +66,20 @@ const LibAuthorPage = () => {
                     toast.success('Liên thông thành công.');
                     setOpenConfirmPullLink(false);
                 },
+                onError: (error: any) => {
+                    toast.error(error.message);
+                },
             });
         }
     };
 
     const handleCloseConfirmRestoreDialog = () => {
         setOpenConfirmPullLink(false);
+    };
+
+    // lọc
+    const handleLibraryFilterChange = (event) => {
+        setSelectedLibrary(event.target.value);
     };
 
     const columns: TColumn<TAuthor & { libraryDetails?: TLibrary }>[] = useMemo(
@@ -179,7 +190,7 @@ const LibAuthorPage = () => {
 
         const allCheckedIds = data.data.result.map(item => item._id);
         setCheckedDelete(allCheckedIds);
-        setOpenConfirmPullLinkMultiple(true); 
+        setOpenConfirmPullLinkMultiple(true);
     }, [data]);
 
     return (
@@ -214,7 +225,11 @@ const LibAuthorPage = () => {
                     </Box>
                 </Stack>
 
-                <ActionsForm actions={actionMenus} />
+                <ActionsForm actions={actionMenus}
+                    selectedLibrary={selectedLibrary}
+                    handleLibraryFilterChange={handleLibraryFilterChange}
+                    libraryData={libraryData?.data?.result[0]?.libraries}
+                />
 
                 <TableList
                     checked={checkedDelete}

@@ -86,10 +86,18 @@ export const useRestoreManyMaterial = () => {
 export const useAddMaterialPullLink = () => {
     return useMutation({
         mutationFn: async (data: { ids: string[], note: string, isPublic: boolean }) => {
-            return await materialService.createPullLink<TMaterial>(data)
+            return await materialService.createPullLink<{ data: TMaterial; errors?: any }>(data)
         },
         onError: (error: any) => {
             toast.error(error.message);
+        },
+        onSuccess(data) {
+            if (data.data.errors) {
+                console.log(data);
+                toast.error("Tên đã tồn tại");
+            } else {
+                toast.success("Liên thông thành công");
+            }
         },
     })
 }

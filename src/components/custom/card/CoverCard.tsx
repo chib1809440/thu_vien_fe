@@ -278,16 +278,30 @@ const CoverCard = ({
                 {subtitle === "ấn phẩm mềm" && (
                     <Box>
                         {mimetype === "application/pdf" && (
-                            <StyledButton
-                                color="primary"
-                                size="small"
-                                startIcon={<IconPdf stroke={2} />}
-                                variant="contained"
-                                sx={{ marginTop: 1, width: "150px" }}
-                                onClick={handleOpenView}
-                            >
-                                Xem sách
-                            </StyledButton>
+                            <Box sx={{ gap: 2 }}>
+                                <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<IconPdf stroke={2} />}
+                                    variant="contained"
+                                    sx={{ marginTop: 1, width: "150px" }}
+                                    onClick={handleOpenView}
+                                >
+                                    Xem dạng sách
+                                </StyledButton>
+                                <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<IconPdf stroke={2} />}
+                                    variant="contained"
+                                    sx={{ marginTop: 1, width: "150px", marginLeft: 2 }}
+                                >
+                                    <a href={path} target="_blank" rel="noopener noreferrer" style={{ color: "white" }}>
+                                        Xem dạng pdf
+                                    </a>
+
+                                </StyledButton>
+                            </Box>
                         )}
                         {[
                             "application/msword",

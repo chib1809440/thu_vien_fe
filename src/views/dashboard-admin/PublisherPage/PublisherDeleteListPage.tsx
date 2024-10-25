@@ -17,6 +17,7 @@ import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TPublisher } from "../../../types/models/publisher";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 
 const PublisherDeleteListPage = () => {
@@ -93,6 +94,7 @@ const PublisherDeleteListPage = () => {
                 label: "Tên nhà sản xuất",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
                 id: "description",

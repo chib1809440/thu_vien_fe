@@ -15,6 +15,7 @@ import SelectForm from "../../../../components/custom/form/SelectForm";
 import { TPublicationsCreate } from "../../../../types/models/publications.type";
 import { TShelves } from "../../../../types/models/shelves";
 import * as yup from "yup";
+import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 
 type Props = {
     open: boolean;
@@ -115,7 +116,7 @@ const FormEditShelves: FC<Props> = ({
                                 options={
                                     shelfOptions?.map((item) => ({
                                         value: item._id,
-                                        label: item.name,
+                                        label: capitalizeFirstLetter(item.name),
                                     })) || []
                                 }
                                 {...getFieldProps("shelvesId")}

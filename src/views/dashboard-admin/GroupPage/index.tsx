@@ -19,6 +19,7 @@ import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditGroup from "./ui-components/FormAddEditGroup";
 import GroupDetailsDialog from "./ui-components/GroupDetailsDialog";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 const GroupPage = () => {
     const queryString = useQueryString();
@@ -130,6 +131,7 @@ const GroupPage = () => {
                 label: "Tên nhóm",
                 align: "left",
                 sxRow: { paddingRight: 4, maxWidth: 200 },
+                render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
                 id: "mainLibrary",

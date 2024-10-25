@@ -176,20 +176,32 @@ const MenuAddVoice: FC<Props> = ({
 
 
     const filterByTypeVoiceId = typeVoiceData?.map((typeVoice) => {
+        const voices = voiceData?.filter((voice) => (
+            publicationsData?.createBy === userId 
+                ? (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id 
+                : (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id && voice.isPublic === true
+        ));
+        const sortedVoices = voices?.sort((a, b) => a.order - b.order);
+    
         return {
             ...typeVoice,
-            voices: voiceData?.filter((voice) => (publicationsData?.createBy === userId ? (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id : (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id &&
-                voice.isPublic === true)),
+            voices: sortedVoices,
         };
     });
+    
     const filterByTypeVoiceIdPullLink = typeVoiceData?.map((typeVoice) => {
+        const voices = voiceLinkData?.data?.result?.filter((voice) => (
+            publicationsData?.createBy === userId
+                ? voice.typeVoiceId === (typeVoice as TTypeVoice)?._id
+                : (voice.typeVoiceId === (typeVoice as TTypeVoice)?._id && voice.isPublic === true && voice.isLink === true)
+        ));
+        const sortedVoices = voices?.sort((a, b) => a.order - b.order);
+
         return {
             ...typeVoice,
-            voices: voiceLinkData?.data?.result?.filter((voice) => (publicationsData?.createBy === userId ? voice.typeVoiceId === (typeVoice as TTypeVoice)?._id : (voice.typeVoiceId === (typeVoice as TTypeVoice)?._id &&
-                voice.isPublic === true && voice.isLink === true))),
+            voices: sortedVoices,
         };
     });
-
     const canAddVoice = publicationsData?.createBy === currentUserId;
     const currentPath = window.location.pathname;
 
@@ -237,6 +249,8 @@ const MenuAddVoice: FC<Props> = ({
                                         justifyContent: "space-between",
                                         alignItems: "center",
                                         backgroundColor: "white",
+                                        pl: 1,
+                                        pr: 1,
                                         transition: "all 0.3s",
                                         "&:hover": {
                                             color: "#1791e2",
@@ -249,6 +263,7 @@ const MenuAddVoice: FC<Props> = ({
                                             onClick={() => handleClickTypeVoice(type)}
                                             key={type._id}
                                             selected={activeTypeVoiceId === type._id}
+                                            style={{ width: "100%" }}
                                         >
                                             <ListItemIcon>
                                                 <IconFlag />
@@ -331,6 +346,8 @@ const MenuAddVoice: FC<Props> = ({
                                         justifyContent: "space-between",
                                         alignItems: "center",
                                         backgroundColor: "white",
+                                        pl: 1,
+                                        pr: 1,
                                         transition: "all 0.3s",
                                         "&:hover": {
                                             color: "#1791e2",
@@ -343,6 +360,7 @@ const MenuAddVoice: FC<Props> = ({
                                             onClick={() => handleClickTypeVoice(type)}
                                             key={type._id}
                                             selected={activeTypeVoiceId === type._id}
+                                            style={{ width: "100%" }}
                                         >
                                             <ListItemIcon>
                                                 <IconFlag />

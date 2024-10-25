@@ -17,6 +17,7 @@ import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TAuthor } from "../../../types/models/author";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 
 const AuthorDeleteListPage = () => {
@@ -93,6 +94,7 @@ const AuthorDeleteListPage = () => {
                 label: "Tên tác giả",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
                 id: "description",

@@ -21,6 +21,7 @@ import FilterByItems from "../../../PublicationsPage/ui-components/FilterByItems
 import PublicationsDetailsDialog from "../../../PublicationsPage/ui-components/PublicationsDetailsDialog";
 import { TLibrary } from "../../../../../types/models/library.type";
 import { useFetchLibrariesFromGroup } from "../../../../../hooks/services/group/group-query";
+import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
 
 const LibraryPublicationsPage = () => {
     const queryString = useQueryString();
@@ -118,6 +119,7 @@ const LibraryPublicationsPage = () => {
                 label: "Tên ấn phẩm",
                 align: "left",
                 sxRow: { px: 3, maxWidth: 150 },
+                render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
                 id: "type",

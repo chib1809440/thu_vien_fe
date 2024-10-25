@@ -1,6 +1,6 @@
 import { Switch, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
+import { IconTrash } from "@tabler/icons";
 import { IconTrashXFilled } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
@@ -9,20 +9,17 @@ import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
-import { useFetchPublications } from "../../../hooks/services/publications/publications-query";
-import { useFetchTypeVoice } from "../../../hooks/services/type-voice/type-voice-query";
 import useQueryString from "../../../hooks/services/useQueryString";
-import { useAddVoice, useDeleteSoftManyVoice, useDeleteSoftVoice, useEditVoice } from "../../../hooks/services/voice/voice-mutation";
+import { useDeleteSoftManyVoice, useDeleteSoftVoice, useEditVoice } from "../../../hooks/services/voice/voice-mutation";
 import { useFetchVoice, useReFetchVoice } from "../../../hooks/services/voice/voice-query";
 import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TPublications } from "../../../types/models/publications.type";
 import { TTypeVoice } from "../../../types/models/type-voice";
-import { TVoice, TVoiceCreate } from "../../../types/models/voice";
+import { TVoice } from "../../../types/models/voice";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
-import { getLabelFromOptions, parserParams } from "../../../utils/object";
-import FilterByItems from "../PublicationsPage/ui-components/FilterByItems";
 import { statusVoiceImage } from "../../../utils/constants.utils";
+import { getLabelFromOptions, parserParams } from "../../../utils/object";
 
 
 const VoicePage = () => {
@@ -32,7 +29,6 @@ const VoicePage = () => {
     const search = queryString?.q ?? "";
 
     const [barcodeSearch, setBarcodeSearch] = useState("");
-    const [selectedTypeVoice, setSelectedTypeVoice] = useState(0);
 
     const filter = useMemo(
         () =>
@@ -47,59 +43,16 @@ const VoicePage = () => {
         page,
         ...filter,
     });
-    const { data: typeVoiceData } = useFetchTypeVoice();
-    const { data: PublicationsData } = useFetchPublications();
-    const mutationAdd = useAddVoice();
     const mutationEdit = useEditVoice();
     const mutationSoftDelete = useDeleteSoftVoice();
     const mutationSoftDeleteMany = useDeleteSoftManyVoice();
     const revalidate = useReFetchVoice();
 
-    const [openAddEdit, setOpenAddEdit] = useState(false);
-    const [selectedEdit, setSelectedEdit] = useState<TVoice | null>(null);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [voiceToDelete, setVoiceToDelete] = useState<TVoice | null>(null);
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
-
-    const addVoice = () => {
-        setOpenAddEdit(true);
-    };
-
-    const handleEditVoice = (row: TVoice) => {
-        setSelectedEdit(row);
-        setOpenAddEdit(true);
-    };
-
-    const handleClose = () => {
-        setOpenAddEdit(false);
-        setSelectedEdit(null);
-    };
-
-    const handleSubmit = (values: TVoiceCreate) => {
-        if (selectedEdit) {
-            mutationEdit.mutate(
-                { ...values, _id: selectedEdit._id },
-                {
-                    onSuccess: () => {
-                        revalidate();
-                        toast.success('Chỉnh sửa thành công.');
-                        handleClose();
-                    },
-                }
-            );
-            return;
-        }
-
-        mutationAdd.mutate(values, {
-            onSuccess: (data) => {
-                revalidate();
-                toast.success('Thêm thành công.');
-                setOpenAddEdit(false);
-            },
-        });
-    };
 
     const handleOpenConfirmDialog = (row: TVoice) => {
         setVoiceToDelete(row);
@@ -125,11 +78,6 @@ const VoicePage = () => {
     const handleBarcodeSearch = (value) => {
         setBarcodeSearch(value);
     };
-
-    const handleTypeVoicelFilterChange = (event) => {
-        setSelectedTypeVoice(event.target.value);
-    };
-
 
     const handleChangeShareConnect = (row: TVoice, checked: boolean) => {
         if (!row.isPublic) {
@@ -189,6 +137,9 @@ const VoicePage = () => {
                             </Box>
                             <Box sx={{ display: "flex", alignItems: "center" }}>
                                 Loại hội thoại: <Typography ml={1} fontWeight={600}>{getLabelFromOptions(statusVoiceImage, row?.isPrivate)}</Typography>
+                            </Box>
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                TT: <Typography ml={1} fontWeight={600}>{row?.order}</Typography>
                             </Box>
                         </Box>
                     );

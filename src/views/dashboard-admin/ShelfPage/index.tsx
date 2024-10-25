@@ -16,6 +16,7 @@ import { TShelves, TShelvesCreate } from "../../../types/models/shelves";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditShelf from "./ui-components/FormAddEditShelf";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 
 const ShelfPage = () => {
@@ -106,6 +107,7 @@ const ShelfPage = () => {
                 label: "Tên tủ kệ",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
                 id: "description",

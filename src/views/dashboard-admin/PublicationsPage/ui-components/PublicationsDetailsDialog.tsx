@@ -8,8 +8,8 @@ import { TPublications } from '../../../../types/models/publications.type';
 import { TShelves } from '../../../../types/models/shelves';
 import ImageDetailPage from '../ImageDetailPage';
 import VideoDetailPage from '../VideoDetailPage';
-import BookViewDialog from './BookViewDialog';
 import WordDetailPage from '../WordDetailPage';
+import BookViewDialog from './BookViewDialog';
 
 const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { open: boolean; onClose: () => void; publications: TPublications | null, openLT?: boolean }) => {
     const [showBook, setShowBook] = useState(false);

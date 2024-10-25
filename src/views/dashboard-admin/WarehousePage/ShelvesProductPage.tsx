@@ -21,6 +21,7 @@ import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../utils/object";
 import FormEditShelves from "./ui-components/FormEditShelves";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 const ShelvesProductPage = () => {
     const queryString = useQueryString();
@@ -103,6 +104,7 @@ const ShelvesProductPage = () => {
                 label: "Tên ấn phẩm",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
                 id: "shelvesName",
@@ -110,7 +112,7 @@ const ShelvesProductPage = () => {
                 label: "Tên kệ",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => (row.shelvesId as TShelves)?.name,
+                render: (row) => (capitalizeFirstLetter((row.shelvesId as TShelves)?.name)),
             },
             {
                 id: "shelvesQuantity",

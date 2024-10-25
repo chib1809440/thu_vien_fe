@@ -16,6 +16,7 @@ import { TLibrary, TLibraryCreate } from "../../../types/models/library.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditLibrary from "./ui-components/FormAddEditLibrary";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 
 const LibraryPage = () => {
@@ -107,6 +108,7 @@ const LibraryPage = () => {
                 label: "Tên thư viện",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
                 id: "address",

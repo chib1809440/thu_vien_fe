@@ -1,5 +1,5 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
+import { Box, Dialog, DialogContent, DialogTitle, IconButton, Typography } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
 import { FC, useMemo } from "react";
 import * as yup from "yup";
@@ -8,6 +8,8 @@ import SelectForm from "../../../../components/custom/form/SelectForm";
 import { Role } from "../../../../interfaces/role";
 import { CreateUserModel } from "../../../../interfaces/user";
 import { TLibrary } from "../../../../types/models/library.type";
+import { capitalizeFirstLetter } from '../../../../helpers/capitalizeFirstLetter';
+import { formatDate } from '../../../../helpers/formatDate';
 
 type Props = {
     open: boolean;
@@ -131,6 +133,7 @@ const FormProfile: FC<Props> = ({
                                 error={touched.gender && Boolean(errors.gender)}
                                 helperText={touched.gender && errors.gender}
                                 {...getFieldProps("gender")}
+                                value={capitalizeFirstLetter(values?.gender)}
                                 disabled
                             />
                             <InputForm
@@ -140,6 +143,7 @@ const FormProfile: FC<Props> = ({
                                 helperText={touched.birthday && errors.birthday}
                                 {...getFieldProps("birthday")}
                                 disabled
+                                value={formatDate(values?.birthday)}
                             />
                         </Box>
 
@@ -149,7 +153,7 @@ const FormProfile: FC<Props> = ({
                                 options={
                                     roleOptions?.map((item) => ({
                                         value: item._id,
-                                        label: item.name,
+                                        label: capitalizeFirstLetter(item.name),
                                     })) || []
                                 }
                                 {...getFieldProps("roleId")}
@@ -162,9 +166,10 @@ const FormProfile: FC<Props> = ({
                                 options={
                                     libraryOptions?.map((item) => ({
                                         value: item._id,
-                                        label: item.name,
+                                        label: capitalizeFirstLetter(item.name),
                                     })) || []
                                 }
+                                
                                 {...getFieldProps("libraryId")}
                                 error={touched.libraryId && Boolean(errors.libraryId)}
                                 helperText={touched.libraryId && errors.libraryId}

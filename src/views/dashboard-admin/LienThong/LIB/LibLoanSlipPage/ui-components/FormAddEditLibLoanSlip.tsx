@@ -1,4 +1,4 @@
-import { Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, Table, TableBody, TableContainer, TableHead, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, Table, TableBody, TableContainer, TableHead, TextField, Typography } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import * as yup from "yup";
@@ -180,7 +180,9 @@ const FormAddEditLoanSlip: FC<Props> = ({
         },
     ]);
     const debouncedBarCodeUserId = useDebounce(barcodeUserId, 500);
+    const [dropdownOptions, setDropdownOptions] = useState<CreatePublication[]>([]);
 
+    const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
     useEffect(() => {
         if (debouncedBarCodeUserId) {
             // Chỉ gọi API khi có giá trị barcode
@@ -221,10 +223,11 @@ const FormAddEditLoanSlip: FC<Props> = ({
         }
     }, [loanSlip])
     const handleBarCodeChange = (index: number, newBarCode: string) => {
-        const updatedPublications = [...publications];
-        updatedPublications[index].barcode = newBarCode;
+        //  const updatedPublications = [...publications];
+        //   updatedPublications[index].barcode = newBarCode;
         setSearchBarCode(newBarCode + ' ' + index);
-        setPublications(updatedPublications);
+        // setPublications(updatedPublications);
+
     };
     const handleReturnLoanSlip = () => {
         const filteredPublications = publications.map((publication) => ({
@@ -237,56 +240,70 @@ const FormAddEditLoanSlip: FC<Props> = ({
     const debouncedBarcode = useDebounce(searchBarCode, 500);
 
     useEffect(() => {
-        if (debouncedBarcode) {
+        if (debouncedBarcode && debouncedBarcode.length >= 5) {
             const fetchPublicationByBarCode = async () => {
                 try {
+
                     const parts = debouncedBarcode.split(' '); // Tách chuỗi theo dấu cách
                     const barcode = parts.slice(0, parts.length - 1).join(' '); // Lấy tất cả các phần ngoại trừ phần cuối cùng và ghép lại
                     const index = Number(parts[parts.length - 1]); // Lấy phần cuối cùng và chuyển đổi thành số
+                    setLoadingSearch(true)
+                    const result = await publicationsService.getByName<TPublications>({ search: barcode, libraryId: formik?.values?.libraryId });
+                    // Chuyển đổi kết quả thành mảng CreatePublication[]
+                    const convertedPublications: CreatePublication[] = result.data.result.map((pub: TPublications) => ({
+                        name: pub.name || '',  // Cung cấp giá trị mặc định nếu không có
+                        publicationId: pub._id || '',
+                        position: 'trên kệ', // Giá trị mặc định
+                        quantityLoan: pub.quantityLoan || 1, // Giá trị mặc định
+                        quantity: pub.quantity || 0, // Giá trị mặc định
+                        shelvesQuantity: pub.shelvesQuantity || 0, // Giá trị mặc định
+                        barcode: pub.barcode || '', // Cung cấp giá trị mặc định nếu không có
+                    }));
+                    setDropdownOptions(convertedPublications);
+                    setLoadingSearch(false)
 
-                    const result = await publicationsService.getByName<TPublications>({ searchBarCode: barcode, libraryId: formik?.values?.libraryId });
-                    const publicationData = result.data.result; // Assuming result.data.result contains the publication info
-                    if (publicationData) {
-                        setPublications((prevPublications) => {
-                            // Check if the barcode already exists in the publications state
-                            const existingPublication = prevPublications.find(
-                                (pub) => pub.publicationId === publicationData._id
-                            );
+                    //    const publicationData = result.data.result; // Assuming result.data.result contains the publication info
+                    // if (publicationData) {
+                    //     setPublications((prevPublications) => {
+                    //         // Check if the barcode already exists in the publications state
+                    //         const existingPublication = prevPublications.find(
+                    //             (pub) => pub.publicationId === publicationData._id
+                    //         );
 
-                            if (existingPublication) {
-                                // If it exists, update the quantityLoan
-                                let newPublications = [...publications];
-                                newPublications[index] = {
-                                    ...newPublications[index],
-                                    name: '', // Set name to empty string
-                                    barcode: '' // Set name to empty string
-                                };
-                                newPublications = newPublications.map((pub) =>
-                                    pub.publicationId === publicationData._id
-                                        ? { ...pub, quantityLoan: pub.quantityLoan + 1 } // Increment the quantityLoan
-                                        : pub
-                                );
-                                return newPublications
-                            } else {
-                                let newPublications = [...publications];
-                                newPublications = newPublications.map((pub) =>
-                                    pub.barcode === publicationData.barcode
-                                        ? { name: publicationData.name, publicationId: publicationData._id, quantityLoan: 1, position: 'trên kệ', barcode: publicationData.barcode, quantity: publicationData.quantity, shelvesQuantity: publicationData.shelvesQuantity } // Increment the quantityLoan
-                                        : pub
-                                );
-                                newPublications.push({
-                                    name: '',
-                                    publicationId: '',
-                                    position: 'trên kệ',
-                                    quantityLoan: 1,
-                                    quantity: 0,
-                                    shelvesQuantity: 0,
-                                    barcode: '',
-                                },)
-                                return newPublications;
-                            }
-                        });
-                    }
+                    //         if (existingPublication) {
+                    //             // If it exists, update the quantityLoan
+                    //             let newPublications = [...publications];
+                    //             newPublications[index] = {
+                    //                 ...newPublications[index],
+                    //                 name: '', // Set name to empty string
+                    //                 barcode: '' // Set name to empty string
+                    //             };
+                    //             newPublications = newPublications.map((pub) =>
+                    //                 pub.publicationId === publicationData._id
+                    //                     ? { ...pub, quantityLoan: pub.quantityLoan + 1 } // Increment the quantityLoan
+                    //                     : pub
+                    //             );
+                    //             return newPublications
+                    //         } else {
+                    //             let newPublications = [...publications];
+                    //             newPublications = newPublications.map((pub) =>
+                    //                 pub.barcode === publicationData.barcode
+                    //                     ? { name: publicationData.name, publicationId: publicationData._id, quantityLoan: 1, position: 'trên kệ', barcode: publicationData.barcode, quantity: publicationData.quantity, shelvesQuantity: publicationData.shelvesQuantity } // Increment the quantityLoan
+                    //                     : pub
+                    //             );
+                    //             newPublications.push({
+                    //                 name: '',
+                    //                 publicationId: '',
+                    //                 position: 'trên kệ',
+                    //                 quantityLoan: 1,
+                    //                 quantity: 0,
+                    //                 shelvesQuantity: 0,
+                    //                 barcode: '',
+                    //             },)
+                    //             return newPublications;
+                    //         }
+                    //     });
+                    // }
                     setSearchBarCode('');
                 } catch (error) {
                     console.error('Error fetching publication data:', error);
@@ -345,6 +362,68 @@ const FormAddEditLoanSlip: FC<Props> = ({
             }
         `,
     });
+    // Hàm xử lý sự kiện onChange
+    const handleLibraryChange = (event) => {
+        const selectedLibraryId = event.target.value;
+        formik.setFieldValue('libraryId', selectedLibraryId);
+        setPublications([
+            {
+                name: '',
+                publicationId: '',
+                position: '',
+                quantityLoan: 1,
+                quantity: 0,
+                shelvesQuantity: 0,
+                barcode: '',
+            },
+        ]);
+
+    };
+    const handlePublicationChange = (
+        event: any,
+        value: CreatePublication | null,
+        index: number,
+    ) => {
+        // Kiểm tra xem giá trị có hợp lệ không
+        if (value) {
+            const updatedPublications = [...publications]; // Tạo bản sao của publications
+
+            // Tìm xem publicationId đã tồn tại hay chưa
+            const existingIndex = updatedPublications.findIndex(pub => pub.publicationId === value.publicationId);
+
+            if (existingIndex !== -1) {
+                // Nếu publicationId đã tồn tại, tăng quantityLoan lên 1
+                updatedPublications[existingIndex].quantityLoan += 1;
+            } else {
+                // Nếu không, thêm mới vào publications
+                updatedPublications[index] = {
+                    name: value.name, // Cập nhật tên
+                    publicationId: value.publicationId || '', // Cập nhật ID
+                    position: 'trên kệ', // Hoặc giá trị mặc định khác
+                    quantityLoan: 1, // Đặt quantityLoan là 1
+                    quantity: 0, // Giá trị mặc định
+                    shelvesQuantity: 0, // Giá trị mặc định
+                    barcode: value.barcode || '', // Cập nhật barcode
+                };
+                // Chỉ thêm một mục mới trống nếu không có mục nào khác đang chờ
+                if (index === updatedPublications.length - 1) {
+                    updatedPublications.push({
+                        name: '',
+                        publicationId: '',
+                        position: '',
+                        quantityLoan: 1,
+                        quantity: 0,
+                        shelvesQuantity: 0,
+                        barcode: '',
+                    });
+                }
+            }
+
+            setPublications(updatedPublications); // Cập nhật state publications
+            setDropdownOptions([]); // Xóa dropdown options nếu cần
+        }
+    };
+    console.log("dsdsd", publications);
 
     return (
         <FormikProvider value={formik}>
@@ -531,7 +610,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                         name="libraryId"
                                         type="libraryId"
                                         value={formik.values.libraryId}
-                                        onChange={formik.handleChange}
+                                        onChange={handleLibraryChange}
                                         onBlur={formik.handleBlur}
                                         error={
                                             formik.touched.libraryId &&
@@ -634,23 +713,39 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                             {publications?.map((row, index) => (
                                                 <StyledTableRow key={index}>
                                                     <StyledTableCell align="left">
+                                                        {row.barcode || "Không có dữ liệu"}
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="left">
                                                         <Box style={{ width: "100%" }} >
                                                             {
-                                                                row.publicationId !== '' ? <>{row.barcode}</> : <>   <TextField
-                                                                    variant="outlined"
-                                                                    fullWidth
-                                                                    placeholder="Nhập barcode sách"
-                                                                    value={row.barcode}
-                                                                    onChange={(e) => handleBarCodeChange(index, e.target.value)}
-                                                                    inputRef={index === publications.length - 1 ? lastInputRef : null} // Focus on the last input
-                                                                /></>
+                                                                row.publicationId !== '' ? <>{row.name}</> : <>
+                                                                    <Autocomplete
+                                                                        getOptionLabel={(option) => (option?.name)}
+                                                                        loading={loadingSearch}
+                                                                        options={dropdownOptions}
+                                                                        onChange={(event, value) =>
+                                                                            handlePublicationChange(event, value, index)
+                                                                        }
+                                                                        disablePortal
+                                                                        value={publications[index] || null}
+                                                                        onInputChange={(event, newInputValue, reason) => {
+                                                                            if (reason === 'reset') {
+                                                                                setDropdownOptions([])
+                                                                                return
+                                                                            }
+                                                                        }}
+                                                                        renderInput={(params) => <TextField
+                                                                            inputRef={index === publications.length - 1 ? lastInputRef : null}
+                                                                            onChange={(event) =>
+                                                                                handleBarCodeChange(index, event.target.value)
+                                                                            }  {...params} />}
+                                                                    />
+                                                                </>
                                                             }
 
                                                         </Box>
                                                     </StyledTableCell>
-                                                    <StyledTableCell align="left">
-                                                        {row.name || "Không có dữ liệu"}
-                                                    </StyledTableCell>
+
                                                     {
                                                         isEditMode === false && <> <StyledTableCell align="left">
                                                             {row.quantity}

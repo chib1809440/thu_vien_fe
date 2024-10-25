@@ -10,8 +10,8 @@ class PublicationsService extends BaseApi {
     }
     public async getByName<DynamicType>(params?: TFilter) {
         const httpClientInstance = this.getHttpClient();
-        const response = await httpClientInstance.get(`${this.endpoint}/barcode/name`, { params });
-        return response.data as TApiOneRecord<DynamicType>;
+        const response = await httpClientInstance.get(`${this.endpoint}/name`, { params });
+        return response.data as TApiMultipleRecords<DynamicType>;
     }
     public async importExcel(file: File) {
         const formData = new FormData();

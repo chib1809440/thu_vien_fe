@@ -76,7 +76,9 @@ type Props = {
 const schema = yup.object().shape({
     note: yup
         .string(),
-       
+    libraryId: yup
+        .string()
+        .required("Vui lòng chọn vai trò").notOneOf(['0'], "Vui lòng chọn vai trò"),
 });
 
 const FormAddEditLoanSlip: FC<Props> = ({
@@ -162,6 +164,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
     const [returnDay, setReturnDay] = useState(new Date());
     const [barcodeUserId, setbarcodeUserId] = useState<string>('');
     const [searchBarCode, setSearchBarCode] = useState<string>('');
+    
     const [userData, setUserData] = useState<EntityResponse<User>>(null);
     const [publications, setPublications] = useState<CreatePublication[]>([
         {

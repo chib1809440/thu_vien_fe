@@ -51,6 +51,7 @@ import DatePicker from "react-datepicker";
 import { generateUserName } from "../../../helpers/generateUserName";
 import { IconHttpDelete, IconSquareXFilled } from "@tabler/icons-react";
 import { useRoleList } from "../../../hooks/react-query/roleData";
+import { Role } from "../../../interfaces/role";
 export const validationUtilizedObjectSchema = yup.object({
     fullname: yup.string().required("Vui lòng nhập họ và tên"),
     email: yup.string().email("Vui lòng nhập đúng định dạng email"),
@@ -148,7 +149,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
             phoneNumber: user?.phoneNumber ?? "",
             address: user?.address ?? "",
             gender: user?.gender ?? "",
-            roleId: user?.roleId?._id ?? '0',
+            roleId: (user?.roleId as Role)?._id ?? '0',
             birthday: (new Date().toDateString())
 
         },
@@ -192,7 +193,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                 address: user?.address ?? "",
                 birthday: user?.birthday ?? "",
                 gender: user?.gender ?? "",
-                roleId: user?.roleId?._id ?? '0',
+                roleId: (user?.roleId as Role)?._id ?? '0',
             });
         }
     }, [user]);

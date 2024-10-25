@@ -30,6 +30,7 @@ import AdminAccountDialog from "../../../../components/default/dialog/AdminAccou
 import { TLibrary } from "../../../../types/models/library.type";
 import AdminDetailDialog from "./AdminDetailDialog";
 import AccountDetailDialog from "../../../../components/default/dialog/AccountDetailPage";
+import { Role } from "../../../../interfaces/role";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -287,7 +288,7 @@ function TableAdminList<T extends DataType>({
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.barcode}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.fullname}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.phoneNumber}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.roleId?.name}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{(user?.roleId as Role)?.name}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.gender}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{(row?.libraryId as TLibrary)?.name}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{formatDate(row?.birthday)}</StyledTableCell>

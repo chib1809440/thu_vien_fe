@@ -36,6 +36,7 @@ export type UserProfile = {
 };
 
 export type UserProfileV2 = {
+    email: string;
     userID?: string;
     username?: string;
     fullName?: string;

@@ -54,6 +54,7 @@ import { useRoleList } from "../../../hooks/react-query/roleData";
 import { useFetchGroup } from "../../../hooks/services/group/group-query";
 import { useFetchLibrary } from "../../../hooks/services/library/library-query";
 import { TLibrary } from "../../../types/models/library.type";
+import { Role } from "../../../interfaces/role";
 export const validationUtilizedObjectSchema = yup.object({
     fullname: yup.string().required("Vui lòng nhập họ và tên"),
     email: yup.string().email("Vui lòng nhập đúng định dạng email"),
@@ -156,7 +157,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
             phoneNumber: user?.phoneNumber ?? "",
             address: user?.address ?? "",
             gender: user?.gender ?? "",
-            roleId: user?.roleId?._id ?? roleId,
+            roleId: (user?.roleId as Role)?._id ?? roleId,
             libraryId: (user?.libraryId as TLibrary)?._id ?? '0',
             birthday: (new Date().toDateString())
 
@@ -200,7 +201,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                 address: user?.address ?? "",
                 birthday: user?.birthday ?? "",
                 gender: user?.gender ?? "",
-                roleId: user?.roleId?._id ?? '0',
+                roleId: (user?.roleId as Role)?._id ?? '0',
                 libraryId: (user?.libraryId as TLibrary)?._id ?? '0',
             });
         }

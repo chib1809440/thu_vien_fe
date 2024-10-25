@@ -1,18 +1,13 @@
 // material-ui
-import { Avatar, Box, Button, Grid } from "@mui/material";
+import { Avatar, Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 // project imports
-import { IconLogout, IconMenu2 } from "@tabler/icons";
+import { IconMenu2 } from "@tabler/icons";
 import { useDispatch, useSelector } from "../../../store";
 import { openDrawer } from "../../../store/slices/menu";
-import Customization from "../../Customization";
 import LogoSection from "../LogoSection";
 import ProfileSection from "./ProfileSection";
-import { useNavigate } from "react-router-dom";
-import React from "react";
-import { isLoginWaiting } from "../../../store/slices/isLoginLT";
-import { useAuth } from "../../../contexts/JWTContext";
 
 
 // ==============================|| MAIN NAVBAR / HEADER ||============================== //
@@ -20,29 +15,11 @@ import { useAuth } from "../../../contexts/JWTContext";
 
 const Header = () => {
   const theme = useTheme();
-  const { logout } = useAuth();
-
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-
   const { drawerOpen } = useSelector((state) => state.menu);
-
-  const { isLogin } = useSelector((state) => state.isLogin);
-  React.useEffect(() => {
-    dispatch(isLoginWaiting());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleLogout = async() => {
-    // localStorage.removeItem('serviceTokenLT');
-    // navigate('trang-chu', { replace: true });
-    await logout();
-    localStorage.removeItem('serviceTokenLT');
-  };
 
   return (
     <>
-      {/* logo & toggler button */}
       <Box
         sx={{
           width: 228,
@@ -82,34 +59,7 @@ const Header = () => {
       <Box sx={{ flexGrow: 1 }} />
       <Box sx={{ flexGrow: 1 }} />
 
-      {/* mega-menu */}
-      {/* <Box sx={{ display: { xs: "none", sm: "block" } }}>
-        <MegaMenuSection />
-      </Box> */}
-
-      {/* live customization & localization */}
-      {/* <Box sx={{ display: { xs: "none", sm: "block" } }}>
-        <LocalizationSection />
-      </Box> */}
-
-      {/* notification & profile */}
-      {/* <NotificationSection /> */}
-      {/* <h4 style={{ marginRight: '10px', fontWeight: '500' }}>Xin chào <strong>{user?.fullName}</strong></h4> */}
       <ProfileSection />
-      <Box sx={{ flexGrow: 0.01 }} />
-      {isLogin &&
-        <Grid item>
-          <Button variant="outlined" onClick={handleLogout} startIcon={<IconLogout />}>
-            Đăng xuất Liên thông
-          </Button>
-        </Grid>
-      }
-      <Customization />
-
-      {/* mobile header */}
-      {/* <Box sx={{ display: { xs: "block", sm: "none" } }}>
-        <MobileSection />
-      </Box> */}
     </>
   );
 };

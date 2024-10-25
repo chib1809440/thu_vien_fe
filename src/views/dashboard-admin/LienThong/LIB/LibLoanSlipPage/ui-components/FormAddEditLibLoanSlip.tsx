@@ -27,6 +27,7 @@ import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
 import { capitalizeFirstLetter } from "../../../../../../helpers/capitalizeFirstLetter";
 import { useFetchLibrariesFromGroup } from "../../../../../../hooks/services/group/group-query";
+import { Role } from "../../../../../../interfaces/role";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -440,7 +441,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                 <Typography sx={{ ml: 2, mt: 2, fontWeight: "bold" }}>
                                     Vai trò:
                                     <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
-                                        {userData?.data?.result?.roleId?.name || "Không có dữ liệu"}
+                                        {(userData?.data?.result?.roleId as Role)?.name || "Không có dữ liệu"}
                                     </span>
                                 </Typography>
                             </Grid>

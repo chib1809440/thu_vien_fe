@@ -24,6 +24,7 @@ import { CsFlexRowBetween } from "../../../../components/default/flex";
 import CustomInput from "../../../../components/default/input/CustomInput";
 import AlertConfirmDialog from "../../../../components/default/alert/confirmAlertDialog";
 import UserDialog from "../../../../components/default/dialog/UserDialog";
+import { Role } from "../../../../interfaces/role";
 
 
 interface TableProps<T extends DataType> {
@@ -276,7 +277,7 @@ function TableAdminTrashList<T extends DataType>({
                                                         </StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.fullname}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.phoneNumber}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.roleId?.name}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{(user?.roleId as Role)?.name}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.gender}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{formatDate(row?.birthday)}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center">

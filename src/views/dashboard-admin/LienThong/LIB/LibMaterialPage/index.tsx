@@ -68,13 +68,13 @@ const LibMaterialPage = () => {
                         ...filter,
                     });
                     setOpenConfirmPullLink(false);
-                    if (data.data.errors) {
-                        console.log(data);
-                        toast.error("Tên đã tồn tại");
-                    } else {
+                    if ([materialPullLink?._id]?.length > 0) {
                         toast.success("Liên thông thành công");
+                    } else {
+                        console.log([materialPullLink?._id]);
+                        toast.success("Tên đã tồn tại.");
                     }
-                },
+                }
             });
         }
     };
@@ -167,17 +167,39 @@ const LibMaterialPage = () => {
     // Hàm xác nhận liên thông nhiều ấn phẩm
     const handleConfirmPullLinkMultiple = useCallback(() => {
         if (checkedDelete.length === 0) return;
+        console.log(checkedDelete);
+        
         mutationPullLink.mutate({
             ids: checkedDelete,
             isPublic: false,
             note: ""
         }, {
-            onSuccess: () => {
-                revalidate({ limit, page, search });
-                toast.success("Liên thông các mục đã chọn thành công.");
+            onSuccess: (data) => {
+                console.log(data.data.results);
+                
+                revalidate({
+                    limit,
+                    page,
+                    search,
+                });
                 setOpenConfirmPullLinkMultiple(false);
                 setCheckedDelete([]);
-            },
+            
+                const successfulIds = data.data.results.map(result => result._id);
+                const errorIds = checkedDelete.filter(id => !successfulIds.includes(id));
+                console.log(successfulIds);
+                console.log(errorIds);
+                
+    
+                if (data.data.results.length === 0 && data.data.errors.length > 0) {
+                    toast.error(`Các tên: [${errorIds.join(', ')}] đã liên thông`);
+                } else if (successfulIds.length > 0 && errorIds.length > 0) {
+                    toast.success(`Liên thông các mục [${successfulIds.join(', ')}] đã chọn thành công.`);
+                    toast.error(`Các tên: [${errorIds.join(', ')}] đã liên thông`);
+                } else {
+                    toast.success("Liên thông các mục đã chọn thành công.");
+                }
+            }
         });
     }, [checkedDelete, mutationPullLink, revalidate, limit, page, search]);
 

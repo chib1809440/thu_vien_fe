@@ -13,7 +13,7 @@ export interface User extends AbstractEntity {
     avatar: string;
     gender: string;
     barcode: string;
-    roleId: Role;
+    roleId: Role|string;
     passwordFirst: string;
     libraryId: string | TLibrary;
 }

@@ -28,6 +28,7 @@ import { useRoleList } from "../../../../../hooks/react-query/roleData";
 import { filterBreakpointKeys } from "@mui/system/Unstable_Grid/traverseBreakpoints";
 import AccountDetailDialog from "../../../../../components/default/dialog/AccountDetailPage";
 import { IconEye } from "@tabler/icons";
+import { Role } from "../../../../../interfaces/role";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -295,7 +296,7 @@ function TableUserList<T extends DataType>({
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.barcode}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.fullname}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.phoneNumber}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.roleId?.name}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{(user?.roleId as Role)?.name}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.gender}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{formatDate(row?.birthday)}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center">

@@ -1,5 +1,5 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
+import { Box, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
 import { FC, useMemo } from "react";
 import * as yup from "yup";
@@ -92,11 +92,10 @@ const FormProfile: FC<Props> = ({
                     <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
                         <InputForm
                             label="Họ tên"
-                            placeholder="Nhập họ tên"
-                            required
                             error={touched.fullname && Boolean(errors.fullname)}
                             helperText={touched.fullname && errors.fullname}
                             {...getFieldProps("fullname")}
+                            disabled
                         />
                         <InputForm
                             label="Địa chỉ"
@@ -104,61 +103,74 @@ const FormProfile: FC<Props> = ({
                             error={touched.address && Boolean(errors.address)}
                             helperText={touched.address && errors.address}
                             {...getFieldProps("address")}
-                        />
-                        <InputForm
-                            label="Email"
-                            placeholder="Nhập email"
-                            error={touched.email && Boolean(errors.email)}
-                            helperText={touched.email && errors.email}
-                            {...getFieldProps("email")}
-                        />
-                        <InputForm
-                            label="Số điện thoại"
-                            placeholder="Nhập số điện thoại"
-                            error={touched.phoneNumber && Boolean(errors.phoneNumber)}
-                            helperText={touched.phoneNumber && errors.phoneNumber}
-                            {...getFieldProps("phoneNumber")}
-                        />
-                        <InputForm
-                            label="Giới tính"
-                            placeholder="Nhập giới tính"
-                            error={touched.gender && Boolean(errors.gender)}
-                            helperText={touched.gender && errors.gender}
-                            {...getFieldProps("gender")}
-                        />
-                        <InputForm
-                            label="Ngày sinh"
-                            placeholder="Nhập ngày"
-                            error={touched.birthday && Boolean(errors.birthday)}
-                            helperText={touched.birthday && errors.birthday}
-                            {...getFieldProps("birthday")}
-                        />
-                        <SelectForm
-                            label="Chọn vai trò"
-                            options={
-                                roleOptions?.map((item) => ({
-                                    value: item._id,
-                                    label: item.name,
-                                })) || []
-                            }
-                            {...getFieldProps("roleId")}
-                            error={touched.roleId && Boolean(errors.roleId)}
-                            helperText={touched.roleId && errors.roleId}
                             disabled
                         />
-                        <SelectForm
-                            label="Chọn thư viện"
-                            options={
-                                libraryOptions?.map((item) => ({
-                                    value: item._id,
-                                    label: item.name,
-                                })) || []
-                            }
-                            {...getFieldProps("libraryId")}
-                            error={touched.libraryId && Boolean(errors.libraryId)}
-                            helperText={touched.libraryId && errors.libraryId}
-                            disabled
-                        />
+                        <Box sx={{ display: "flex", gap: 2 }}>
+                            <InputForm
+                                label="Email"
+                                placeholder="Nhập email"
+                                error={touched.email && Boolean(errors.email)}
+                                helperText={touched.email && errors.email}
+                                {...getFieldProps("email")}
+                                disabled
+                            />
+                            <InputForm
+                                label="Số điện thoại"
+                                placeholder="Nhập số điện thoại"
+                                error={touched.phoneNumber && Boolean(errors.phoneNumber)}
+                                helperText={touched.phoneNumber && errors.phoneNumber}
+                                {...getFieldProps("phoneNumber")}
+                                disabled
+                            />
+                        </Box>
+
+                        <Box sx={{ display: "flex", gap: 2 }}>
+                            <InputForm
+                                label="Giới tính"
+                                placeholder="Nhập giới tính"
+                                error={touched.gender && Boolean(errors.gender)}
+                                helperText={touched.gender && errors.gender}
+                                {...getFieldProps("gender")}
+                                disabled
+                            />
+                            <InputForm
+                                label="Ngày sinh"
+                                placeholder="Nhập ngày"
+                                error={touched.birthday && Boolean(errors.birthday)}
+                                helperText={touched.birthday && errors.birthday}
+                                {...getFieldProps("birthday")}
+                                disabled
+                            />
+                        </Box>
+
+                        <Box sx={{ display: "flex", gap: 2 }}>
+                            <SelectForm
+                                label="Vai trò"
+                                options={
+                                    roleOptions?.map((item) => ({
+                                        value: item._id,
+                                        label: item.name,
+                                    })) || []
+                                }
+                                {...getFieldProps("roleId")}
+                                error={touched.roleId && Boolean(errors.roleId)}
+                                helperText={touched.roleId && errors.roleId}
+                                disabled
+                            />
+                            <SelectForm
+                                label="Thư viện"
+                                options={
+                                    libraryOptions?.map((item) => ({
+                                        value: item._id,
+                                        label: item.name,
+                                    })) || []
+                                }
+                                {...getFieldProps("libraryId")}
+                                error={touched.libraryId && Boolean(errors.libraryId)}
+                                helperText={touched.libraryId && errors.libraryId}
+                                disabled
+                            />
+                        </Box>
                     </Form>
                 </DialogContent>
             </Dialog>

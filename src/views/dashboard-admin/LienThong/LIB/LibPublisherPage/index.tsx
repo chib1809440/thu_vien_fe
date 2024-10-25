@@ -6,6 +6,7 @@ import ActionsForm from "../../../../../components/custom/form/ActionForm";
 import TableList from "../../../../../components/custom/table-list/TableList";
 import StyledButton from "../../../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../../../components/default/dialog/ConfirmDeleteDialog";
+import { useFetchLibrariesFromGroup } from "../../../../../hooks/services/group/group-query";
 import { useAddPublisherPullLink } from "../../../../../hooks/services/publisher/publisher-mutation";
 import { useFetchPublisherLink, useReFetchPublisherLink } from "../../../../../hooks/services/publisher/publisher-query";
 import useQueryString from "../../../../../hooks/services/useQueryString";
@@ -15,7 +16,6 @@ import { TPublisher } from "../../../../../types/models/publisher";
 import IBreadcrumsCustom from "../../../../../ui-component/breadcrums";
 import MainCard from "../../../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../../../utils/object";
-import { useFetchLibrariesFromGroup } from "../../../../../hooks/services/group/group-query";
 
 
 const LibPublisherPage = () => {
@@ -35,7 +35,7 @@ const LibPublisherPage = () => {
             search, selectedLibrary
         ]
     );
-    const { data, isLoading } = useFetchPublisherLink({
+    const { data, isLoading, isFetching } = useFetchPublisherLink({
         limit,
         page,
         ...filter,
@@ -68,13 +68,19 @@ const LibPublisherPage = () => {
                         ...filter,
                     });
                     setOpenConfirmPullLink(false);
-                    if (data.data.errors) {
-                        console.log(data);
-                        toast.error("Tên đã tồn tại");
+                    const successfulNames = data.data.results.map(result => result.name);
+                    const errorNames = data.data.errors.map(error => error.resource.name);
+
+
+                    if (data.data.results.length === 0 && data.data.errors.length > 0) {
+                        toast.error(<span>Mục: <strong style={{ color: 'red' }}>[ {errorNames.join(', ')} ]</strong> đã liên thông.</span>);
+                    } else if (successfulNames.length > 0 && errorNames.length > 0) {
+                        toast.success(<span>Liên thông mục: <strong style={{ color: 'green' }}>[ {successfulNames.join(', ')} ]</strong> thành công.</span>, { autoClose: 5000 });
+                        toast.error(<span>Mục: <strong style={{ color: 'red' }}>[ {errorNames.join(', ')} ]</strong> đã liên thông.</span>, { autoClose: 5000 });
                     } else {
-                        toast.success("Liên thông thành công");
+                        toast.success(<span>Liên thông mục: <strong style={{ color: 'green' }}>[ {successfulNames.join(', ')} ]</strong> thành công.</span>);
                     }
-                },
+                }
             });
         }
     };
@@ -172,12 +178,29 @@ const LibPublisherPage = () => {
             isPublic: false,
             note: ""
         }, {
-            onSuccess: () => {
-                revalidate({ limit, page, search });
-                toast.success("Liên thông các mục đã chọn thành công.");
+            onSuccess: (data) => {
+
+                revalidate({
+                    limit,
+                    page,
+                    search,
+                });
                 setOpenConfirmPullLinkMultiple(false);
                 setCheckedDelete([]);
-            },
+
+                const successfulNames = data.data.results.map(result => result.name);
+                const errorNames = data.data.errors.map(error => error.resource.name);
+
+
+                if (data.data.results.length === 0 && data.data.errors.length > 0) {
+                    toast.error(<span>Các mục: <strong style={{ color: 'red' }}>[ {errorNames.join(', ')} ]</strong> đã liên thông.</span>);
+                } else if (successfulNames.length > 0 && errorNames.length > 0) {
+                    toast.success(<span>Liên thông các mục: <strong style={{ color: 'green' }}>[ {successfulNames.join(', ')} ]</strong> thành công.</span>, { autoClose: 5000 });
+                    toast.error(<span>Các mục: <strong style={{ color: 'red' }}>[ {errorNames.join(', ')} ]</strong> đã liên thông.</span>, { autoClose: 5000 });
+                } else {
+                    toast.success(<span>Liên thông các mục: <strong style={{ color: 'green' }}>[ {successfulNames.join(', ')} ]</strong> thành công.</span>);
+                }
+            }
         });
     }, [checkedDelete, mutationPullLink, revalidate, limit, page, search]);
 
@@ -244,7 +267,7 @@ const LibPublisherPage = () => {
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

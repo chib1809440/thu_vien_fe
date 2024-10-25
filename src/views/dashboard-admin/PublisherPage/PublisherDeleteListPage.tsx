@@ -25,7 +25,7 @@ const PublisherDeleteListPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
 
-    const { data, isLoading } = useFetchPublisherDeleteList({ limit, page, search });
+    const { data, isLoading, isFetching } = useFetchPublisherDeleteList({ limit, page, search });
 
     const mutationDelete = useDeletePublisher();
     const mutationDeleteMany = useDeleteManyPublisher();
@@ -269,7 +269,7 @@ const PublisherDeleteListPage = () => {
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

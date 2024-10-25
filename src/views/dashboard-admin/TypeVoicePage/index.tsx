@@ -24,7 +24,7 @@ const TypeVoicePage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
 
-    const { data, isLoading } = useFetchTypeVoice({ limit, page, search });
+    const { data, isLoading, isFetching } = useFetchTypeVoice({ limit, page, search });
     const mutationAdd = useAddTypeVoice();
     const mutationEdit = useEditTypeVoice();
     const mutationSoftDelete = useDeleteSoftTypeVoice();
@@ -265,7 +265,7 @@ const TypeVoicePage = () => {
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

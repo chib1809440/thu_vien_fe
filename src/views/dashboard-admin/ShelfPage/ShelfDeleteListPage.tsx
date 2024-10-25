@@ -24,7 +24,7 @@ const ShelfDeleteListPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
 
-    const { data, isLoading } = useFetchShelfDeleteList({ limit, page, search });
+    const { data, isLoading, isFetching } = useFetchShelfDeleteList({ limit, page, search });
 
     const mutationDelete = useDeleteShelf();
     const mutationDeleteMany = useDeleteManyShelf();
@@ -259,7 +259,7 @@ const ShelfDeleteListPage = () => {
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

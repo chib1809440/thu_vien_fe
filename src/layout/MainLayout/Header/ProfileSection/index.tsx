@@ -56,16 +56,16 @@ const ProfileSection = () => {
         return _user?.data?._id;
     }, [user]);
 
-    const libraryId = useMemo(() => {
+    const libraryDetail = useMemo(() => {
         if (!user) return null;
 
         const _user = { ...user } as any;
 
-        return _user?.data?.libraryId;
+        return _user?.data?.libraryDetail;
     }, [user]);
     const { data: userData } = useUser(userID);
     const { data: roleOptions } = useRoleList();
-    const { data: libraryOptions } = useFetchLibrary();
+    const { data: libraryOptions } = useFetchLibrary();    
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
@@ -167,14 +167,14 @@ const ProfileSection = () => {
                             {setting.name}
                         </MenuItem>
                     ))}
-                    {libraryId && (
+                    {libraryDetail && (
                         <>
                             <Divider sx={{ margin: 0 }} />
                             <Box sx={{ display: "flex", pl: 2, pr: 2, py: 1, alignItems: "center" }}>
                                 <ListItemIcon sx={{ color: "#102e9e" }}>
                                     <IconHomeBitcoin stroke={2} />
                                 </ListItemIcon>
-                                <Typography sx={{ color: "#102e9e" }} variant="body2" textTransform={"capitalize"} >{libraryId.name}</Typography>
+                                <Typography sx={{ color: "#102e9e" }} variant="body2" textTransform={"capitalize"} >{libraryDetail.name}</Typography>
                             </Box>
                         </>
 

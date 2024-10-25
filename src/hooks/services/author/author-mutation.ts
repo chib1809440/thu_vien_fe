@@ -87,7 +87,7 @@ export const useRestoreManyAuthor = () => {
 export const useAddAuthorPullLink = () => {
     return useMutation({
         mutationFn: async (data: { ids: string[], note: string, isPublic: boolean }) => {
-            return await authorService.createPullLink<{ data: TAuthor; errors?: any }>(data)
+            return await authorService.createPullLink<{ results: TAuthor[]; errors?: any }>(data)
         },
         onError: (error: any) => {
             toast.error(error.message);

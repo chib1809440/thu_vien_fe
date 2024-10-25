@@ -59,7 +59,7 @@ const LibraryPublicationsPage = () => {
             selectedLibrary
         ]
     );
-    const { data, isLoading } = useFetchPublicationsLink({
+    const { data, isLoading, isFetching } = useFetchPublicationsLink({
         limit,
         page,
         ...filter,
@@ -316,7 +316,7 @@ const LibraryPublicationsPage = () => {
                 <TableList
                     columns={columns}
                     rows={data?.data?.result || []}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

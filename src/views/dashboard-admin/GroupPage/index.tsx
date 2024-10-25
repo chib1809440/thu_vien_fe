@@ -27,7 +27,7 @@ const GroupPage = () => {
     const search = queryString?.q ?? "";
     const groupId = "";
 
-    const { data, isLoading } = useFetchGroup({ limit, page, search });
+    const { data, isLoading, isFetching } = useFetchGroup({ limit, page, search });
     const { data: libs } = useFetchLibrary({ groupId });
 
     const mutationAdd = useAddGroup();
@@ -357,7 +357,7 @@ const GroupPage = () => {
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

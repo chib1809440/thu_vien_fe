@@ -24,7 +24,7 @@ const ShelfPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
 
-    const { data, isLoading } = useFetchShelf({ limit, page, search });
+    const { data, isLoading, isFetching } = useFetchShelf({ limit, page, search });
     const mutationAdd = useAddShelf();
     const mutationEdit = useEditShelf();
     const mutationSoftDelete = useDeleteSoftShelf();
@@ -281,7 +281,7 @@ const ShelfPage = () => {
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

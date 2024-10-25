@@ -35,11 +35,14 @@ const LibMaterialPage = () => {
             search, selectedLibrary
         ]
     );
-    const { data, isLoading } = useFetchMaterialLink({
+    const { data, isLoading, isFetching } = useFetchMaterialLink({
         limit,
         page,
         ...filter,
     });
+
+    console.log(isLoading,isFetching);
+    
     const { data: libraryData } = useFetchLibrariesFromGroup();
     const mutationPullLink = useAddMaterialPullLink();
     const revalidate = useReFetchMaterialLink();
@@ -68,11 +71,17 @@ const LibMaterialPage = () => {
                         ...filter,
                     });
                     setOpenConfirmPullLink(false);
-                    if ([materialPullLink?._id]?.length > 0) {
-                        toast.success("Liên thông thành công");
+                    const successfulNames = data.data.results.map(result => result.name);
+                    const errorNames = data.data.errors.map(error => error.resource.name);
+
+
+                    if (data.data.results.length === 0 && data.data.errors.length > 0) {
+                        toast.error(<span>Mục: <strong style={{ color: 'red' }}>[ {errorNames.join(', ')} ]</strong> đã liên thông.</span>);
+                    } else if (successfulNames.length > 0 && errorNames.length > 0) {
+                        toast.success(<span>Liên thông mục: <strong style={{ color: 'green' }}>[ {successfulNames.join(', ')} ]</strong> thành công.</span>, { autoClose: 5000 });
+                        toast.error(<span>Mục: <strong style={{ color: 'red' }}>[ {errorNames.join(', ')} ]</strong> đã liên thông.</span>, { autoClose: 5000 });
                     } else {
-                        console.log([materialPullLink?._id]);
-                        toast.success("Tên đã tồn tại.");
+                        toast.success(<span>Liên thông mục: <strong style={{ color: 'green' }}>[ {successfulNames.join(', ')} ]</strong> thành công.</span>);
                     }
                 }
             });
@@ -167,16 +176,13 @@ const LibMaterialPage = () => {
     // Hàm xác nhận liên thông nhiều ấn phẩm
     const handleConfirmPullLinkMultiple = useCallback(() => {
         if (checkedDelete.length === 0) return;
-        console.log(checkedDelete);
-        
         mutationPullLink.mutate({
             ids: checkedDelete,
             isPublic: false,
             note: ""
         }, {
             onSuccess: (data) => {
-                console.log(data.data.results);
-                
+
                 revalidate({
                     limit,
                     page,
@@ -184,20 +190,18 @@ const LibMaterialPage = () => {
                 });
                 setOpenConfirmPullLinkMultiple(false);
                 setCheckedDelete([]);
-            
-                const successfulIds = data.data.results.map(result => result._id);
-                const errorIds = checkedDelete.filter(id => !successfulIds.includes(id));
-                console.log(successfulIds);
-                console.log(errorIds);
-                
-    
+
+                const successfulNames = data.data.results.map(result => result.name);
+                const errorNames = data.data.errors.map(error => error.resource.name);
+
+
                 if (data.data.results.length === 0 && data.data.errors.length > 0) {
-                    toast.error(`Các tên: [${errorIds.join(', ')}] đã liên thông`);
-                } else if (successfulIds.length > 0 && errorIds.length > 0) {
-                    toast.success(`Liên thông các mục [${successfulIds.join(', ')}] đã chọn thành công.`);
-                    toast.error(`Các tên: [${errorIds.join(', ')}] đã liên thông`);
+                    toast.error(<span>Các mục: <strong style={{ color: 'red' }}>[ {errorNames.join(', ')} ]</strong> đã liên thông.</span>);
+                } else if (successfulNames.length > 0 && errorNames.length > 0) {
+                    toast.success(<span>Liên thông các mục: <strong style={{ color: 'green' }}>[ {successfulNames.join(', ')} ]</strong> thành công.</span>, { autoClose: 5000 });
+                    toast.error(<span>Các mục: <strong style={{ color: 'red' }}>[ {errorNames.join(', ')} ]</strong> đã liên thông.</span>, { autoClose: 5000 });
                 } else {
-                    toast.success("Liên thông các mục đã chọn thành công.");
+                    toast.success(<span>Liên thông các mục: <strong style={{ color: 'green' }}>[ {successfulNames.join(', ')} ]</strong> thành công.</span>);
                 }
             }
         });
@@ -266,7 +270,7 @@ const LibMaterialPage = () => {
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

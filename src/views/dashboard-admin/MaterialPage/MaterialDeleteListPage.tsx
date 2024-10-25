@@ -25,7 +25,7 @@ const MaterialDeleteListPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
 
-    const { data, isLoading } = useFetchMaterialDeleteList({ limit, page, search });
+    const { data, isLoading, isFetching } = useFetchMaterialDeleteList({ limit, page, search });
 
     const mutationDelete = useDeleteMaterial();
     const mutationDeleteMany = useDeleteManyMaterial();
@@ -63,8 +63,8 @@ const MaterialDeleteListPage = () => {
         setOpenConfirmDialog(false);
     };
 
-     // Khôi phục 1
-     const handleOpenConfirmRestoreDialog = (row: TMaterial) => {
+    // Khôi phục 1
+    const handleOpenConfirmRestoreDialog = (row: TMaterial) => {
         setMaterialToRestore(row);
         setOpenConfirmRestoreDialog(true);
     };
@@ -269,7 +269,7 @@ const MaterialDeleteListPage = () => {
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

@@ -25,7 +25,7 @@ const CategoryPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
 
-    const { data, isLoading } = useFetchCategory({ limit, page, search });
+    const { data, isLoading, isFetching } = useFetchCategory({ limit, page, search });
     const mutationAdd = useAddCategory();
     const mutationEdit = useEditCategory();
     const mutationSoftDelete = useDeleteSoftCategory();
@@ -305,7 +305,7 @@ const CategoryPage = () => {
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

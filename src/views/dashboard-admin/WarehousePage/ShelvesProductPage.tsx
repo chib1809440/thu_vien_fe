@@ -43,7 +43,7 @@ const ShelvesProductPage = () => {
         [barcodeSearch, search, type, status]
     );
 
-    const { data, isLoading } = useFetchPublications({
+    const { data, isLoading, isFetching } = useFetchPublications({
         limit,
         page,
         ...filter,
@@ -236,7 +236,7 @@ const ShelvesProductPage = () => {
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

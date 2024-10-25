@@ -25,7 +25,7 @@ const PublisherPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
 
-    const { data, isLoading } = useFetchPublisher({ limit, page, search });
+    const { data, isLoading, isFetching } = useFetchPublisher({ limit, page, search });
     const mutationAdd = useAddPublisher();
     const mutationEdit = useEditPublisher();
     const mutationSoftDelete = useDeleteSoftPublisher();
@@ -307,7 +307,7 @@ const PublisherPage = () => {
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

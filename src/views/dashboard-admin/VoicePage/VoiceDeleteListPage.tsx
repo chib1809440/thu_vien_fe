@@ -26,7 +26,7 @@ const VoiceDeleteListPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
 
-    const { data, isLoading } = useFetchVoiceDeleteList({ limit, page, search });
+    const { data, isLoading, isFetching } = useFetchVoiceDeleteList({ limit, page, search });
 
     const mutationDelete = useDeleteVoice();
     const mutationDeleteMany = useDeleteManyVoice();
@@ -247,7 +247,7 @@ const VoiceDeleteListPage = () => {
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

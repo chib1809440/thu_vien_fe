@@ -25,7 +25,7 @@ const MaterialPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
 
-    const { data, isLoading } = useFetchMaterial({ limit, page, search });
+    const { data, isLoading, isFetching } = useFetchMaterial({ limit, page, search });
     const mutationAdd = useAddMaterial();
     const mutationEdit = useEditMaterial();
     const mutationSoftDelete = useDeleteSoftMaterial();
@@ -270,7 +270,7 @@ const MaterialPage = () => {
             )}
 
             <MainCard>
-            <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
+                <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
                     <Box display="flex" flexWrap="wrap">
                         <Box>
                             <StyledButton
@@ -308,7 +308,7 @@ const MaterialPage = () => {
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

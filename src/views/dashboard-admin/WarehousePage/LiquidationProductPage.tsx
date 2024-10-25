@@ -38,7 +38,7 @@ const LiquidationProductPage = () => {
         [barcodeSearch, search, type, status]
     );
 
-    const { data, isLoading } = useFetchLiquidation({
+    const { data, isLoading, isFetching } = useFetchLiquidation({
         limit,
         page,
         ...filter
@@ -262,7 +262,7 @@ const LiquidationProductPage = () => {
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

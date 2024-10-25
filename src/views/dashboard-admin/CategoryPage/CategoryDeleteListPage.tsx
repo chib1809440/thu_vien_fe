@@ -25,7 +25,7 @@ const CategoryDeleteListPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
 
-    const { data, isLoading } = useFetchCategoryDeleteList({ limit, page, search });
+    const { data, isLoading, isFetching } = useFetchCategoryDeleteList({ limit, page, search });
 
     const mutationDelete = useDeleteCategory();
     const mutationDeleteMany = useDeleteManyCategory();
@@ -267,7 +267,7 @@ const CategoryDeleteListPage = () => {
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

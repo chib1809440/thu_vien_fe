@@ -42,7 +42,7 @@ const VoicePage = () => {
         [search]
     );
 
-    const { data, isLoading } = useFetchVoice({
+    const { data, isLoading, isFetching } = useFetchVoice({
         limit,
         page,
         ...filter,
@@ -382,7 +382,7 @@ const VoicePage = () => {
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

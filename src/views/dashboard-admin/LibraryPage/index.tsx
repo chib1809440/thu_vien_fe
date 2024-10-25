@@ -24,7 +24,7 @@ const LibraryPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
 
-    const { data, isLoading } = useFetchLibrary({ limit, page, search });
+    const { data, isLoading, isFetching } = useFetchLibrary({ limit, page, search });
     const mutationAdd = useAddLibrary();
     const mutationEdit = useEditLibrary();
     const mutationDelete = useDeleteLibrary();
@@ -280,7 +280,7 @@ const LibraryPage = () => {
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />

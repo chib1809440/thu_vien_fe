@@ -296,7 +296,7 @@ function TableUserList<T extends DataType>({
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.barcode}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.fullname}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.phoneNumber}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{(user?.roleId as Role)?.name}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{(row?.roleId as Role)?.name}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.gender}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{formatDate(row?.birthday)}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center">

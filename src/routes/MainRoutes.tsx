@@ -141,6 +141,10 @@ const LibLoanSlipPage = Loadable(
   lazy(() => import("../views/dashboard-admin/LienThong/LIB/LibLoanSlipPage"))
 );
 
+const LibLoanSlipRequestPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/LienThong/LIB/LibLoanSlipPage/LoanSlipRequestLink"))
+);
+
 
 
 const LibAccount = Loadable(
@@ -367,6 +371,10 @@ export const MainRoutesV2 = {
     {
       path: "lien-thong/chia-se-danh-muc/phieu-muon-lien-thong",
       element: <LibLoanSlipPage />,
+    },
+    {
+      path: "lien-thong/chia-se-danh-muc/phieu-muon-yeu-cau-lien-thong",
+      element: <LibLoanSlipRequestPage />,
     },
     {
       path: "tai-khoan-lien-thong",

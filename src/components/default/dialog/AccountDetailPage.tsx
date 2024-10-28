@@ -106,7 +106,7 @@ export default function AccountDetailDialog({ title, maxWidth, id, content, acti
                             <Typography sx={{ mb: 3 }}><strong>Họ và tên:</strong>  {userDetail?.data?.result?.fullname}</Typography>
                             <Typography sx={{ mb: 3 }}><strong>Email:</strong> {userDetail?.data?.result?.email}</Typography>
                             <Typography sx={{ mb: 3 }}><strong>Số điện thoại:</strong> {userDetail?.data?.result?.phoneNumber}</Typography>
-                            <Typography sx={{ mb: 3 }}><strong>Giới tính:</strong> {capitalizeFirstLetter(userDetail?.data?.result?.email)}</Typography>
+                            <Typography sx={{ mb: 3 }}><strong>Giới tính:</strong> {capitalizeFirstLetter(userDetail?.data?.result?.gender)}</Typography>
                             <Typography sx={{ mb: 3 }}><strong>Ngày sinh:</strong> {formatDate(userDetail?.data?.result?.birthday)}</Typography>
                             <Typography sx={{ mb: 3 }}><strong>Tên đăng nhập:</strong> {userDetail?.data?.result?.username}</Typography>
                             <Typography sx={{ mb: 3 }}><strong>Mật khẩu đầu tiên:</strong> {capitalizeFirstLetter(userDetail?.data?.result?.passwordFirst)}</Typography>

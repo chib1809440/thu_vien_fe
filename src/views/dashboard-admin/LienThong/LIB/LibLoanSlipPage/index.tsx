@@ -9,8 +9,8 @@ import ActionsForm from "../../../../../components/custom/form/ActionForm";
 import TableList from "../../../../../components/custom/table-list/TableList";
 import StyledButton from "../../../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../../../components/default/dialog/ConfirmDeleteDialog";
-import { useAddLoanSlip, useApprovalLoanSlip, useDeleteSoftLoanSlip, useDeleteSoftManyLoanSlip, useEditLoanSlip, useReturnLoanSlip } from "../../../../../hooks/services/loanSlip/loanSlip-mutation";
-import { useFetchLoanSlip, useReFetchLoanSlip } from "../../../../../hooks/services/loanSlip/loanSlip-query";
+import { useAddLoanSlip, useApprovalLoanSlip, useDeleteLoanSlip, useDeleteManyLoanSlip, useDeleteSoftLoanSlip, useDeleteSoftManyLoanSlip, useEditLoanSlip, useReturnLoanSlip } from "../../../../../hooks/services/loanSlip/loanSlip-mutation";
+import { useFetchLoanSlip, useFetchLoanSlipLink, useReFetchLoanSlip, useReFetchLoanSlipLink } from "../../../../../hooks/services/loanSlip/loanSlip-query";
 import useQueryString from "../../../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../../../types/common/table";
 import { CreatePublication, TLoanSlip, TLoanSlipCreate } from "../../../../../types/models/loanSlip.type";
@@ -26,6 +26,7 @@ import { useFetchPublications } from "../../../../../hooks/services/publications
 import DatePicker from "react-datepicker";
 import ExcelJS from 'exceljs';
 import FormAddEditLibLoanSlip from "./ui-components/FormAddEditLibLoanSlip";
+import { useAuth } from "../../../../../contexts/JWTContext";
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -59,6 +60,14 @@ const LoanSlipPage = () => {
     const [endDate, setEndDate] = useState(null);
     const [filterDateType, setFilterDateType] = useState<string | number>(0);
     const [filterStatus, setFilterStatus] = useState<string | number>(0);
+    const { user } = useAuth();
+    const libraryId = useMemo(() => {
+        if (!user) return null;
+
+        const _user = { ...user } as any;
+
+        return _user?.data?.libraryId;
+    }, [user]);
     const filter = useMemo(
         () =>
             parserParams([
@@ -75,22 +84,21 @@ const LoanSlipPage = () => {
         ]
     );
     const theme = useTheme();
-    const { data, isLoading } = useFetchLoanSlip({
+    const { data, isLoading } = useFetchLoanSlipLink({
         limit,
         page,
         startDate,
         endDate,
         ...filter,
     });
-    console.log(filterDateType);
 
     const mutationAdd = useAddLoanSlip();
     const mutationApproval = useApprovalLoanSlip();
     const mutationReturn = useReturnLoanSlip();
     const mutationEdit = useEditLoanSlip();
-    const mutationSoftDelete = useDeleteSoftLoanSlip();
-    const mutationSoftDeleteMany = useDeleteSoftManyLoanSlip();
-    const revalidate = useReFetchLoanSlip();
+    const mutationDelete = useDeleteLoanSlip();
+    //const mutationSDeleteMany = useDeleteManyLoanSlip();
+    const revalidate = useReFetchLoanSlipLink();
     const handleClearStartDate = () => {
         setStartDate(null); // Đặt lại giá trị endDate về null
     };
@@ -184,7 +192,7 @@ const LoanSlipPage = () => {
     };
     const handleConfirmDelete = () => {
         if (loanSlipToDelete) {
-            mutationSoftDelete.mutate(loanSlipToDelete._id, {
+            mutationDelete.mutate(loanSlipToDelete._id, {
                 onSuccess: () => {
                     revalidate();
                     toast.success('Xóa phiếu mượn thành công.');
@@ -311,7 +319,13 @@ const LoanSlipPage = () => {
                                         variant="filled"
                                     />
                                 </> : <>
-                                    <Button variant="contained" sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }} onClick={() => handleApprovalLoanSlip(row)}>Chưa duyệt</Button>
+                                    <Chip
+                                        style={{ color: 'black', background: 'yellow' }}
+                                        label="Chưa duyệt"
+                                        variant="filled"
+                                    />
+
+                                    {/* <Button variant="contained" sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }} onClick={() => handleApprovalLoanSlip(row)}>Chưa duyệt</Button> */}
                                 </>
                             }
                         </Box>
@@ -333,11 +347,15 @@ const LoanSlipPage = () => {
                                 gap: 1,
                             }}
                         >
-                            <IconPencil
-                                onClick={() => handleEditLoanSlip(row)}
-                                size={20}
-                                stroke={1.5}
-                            />
+                            {
+                                row.isAgree === false && libraryId !== row.libraryId &&
+                                <IconPencil
+                                    onClick={() => handleEditLoanSlip(row)}
+                                    size={20}
+                                    stroke={1.5}
+                                />
+                            }
+
                             {
                                 row.isAgree === false &&
                                 <IconTrash
@@ -390,17 +408,7 @@ const LoanSlipPage = () => {
         setOpenConfirmSoftDeleteMultiple(true);
     }, [checkedDelete]);
 
-    const handleConfirmSoftDeleteMultiple = useCallback(() => {
-        if (checkedDelete.length === 0) return;
-        mutationSoftDeleteMany.mutate(checkedDelete, {
-            onSuccess: () => {
-                revalidate();
-                toast.success("Xóa các mục đã chọn thành công.");
-                setOpenConfirmSoftDeleteMultiple(false);
-                setCheckedDelete([]);
-            },
-        });
-    }, [checkedDelete]);
+
     const handleExportLoanSlipExcel = () => {
         // Tạo một workbook mới
         console.log(data);
@@ -523,16 +531,7 @@ const LoanSlipPage = () => {
 
     const actionMenus = useMemo((): TMenuOption[] => {
         return [
-            {
-                label: "Xóa các dữ liệu vào thùng rác",
-                icon: <IconTrashXFilled size={20} stroke={1.5} />,
-                onClick: handleDeleteMultiple,
-            },
-            {
-                label: "Xuất excel",
-                icon: <IconFileExport size={20} stroke={1.5} />,
-                onClick: handleExportLoanSlipExcel,
-            },
+          
         ];
     }, [handleDeleteMultiple, handleExportLoanSlipExcel]);
 
@@ -595,8 +594,7 @@ const LoanSlipPage = () => {
                                 Thêm mới
                             </StyledButton>
                         </Box>
-
-                        <Box>
+                        {/* <Box>
                             <Link to="/quan-ly-muon-tra/phieu-muon/danh-sach-xoa-phieu-muon" style={{ textDecoration: 'none' }}>
                                 <StyledButton
                                     sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
@@ -607,7 +605,7 @@ const LoanSlipPage = () => {
                                     Thùng rác
                                 </StyledButton>
                             </Link>
-                        </Box>
+                        </Box> */}
                     </Box>
                 </Stack>
                 <ActionsForm actions={actionMenus} barcode={true}
@@ -764,14 +762,6 @@ const LoanSlipPage = () => {
                     onConfirm={handleConfirmDelete}
                     title="Xác nhận xóa?"
                     description={`Bạn có chắc chắn muốn xóa "${loanSlipToDelete?._id}" ?`}
-                />
-                <ConfirmDeleteDialog
-                    key={"deleteMultiple"}
-                    open={openConfirmSoftDeleteMultiple}
-                    onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
-                    onConfirm={handleConfirmSoftDeleteMultiple}
-                    title="Xác nhận xóa các mục đã chọn?"
-                    description={`Bạn có chắc chắn muốn xóa?`}
                 />
             </MainCard>
         </div>

@@ -380,6 +380,14 @@ export const dashboardAdminV2 = {
                     icon: icons.IconBrowserPlus,
                     breadcrumbs: false,
                 },
+                {
+                    id: 'phieu-muon-yeu-cau-lien-thong',
+                    title: "Danh sách yêu cầu mượn",
+                    type: 'item',
+                    url: '/lien-thong/chia-se-danh-muc/phieu-muon-yeu-cau-lien-thong',
+                    icon: icons.IconBrowserPlus,
+                    breadcrumbs: false,
+                },
             ]
         },
         {

@@ -80,7 +80,7 @@ const CoverCard = ({
         <Paper
             sx={{
                 border: `1px solid ${theme.palette.grey[200]}`,
-                height: handleOpenView ? "500px" : "300px",
+                height: handleOpenView ? "500px" : "450px",
                 position: "relative",
             }}
         >
@@ -124,7 +124,7 @@ const CoverCard = ({
                 sx={{
                     position: "absolute",
                     pt: handleOpenView ? 2 : 1,
-                    top: { xs: "50%", sm: handleOpenView ? "30%" : "50%" },
+                    top: { xs: "50%", sm: handleOpenView ? "30%" : "35%" },
                     left: { xs: "0", sm: handleOpenView ? "20%" : "20%" },
                     display: "flex",
                     justifyContent: "flex-end",
@@ -287,9 +287,9 @@ const CoverCard = ({
                                     sx={{ marginTop: 1, width: "150px" }}
                                     onClick={handleOpenView}
                                 >
-                                    Xem dạng sách
+                                    Xem sách
                                 </StyledButton>
-                                <StyledButton
+                                {/* <StyledButton
                                     color="primary"
                                     size="small"
                                     startIcon={<IconPdf stroke={2} />}
@@ -300,7 +300,7 @@ const CoverCard = ({
                                         Xem dạng pdf
                                     </a>
 
-                                </StyledButton>
+                                </StyledButton> */}
                             </Box>
                         )}
                         {[

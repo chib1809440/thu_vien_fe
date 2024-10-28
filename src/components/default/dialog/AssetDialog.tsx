@@ -152,8 +152,10 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
 
                 } else {
                     const data: Asset = {
-                        ...asset,
-                        ...values,
+                        note: values.note,
+                        name: values.name,
+                        _id: asset._id,
+                        description: values.description,
                         quantityTotal: +values.quantityTotal,
                         quantityUsed: +values.quantityUsed,
                         quantityWarehouse: +values.quantityWarehouse,

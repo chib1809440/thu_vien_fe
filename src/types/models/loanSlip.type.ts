@@ -38,6 +38,7 @@ export type TLoanSlipCreate = {
     barcodeUserId?: string;
     returnDay: string;
     barcode?: string;
+    isLink?: boolean,
     isPrint: boolean;
     receiptDate: string;
     status?: TStatusLoanSlip;

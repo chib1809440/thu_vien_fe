@@ -27,6 +27,12 @@ class LoanSlipService extends BaseApi {
         });
         return response.data as TApiMultipleRecords<DynamicType>;
     }
+    public async getAllRequestLink<DynamicType>(params?: TFilter) {
+        const response = await this.httpClient.get(`${this.endpoint}/request-link`, {
+            params,
+        });
+        return response.data as TApiMultipleRecords<DynamicType>;
+    }
 }
 
 const loanSlipService = new LoanSlipService("/loan-slip");

@@ -489,21 +489,25 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                                             Boolean(formik.errors.roleId)
                                                         }
                                                     >
-                                                        <MenuItem value='0' disabled>
+                                                        <MenuItem value="0" disabled>
                                                             Chọn vai trò
                                                         </MenuItem>
                                                         {roles?.data?.result?.length > 0 ? (
-                                                            roles.data.result.map((item, index) => (
-                                                                <MenuItem key={index} value={item._id}>
-                                                                    {item.name}
-                                                                </MenuItem>
-                                                            ))
+                                                            roles.data.result
+                                                                .filter(item =>
+                                                                    item.name === "Student" ||
+                                                                    item.name === "Teacher"
+                                                                ) // Lọc các vai trò theo tên
+                                                                .map((item, index) => (
+                                                                    <MenuItem key={index} value={item._id}>
+                                                                        {item.name}
+                                                                    </MenuItem>
+                                                                ))
                                                         ) : (
                                                             <MenuItem value="0" disabled>
                                                                 Chọn vai trò
                                                             </MenuItem>
                                                         )}
-
                                                     </Select>
                                                 </FormControl>
                                                 {formik.touched.roleId &&

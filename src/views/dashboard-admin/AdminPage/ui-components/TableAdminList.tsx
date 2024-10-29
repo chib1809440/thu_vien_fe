@@ -64,19 +64,21 @@ function TableAdminList<T extends DataType>({
     const [isOpenConfirmDialog, setIsOpenConfirmDialog] = useState(false);
     const [isOpenConfirmDeleteSelectedDialog, setIsOpenConfirmDeleteSelectedDialog] = useState(false);
     const [selectedDeleteID, setSelectedDeleteID] = useState<string>()
-    const [filterRoleId, setFilterRoleId] = useState<string | number>(0)
+    const [filterRoleId, setFilterRoleId] = useState<string | number>(null)
     const debouncedSearch = useDebounce<string>(contentSearch, searchDelay);
     const [checked, setChecked] = useState<string[]>([]);
     const [checkedAll, setCheckedAll] = useState<boolean>(false);
+    const { data: roles } = useRoleList();
     const { data: users, isPending, error, isError, isPlaceholderData, isFetching, refetch } =
         useUserList(page, rowsPerPage, debouncedSearch, filterRoleId);
     useEffect(() => {
+        console.log('hehehe', filterRoleId);
+
         refetch()
     }, [filterRoleId])
 
     const { mutate: softDeleteUser, isPending: isPendingUpdate } = useSoftDeleteUser();
     const { mutate: softDeleteUserSelected } = useDeleteUserSelected();
-    const { data: roles } = useRoleList();
     useEffect(() => {
         if (roles?.data?.result.length > 0) {
             // Tìm đối tượng có item.name là "Admin"

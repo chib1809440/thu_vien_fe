@@ -38,22 +38,10 @@ const headCells: HeadCell[] = [
         label: 'Vai trò',
     },
     {
-        id: 'user_gender',
-        numeric: false,
-        disablePadding: true,
-        label: 'Giới tính',
-    },
-    {
         id: 'user_libraryId',
         numeric: false,
         disablePadding: true,
         label: 'Tên thư viện',
-    },
-    {
-        id: 'user_birthday',
-        numeric: false,
-        disablePadding: true,
-        label: 'Ngày sinh',
     },
     {
         id: 'action',

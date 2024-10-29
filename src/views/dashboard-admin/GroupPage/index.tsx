@@ -11,7 +11,7 @@ import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDelet
 import { CsFlexRowBetween } from "../../../components/default/flex";
 import { useAddGroup, useDeleteGroup, useDeleteManyGroup, useEditGroup } from "../../../hooks/services/group/group-mutation";
 import { useFetchGroup, useReFetchGroup } from "../../../hooks/services/group/group-query";
-import { useFetchLibrary } from "../../../hooks/services/library/library-query";
+import { useFetchLibrary, useReFetchLibrary } from "../../../hooks/services/library/library-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TGroup, TGroupCreate } from "../../../types/models/group.type";
@@ -36,6 +36,7 @@ const GroupPage = () => {
     const mutationDelete = useDeleteGroup();
     const mutationDeleteMany = useDeleteManyGroup();
     const revalidate = useReFetchGroup();
+    const revalidateLibs = useReFetchLibrary();
 
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TGroup | null>(null);
@@ -73,6 +74,7 @@ const GroupPage = () => {
                 {
                     onSuccess: () => {
                         revalidate();
+                        revalidateLibs();
                         toast.success('Chỉnh sửa thành công.');
                         handleClose();
                     },
@@ -86,6 +88,7 @@ const GroupPage = () => {
         mutationAdd.mutate(payload, {
             onSuccess: (data) => {
                 revalidate();
+                revalidateLibs();
                 toast.success('Thêm thành công.');
                 setOpenAddEdit(false);
             },

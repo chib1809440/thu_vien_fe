@@ -17,6 +17,7 @@ import { TMaterial, TMaterialCreate } from "../../../types/models/material";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditMaterial from "./ui-components/FormAddEditMaterial";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 
 const MaterialPage = () => {
@@ -125,6 +126,7 @@ const MaterialPage = () => {
                 label: "Tên dạng học liệu",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
                 id: "description",

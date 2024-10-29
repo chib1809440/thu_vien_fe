@@ -7,6 +7,7 @@ import { TCategory } from '../../../../types/models/category';
 import { TMaterial } from '../../../../types/models/material';
 import { TPublisher } from '../../../../types/models/publisher';
 import { TTypeVoice } from '../../../../types/models/type-voice';
+import { capitalizeFirstLetter } from '../../../../helpers/capitalizeFirstLetter';
 
 type Props = {
     selectedPublications?: number;
@@ -64,7 +65,7 @@ const FilterByItems: FC<Props> = ({
                             <MenuItem value={0}>Tất cả loại ấn phẩm</MenuItem>
                             {typeOptions?.map((item, index) => (
                                 <MenuItem key={index} value={item.value}>
-                                    {item.label}
+                                    {capitalizeFirstLetter(item.label)}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -84,7 +85,7 @@ const FilterByItems: FC<Props> = ({
                             <MenuItem value={0}>Tất cả dạng học liệu</MenuItem>
                             {materialData?.data?.result?.map((item, index) => (
                                 <MenuItem key={index} value={item._id}>
-                                    {item.name}
+                                    {capitalizeFirstLetter(item.name)}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -108,7 +109,7 @@ const FilterByItems: FC<Props> = ({
                             <MenuItem value={0}>Tất cả lĩnh vực</MenuItem>
                             {categoryData?.data?.result?.map((item, index) => (
                                 <MenuItem key={index} value={item._id}>
-                                    {item.name}
+                                    {capitalizeFirstLetter(item.name)}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -132,7 +133,7 @@ const FilterByItems: FC<Props> = ({
                             <MenuItem value={0}>Tất cả tác giả</MenuItem>
                             {authorData?.data?.result?.map((item, index) => (
                                 <MenuItem key={index} value={item._id}>
-                                    {item.name}
+                                    {capitalizeFirstLetter(item.name)}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -156,7 +157,7 @@ const FilterByItems: FC<Props> = ({
                             <MenuItem value={0}>Tất cả nhà xuất bản</MenuItem>
                             {publisherData?.data?.result?.map((item, index) => (
                                 <MenuItem key={index} value={item._id}>
-                                    {item.name}
+                                    {capitalizeFirstLetter(item.name)}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -180,7 +181,7 @@ const FilterByItems: FC<Props> = ({
                             <MenuItem value={0}>Tất cả loại voice</MenuItem>
                             {typeVoiceData?.data?.result?.map((item, index) => (
                                 <MenuItem key={index} value={item._id}>
-                                    {item.name}
+                                    {capitalizeFirstLetter(item.name)}
                                 </MenuItem>
                             ))}
                         </Select>

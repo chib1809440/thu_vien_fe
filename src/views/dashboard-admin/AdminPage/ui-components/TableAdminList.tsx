@@ -31,6 +31,7 @@ import { TLibrary } from "../../../../types/models/library.type";
 import AdminDetailDialog from "./AdminDetailDialog";
 import AccountDetailDialog from "../../../../components/default/dialog/AccountDetailPage";
 import { Role } from "../../../../interfaces/role";
+import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -291,9 +292,7 @@ function TableAdminList<T extends DataType>({
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.fullname}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.phoneNumber}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{(row?.roleId as Role)?.name}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.gender}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{(row?.libraryId as TLibrary)?.name}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{formatDate(row?.birthday)}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{capitalizeFirstLetter((row?.libraryId as TLibrary)?.name)}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center">
                                                             <Box sx={{
                                                                 display: "flex",

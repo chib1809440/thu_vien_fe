@@ -17,6 +17,7 @@ import { TAuthor, TAuthorCreate } from "../../../types/models/author";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditAuthor from "./ui-components/FormAddEditAuthor";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 
 const AuthorPage = () => {
@@ -121,6 +122,7 @@ const AuthorPage = () => {
                 label: "Tên tác giả",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
                 id: "description",

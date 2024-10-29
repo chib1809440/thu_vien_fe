@@ -33,6 +33,7 @@ import MainCard from "../../../../ui-component/cards/MainCard";
 import { statusVoiceImage } from "../../../../utils/constants.utils";
 import { getLabelFromOptions } from "../../../../utils/object";
 import FormAddEditTypeVoice from "../../TypeVoicePage/ui-components/FormAddEditTypeVoice";
+import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 
 type Props = {
     open: boolean;
@@ -348,7 +349,7 @@ const DialogAddEditVoice: FC<Props> = ({
                                         options={
                                             typeVoiceData?.data?.result?.map((item) => ({
                                                 value: item._id,
-                                                label: item.name,
+                                                label: capitalizeFirstLetter(item.name),
                                             })) || []
                                         }
                                         {...getFieldProps("typeVoiceId")}

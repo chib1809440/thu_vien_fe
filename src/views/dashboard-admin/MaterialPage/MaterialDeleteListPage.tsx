@@ -17,6 +17,7 @@ import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TMaterial } from "../../../types/models/material";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 
 const MaterialDeleteListPage = () => {
@@ -93,6 +94,7 @@ const MaterialDeleteListPage = () => {
                 label: "Tên dạng học liệu",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
                 id: "description",

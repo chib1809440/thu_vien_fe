@@ -17,6 +17,7 @@ import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TCategory } from "../../../types/models/category";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 
 const CategoryDeleteListPage = () => {
@@ -92,6 +93,7 @@ const CategoryDeleteListPage = () => {
                 disablePadding: "none",
                 label: "Tên lĩnh vực",
                 align: "left",
+                render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
                 id: "description",

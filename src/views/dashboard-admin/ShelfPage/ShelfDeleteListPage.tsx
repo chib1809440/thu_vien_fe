@@ -16,6 +16,7 @@ import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TShelves } from "../../../types/models/shelves";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 
 const ShelfDeleteListPage = () => {
@@ -92,6 +93,7 @@ const ShelfDeleteListPage = () => {
                 label: "Tên tủ kệ",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
                 id: "description",

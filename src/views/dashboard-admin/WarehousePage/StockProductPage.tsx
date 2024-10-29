@@ -24,6 +24,7 @@ import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../utils/object";
 import FormEditWarehouse from "./ui-components/FormEditWarehouse";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 const StockProductPage = () => {
     const queryString = useQueryString();
@@ -167,6 +168,7 @@ const StockProductPage = () => {
                 label: "Tên ấn phẩm",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
                 id: "quantity",

@@ -16,6 +16,8 @@ import { TLibrary, TLibraryCreate } from "../../../types/models/library.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditLibrary from "./ui-components/FormAddEditLibrary";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
+import { TGroup } from "../../../types/models/group.type";
 
 
 const LibraryPage = () => {
@@ -106,15 +108,31 @@ const LibraryPage = () => {
                 disablePadding: "none",
                 label: "Tên thư viện",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
+                sxRow: { maxWidth: 200 },
+                render: (row) => (capitalizeFirstLetter(row?.name)),
+            },
+            {
+                id: "group",
+                disablePadding: "none",
+                label: "Nhóm",
+                align: "left",
+                sxRow: { maxWidth: 100 },
+                render: (row) => {
+                    return (
+                        <Box>
+                            {row?.groupId !== null ? "Đã có nhóm" : "Chưa có nhóm"}
+                        </Box>
+                    )
+                },
             },
             {
                 id: "address",
                 disablePadding: "none",
                 label: "Địa chỉ",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 150 },
+                sxRow: {maxWidth: 150 },
             },
+           
             {
                 id: "phoneNumber",
                 disablePadding: "none",
@@ -170,7 +188,7 @@ const LibraryPage = () => {
             return [...prev, row._id];
         });
     }, []);
-    
+
     const handleCheckedDeleteAll = useCallback(
         (checked: boolean) => {
             if (data?.data?.result?.length === 0) return;

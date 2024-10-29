@@ -80,7 +80,7 @@ const CoverCard = ({
         <Paper
             sx={{
                 border: `1px solid ${theme.palette.grey[200]}`,
-                height: handleOpenView ? "500px" : "300px",
+                height: handleOpenView ? "500px" : "450px",
                 position: "relative",
             }}
         >
@@ -124,7 +124,7 @@ const CoverCard = ({
                 sx={{
                     position: "absolute",
                     pt: handleOpenView ? 2 : 1,
-                    top: { xs: "50%", sm: handleOpenView ? "30%" : "50%" },
+                    top: { xs: "50%", sm: handleOpenView ? "30%" : "35%" },
                     left: { xs: "0", sm: handleOpenView ? "20%" : "20%" },
                     display: "flex",
                     justifyContent: "flex-end",
@@ -278,16 +278,30 @@ const CoverCard = ({
                 {subtitle === "ấn phẩm mềm" && (
                     <Box>
                         {mimetype === "application/pdf" && (
-                            <StyledButton
-                                color="primary"
-                                size="small"
-                                startIcon={<IconPdf stroke={2} />}
-                                variant="contained"
-                                sx={{ marginTop: 1, width: "150px" }}
-                                onClick={handleOpenView}
-                            >
-                                Xem sách
-                            </StyledButton>
+                            <Box sx={{ gap: 2 }}>
+                                <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<IconPdf stroke={2} />}
+                                    variant="contained"
+                                    sx={{ marginTop: 1, width: "150px" }}
+                                    onClick={handleOpenView}
+                                >
+                                    Xem sách
+                                </StyledButton>
+                                {/* <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<IconPdf stroke={2} />}
+                                    variant="contained"
+                                    sx={{ marginTop: 1, width: "150px", marginLeft: 2 }}
+                                >
+                                    <a href={path} target="_blank" rel="noopener noreferrer" style={{ color: "white" }}>
+                                        Xem dạng pdf
+                                    </a>
+
+                                </StyledButton> */}
+                            </Box>
                         )}
                         {[
                             "application/msword",

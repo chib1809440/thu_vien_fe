@@ -8,6 +8,7 @@ import StyledButton from "../../default/button/StyledButton";
 import { TMenuOption } from "../../../types/common/table";
 import CustomInput from "../../default/input/CustomInput";
 import { TLibrary } from "../../../types/models/library.type";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 type Props = {
     actions?: TMenuOption[];
@@ -102,7 +103,7 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
                             <MenuItem value={0}>Tất cả thư viện</MenuItem>
                             {libraryData?.map((item, index) => (
                                 <MenuItem key={index} value={item._id}>
-                                    {item.name}
+                                    {capitalizeFirstLetter(item.name)}
                                 </MenuItem>
                             ))}
                         </Select>

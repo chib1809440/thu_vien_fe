@@ -11,6 +11,7 @@ import { useAddLibrary } from "../../../../hooks/services/library/library-mutati
 import { useReFetchLibrary } from "../../../../hooks/services/library/library-query";
 import { toast } from "react-toastify";
 import FormAddEditLibrary from "../../LibraryPage/ui-components/FormAddEditLibrary";
+import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 
 type Props = {
     open: boolean;
@@ -143,7 +144,10 @@ const FormAddEditGroup: FC<Props> = ({
                                 label="Thư viện"
                                 required
                                 value={(values.libraries as unknown as TLibrary[]) || []}
-                                options={libOptions}
+                                options={libOptions?.map((item) => ({
+                                    ...item,
+                                    name: capitalizeFirstLetter(item.name), 
+                                })) || []}
                                 keyLabel={"name"}
                                 onChange={handleChangedLibs}
                                 error={touched.libraries && Boolean(errors.libraries)}
@@ -157,7 +161,7 @@ const FormAddEditGroup: FC<Props> = ({
                                 options={((values.libraries as unknown as TLibrary[]) || [])?.map(
                                     (item) => ({
                                         value: item._id,
-                                        label: item.name,
+                                        label: capitalizeFirstLetter(item.name),
                                     })
                                 )}
                                 {...getFieldProps("mainLibrary")}

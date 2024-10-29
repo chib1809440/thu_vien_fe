@@ -18,6 +18,7 @@ import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../utils/object";
 import FormEditLiquidation from "./ui-components/FormEditLiquidation";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 const LiquidationProductPage = () => {
     const queryString = useQueryString();
@@ -107,7 +108,7 @@ const LiquidationProductPage = () => {
                 label: "Tên ấn phẩm",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => (row.publicationId as TPublications)?.name,
+                render: (row) => capitalizeFirstLetter((row.publicationId as TPublications)?.name),
             },
             {
                 id: "quantity",

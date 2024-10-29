@@ -68,7 +68,7 @@ export default function RoleDecentralizeDialog({ title, maxWidth, id, content, a
     const { data: permissions, isPending: isPendingPermissions } = usePermissionList();
     const [entityError, setEntityError] = useState<string | string[]>(null);
     useEffect(() => {
-        setCheckedPermissions(role.permissions)
+        setCheckedPermissions(role.permissions ?? [])
     }, [role])
     const onSuccess = (data: EntityResponse<Example>) => {
         if (data.statusCode) {
@@ -163,6 +163,7 @@ export default function RoleDecentralizeDialog({ title, maxWidth, id, content, a
     const isChecked = (resource: string, permission: string) => {
         return checkedPermissions.some(item => item.resource === resource && item.action === permission);
     };
+    console.log('check', checkedPermissions);
     const handleSubmit = () => {
         const data: AddPermissionToRoleModel = {
             roleId: role._id,

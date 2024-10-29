@@ -65,7 +65,7 @@ const PublicationsPage = () => {
         if (!user) return null;
         const _user = { ...user } as any;
         return _user?.data?.roleId?.name;
-    }, [user]);    
+    }, [user]);
 
     const filter = useMemo(
         () =>
@@ -146,7 +146,7 @@ const PublicationsPage = () => {
         setPublicationsDetails(null);
     };
 
-    const handleSubmit = (values: TPublicationsCreate) => {        
+    const handleSubmit = (values: TPublicationsCreate) => {
         const payload = {
             ...values,
             categoryIds: values.categoryIds.map((t: any) => t?._id),
@@ -312,7 +312,7 @@ const PublicationsPage = () => {
                                 )
                             }
                             {
-                                !(row?.type === "ấn phẩm cứng") && (
+                                !(row?.type === "ấn phẩm cứng") && (userRole !== "Student") && (
                                     <Box>
                                         Chia sẽ lên thư viện:
                                         <Switch
@@ -403,6 +403,10 @@ const PublicationsPage = () => {
                     maxWidth: 100,
                 },
                 render: (row) => {
+                    if (userRole === "Student") {
+                        return null;
+                    }
+
                     return (
                         <Switch
                             checked={row?.isLink}
@@ -435,16 +439,23 @@ const PublicationsPage = () => {
                                 stroke={1.5}
                                 onClick={() => handleViewDetails(row)}
                             />
-                            <IconPencil
-                                onClick={() => handleEditPublications(row)}
-                                size={20}
-                                stroke={1.5}
-                            />
-                            <IconTrash
-                                size={20}
-                                stroke={1.5}
-                                onClick={() => handleOpenConfirmDialog(row)}
-                            />
+                            {
+                                (userRole !== "Student") ?
+                                    <>
+                                        <IconPencil
+                                            onClick={() => handleEditPublications(row)}
+                                            size={20}
+                                            stroke={1.5}
+                                        />
+                                        <IconTrash
+                                            size={20}
+                                            stroke={1.5}
+                                            onClick={() => handleOpenConfirmDialog(row)}
+                                        />
+                                    </>
+                                    : <></>
+                            }
+
                         </Box>
                     );
                 },
@@ -542,6 +553,10 @@ const PublicationsPage = () => {
     };
 
     const actionMenus = useMemo((): TMenuOption[] => {
+        if (userRole === "Student") {
+            return []; 
+        }
+
         return [
             {
                 label: "Tải file mẫu",
@@ -559,7 +574,7 @@ const PublicationsPage = () => {
                 onClick: handleDeleteMultiple,
             },
         ];
-    }, [handleDeleteMultiple, handleDownloadTemplate, handleImportExcel]);
+    }, [userRole, handleDeleteMultiple, handleDownloadTemplate, handleImportExcel]);
 
     const initialValues = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {
@@ -643,48 +658,53 @@ const PublicationsPage = () => {
             )}
 
             <MainCard>
-                <Stack
-                    spacing={2}
-                    sx={{
-                        paddingLeft: { xs: 4, sm: 4 },
-                        paddingBottom: { xs: 2, sm: 2 },
-                        width: "100%",
-                    }}
-                >
-                    <Box display="flex" flexWrap="wrap">
-                        <Box>
-                            <StyledButton
-                                color="primary"
-                                size="small"
-                                startIcon={<IconPlus stroke={2} />}
-                                variant="contained"
-                                onClick={addPublications}
-                            >
-                                Thêm mới
-                            </StyledButton>
-                        </Box>
+                {
+                    (userRole !== "Student") ?
+                        <Stack
+                            spacing={2}
+                            sx={{
+                                paddingLeft: { xs: 4, sm: 4 },
+                                paddingBottom: { xs: 2, sm: 2 },
+                                width: "100%",
+                            }}
+                        >
+                            <Box display="flex" flexWrap="wrap">
+                                <Box>
+                                    <StyledButton
+                                        color="primary"
+                                        size="small"
+                                        startIcon={<IconPlus stroke={2} />}
+                                        variant="contained"
+                                        onClick={addPublications}
+                                    >
+                                        Thêm mới
+                                    </StyledButton>
+                                </Box>
 
-                        <Box>
-                            <Link
-                                to="/thu-vien/danh-sach-xoa-an-pham"
-                                style={{ textDecoration: "none" }}
-                            >
-                                <StyledButton
-                                    sx={{
-                                        background: "#de524a",
-                                        color: "white",
-                                        marginLeft: "10px",
-                                    }}
-                                    size="small"
-                                    startIcon={<IconTrash stroke={2} />}
-                                    variant="contained"
-                                >
-                                    Thùng rác
-                                </StyledButton>
-                            </Link>
-                        </Box>
-                    </Box>
-                </Stack>
+                                <Box>
+                                    <Link
+                                        to="/thu-vien/danh-sach-xoa-an-pham"
+                                        style={{ textDecoration: "none" }}
+                                    >
+                                        <StyledButton
+                                            sx={{
+                                                background: "#de524a",
+                                                color: "white",
+                                                marginLeft: "10px",
+                                            }}
+                                            size="small"
+                                            startIcon={<IconTrash stroke={2} />}
+                                            variant="contained"
+                                        >
+                                            Thùng rác
+                                        </StyledButton>
+                                    </Link>
+                                </Box>
+                            </Box>
+                        </Stack>
+                        : <></>
+                }
+
 
                 <ActionsForm
                     actions={actionMenus}

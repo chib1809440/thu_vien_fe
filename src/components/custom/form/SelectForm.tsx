@@ -22,7 +22,7 @@ type Props = {
     endAdornment?: ReactNode;
     disabled?: boolean;
     handleAdd?: () => void;
-    text?: string
+    text?: string;
 };
 
 const SelectForm: FC<Props> = ({

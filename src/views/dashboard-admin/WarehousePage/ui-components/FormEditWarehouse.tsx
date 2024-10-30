@@ -15,8 +15,12 @@ import * as yup from "yup";
 import InputForm from "../../../../components/custom/form/InputForm";
 import SelectForm from "../../../../components/custom/form/SelectForm";
 import { TPublicationsCreate } from "../../../../types/models/publications.type";
-import { TShelves } from "../../../../types/models/shelves";
+import { TShelves, TShelvesCreate } from "../../../../types/models/shelves";
 import { positionLiquidationDamaged, stockStatusOptions } from "../../../../utils/constants.utils";
+import { useAddShelf } from "../../../../hooks/services/shelf/shelf-mutation";
+import { useReFetchShelf } from "../../../../hooks/services/shelf/shelf-query";
+import { toast } from "react-toastify";
+import FormAddEditShelf from "../../ShelfPage/ui-components/FormAddEditShelf";
 
 const schema = yup.object().shape({
     name: yup.string().required("Vui lòng nhập tên"),
@@ -50,12 +54,14 @@ const FormEditWarehouse: FC<Props> = ({
     isFetching = false,
     isEditMode = false,
 }) => {
-
+    const [openAdd, setOpenAdd] = useState(false);
     const [statusWarehouse, setStatusWarehouse] = useState("");
     const [positionLD, setPositionLD] = useState("trong kho");
     const [reasonLD, setReasonLD] = useState("");
     const [touchedMount, setTouchedMount] = useState({ additionalQuantity: false });
     const [errorsMount, setErrorsMount] = useState({ additionalQuantity: "" });
+    const mutationAdd = useAddShelf();
+    const revalidate = useReFetchShelf();
 
     const [operation, setOperation] = useState("add");
     const [additionalQuantity, setAdditionalQuantity] = useState(0);
@@ -176,7 +182,7 @@ const FormEditWarehouse: FC<Props> = ({
     };
 
     const handleLiqidation = (e) => {
-        const value = Number(e.target.value);
+        const value = Number(e.target.value);        
         setLiquidationQuantity(value);
         setLiquidationTouched({ liquidationQuantity: true });
         let error = null;
@@ -194,279 +200,323 @@ const FormEditWarehouse: FC<Props> = ({
         setReasonLD(event.target.value);
     };
 
+    const handleAddShelves = () => {
+        setOpenAdd(true);
+    };
+
+    const handleClose = () => {
+        setOpenAdd(false);
+    };
+
+    const handleSubmitShelves = (values: TShelvesCreate) => {
+        mutationAdd.mutate(values, {
+            onSuccess: (data) => {
+                revalidate();
+                toast.success("Thêm thành công.");
+                setOpenAdd(false);
+            },
+            onError: (error) => {
+                toast.error("Thêm thất bại: " + error.message);
+            },
+        });
+        return;
+    };
+    const initialValuesShelves = useMemo((): TShelvesCreate => {
+        return {
+            name: "",
+            description: "",
+        };
+    }, []);
+
+    console.log(initialValues);
+    
+
     return (
-        <FormikProvider value={formik}>
-            <Dialog
-                maxWidth="sm"
-                fullWidth
-                open={open}
-                onClose={(event, reason) => {
-                    if (reason !== "backdropClick") {
-                        onClose();
-                    }
-                }}
-                disableEscapeKeyDown
-            >
-                <DialogTitle>
-                    Cập nhật thông tin kho
-                    <IconButton
-                        aria-label="close"
-                        onClick={onClose}
-                        color="error"
-                        sx={{ position: "absolute", right: 8, top: 2 }}
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                </DialogTitle>
+        <>
+            {openAdd && (
+                <FormAddEditShelf
+                    open={openAdd}
+                    onClose={handleClose}
+                    initialValues={initialValuesShelves}
+                    onSubmit={handleSubmitShelves}
+                    isEditMode={false}
+                />
+            )}
+            <FormikProvider value={formik}>
+                <Dialog
+                    maxWidth="sm"
+                    fullWidth
+                    open={open}
+                    onClose={(event, reason) => {
+                        if (reason !== "backdropClick") {
+                            onClose();
+                        }
+                    }}
+                    disableEscapeKeyDown
+                >
+                    <DialogTitle>
+                        Cập nhật thông tin kho
+                        <IconButton
+                            aria-label="close"
+                            onClick={onClose}
+                            color="error"
+                            sx={{ position: "absolute", right: 8, top: 2 }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </DialogTitle>
 
-                <DialogContent>
-                    <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
-                        <Box sx={{ display: "flex", gap: 2 }}>
-                            <InputForm
-                                label="Tên ấn phẩm"
-                                error={touched.name && Boolean(errors.name)}
-                                helperText={touched.name && errors.name}
-                                {...getFieldProps("name")}
-                                disabled
-                            />
-                            <SelectForm
-                                label="Trạng thái ấn phẩm"
-                                text="Trạng thái:"
-                                options={stockStatusOptions}
-                                value={statusWarehouse}
-                                onChange={(event) => {
-                                    setStatusWarehouse(event?.target?.value);
-                                    console.log(event?.target?.value);
-                                    
-                                }}
-                            />
-                        </Box>
-
-                        {statusWarehouse === "trên kệ" && (
-                            <>
+                    <DialogContent>
+                        <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
+                            <Box sx={{ display: "flex", gap: 2 }}>
                                 <InputForm
-                                    label="Tổng số lượng ấn phẩm sách"
-                                    type="number"
-                                    {...getFieldProps("totalQuantity")}
-                                    error={touched.totalQuantity && Boolean(errors.totalQuantity)}
-                                    helperText={touched.totalQuantity && errors.totalQuantity}
+                                    label="Tên ấn phẩm"
+                                    error={touched.name && Boolean(errors.name)}
+                                    helperText={touched.name && errors.name}
+                                    {...getFieldProps("name")}
                                     disabled
                                 />
-                                <Box sx={{ display: "flex", gap: 2 }}>
-                                    <SelectForm
-                                        label="Chọn kệ tủ"
-                                        text="Kệ - tủ:"
-                                        options={
-                                            shelfOptions?.map((item) => ({
-                                                value: item?._id,
-                                                label: item?.name,
-                                            })) || []
-                                        }
-                                        {...getFieldProps("shelvesId")}
-                                        error={touched.shelvesId && Boolean(errors.shelvesId)}
-                                        helperText={touched.shelvesId && errors.shelvesId}
-                                    />
+                                <SelectForm
+                                    label="Trạng thái ấn phẩm"
+                                    text="Trạng thái:"
+                                    options={stockStatusOptions}
+                                    value={statusWarehouse}
+                                    onChange={(event) => {
+                                        setStatusWarehouse(event?.target?.value);
+                                        console.log(event?.target?.value);
 
+                                    }}
+                                />
+                            </Box>
+
+                            {statusWarehouse === "trên kệ" && (
+                                <>
                                     <InputForm
-                                        label="Số lượng trên kệ"
+                                        label="Tổng số lượng ấn phẩm sách"
                                         type="number"
-                                        placeholder="Nhập số lượng lên kệ"
-                                        {...getFieldProps("shelvesQuantity")}
-                                        error={
-                                            touched.shelvesQuantity &&
-                                            Boolean(errors.shelvesQuantity)
-                                        }
-                                        helperText={
-                                            touched.shelvesQuantity && errors.shelvesQuantity
-                                        }
+                                        {...getFieldProps("totalQuantity")}
+                                        error={touched.totalQuantity && Boolean(errors.totalQuantity)}
+                                        helperText={touched.totalQuantity && errors.totalQuantity}
                                         disabled
                                     />
-                                </Box>
+                                    <Box sx={{ display: "flex", gap: 2 }}>
+                                        <SelectForm
+                                            label="Chọn kệ tủ"
+                                            text="Kệ - tủ:"
+                                            options={
+                                                shelfOptions?.map((item) => ({
+                                                    value: item?._id,
+                                                    label: item?.name,
+                                                })) || []
+                                            }
+                                            {...getFieldProps("shelvesId")}
+                                            error={touched.shelvesId && Boolean(errors.shelvesId)}
+                                            helperText={touched.shelvesId && errors.shelvesId}
+                                            handleAdd={handleAddShelves}
+                                        />
 
-                                <Box display={"flex"} my={1}>
+                                        <InputForm
+                                            label="Số lượng trên kệ"
+                                            type="number"
+                                            placeholder="Nhập số lượng lên kệ"
+                                            {...getFieldProps("shelvesQuantity")}
+                                            sxBox={{ mt: 2.5 }}
+                                            error={
+                                                touched.shelvesQuantity &&
+                                                Boolean(errors.shelvesQuantity)
+                                            }
+                                            helperText={
+                                                touched.shelvesQuantity && errors.shelvesQuantity
+                                            }
+                                            disabled
+                                        />
+                                    </Box>
+
+                                    <Box display={"flex"} my={1}>
+                                        <Typography>
+                                            <input
+                                                type="radio"
+                                                value="add"
+                                                checked={operation === "add"}
+                                                onChange={() => {
+                                                    setOperation("add");
+                                                    const error = validateAdditionalQuantity(
+                                                        additionalQuantity,
+                                                        "add",
+                                                        shelvesQuantity,
+                                                        stockQuantity
+                                                    );
+                                                    setErrorsMount({
+                                                        ...errorsMount,
+                                                        additionalQuantity: error,
+                                                    });
+                                                    setTouchedMount({
+                                                        ...touchedMount,
+                                                        additionalQuantity: true,
+                                                    });
+                                                }}
+                                            />
+                                            Thêm
+                                        </Typography>
+                                        <Typography ml={2}>
+                                            <input
+                                                type="radio"
+                                                value="subtract"
+                                                checked={operation === "subtract"}
+                                                onChange={() => {
+                                                    setOperation("subtract");
+                                                    const error = validateAdditionalQuantity(
+                                                        additionalQuantity,
+                                                        "subtract",
+                                                        shelvesQuantity,
+                                                        stockQuantity
+                                                    );
+                                                    setErrorsMount({
+                                                        ...errorsMount,
+                                                        additionalQuantity: error,
+                                                    });
+                                                    setTouchedMount({
+                                                        ...touchedMount,
+                                                        additionalQuantity: true,
+                                                    });
+                                                }}
+                                            />
+                                            Giảm
+                                        </Typography>
+                                    </Box>
+                                    <InputForm
+                                        label={
+                                            operation === "add"
+                                                ? "Số lượng muốn thêm lên kệ"
+                                                : "Số lượng muốn giảm từ kệ"
+                                        }
+                                        type="number"
+                                        placeholder="Nhập số lượng"
+                                        value={additionalQuantity}
+                                        onChange={handleQuantityChange}
+                                        error={
+                                            touchedMount.additionalQuantity &&
+                                            Boolean(errorsMount.additionalQuantity)
+                                        }
+                                        helperText={
+                                            touchedMount.additionalQuantity &&
+                                                errorsMount.additionalQuantity
+                                                ? errorsMount.additionalQuantity
+                                                : undefined
+                                        }
+                                    />
+
                                     <Typography>
-                                        <input
-                                            type="radio"
-                                            value="add"
-                                            checked={operation === "add"}
-                                            onChange={() => {
-                                                setOperation("add");
-                                                const error = validateAdditionalQuantity(
-                                                    additionalQuantity,
-                                                    "add",
-                                                    shelvesQuantity,
-                                                    stockQuantity
-                                                );
-                                                setErrorsMount({
-                                                    ...errorsMount,
-                                                    additionalQuantity: error,
-                                                });
-                                                setTouchedMount({
-                                                    ...touchedMount,
-                                                    additionalQuantity: true,
-                                                });
-                                            }}
-                                        />
-                                        Thêm
+                                        <strong>
+                                            Tổng số lượng trên kệ còn:{" "}
+                                            <span style={{ color: "blue" }}>{calculateTotal()}</span> ấn
+                                            phẩm sách
+                                        </strong>
                                     </Typography>
-                                    <Typography ml={2}>
-                                        <input
-                                            type="radio"
-                                            value="subtract"
-                                            checked={operation === "subtract"}
-                                            onChange={() => {
-                                                setOperation("subtract");
-                                                const error = validateAdditionalQuantity(
-                                                    additionalQuantity,
-                                                    "subtract",
-                                                    shelvesQuantity,
-                                                    stockQuantity
-                                                );
-                                                setErrorsMount({
-                                                    ...errorsMount,
-                                                    additionalQuantity: error,
-                                                });
-                                                setTouchedMount({
-                                                    ...touchedMount,
-                                                    additionalQuantity: true,
-                                                });
-                                            }}
-                                        />
-                                        Giảm
-                                    </Typography>
-                                </Box>
-                                <InputForm
-                                    label={
-                                        operation === "add"
-                                            ? "Số lượng muốn thêm lên kệ"
-                                            : "Số lượng muốn giảm từ kệ"
-                                    }
-                                    type="number"
-                                    placeholder="Nhập số lượng"
-                                    value={additionalQuantity}
-                                    onChange={handleQuantityChange}
-                                    error={
-                                        touchedMount.additionalQuantity &&
-                                        Boolean(errorsMount.additionalQuantity)
-                                    }
-                                    helperText={
-                                        touchedMount.additionalQuantity &&
-                                            errorsMount.additionalQuantity
-                                            ? errorsMount.additionalQuantity
-                                            : undefined
-                                    }
-                                />
+                                </>
+                            )}
 
-                                <Typography>
-                                    <strong>
-                                        Tổng số lượng trên kệ còn:{" "}
-                                        <span style={{ color: "blue" }}>{calculateTotal()}</span> ấn
-                                        phẩm sách
-                                    </strong>
-                                </Typography>
-                            </>
-                        )}
+                            {statusWarehouse === "thanh lý" && (
+                                <>
+                                    <InputForm
+                                        label="Tổng số lượng ấn phẩm sách"
+                                        type="number"
+                                        {...getFieldProps("totalQuantity")}
+                                        error={touched.totalQuantity && Boolean(errors.totalQuantity)}
+                                        helperText={touched.totalQuantity && errors.totalQuantity}
+                                        disabled
+                                    />
+                                    <InputForm
+                                        label="Số lượng thanh lý"
+                                        type="number"
+                                        placeholder="Nhập số lượng thanh lý"
+                                        value={liquidationQuantity}
+                                        onChange={handleLiqidation}
+                                        error={liquidationTouched.liquidationQuantity && Boolean(liquidationErrors.liquidationQuantity)}
+                                        helperText={liquidationTouched.liquidationQuantity ? liquidationErrors.liquidationQuantity : undefined}
+                                    />
+                                    <InputForm
+                                        label="Lý do thanh lý"
+                                        placeholder="Nhập lý do thanh lý"
+                                        value={reasonLD}
+                                        onChange={handleReasonChange}
+                                    />
 
-                        {statusWarehouse === "thanh lý" && (
-                            <>
-                                <InputForm
-                                    label="Tổng số lượng ấn phẩm sách"
-                                    type="number"
-                                    {...getFieldProps("totalQuantity")}
-                                    error={touched.totalQuantity && Boolean(errors.totalQuantity)}
-                                    helperText={touched.totalQuantity && errors.totalQuantity}
-                                    disabled
-                                />
-                                <InputForm
-                                    label="Số lượng thanh lý"
-                                    type="number"
-                                    placeholder="Nhập số lượng thanh lý"
-                                    value={liquidationQuantity}
-                                    onChange={handleLiqidation}
-                                    error={liquidationTouched.liquidationQuantity && Boolean(liquidationErrors.liquidationQuantity)}
-                                    helperText={liquidationTouched.liquidationQuantity ? liquidationErrors.liquidationQuantity : undefined}
-                                />
-                                <InputForm
-                                    label="Lý do thanh lý"
-                                    placeholder="Nhập lý do thanh lý"
-                                    value={reasonLD}
-                                    onChange={handleReasonChange}
-                                />
+                                    <SelectForm
+                                        label="Vị trí thanh lý"
+                                        options={positionLiquidationDamaged}
+                                        value={positionLD}
+                                        onChange={(event) => {
+                                            const newPosition = event.target.value;
+                                            setPositionLD(newPosition);
 
-                                <SelectForm
-                                    label="Vị trí thanh lý"
-                                    options={positionLiquidationDamaged}
-                                    value={positionLD}
-                                    onChange={(event) => {
-                                        const newPosition = event.target.value;
-                                        setPositionLD(newPosition);
+                                            const error = validateLiquidationQuantity(liquidationQuantity,
+                                                newPosition === "trong kho" ? stockQuantity : shelvesQuantity);
 
-                                        const error = validateLiquidationQuantity(liquidationQuantity,
-                                            newPosition === "trong kho" ? stockQuantity : shelvesQuantity);
+                                            setLiquidationErrors({ liquidationQuantity: error });
+                                        }}
+                                    />
+                                </>
+                            )}
 
-                                        setLiquidationErrors({ liquidationQuantity: error });
-                                    }}
-                                />
-                            </>
-                        )}
+                            {statusWarehouse === "hư hỏng" && (
+                                <>
+                                    <InputForm
+                                        label="Tổng số lượng ấn phẩm sách"
+                                        type="number"
+                                        {...getFieldProps("totalQuantity")}
+                                        error={touched.totalQuantity && Boolean(errors.totalQuantity)}
+                                        helperText={touched.totalQuantity && errors.totalQuantity}
+                                        disabled
+                                    />
+                                    <InputForm
+                                        label="Số lượng hư hỏng"
+                                        type="number"
+                                        placeholder="Nhập số lượng hư hỏng"
+                                        value={liquidationQuantity}
+                                        onChange={handleLiqidation}
+                                        error={liquidationTouched.liquidationQuantity && Boolean(liquidationErrors.liquidationQuantity)}
+                                        helperText={liquidationTouched.liquidationQuantity ? liquidationErrors.liquidationQuantity : undefined}
+                                    />
+                                    <InputForm
+                                        label="Lý do hư hỏng"
+                                        placeholder="Nhập lý do hư hỏng"
+                                        value={reasonLD}
+                                        onChange={handleReasonChange}
+                                    />
 
-                        {statusWarehouse === "hư hỏng" && (
-                            <>
-                                <InputForm
-                                    label="Tổng số lượng ấn phẩm sách"
-                                    type="number"
-                                    {...getFieldProps("totalQuantity")}
-                                    error={touched.totalQuantity && Boolean(errors.totalQuantity)}
-                                    helperText={touched.totalQuantity && errors.totalQuantity}
-                                    disabled
-                                />
-                                <InputForm
-                                    label="Số lượng hư hỏng"
-                                    type="number"
-                                    placeholder="Nhập số lượng hư hỏng"
-                                    value={liquidationQuantity}
-                                    onChange={handleLiqidation}
-                                    error={liquidationTouched.liquidationQuantity && Boolean(liquidationErrors.liquidationQuantity)}
-                                    helperText={liquidationTouched.liquidationQuantity ? liquidationErrors.liquidationQuantity : undefined}
-                                />
-                                <InputForm
-                                    label="Lý do hư hỏng"
-                                    placeholder="Nhập lý do hư hỏng"
-                                    value={reasonLD}
-                                    onChange={handleReasonChange}
-                                />
+                                    <SelectForm
+                                        label="Vị trí hư hỏng"
+                                        options={positionLiquidationDamaged}
+                                        value={positionLD}
+                                        onChange={(event) => {
+                                            const newPosition = event.target.value;
+                                            setPositionLD(newPosition);
 
-                                <SelectForm
-                                    label="Vị trí hư hỏng"
-                                    options={positionLiquidationDamaged}
-                                    value={positionLD}
-                                    onChange={(event) => {
-                                        const newPosition = event.target.value;
-                                        setPositionLD(newPosition);
+                                            const error = validateLiquidationQuantity(liquidationQuantity,
+                                                newPosition === "trong kho" ? stockQuantity : shelvesQuantity);
 
-                                        const error = validateLiquidationQuantity(liquidationQuantity,
-                                            newPosition === "trong kho" ? stockQuantity : shelvesQuantity);
+                                            setLiquidationErrors({ liquidationQuantity: error });
+                                        }}
+                                    />
+                                </>
+                            )}
+                        </Form>
+                    </DialogContent>
 
-                                        setLiquidationErrors({ liquidationQuantity: error });
-                                    }}
-                                />
-                            </>
-                        )}
-                    </Form>
-                </DialogContent>
-
-                <DialogActions>
-                    <Button
-                        disabled={isFetching}
-                        onClick={handleSubmit as () => void}
-                        variant="contained"
-                        color="primary"
-                    >
-                        {isFetching ? "Đang cập nhật..." : "Cập nhật"}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </FormikProvider>
+                    <DialogActions>
+                        <Button
+                            disabled={isFetching}
+                            onClick={handleSubmit as () => void}
+                            variant="contained"
+                            color="primary"
+                        >
+                            {isFetching ? "Đang cập nhật..." : "Cập nhật"}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </FormikProvider>
+        </>
     );
 };
 

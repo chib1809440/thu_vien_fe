@@ -20,6 +20,8 @@ import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { statusVoiceImage } from "../../../utils/constants.utils";
 import { getLabelFromOptions, parserParams } from "../../../utils/object";
+import { useFetchTypeVoice } from "../../../hooks/services/type-voice/type-voice-query";
+import FilterByItems from "../PublicationsPage/ui-components/FilterByItems";
 
 
 const VoicePage = () => {
@@ -29,13 +31,15 @@ const VoicePage = () => {
     const search = queryString?.q ?? "";
 
     const [barcodeSearch, setBarcodeSearch] = useState("");
+    const [selectedTypeVoice, setSelectedTypeVoice] = useState(0);
 
     const filter = useMemo(
         () =>
             parserParams([
                 { compare: "", target: { search } },
+                { compare: 0, target: { typeVoiceId: selectedTypeVoice } },
             ]),
-        [search]
+        [search, selectedTypeVoice]
     );
 
     const { data, isLoading, isFetching } = useFetchVoice({
@@ -43,6 +47,7 @@ const VoicePage = () => {
         page,
         ...filter,
     });
+    const { data: typeVoiceData } = useFetchTypeVoice();
     const mutationEdit = useEditVoice();
     const mutationSoftDelete = useDeleteSoftVoice();
     const mutationSoftDeleteMany = useDeleteSoftManyVoice();
@@ -111,6 +116,10 @@ const VoicePage = () => {
         );
         return;
     };
+    // loc
+    const handleTypeVoiceFilterChange = (event) => {
+        setSelectedTypeVoice(event.target.value);
+    };
 
     const columns: TColumn<TVoice>[] = useMemo(
         () => [
@@ -120,7 +129,7 @@ const VoicePage = () => {
                 label: "Tên voice",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 150 },
-                render: (row)=> row?.name?.replace(/\.mp3$/, "") || "",
+                render: (row) => row?.name?.replace(/\.mp3$/, "") || "",
             },
             {
                 id: "type",
@@ -171,7 +180,7 @@ const VoicePage = () => {
                                     </Box>
                                 )
                             }
-                             <Box>
+                            <Box>
                                 Chia sẽ lên thư viện:
                                 <Switch
                                     checked={row?.isPublic}
@@ -320,11 +329,11 @@ const VoicePage = () => {
                     handleBarcodeSearch={handleBarcodeSearch}
                 />
 
-                {/* <FilterByItems
+                <FilterByItems
                     selectedTypeVoice={selectedTypeVoice}
-                    handleTypeVoiceFilterChange={handleTypeVoicelFilterChange}
+                    handleTypeVoiceFilterChange={handleTypeVoiceFilterChange}
                     typeVoiceData={typeVoiceData}
-                /> */}
+                />
 
                 <TableList
                     checked={checkedDelete}

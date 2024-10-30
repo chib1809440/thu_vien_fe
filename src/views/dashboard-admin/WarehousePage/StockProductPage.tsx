@@ -262,7 +262,6 @@ const StockProductPage = () => {
 
     const initialValues = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {
-
             return {
                 name: selectedEdit.name,
                 quantity: selectedEdit.quantity,

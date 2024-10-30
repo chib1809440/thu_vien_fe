@@ -22,6 +22,7 @@ import { statusVoiceImage } from "../../../utils/constants.utils";
 import { getLabelFromOptions, parserParams } from "../../../utils/object";
 import { useFetchTypeVoice } from "../../../hooks/services/type-voice/type-voice-query";
 import FilterByItems from "../PublicationsPage/ui-components/FilterByItems";
+import { useAuth } from "../../../contexts/JWTContext";
 
 
 const VoicePage = () => {
@@ -32,6 +33,14 @@ const VoicePage = () => {
 
     const [barcodeSearch, setBarcodeSearch] = useState("");
     const [selectedTypeVoice, setSelectedTypeVoice] = useState(0);
+
+    const { user } = useAuth();
+
+    const userId = useMemo(() => {
+        if (!user) return null;
+        const _user = { ...user } as any;
+        return _user?.data?._id;
+    }, [user]);
 
     const filter = useMemo(
         () =>
@@ -180,15 +189,20 @@ const VoicePage = () => {
                                     </Box>
                                 )
                             }
-                            <Box>
-                                Chia sẽ lên thư viện:
-                                <Switch
-                                    checked={row?.isPublic}
-                                    value={row?.isPublic}
-                                    onChange={(event) => handleChangePublic(row, event.target.checked)}
-                                    disabled={row?.isLink === true}
-                                />
-                            </Box>
+                            {
+                                (row?.createBy === userId) && (
+                                    <Box>
+                                        Chia sẻ lên thư viện:
+                                        <Switch
+                                            checked={row?.isPublic}
+                                            value={row?.isPublic}
+                                            onChange={(event) => handleChangePublic(row, event.target.checked)}
+                                            disabled={row?.isLink === true}
+                                        />
+                                    </Box>
+                                )
+                            }
+
 
                         </>
                     );

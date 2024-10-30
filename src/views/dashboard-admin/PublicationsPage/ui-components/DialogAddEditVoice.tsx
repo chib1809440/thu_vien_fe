@@ -19,7 +19,7 @@ import TableList from "../../../../components/custom/table-list/TableList";
 import StyledButton from "../../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../../components/default/dialog/ConfirmDeleteDialog";
 import { useAddTypeVoice } from "../../../../hooks/services/type-voice/type-voice-mutation";
-import { useFetchTypeVoice } from "../../../../hooks/services/type-voice/type-voice-query";
+import { useFetchTypeVoice, useReFetchTypeVoice } from "../../../../hooks/services/type-voice/type-voice-query";
 import {
     useDeleteSoftManyVoice,
     useDeleteSoftVoice
@@ -89,6 +89,7 @@ const DialogAddEditVoice: FC<Props> = ({
     const mutationSoftDelete = useDeleteSoftVoice();
     const mutationSoftDeleteMany = useDeleteSoftManyVoice();
     const revalidate = useReFetchVoice();
+    const revalidateTyVoice = useReFetchTypeVoice();
     const mutationAdd = useAddTypeVoice();
 
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -252,9 +253,10 @@ const DialogAddEditVoice: FC<Props> = ({
             reader.onload = (event) => {
                 setDefaultImage(event.target?.result as string);
             };
-            reader.readAsDataURL(file);
-            setFileName(file.name);
+            reader.readAsDataURL(file);            
+            setFileName(file.name);            
             setFieldValue("file", file);
+            setFieldValue("name", file.name)
         },
         [initialValues, setFieldValue]
     );
@@ -276,6 +278,7 @@ const DialogAddEditVoice: FC<Props> = ({
         mutationAdd.mutate(values, {
             onSuccess: (data) => {
                 revalidate();
+                revalidateTyVoice();
                 toast.success("Thêm thành công.");
                 setOpenAdd(false);
             },
@@ -406,7 +409,7 @@ const DialogAddEditVoice: FC<Props> = ({
                                     defaultImage={filenameDefault || defaultImage}
                                     onChange={handleChangeImage}
                                     error={touched.file && errors.file}
-                                    fileName={values?.name || fileName}
+                                    fileName={values?.name || fileName }
                                 />
                             </Form>
                         </Box>
@@ -432,7 +435,7 @@ const DialogAddEditVoice: FC<Props> = ({
                             <TableList
                                 checked={checkedDelete}
                                 columns={columns}
-                                rows={data?.data?.result?.filter(row => row.isPublic === true) || []}
+                                rows={data?.data?.result?.filter(row => row.isPublic === true && (publicationsData?._id === (row?.publicationId as TPublications)?._id)) || []}
                                 onChecked={handleCheckedDelete}
                                 onToggleCheckedAll={handleCheckedDeleteAll}
                                 checkedAll={checkedAll}

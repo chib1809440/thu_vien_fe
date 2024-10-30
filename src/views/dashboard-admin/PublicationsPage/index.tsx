@@ -312,9 +312,9 @@ const PublicationsPage = () => {
                                 )
                             }
                             {
-                                !(row?.type === "ấn phẩm cứng") && (userRole !== "Student") && (
+                                !(row?.type === "ấn phẩm cứng") && (userRole !== "Student") && (row?.createBy === userId) && (
                                     <Box>
-                                        Chia sẽ lên thư viện:
+                                        Chia sẻ lên thư viện:
                                         <Switch
                                             checked={row?.isPublic}
                                             value={row?.isPublic}

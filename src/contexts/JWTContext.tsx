@@ -16,6 +16,7 @@ import { KeyedObject } from "../types";
 import { InitialLoginContextProps, JWTContextType } from "../types/auth";
 import { AUTH_API } from "../_apis/api-endpoint";
 import { getAllExamples } from "../_apis/example.api";
+import { getUserById } from "../_apis/user.api";
 
 // constant
 const initialState: InitialLoginContextProps = {
@@ -88,7 +89,7 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
                         },
                     });
                 } else {
-                    const response = await getAllExamples(1, 10);
+                    const response = await getUserById(userString?.data?._id);
                     if (response.statusCode === 200 || response.statusCode === 201) {
                         dispatch({
                             type: LOGIN,
@@ -165,7 +166,7 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
 
     const resetPassword = (email: string) => console.log(email);
 
-    const updateProfile = () => {};
+    const updateProfile = () => { };
 
     if (state.isInitialized !== undefined && !state.isInitialized) {
         return <Loader />;

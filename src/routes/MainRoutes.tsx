@@ -3,6 +3,7 @@ import { lazy } from "react";
 import MainLayout, { MainLayoutV2 } from "../layout/MainLayout";
 import Loadable from "../ui-component/Loadable";
 import AuthGuard from "../utils/route-guard/AuthGuard";
+import PermissionGuard from "../utils/route-guard/PermissionGuard";
 const LoanSlipDeleteListPage = Loadable(
   lazy(() => import("../views/dashboard-admin/LoanSlipPage/LoanSlipDeleteListPage"))
 );
@@ -164,6 +165,10 @@ const WareHouseReceiptPage = Loadable(
 const WareHouseReceiptDeleteListPage = Loadable(
   lazy(() => import("../views/dashboard-admin/WareHouseReceiptPage/WareHouseDeleteListPage"))
 );
+//Error Page
+const ForbiddenPage = Loadable(
+  lazy(() => import("../views/ErrorPage/ForbiddenPage"))
+);
 const MainRoutes = {
   path: "/",
   element: (
@@ -174,7 +179,17 @@ const MainRoutes = {
   children: [
     {
       path: "/trang-chu",
-      element: <HomePage />,
+      element: (
+        <PermissionGuard
+          requiredPermissions={[{ resource: 'statisticals', action: 'manage' }, { resource: 'statisticals', action: 'read' }]}
+        >
+          <HomePage />
+        </PermissionGuard>
+      ),
+    },
+    {
+      path: "/403",
+      element: <ForbiddenPage />,
     },
     {
       path: "/vi-du",

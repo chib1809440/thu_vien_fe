@@ -89,7 +89,7 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
                         },
                     });
                 } else {
-                    const response = await getUserById(userString?.data?._id);
+                    const response = await getUserById(userObject?.data?._id);
                     if (response.statusCode === 200 || response.statusCode === 201) {
                         dispatch({
                             type: LOGIN,

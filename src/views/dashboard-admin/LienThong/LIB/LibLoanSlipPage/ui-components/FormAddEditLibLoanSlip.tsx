@@ -29,6 +29,7 @@ import { capitalizeFirstLetter } from "../../../../../../helpers/capitalizeFirst
 import { useFetchLibrariesFromGroup } from "../../../../../../hooks/services/group/group-query";
 import { Role } from "../../../../../../interfaces/role";
 import { useAuth } from "../../../../../../contexts/JWTContext";
+import PrintLoanSlip from "../../../../LoanSlipPage/ui-components/PrintLoanSlip";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -438,6 +439,8 @@ const FormAddEditLoanSlip: FC<Props> = ({
             setDropdownOptions([]); // Xóa dropdown options nếu cần
         }
     };
+    console.log(libraryId);
+    console.log(loanSlip?.libraryId);
 
     return (
         <FormikProvider value={formik}>
@@ -458,6 +461,11 @@ const FormAddEditLoanSlip: FC<Props> = ({
                 </DialogTitle>
 
                 <DialogContent sx={{ p: 8 }} >
+                    <Box sx={{ display: 'none' }}>
+                        {
+                            loanSlip && <PrintLoanSlip ref={componentRef} loanSlip={loanSlip} />
+                        }
+                    </Box>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <Chip
@@ -785,13 +793,16 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                         )}
                                                     </StyledTableCell>
                                                     <StyledTableCell align="center">
-                                                        <IconTrash
-                                                            style={{ cursor: 'pointer', color: 'red' }}
-                                                            onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
-                                                            color="red"
-                                                            size={20}
-                                                            stroke={1.5}
-                                                        />
+                                                        {
+                                                            loanSlip && !loanSlip.isAgree && <IconTrash
+                                                                style={{ cursor: 'pointer', color: 'red' }}
+                                                                onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
+                                                                color="red"
+                                                                size={20}
+                                                                stroke={1.5}
+                                                            />
+                                                        }
+
                                                     </StyledTableCell>
                                                 </StyledTableRow>
                                             ))}
@@ -832,16 +843,17 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     </Button>
                     {
 
-                        !loanSlip && isEditMode && !loanSlip?.isReturn && <Button onClick={handleReturnLoanSlip} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                        loanSlip && ((libraryId as string) === loanSlip.libraryId) && isEditMode && !loanSlip?.isReturn && <Button onClick={handleReturnLoanSlip} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
                             Trả sách
                         </Button>
                     }
                     {
 
-                        !loanSlip && isEditMode && <Button onClick={() => handlePrint()} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                        loanSlip && ((libraryId as string) === loanSlip.libraryId) && isEditMode && <Button onClick={() => handlePrint()} style={{ background: '#212121', color: 'white' }} variant="contained"  >
                             In
                         </Button>
                     }
+
                     {
                         !loanSlip?.isReturn && <Button
                             disabled={isFetching}

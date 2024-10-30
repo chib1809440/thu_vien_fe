@@ -67,6 +67,7 @@ const LoanSlipPage = () => {
                 { compare: "", target: { barcode: barcodeSearch } },
                 { compare: 0, target: { type: filterDateType } },
                 { compare: 0, target: { status: filterStatus } },
+                { compare: 0, target: { isLink: false } },
             ]),
         [
             barcodeSearch,

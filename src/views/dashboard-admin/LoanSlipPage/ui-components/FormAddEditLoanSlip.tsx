@@ -76,9 +76,6 @@ type Props = {
 const schema = yup.object().shape({
     note: yup
         .string(),
-    libraryId: yup
-        .string()
-        .required("Vui lòng chọn vai trò").notOneOf(['0'], "Vui lòng chọn vai trò"),
 });
 
 const FormAddEditLoanSlip: FC<Props> = ({
@@ -111,7 +108,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
             );
             // Reset mảng lỗi trước khi kiểm tra
             setArrayError([]);
-
             if (!isEditMode) {
                 const errors = filteredPublications.reduce((acc, item) => {
                     if (item.position === "trong kho" && item.quantity < item.quantityLoan) {
@@ -137,6 +133,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
             if (!userData?.data?.result?._id) {
                 toast.error('Vui lòng quét barcode thông tin người mượn')
+                return;
             }
             if (onSubmit) {
 
@@ -164,7 +161,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
     const [returnDay, setReturnDay] = useState(new Date());
     const [barcodeUserId, setbarcodeUserId] = useState<string>('');
     const [searchBarCode, setSearchBarCode] = useState<string>('');
-    
+
     const [userData, setUserData] = useState<EntityResponse<User>>(null);
     const [publications, setPublications] = useState<CreatePublication[]>([
         {
@@ -218,6 +215,9 @@ const FormAddEditLoanSlip: FC<Props> = ({
             setPublications(editPublications);
         }
     }, [loanSlip])
+    console.log('dsdsds', loanSlip);
+
+
     const handleBarCodeChange = (index: number, newBarCode: string) => {
         const updatedPublications = [...publications];
         updatedPublications[index].barcode = newBarCode;

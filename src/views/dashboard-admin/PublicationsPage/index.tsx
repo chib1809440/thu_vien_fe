@@ -38,6 +38,7 @@ import DialogImportFile from "./ui-components/DialogImportFile ";
 import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 const PublicationsPage = () => {
     const queryString = useQueryString();
@@ -269,6 +270,7 @@ const PublicationsPage = () => {
                 label: "Tên ấn phẩm",
                 align: "left",
                 sxRow: { px: 3, maxWidth: 150 },
+                render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
                 id: "type",

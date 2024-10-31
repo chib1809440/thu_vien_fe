@@ -1,33 +1,31 @@
-import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, Grid, MenuItem, Paper, Select, Table, TableBody, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
+import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, Grid, IconButton, MenuItem, Paper, Select, Table, TableBody, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from "@mui/material";
+import { styled } from '@mui/material/styles';
+import { Box } from "@mui/system";
+import { IconPlus, IconTrash } from "@tabler/icons";
+import { IconCirclePlusFilled } from "@tabler/icons-react";
 import { Form, FormikProvider, useFormik } from "formik";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { useReactToPrint } from "react-to-print";
+import { toast } from "react-toastify";
 import * as yup from "yup";
-import InputForm from "../../../../components/custom/form/InputForm";
-import SwitchForm from "../../../../components/custom/form/SwitchForm";
-import { CreatePublicationWareHouseReceipt, TWareHouseReceipt, TWareHouseReceiptCreate } from "../../../../types/models/warehouse-receipt";
-import AutocompleteForm from "../../../../components/custom/form/AutoCompleteForm";
-import SelectForm from "../../../../components/custom/form/SelectForm";
-import { useFetchSupplier } from "../../../../hooks/services/supplier/supplier-query";
-import { Box } from "@mui/system";
-import { StyledTableCell, StyledTableRow } from "../../../../components/custom/table-list/style";
-import useDebounce from "../../../../hooks/useDebounce";
-import { IconCirclePlusFilled } from "@tabler/icons-react";
 import publicationsService from "../../../../_apis/services/publications.service";
-import { TPublications, TPublicationsCreate } from "../../../../types/models/publications.type";
-import { IconPlus, IconTrash } from "@tabler/icons";
-import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { styled } from '@mui/material/styles';
+import { StyledTableCell, StyledTableRow } from "../../../../components/custom/table-list/style";
 import StyledButton from "../../../../components/default/button/StyledButton";
-import FormAddEditLoanSlip from "../../LoanSlipPage/ui-components/FormAddEditLoanSlip";
-import FormAddEditPublications from "../../PublicationsPage/ui-components/FormAddEditPublications";
+import { useFetchAuthor } from "../../../../hooks/services/author/author-query";
 import { useFetchCategory } from "../../../../hooks/services/category/category-query";
 import { useFetchMaterial } from "../../../../hooks/services/material/material-query";
-import { useFetchAuthor } from "../../../../hooks/services/author/author-query";
-import { useFetchPublisher } from "../../../../hooks/services/publisher/publisher-query";
 import { useAddPublications, useEditPublications } from "../../../../hooks/services/publications/publications-mutation";
 import { useReFetchPublications } from "../../../../hooks/services/publications/publications-query";
-import { toast } from "react-toastify";
-import { useReactToPrint } from "react-to-print";
+import { useFetchPublisher } from "../../../../hooks/services/publisher/publisher-query";
+import { useAddSupplier } from '../../../../hooks/services/supplier/supplier-mutation';
+import { useFetchSupplier, useReFetchSupplier } from "../../../../hooks/services/supplier/supplier-query";
+import useDebounce from "../../../../hooks/useDebounce";
+import { TPublications, TPublicationsCreate } from "../../../../types/models/publications.type";
+import { TSupplierCreate } from '../../../../types/models/supplier.type';
+import { CreatePublicationWareHouseReceipt, TWareHouseReceipt, TWareHouseReceiptCreate } from "../../../../types/models/warehouse-receipt";
+import FormAddEditPublications from "../../PublicationsPage/ui-components/FormAddEditPublications";
+import FormAddEditSupplier from './FormAddEditSupplier';
 import PrintWareHouseReceipt from "./PrintWareHouseReceipt";
 
 type Props = {
@@ -90,6 +88,8 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
     const { data: publisherData } = useFetchPublisher();
     const { data, isLoading } = useFetchSupplier();
     const revalidate = useReFetchPublications();
+    const revalidateSupplier = useReFetchSupplier();
+    const [openAdd, setOpenAdd] = useState(false);
 
     const [publications, setPublications] = useState<CreatePublicationWareHouseReceipt[]>([
         {
@@ -101,6 +101,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
     ]);
     const mutationAdd = useAddPublications();
     const mutationEdit = useEditPublications();
+    const mutationAddSupplier = useAddSupplier();
     // Use custom hook to debounce array of barcodes
     const debouncedBarcode = useDebounce(searchBarCode, 500);
     console.log(publications);
@@ -207,6 +208,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
     const handleClose = () => {
         setOpenAddEdit(false);
         setSelectedEdit(null);
+        setOpenAdd(false);
     };
     const initialValuePublications = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {
@@ -279,7 +281,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                 revalidate();
                 if (data.statusCode === 201) {
                     let newPublications = [...publications]
-                    alert(21)
+                    // alert(21)
                     newPublications.push({
                         name: data.data.name,
                         publicationId: data.data._id,
@@ -325,235 +327,286 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
             }
         `,
     });
+
+    const handleAddSupplier = () => {
+        setOpenAdd(true);
+    };
+
+    const handleSubmitSupplier = (values: TSupplierCreate) => {
+        mutationAddSupplier.mutate(values, {
+            onSuccess: (data) => {
+                revalidateSupplier();
+                toast.success("Thêm thành công.");
+                setOpenAdd(false);
+            },
+            onError: (error) => {
+                toast.error("Thêm thất bại: " + error.message);
+            },
+        });
+        return;
+    };
+    const initialValuesSupplier = useMemo((): TSupplierCreate => {
+        return {
+            name: "",
+            phoneNumber: "",
+            email: "",
+            address: "",
+            note: "",
+        };
+    }, []);
+
     return (
-        <FormikProvider value={formik}>
-            <Dialog
-                maxWidth="lg"
-                fullWidth
-                open={open}
-                onClose={(event, reason) => {
-                    if (reason !== "backdropClick") {
-                        // Ngăn tắt khi bấm ra ngoài
-                        onClose();
-                    }
-                }}
-                disableEscapeKeyDown
-            >
-                <DialogTitle sx={{ p: 4 }}>
-                    {isEditMode ? "Sửa thông tin phiếu nhập kho" : "Thêm thông tin phiếu nhập kho mới"}
-                </DialogTitle>
-                {openAddEdit && (
-                    <FormAddEditPublications
-                        open={openAddEdit}
-                        onClose={handleClose}
-                        initialValues={initialValuePublications}
-                        onSubmit={handleSubmitPublication}
-                        isEditMode={selectedEdit ? true : false}
-                        cateOptions={categoryData?.data?.result || []}
-                        authorOptions={authorData?.data?.result || []}
-                        materialOptions={materialData?.data?.result || []}
-                        publisherOptions={publisherData?.data?.result || []}
-                        imageUrl={
-                            selectedEdit?.priviewImage
-                                ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.priviewImage}`
-                                : selectedEdit?.path
-                                    ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
-                                    : ""
-                        }
-                    />
-                )}
-                <DialogContent sx={{ p: 8 }}>
-                    <Box sx={{ display: 'none' }}>
-                        {
-                            wareHouseReceipt && <PrintWareHouseReceipt ref={componentRef} wareHouseReceipt={wareHouseReceipt} />
-                        }
-                    </Box>
-                    <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
+        <>
 
-                        <Box style={{ width: "100%" }} sx={{ mb: 1.5 }}>
-                            <Typography sx={{ display: 'flex', alignItems: 'center', mb: 1.5, fontWeight: "bold" }}>
-                                <span style={{ marginRight: '8px' }}>Nhà cung cấp</span>
-                                <span className="required_text">(*)</span>
-                            </Typography>
-                            <FormControl fullWidth>
-                                <Select
-                                    labelId="demo-simple-select-label"
-                                    id="supplierId"
-                                    name="supplierId"
-                                    type="supplierId"
-                                    value={formik.values.supplierId}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    error={
-                                        formik.touched.supplierId &&
-                                        Boolean(formik.errors.supplierId)
-                                    }
-                                >
-                                    <MenuItem value='0' disabled>
-                                        Chọn nhà cung cấp
-                                    </MenuItem>
-                                    {data?.data?.result?.length > 0 ? (
-                                        data.data.result.map((item, index) => (
-                                            <MenuItem key={index} value={item._id}>
-                                                {item.name}
-                                            </MenuItem>
-                                        ))
-                                    ) : (
-                                        <MenuItem value="0" disabled>
-                                            Chọn nhà cung cấp
-                                        </MenuItem>
-                                    )}
+            {openAdd && (
+                <FormAddEditSupplier
+                    open={openAdd}
+                    onClose={handleClose}
+                    initialValues={initialValuesSupplier}
+                    onSubmit={handleSubmitSupplier}
+                    isEditMode={false}
+                />
+            )}
 
-                                </Select>
-                            </FormControl>
-                            {formik.touched.supplierId &&
-                                Boolean(formik.errors.supplierId) && (
-                                    <FormHelperText className="required_text">
-                                        {" "}
-                                        {formik.errors.supplierId
-                                            ? formik.errors.supplierId.toString()
-                                            : ""}
-                                    </FormHelperText>
-                                )}
+            <FormikProvider value={formik}>
+                <Dialog
+                    maxWidth="lg"
+                    fullWidth
+                    open={open}
+                    onClose={(event, reason) => {
+                        if (reason !== "backdropClick") {
+                            // Ngăn tắt khi bấm ra ngoài
+                            onClose();
+                        }
+                    }}
+                    disableEscapeKeyDown
+                >
+                    <DialogTitle sx={{ p: 4 }}>
+                        {isEditMode ? "Sửa thông tin phiếu nhập kho" : "Thêm thông tin phiếu nhập kho mới"}
+                    </DialogTitle>
+                    {openAddEdit && (
+                        <FormAddEditPublications
+                            open={openAddEdit}
+                            onClose={handleClose}
+                            initialValues={initialValuePublications}
+                            onSubmit={handleSubmitPublication}
+                            isEditMode={selectedEdit ? true : false}
+                            cateOptions={categoryData?.data?.result || []}
+                            authorOptions={authorData?.data?.result || []}
+                            materialOptions={materialData?.data?.result || []}
+                            publisherOptions={publisherData?.data?.result || []}
+                            imageUrl={
+                                selectedEdit?.priviewImage
+                                    ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.priviewImage}`
+                                    : selectedEdit?.path
+                                        ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
+                                        : ""
+                            }
+                        />
+                    )}
+                    <DialogContent sx={{ p: 8 }}>
+                        <Box sx={{ display: 'none' }}>
+                            {
+                                wareHouseReceipt && <PrintWareHouseReceipt ref={componentRef} wareHouseReceipt={wareHouseReceipt} />
+                            }
                         </Box>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <Box sx={{ mt: 4, display: 'flex', alignItems: 'center' }}>
-                                    <Chip
-                                        color='primary'
-                                        label="Thông tin sách"
-                                        variant="filled"
-                                        sx={{ marginRight: '10px', }}
-                                    />
-                                    <StyledButton
-                                        color="primary"
-                                        size="small"
-                                        type="button"
-                                        startIcon={<IconPlus stroke={2} />}
-                                        variant="contained"
-                                        onClick={addLoanSlip}
-                                    >
-                                        Thêm ấn phẩm mới
-                                    </StyledButton>
-                                    <IconCirclePlusFilled
-                                        style={{ cursor: 'pointer', marginLeft: '10px', marginRight: '10px' }} // Khoảng cách giữa Chip và Icon
-                                        onClick={() => handleAddPublication()} // Gọi hàm thêm
-                                        color="green"
-                                        size={30}
-                                        stroke={1.5}
-                                    />
+                        <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
 
-                                </Box>
-                                <TableContainer component={Paper} sx={{ mt: 4 }}>
-                                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                                        <TableHead>
-                                            <TableRow>
-                                                <StyledTableCell align="left" width='20%'>BarCode</StyledTableCell>
-                                                <StyledTableCell align="left" width='40%'>Tên sách</StyledTableCell>
-                                                <StyledTableCell align="center" width='15%'>Số lượng</StyledTableCell>
-                                                <StyledTableCell align="center" width='15%'>Hành động</StyledTableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {publications?.map((row, index) => (
-                                                <StyledTableRow key={index}>
-                                                    <StyledTableCell align="left">
-                                                        <Box style={{ width: "100%" }} >
-                                                            {
-                                                                row.publicationId !== '' ? <>{row.barcode}</> : <>   <TextField
-                                                                    variant="outlined"
-                                                                    fullWidth
-                                                                    placeholder="Nhập barcode sách"
-                                                                    value={row.barcode}
-                                                                    onChange={(e) => handleBarCodeChange(index, e.target.value)}
-                                                                    inputRef={index === publications.length - 1 ? lastInputRef : null} // Focus on the last input
-                                                                /></>
-                                                            }
-
-                                                        </Box>
-                                                    </StyledTableCell>
-                                                    <StyledTableCell align="left">
-                                                        {row.name || "Không có dữ liệu"}
-                                                    </StyledTableCell>
-
-                                                    <StyledTableCell align="center">
-                                                        <Box style={{ width: "100%" }}>
-                                                            <TextField
-                                                                variant="outlined"
-                                                                fullWidth
-                                                                placeholder="Số lượng"
-                                                                value={row.quantityWareHouse}
-                                                                onChange={(e) => {
-                                                                    const updatedPublications = [...publications];
-                                                                    updatedPublications[index].quantityWareHouse = Number(e.target.value);
-                                                                    setPublications(updatedPublications);
-                                                                }}
-                                                            />
-                                                        </Box>
-                                                    </StyledTableCell>
-                                                    <StyledTableCell align="center">
-                                                        <IconTrash
-                                                            style={{ cursor: 'pointer', color: 'red' }}
-                                                            onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
-                                                            color="red"
-                                                            size={20}
-                                                            stroke={1.5}
-                                                        />
-                                                    </StyledTableCell>
-                                                </StyledTableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                                <Box sx={{ mt: 4 }}>
-                                    <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                        Ghi chú
+                            <Box style={{ width: "100%" }} sx={{ mb: 1.5 }}>
+                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    <Typography sx={{ display: 'flex', alignItems: 'center', mb: 0, fontWeight: "bold" }}>
+                                        <span style={{ marginRight: '8px' }}>Nhà cung cấp</span>
+                                        <span className="required_text">(*)</span>
                                     </Typography>
-                                    <TextareaAutosize
-                                        id="note"
-                                        name="note"
-                                        value={formik.values.note}
+                                    <Tooltip title="Thêm mới" arrow placement="top">
+                                        <IconButton
+                                            size="small"
+                                            onClick={handleAddSupplier}
+                                            sx={{ color: "#2595f1", ml: 1, p: 1.5 }}
+                                        >
+                                            <IconPlus size="18" />
+                                        </IconButton>
+                                    </Tooltip>
+                                </Box>
+                                <FormControl fullWidth>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="supplierId"
+                                        name="supplierId"
+                                        type="supplierId"
+                                        value={formik.values.supplierId}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
-                                        minRows={4}
-                                    />
-                                    {formik.touched.note &&
-                                        Boolean(formik.errors.note) && (
-                                            <FormHelperText className="required_text">
-                                                {" "}
-                                                {formik.errors.note
-                                                    ? formik.errors.note.toString()
-                                                    : ""}
-                                            </FormHelperText>
+                                        error={
+                                            formik.touched.supplierId &&
+                                            Boolean(formik.errors.supplierId)
+                                        }
+                                    >
+                                        <MenuItem value='0' disabled>
+                                            Chọn nhà cung cấp
+                                        </MenuItem>
+                                        {data?.data?.result?.length > 0 ? (
+                                            data.data.result.map((item, index) => (
+                                                <MenuItem key={index} value={item._id}>
+                                                    {item.name}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <MenuItem value="0" disabled>
+                                                Chọn nhà cung cấp
+                                            </MenuItem>
                                         )}
-                                </Box>
+                                    </Select>
+                                </FormControl>
+                                {formik.touched.supplierId &&
+                                    Boolean(formik.errors.supplierId) && (
+                                        <FormHelperText className="required_text">
+                                            {" "}
+                                            {formik.errors.supplierId
+                                                ? formik.errors.supplierId.toString()
+                                                : ""}
+                                        </FormHelperText>
+                                    )}
+                            </Box>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    <Box sx={{ mt: 4, display: 'flex', alignItems: 'center' }}>
+                                        <Chip
+                                            color='primary'
+                                            label="Thông tin sách"
+                                            variant="filled"
+                                            sx={{ marginRight: '10px', }}
+                                        />
+                                        <StyledButton
+                                            color="primary"
+                                            size="small"
+                                            type="button"
+                                            startIcon={<IconPlus stroke={2} />}
+                                            variant="contained"
+                                            onClick={addLoanSlip}
+                                        >
+                                            Thêm ấn phẩm mới
+                                        </StyledButton>
+                                        <IconCirclePlusFilled
+                                            style={{ cursor: 'pointer', marginLeft: '10px', marginRight: '10px' }} // Khoảng cách giữa Chip và Icon
+                                            onClick={() => handleAddPublication()} // Gọi hàm thêm
+                                            color="green"
+                                            size={30}
+                                            stroke={1.5}
+                                        />
+
+                                    </Box>
+                                    <TableContainer component={Paper} sx={{ mt: 4 }}>
+                                        <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                                            <TableHead>
+                                                <TableRow>
+                                                    <StyledTableCell align="left" width='20%'>BarCode</StyledTableCell>
+                                                    <StyledTableCell align="left" width='40%'>Tên sách</StyledTableCell>
+                                                    <StyledTableCell align="center" width='15%'>Số lượng</StyledTableCell>
+                                                    <StyledTableCell align="center" width='15%'>Hành động</StyledTableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {publications?.map((row, index) => (
+                                                    <StyledTableRow key={index}>
+                                                        <StyledTableCell align="left">
+                                                            <Box style={{ width: "100%" }} >
+                                                                {
+                                                                    row.publicationId !== '' ? <>{row.barcode}</> : <>   <TextField
+                                                                        variant="outlined"
+                                                                        fullWidth
+                                                                        placeholder="Nhập barcode sách"
+                                                                        value={row.barcode}
+                                                                        onChange={(e) => handleBarCodeChange(index, e.target.value)}
+                                                                        inputRef={index === publications.length - 1 ? lastInputRef : null} // Focus on the last input
+                                                                    /></>
+                                                                }
+
+                                                            </Box>
+                                                        </StyledTableCell>
+                                                        <StyledTableCell align="left">
+                                                            {row.name || "Không có dữ liệu"}
+                                                        </StyledTableCell>
+
+                                                        <StyledTableCell align="center">
+                                                            <Box style={{ width: "100%" }}>
+                                                                <TextField
+                                                                    variant="outlined"
+                                                                    fullWidth
+                                                                    placeholder="Số lượng"
+                                                                    value={row.quantityWareHouse}
+                                                                    onChange={(e) => {
+                                                                        const updatedPublications = [...publications];
+                                                                        updatedPublications[index].quantityWareHouse = Number(e.target.value);
+                                                                        setPublications(updatedPublications);
+                                                                    }}
+                                                                />
+                                                            </Box>
+                                                        </StyledTableCell>
+                                                        <StyledTableCell align="center">
+                                                            <IconTrash
+                                                                style={{ cursor: 'pointer', color: 'red' }}
+                                                                onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
+                                                                color="red"
+                                                                size={20}
+                                                                stroke={1.5}
+                                                            />
+                                                        </StyledTableCell>
+                                                    </StyledTableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                    <Box sx={{ mt: 4 }}>
+                                        <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
+                                            Ghi chú
+                                        </Typography>
+                                        <TextareaAutosize
+                                            id="note"
+                                            name="note"
+                                            value={formik.values.note}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            minRows={4}
+                                        />
+                                        {formik.touched.note &&
+                                            Boolean(formik.errors.note) && (
+                                                <FormHelperText className="required_text">
+                                                    {" "}
+                                                    {formik.errors.note
+                                                        ? formik.errors.note.toString()
+                                                        : ""}
+                                                </FormHelperText>
+                                            )}
+                                    </Box>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </Form>
+                        </Form>
 
-                </DialogContent>
+                    </DialogContent>
 
-                <DialogActions sx={{ p: 4 }}>
-                    <Button disabled={isFetching} onClick={onClose} color="error">
-                        Huỷ
-                    </Button>
-                    {
-
-                        isEditMode && <Button onClick={() => handlePrint()} style={{ background: '#212121', color: 'white' }} variant="contained"  >
-                            In
+                    <DialogActions sx={{ p: 4 }}>
+                        <Button disabled={isFetching} onClick={onClose} color="error">
+                            Huỷ
                         </Button>
-                    }
-                    <Button
-                        disabled={isFetching}
-                        onClick={handleSubmit as () => void}
-                        variant="contained"
-                        color="primary"
-                    >
-                        {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </FormikProvider>
+                        {
+
+                            isEditMode && <Button onClick={() => handlePrint()} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                                In
+                            </Button>
+                        }
+                        <Button
+                            disabled={isFetching}
+                            onClick={handleSubmit as () => void}
+                            variant="contained"
+                            color="primary"
+                        >
+                            {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </FormikProvider>
+        </>
     );
 };
 

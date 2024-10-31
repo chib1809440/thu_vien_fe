@@ -153,7 +153,7 @@ const GroupPage = () => {
                                 overflow: "hidden",
                             }}
                         >
-                            {row.mainLibrary ? row.mainLibrary.name : "Chưa có trưởng có trưởng nhóm"}
+                            {row.mainLibrary ? capitalizeFirstLetter(row.mainLibrary.name) : "Chưa có trưởng có trưởng nhóm"}
                         </Box>
                     );
                 },

@@ -13,6 +13,7 @@ import StyledButton from "../../default/button/StyledButton";
 import { StyledHeading } from "../../default/typography";
 import ImageCard from "./ImageCard";
 import Barcode from 'react-barcode';
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 const pastelGradients = [
     "linear-gradient(90deg, rgba(144, 238, 144, 1) 0%, rgba(173, 216, 230, 1) 100%)",
@@ -206,12 +207,11 @@ const CoverCard = ({
                             <Chip
                                 key={index}
                                 variant="filled"
-                                label={name}
+                                label={capitalizeFirstLetter(name)}
                                 sx={{
                                     color: theme.palette.text.dark,
                                     background: getRandomPastelGradient(),
                                     ml: 2,
-                                    textTransform: "capitalize",
                                 }}
                             />
                         ))}
@@ -225,7 +225,7 @@ const CoverCard = ({
                             <Chip
                                 key={index}
                                 variant="filled"
-                                label={name}
+                                label={capitalizeFirstLetter(name)}
                                 sx={{
                                     color: theme.palette.text.dark,
                                     background: getRandomPastelGradient(),

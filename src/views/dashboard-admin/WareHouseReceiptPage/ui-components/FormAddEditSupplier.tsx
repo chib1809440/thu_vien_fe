@@ -118,7 +118,6 @@ const FormAddEditSupplier: FC<Props> = ({
                         <InputForm
                             label="Ghi chú"
                             placeholder="Ghi chú"
-                            required
                             error={touched.note && Boolean(errors.note)}
                             helperText={touched.note && errors.note}
                             {...getFieldProps("note")}

@@ -1,4 +1,4 @@
-import { Grid, MenuItem, Select } from '@mui/material';
+import { Grid, MenuItem, Select, Typography } from '@mui/material';
 import { FC } from 'react';
 import CustomInput from '../../../../components/default/input/CustomInput';
 import { TApiMultipleRecords } from '../../../../types/api/api.type';
@@ -133,7 +133,7 @@ const FilterByItems: FC<Props> = ({
                             <MenuItem value={0}>Tất cả tác giả</MenuItem>
                             {authorData?.data?.result?.map((item, index) => (
                                 <MenuItem key={index} value={item._id}>
-                                    {capitalizeFirstLetter(item.name)}
+                                    <Typography textTransform={"capitalize"}>{item.name}</Typography>
                                 </MenuItem>
                             ))}
                         </Select>
@@ -157,7 +157,7 @@ const FilterByItems: FC<Props> = ({
                             <MenuItem value={0}>Tất cả nhà xuất bản</MenuItem>
                             {publisherData?.data?.result?.map((item, index) => (
                                 <MenuItem key={index} value={item._id}>
-                                    {capitalizeFirstLetter(item.name)}
+                                    <Typography textTransform={"capitalize"}>{item.name}</Typography>
                                 </MenuItem>
                             ))}
                         </Select>

@@ -28,6 +28,7 @@ import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
 import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 import { Role } from "../../../../interfaces/role";
+import { useAuth } from "../../../../contexts/JWTContext";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -341,8 +342,16 @@ const FormAddEditLoanSlip: FC<Props> = ({
             }
         `,
     });
-    console.log('isEditMode', isEditMode);
-    console.log('loanSlip', loanSlip);
+    const { logout, user } = useAuth();
+
+
+    const libraryDetail = useMemo(() => {
+        if (!user) return null;
+
+        const _user = { ...user } as any;
+
+        return _user?.data?.libraryDetail;
+    }, [user]);
 
     return (
         <FormikProvider value={formik}>
@@ -366,7 +375,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     <Grid container spacing={2}>
                         <Box sx={{ display: 'none' }}>
                             {
-                                loanSlip && <PrintLoanSlip ref={componentRef} loanSlip={loanSlip} />
+                                loanSlip && libraryDetail && <PrintLoanSlip ref={componentRef} loanSlip={loanSlip} libraryDetail={libraryDetail} />
                             }
                         </Box>
                         <Grid item xs={12}>

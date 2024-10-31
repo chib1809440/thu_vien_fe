@@ -439,8 +439,15 @@ const FormAddEditLoanSlip: FC<Props> = ({
             setDropdownOptions([]); // Xóa dropdown options nếu cần
         }
     };
-    console.log(libraryId);
-    console.log(loanSlip?.libraryId);
+
+
+    const libraryDetail = useMemo(() => {
+        if (!user) return null;
+
+        const _user = { ...user } as any;
+
+        return _user?.data?.libraryDetail;
+    }, [user]);
 
     return (
         <FormikProvider value={formik}>
@@ -463,7 +470,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                 <DialogContent sx={{ p: 8 }} >
                     <Box sx={{ display: 'none' }}>
                         {
-                            loanSlip && <PrintLoanSlip ref={componentRef} loanSlip={loanSlip} />
+                            loanSlip && libraryDetail && <PrintLoanSlip libraryDetail={libraryDetail} ref={componentRef} loanSlip={loanSlip} />
                         }
                     </Box>
                     <Grid container spacing={2}>

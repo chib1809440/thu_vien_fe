@@ -150,7 +150,9 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
             address: user?.address ?? "",
             gender: user?.gender ?? "",
             roleId: (user?.roleId as Role)?._id ?? '0',
-            birthday: (new Date().toDateString())
+            birthday: (new Date().toDateString()),
+            class: user?.class ?? "",
+            school: user?.school ?? "",
 
         },
         validationSchema: validationUtilizedObjectSchema,
@@ -167,6 +169,8 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                 formData.append("gender", values.gender);
                 formData.append("birthday", values.birthday);
                 formData.append("roleId", values.roleId);
+                formData.append("class", values.class);
+                formData.append("school", values.school);
                 if (avatarFile) {
                     formData.append("file", avatarFile);
                 }
@@ -194,6 +198,8 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                 birthday: user?.birthday ?? "",
                 gender: user?.gender ?? "",
                 roleId: (user?.roleId as Role)?._id ?? '0',
+                class: user?.class ?? "",
+                school: user?.school ?? "",
             });
         }
     }, [user]);
@@ -446,8 +452,70 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                     </Grid>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
                                         <Grid item md={12}>
+                                            <Box style={{ width: "100%" }}>
+                                                <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
+                                                    Lớp
+                                                </Typography>
+                                                <TextField
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    id="class"
+                                                    name="class"
+                                                    value={formik.values.class}
+                                                    onChange={formik.handleChange}
+                                                    onBlur={formik.handleBlur}
+                                                    error={
+                                                        formik.touched.class &&
+                                                        Boolean(formik.errors.class)
+                                                    }
+                                                />
+                                                {formik.touched.class &&
+                                                    Boolean(formik.errors.class) && (
+                                                        <FormHelperText className="required_text">
+                                                            {" "}
+                                                            {formik.errors.class
+                                                                ? formik.errors.class.toString()
+                                                                : ""}
+                                                        </FormHelperText>
+                                                    )}
+                                            </Box>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container spacing={3} sx={{ mb: 1.5 }}>
+                                        <Grid item md={12}>
+                                            <Box style={{ width: "100%" }}>
+                                                <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
+                                                    Trường
+                                                </Typography>
+                                                <TextField
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    id="school"
+                                                    name="school"
+                                                    value={formik.values.school}
+                                                    onChange={formik.handleChange}
+                                                    onBlur={formik.handleBlur}
+                                                    error={
+                                                        formik.touched.school &&
+                                                        Boolean(formik.errors.school)
+                                                    }
+                                                />
+                                                {formik.touched.school &&
+                                                    Boolean(formik.errors.school) && (
+                                                        <FormHelperText className="required_text">
+                                                            {" "}
+                                                            {formik.errors.school
+                                                                ? formik.errors.school.toString()
+                                                                : ""}
+                                                        </FormHelperText>
+                                                    )}
+                                            </Box>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container spacing={3} sx={{ mb: 1.5 }}>
+                                        <Grid item md={12}>
                                             <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                                Địa chỉ    <span className="required_text">(*)</span>
+                                                Địa chỉ  <span className="required_text">(*)</span>
                                             </Typography>
                                             <TextareaAutosize
                                                 id="address"

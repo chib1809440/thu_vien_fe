@@ -13,8 +13,10 @@ export interface User extends AbstractEntity {
     avatar: string;
     gender: string;
     barcode: string;
-    roleId: Role|string;
+    roleId: Role | string;
     passwordFirst: string;
+    class?: string;
+    school?: string;
     libraryId: string | TLibrary;
 }
 export interface CreateUserModel {

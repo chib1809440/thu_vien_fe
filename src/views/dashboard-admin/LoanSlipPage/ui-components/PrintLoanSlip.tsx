@@ -1,12 +1,16 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useMemo } from "react";
 import { TLoanSlip } from "../../../../types/models/loanSlip.type";
 import Barcode from 'react-barcode';
+import { useAuth } from "../../../../contexts/JWTContext";
+import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 // Đảm bảo xuất component theo cách đúng
-const PrintLoanSlip = forwardRef<HTMLDivElement, { loanSlip: TLoanSlip }>(
-    ({ loanSlip }, ref) => {
+const PrintLoanSlip = forwardRef<HTMLDivElement, { loanSlip: TLoanSlip, libraryDetail: any }>(
+    ({ loanSlip, libraryDetail }, ref) => {
+
         return (
             <div ref={ref} className="invoice-content" style={{ marginTop: 0, fontSize: '9px' }}>
                 <h2 style={{ textAlign: "center", marginTop: 0 }}>Phiếu mượn sách</h2>
+                <h4 style={{ textAlign: "center", marginTop: 0 }}>{capitalizeFirstLetter(libraryDetail?.name)}</h4>
                 <p>
                     <strong>Họ và tên người mượn sách:</strong> {loanSlip?.userId?.fullname}
                 </p>
@@ -19,6 +23,16 @@ const PrintLoanSlip = forwardRef<HTMLDivElement, { loanSlip: TLoanSlip }>(
                 <p>
                     <strong>Địa chỉ:</strong> {loanSlip?.userId?.address}
                 </p>
+                {
+                    loanSlip?.userId?.class && <p>
+                        <strong>Lớp:</strong> {loanSlip?.userId?.class}
+                    </p>
+                }
+                {
+                    loanSlip?.userId?.school && <p>
+                        <strong>Trường:</strong> {loanSlip?.userId?.school}
+                    </p>
+                }
                 <h3 style={{ textAlign: "center", marginTop: '0px' }}>Danh sách sách mượn</h3>
                 <table style={{ width: "100%", borderCollapse: "collapse", margin: "10px 0" }}>
                     <thead>

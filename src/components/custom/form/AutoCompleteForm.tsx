@@ -15,6 +15,7 @@ import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { ReactNode } from "react";
 import { IconPlus } from "@tabler/icons-react";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 const LIMIT_TAGS = 3;
 const LIMIT_TEXT = 40;
@@ -34,6 +35,7 @@ type Props<Type> = {
     limitTags?: number;
     limitText?: number;
     noOptionsText?: string;
+    isCapitalize?: boolean;
 };
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -54,6 +56,7 @@ const AutocompleteForm = <Type extends Record<string, any>>({
     limitTags = LIMIT_TAGS,
     limitText = LIMIT_TEXT,
     noOptionsText = "Không có dữ liệu",
+    isCapitalize = false,
 }: Props<Type>) => {
     return (
         <FormControl
@@ -98,20 +101,23 @@ const AutocompleteForm = <Type extends Record<string, any>>({
                     const numTags = value.length;
 
                     return (
-                        <Typography variant="body2">
-                            {value
-                                .slice(0, limitTags)
-                                .map((option, _) =>
-                                    option?.[keyLabel]?.length > limitText
-                                        ? option?.[keyLabel].slice(0, limitText) + "..."
-                                        : option?.[keyLabel]
-                                )
-                                .join(", ")}
+                        <Typography variant="body2" textTransform={isCapitalize ? "capitalize" : "none"}>
+                            {capitalizeFirstLetter(
+                                value
+                                    .slice(0, limitTags)
+                                    .map((option, _) =>
+                                        option?.[keyLabel]?.length > limitText
+                                            ? option?.[keyLabel].slice(0, limitText) + "..."
+                                            : option?.[keyLabel]
+                                    )
+                                    .join(", ")
+                            )}
 
                             <Typography
                                 variant="body2"
                                 sx={{ display: "inline" }}
                                 fontWeight="bold"
+
                             >
                                 {numTags > limitTags && ` +${numTags - limitTags} đã chọn`}
                             </Typography>
@@ -130,7 +136,7 @@ const AutocompleteForm = <Type extends Record<string, any>>({
                                 checked={selected}
                             />
 
-                            {option?.[keyLabel]}
+                            <Typography textTransform={isCapitalize ? "capitalize" : "none"}>{capitalizeFirstLetter(option?.[keyLabel])}</Typography>
                         </Box>
                     );
                 }}

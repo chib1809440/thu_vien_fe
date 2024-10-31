@@ -5,6 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { Box, Chip } from '@mui/material';
 import { TGroup } from '../../../../types/models/group.type';
+import { capitalizeFirstLetter } from '../../../../helpers/capitalizeFirstLetter';
 
 const GroupDetailsDialog = ({ open, onClose, group }: { open: boolean; onClose: () => void; group: TGroup | null }) => {
     return (
@@ -13,8 +14,8 @@ const GroupDetailsDialog = ({ open, onClose, group }: { open: boolean; onClose: 
             <DialogContent dividers>
                 {group ? (
                     <Box>
-                        <p><strong>Tên nhóm:</strong> {group.name}</p>
-                        <p><strong>Trưởng nhóm:</strong> {group.mainLibrary ? group.mainLibrary.name : "Chưa có thư viện"}</p>
+                        <p><strong>Tên nhóm:</strong> {capitalizeFirstLetter(group.name)}</p>
+                        <p><strong>Trưởng nhóm:</strong> {group.mainLibrary ? capitalizeFirstLetter(group.mainLibrary.name) : "Chưa có thư viện"}</p>
                         <p><strong>Các thư viện liên thông:</strong>{
                             group.libraries && group.libraries.length > 0
                                 ? (

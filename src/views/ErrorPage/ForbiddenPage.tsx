@@ -1,17 +1,11 @@
-import { Switch } from "@mui/material";
-import { Box, Stack } from "@mui/system";
-import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
-import { IconTrashXFilled } from "@tabler/icons-react";
-import { useCallback, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-
-
+import { Grid, Typography } from "@mui/material";
 
 const ForbiddenPage = () => {
     return (
         <>
-            Không thể truy cập
+           <Grid xs={12} mt={5} container justifyContent='center' alignItems='center'>
+                <Typography fontWeight={900} fontSize={28}>Không có quyền truy cập!</Typography>
+            </Grid>
         </>
     );
 };

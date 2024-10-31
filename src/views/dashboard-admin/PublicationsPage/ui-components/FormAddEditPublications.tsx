@@ -514,6 +514,7 @@ const FormAddEditPublications: FC<Props> = ({
                                 limitTags={1}
                                 limitText={10}
                                 noOptionsText="Vui lòng thêm tác giả mới"
+                                isCapitalize={true}
                             />
 
                             <AutocompleteForm
@@ -529,6 +530,7 @@ const FormAddEditPublications: FC<Props> = ({
                                 limitTags={1}
                                 limitText={10}
                                 noOptionsText="Vui lòng thêm nhà xuất bản mới"
+                                isCapitalize={true}
                             />
                         </Box>
 

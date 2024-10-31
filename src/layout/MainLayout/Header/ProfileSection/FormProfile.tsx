@@ -1,15 +1,12 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Dialog, DialogContent, DialogTitle, IconButton, Typography } from "@mui/material";
+import { Box, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
 import { FC, useMemo } from "react";
 import * as yup from "yup";
 import InputForm from "../../../../components/custom/form/InputForm";
-import SelectForm from "../../../../components/custom/form/SelectForm";
-import { Role } from "../../../../interfaces/role";
-import { CreateUserModel } from "../../../../interfaces/user";
-import { TLibrary } from "../../../../types/models/library.type";
 import { capitalizeFirstLetter } from '../../../../helpers/capitalizeFirstLetter';
 import { formatDate } from '../../../../helpers/formatDate';
+import { CreateUserModel } from "../../../../interfaces/user";
 
 type Props = {
     open: boolean;
@@ -18,8 +15,6 @@ type Props = {
     isFetching?: boolean;
     initialValues: CreateUserModel;
     isEditMode?: boolean;
-    roleOptions?: Role[];
-    libraryOptions?: TLibrary[];
 };
 
 const schema = yup.object().shape({
@@ -35,8 +30,6 @@ const FormProfile: FC<Props> = ({
     open,
     onClose,
     onSubmit,
-    roleOptions,
-    libraryOptions,
     initialValues = {
         email: "",
         fullname: "",
@@ -144,36 +137,6 @@ const FormProfile: FC<Props> = ({
                                 {...getFieldProps("birthday")}
                                 disabled
                                 value={formatDate(values?.birthday)}
-                            />
-                        </Box>
-
-                        <Box sx={{ display: "flex", gap: 2 }}>
-                            <SelectForm
-                                label="Vai trò"
-                                options={
-                                    roleOptions?.map((item) => ({
-                                        value: item._id,
-                                        label: capitalizeFirstLetter(item.name),
-                                    })) || []
-                                }
-                                {...getFieldProps("roleId")}
-                                error={touched.roleId && Boolean(errors.roleId)}
-                                helperText={touched.roleId && errors.roleId}
-                                disabled
-                            />
-                            <SelectForm
-                                label="Thư viện"
-                                options={
-                                    libraryOptions?.map((item) => ({
-                                        value: item._id,
-                                        label: capitalizeFirstLetter(item.name),
-                                    })) || []
-                                }
-                                
-                                {...getFieldProps("libraryId")}
-                                error={touched.libraryId && Boolean(errors.libraryId)}
-                                helperText={touched.libraryId && errors.libraryId}
-                                disabled
                             />
                         </Box>
                     </Form>

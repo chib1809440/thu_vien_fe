@@ -23,7 +23,7 @@ const GroupDetailsDialog = ({ open, onClose, group }: { open: boolean; onClose: 
                                         {group.libraries.map((lib) => (
                                             <Chip
                                                 key={lib._id}
-                                                label={lib.name}
+                                                label={capitalizeFirstLetter(lib.name)}
                                                 variant="outlined"
                                                 color="primary"
                                             />

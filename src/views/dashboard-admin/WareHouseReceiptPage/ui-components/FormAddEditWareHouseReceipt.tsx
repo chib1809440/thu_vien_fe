@@ -413,19 +413,19 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                         <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
 
                             <Box style={{ width: "100%" }} sx={{ mb: 1.5 }}>
-                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Box sx={{ display: "flex", alignItems: "center", mb: 1.5 }}>
                                     <Typography sx={{ display: 'flex', alignItems: 'center', mb: 0, fontWeight: "bold" }}>
                                         <span style={{ marginRight: '8px' }}>Nhà cung cấp</span>
                                         <span className="required_text">(*)</span>
                                     </Typography>
-                                    <Tooltip title="Thêm mới" arrow placement="top">
-                                        <IconButton
-                                            size="small"
+                                    <Tooltip title="Thêm mới" arrow placement="top" >
+                                        <IconCirclePlusFilled
+                                            style={{ cursor: 'pointer', marginLeft: '10px', marginRight: '10px' }}
                                             onClick={handleAddSupplier}
-                                            sx={{ color: "#2595f1", ml: 1, p: 1.5 }}
-                                        >
-                                            <IconPlus size="18" />
-                                        </IconButton>
+                                            color="green"
+                                            size={30}
+                                            stroke={1.5}
+                                        />
                                     </Tooltip>
                                 </Box>
                                 <FormControl fullWidth>

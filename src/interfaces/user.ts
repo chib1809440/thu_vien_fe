@@ -28,8 +28,8 @@ export interface CreateUserModel {
     birthday: string;
     avatar?: File;
     gender: string;
-    roleId: string;
-    libraryId: string;
+    roleId: string | Role;
+    libraryId: string | TLibrary;
 }
 export interface CreateAdminModel {
     _id?: string;
@@ -40,5 +40,5 @@ export interface CreateAdminModel {
     birthday: string;
     avatar?: File;
     gender: string;
-    roleId: string;
+    roleId: string | Role;
 }

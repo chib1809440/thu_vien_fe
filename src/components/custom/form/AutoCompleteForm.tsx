@@ -14,7 +14,7 @@ import {
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { ReactNode } from "react";
-import { IconPlus } from "@tabler/icons-react";
+import { IconCirclePlusFilled, IconPlus } from "@tabler/icons-react";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 const LIMIT_TAGS = 3;
@@ -67,19 +67,19 @@ const AutocompleteForm = <Type extends Record<string, any>>({
             fullWidth
             error={error}
         >
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Typography sx={{ fontWeight: "bold", mb: handleAdd ? 0 : 1.5 }}>
+            <Box sx={{ display: "flex", alignItems: "center", my: 1 }}>
+                <Typography sx={{ fontWeight: "bold"}}>
                     {label} {required && <span className="required_text">(*)</span>}
                 </Typography>
                 {handleAdd && (
                     <Tooltip title="Thêm mới" arrow placement="top">
-                        <IconButton
-                            size="small"
+                        <IconCirclePlusFilled
+                            style={{ cursor: 'pointer', marginLeft: '10px', marginRight: '10px' }}
                             onClick={handleAdd}
-                            sx={{ color: "#2595f1", ml: 1, p: 1.5 }}
-                        >
-                            <IconPlus size="18" />
-                        </IconButton>
+                            color="green"
+                            size={30}
+                            stroke={1.5}
+                        />
                     </Tooltip>
                 )}
             </Box>

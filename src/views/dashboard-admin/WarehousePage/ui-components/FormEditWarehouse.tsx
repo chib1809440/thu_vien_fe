@@ -320,7 +320,7 @@ const FormEditWarehouse: FC<Props> = ({
                                             type="number"
                                             placeholder="Nhập số lượng lên kệ"
                                             {...getFieldProps("shelvesQuantity")}
-                                            sxBox={{ mt: 2.5 }}
+                                            sxBox={{ mt: 2 }}
                                             error={
                                                 touched.shelvesQuantity &&
                                                 Boolean(errors.shelvesQuantity)

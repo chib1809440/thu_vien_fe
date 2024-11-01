@@ -29,6 +29,7 @@ import { toast } from "react-toastify";
 import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 import { Role } from "../../../../interfaces/role";
 import { useAuth } from "../../../../contexts/JWTContext";
+import { formatDate } from "../../../../helpers/formatDate";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -739,6 +740,52 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             </Box>
                         </Grid>
                     </Grid>
+                    {
+                        loanSlip?.historys?.length > 0 && <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <Box sx={{ mt: 4, display: 'flex', alignItems: 'center' }}>
+                                    <Chip
+                                        color='primary'
+                                        label="Thông tin Lịch sử mượn"
+                                        variant="filled"
+                                    />
+                                </Box>
+                                <TableContainer component={Paper} sx={{ mt: 4 }}>
+                                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                                        <TableHead>
+                                            <TableRow>
+                                                <StyledTableCell align="left" width='20%'>BarCode</StyledTableCell>
+                                                <StyledTableCell align="left" width='40%'>Tên sách</StyledTableCell>
+                                                <StyledTableCell align="left" width='15%'>Số lượng đã trả</StyledTableCell>
+                                                <StyledTableCell align="left" width='15%'>Ngày trả</StyledTableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {loanSlip?.historys?.map((row, index) => (
+                                                <StyledTableRow key={index}>
+                                                    <StyledTableCell align="left">
+                                                        <Box style={{ width: "100%" }} >
+                                                            {row?.barcode || "Không có dữ liệu"}
+                                                        </Box>
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="left">
+                                                        {row?.name || "Không có dữ liệu"}
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="left">
+                                                        {row?.quantityReturn || "Không có dữ liệu"}
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="left">
+                                                        {formatDate(row?.historyDate) || "Không có dữ liệu"}
+                                                    </StyledTableCell>
+                                                </StyledTableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </Grid>
+                        </Grid>
+                    }
+
                 </DialogContent>
 
                 <DialogActions sx={{ p: 4 }}>

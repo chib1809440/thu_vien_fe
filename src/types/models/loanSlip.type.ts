@@ -16,6 +16,15 @@ export type TLoanSlip = TEntityAbstract & {
     isReturn: boolean,
     receiptDate: string;
     status: TStatusLoanSlip;
+    historys: {
+        barcode: string;
+        historyDate: string;
+        name: string;
+        position: string;
+        publicationId: string;
+        quantityLoan: number;
+        quantityReturn: number;
+    }[];
     publications: (TPublications & { quantityLoan: number, position: string, publicationId: string, quantityReturn?: number, quantityModify?: number })[];
 };
 

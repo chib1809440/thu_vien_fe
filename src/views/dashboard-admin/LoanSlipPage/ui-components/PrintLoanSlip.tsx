@@ -3,6 +3,7 @@ import { TLoanSlip } from "../../../../types/models/loanSlip.type";
 import Barcode from 'react-barcode';
 import { useAuth } from "../../../../contexts/JWTContext";
 import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
+import { formatDate } from "../../../../helpers/formatDate";
 // Đảm bảo xuất component theo cách đúng
 const PrintLoanSlip = forwardRef<HTMLDivElement, { loanSlip: TLoanSlip, libraryDetail: any }>(
     ({ loanSlip, libraryDetail }, ref) => {
@@ -33,6 +34,12 @@ const PrintLoanSlip = forwardRef<HTMLDivElement, { loanSlip: TLoanSlip, libraryD
                         <strong>Trường:</strong> {loanSlip?.userId?.school}
                     </p>
                 }
+                <p>
+                    <strong>Ngày mượn:</strong> {formatDate(loanSlip?.borrowedDay)}
+                </p>
+                <p>
+                    <strong>Ngày trả:</strong> {formatDate(loanSlip?.returnDay)}
+                </p>
                 <h3 style={{ textAlign: "center", marginTop: '0px' }}>Danh sách sách mượn</h3>
                 <table style={{ width: "100%", borderCollapse: "collapse", margin: "10px 0" }}>
                     <thead>

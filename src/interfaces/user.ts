@@ -28,6 +28,8 @@ export interface CreateUserModel {
     birthday: string;
     avatar?: File;
     gender: string;
+    class?: string;
+    school?: string;
     roleId: string | Role;
     libraryId: string | TLibrary;
 }

@@ -20,6 +20,7 @@ import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditGroup from "./ui-components/FormAddEditGroup";
 import GroupDetailsDialog from "./ui-components/GroupDetailsDialog";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
+import { TLibrary } from "../../../types/models/library.type";
 
 const GroupPage = () => {
     const queryString = useQueryString();
@@ -29,7 +30,7 @@ const GroupPage = () => {
     const groupId = "";
 
     const { data, isLoading, isFetching } = useFetchGroup({ limit, page, search });
-    const { data: libs } = useFetchLibrary({ groupId });
+    const { data: libsGroup } = useFetchLibrary({ groupId });
 
     const mutationAdd = useAddGroup();
     const mutationEdit = useEditGroup();
@@ -182,7 +183,7 @@ const GroupPage = () => {
                                             {row.libraries.slice(0, 2).map((lib) => (
                                                 <Chip
                                                     key={lib._id}
-                                                    label={lib.name}
+                                                    label={capitalizeFirstLetter(lib.name)}
                                                     variant="outlined"
                                                     color="primary"
                                                 />
@@ -317,6 +318,12 @@ const GroupPage = () => {
         };
     }, [selectedEdit]);
 
+    const combinedLibraries = [
+        ...(libsGroup?.data?.result || []),
+        ...(initialValues?.libraries || [])
+    ].filter((item): item is TLibrary => typeof item !== 'string' && item !== null);
+    
+
     return (
         <div>
             <IBreadcrumsCustom
@@ -332,7 +339,7 @@ const GroupPage = () => {
                     initialValues={initialValues}
                     onSubmit={handleSubmit}
                     isEditMode={selectedEdit ? true : false}
-                    libOptions={libs?.data?.result || []}
+                    libOptions={combinedLibraries}
                 />
             )}
 

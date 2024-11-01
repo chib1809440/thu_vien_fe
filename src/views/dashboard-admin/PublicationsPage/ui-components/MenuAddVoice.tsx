@@ -1,6 +1,6 @@
 import { Box, Divider, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material";
 import { IconFlag, IconPlus, IconVolume, IconVolumeOff } from "@tabler/icons-react";
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "../../../../contexts/JWTContext";
 import { useAddVoice, useEditVoice } from "../../../../hooks/services/voice/voice-mutation";
@@ -174,21 +174,29 @@ const MenuAddVoice: FC<Props> = ({
         playVoicesSequentially(voicesToPlay);
     };
 
+    useEffect(() => {
+        return () => {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+        };
+    }, [currentAudio]); 
 
     const filterByTypeVoiceId = typeVoiceData?.map((typeVoice) => {
         const voices = voiceData?.filter((voice) => (
-            publicationsData?.createBy === userId 
-                ? (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id 
+            publicationsData?.createBy === userId
+                ? (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id
                 : (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id && voice.isPublic === true
         ));
         const sortedVoices = voices?.sort((a, b) => a.order - b.order);
-    
+
         return {
             ...typeVoice,
             voices: sortedVoices,
         };
     });
-    
+
     const filterByTypeVoiceIdPullLink = typeVoiceData?.map((typeVoice) => {
         const voices = voiceLinkData?.data?.result?.filter((voice) => (
             publicationsData?.createBy === userId

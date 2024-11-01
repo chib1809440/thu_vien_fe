@@ -155,7 +155,7 @@ const FormEditShelves: FC<Props> = ({
                                     helperText={touched.name && errors.name}
                                     {...getFieldProps("name")}
                                     disabled
-                                    sxBox={{ mt: 2.5 }}
+                                    sxBox={{ mt: 2 }}
                                 />
                                 <SelectForm
                                     label="Chọn kệ tủ"

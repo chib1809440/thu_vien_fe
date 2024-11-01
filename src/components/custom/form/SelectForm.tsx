@@ -4,7 +4,7 @@ import FormHelperText from "@mui/material/FormHelperText";
 import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { Box } from "@mui/system";
-import { IconPlus } from "@tabler/icons-react";
+import { IconCirclePlusFilled, IconPlus } from "@tabler/icons-react";
 import { FC, ReactNode } from "react";
 import { TSelectOption } from "../../../types/common/select";
 
@@ -43,20 +43,20 @@ const SelectForm: FC<Props> = ({
 }) => {
     return (
         <FormControl sx={{ my: 1, ...sx }} error={error} fullWidth>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Typography sx={{ fontWeight: "bold", mb: handleAdd ? 0 : 1.5 }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                <Typography sx={{ fontWeight: "bold" }}>
                     {label} {required && <span className="required_text">(*)</span>}
                 </Typography>
                 {
                     handleAdd && (
                         <Tooltip title="Thêm mới" arrow placement="top">
-                            <IconButton
-                                size="small"
+                            <IconCirclePlusFilled
+                                style={{ cursor: 'pointer', marginLeft: '10px', marginRight: '10px' }}
                                 onClick={handleAdd}
-                                sx={{ color: "#2595f1", ml: 1, p: 1.5 }}
-                            >
-                                <IconPlus size="18" />
-                            </IconButton>
+                                color="green"
+                                size={30}
+                                stroke={1.5}
+                            />
                         </Tooltip>
                     )}
             </Box>

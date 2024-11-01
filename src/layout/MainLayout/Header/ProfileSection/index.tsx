@@ -24,6 +24,8 @@ import { CreateUserModel } from '../../../../interfaces/user';
 import { statusRole } from '../../../../utils/constants.utils';
 import { getLabelFromOptions } from '../../../../utils/object';
 import FormProfile from './FormProfile';
+import { Role } from '../../../../interfaces/role';
+import { TLibrary } from '../../../../types/models/library.type';
 
 // ==============================|| PROFILE MENU ||============================== //
 const settings = [
@@ -106,7 +108,6 @@ const ProfileSection = () => {
     const initialValues = useMemo((): CreateUserModel => {
         if (userData) {
             const user = userData?.data?.result;
-
             return {
                 email: user.email,
                 fullname: user.fullname,
@@ -114,8 +115,8 @@ const ProfileSection = () => {
                 address: user.address,
                 birthday: user.birthday,
                 gender: user.gender,
-                roleId: user.roleId  as string,
-                libraryId: user.libraryId as string,
+                roleId: (user.roleId as Role)?._id,
+                libraryId: (user.libraryId as TLibrary)?._id,
             };
         }
     }, [userData]);
@@ -188,8 +189,6 @@ const ProfileSection = () => {
                     onClose={handleDialogClose}
                     initialValues={initialValues}
                     isEditMode={true}
-                    roleOptions={roleOptions?.data?.result}
-                    libraryOptions={libraryOptions?.data?.result}
                 />
             )}
         </Grid>

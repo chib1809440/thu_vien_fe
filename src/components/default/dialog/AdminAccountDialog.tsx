@@ -179,7 +179,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                     gender: values.gender,
                     birthday: values.birthday,
                     roleId: values.roleId,
-                    libraryId: values.libraryId,
+                    libraryId: values.libraryId ,
                 };
 
                 if (!user) {

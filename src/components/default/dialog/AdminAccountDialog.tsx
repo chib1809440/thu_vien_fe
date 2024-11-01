@@ -153,6 +153,8 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
     const formik = useFormik({
         initialValues: {
             fullname: user?.fullname ?? "",
+            class: user?.class ?? "",
+            school: user?.school ?? "",
             email: user?.email ?? "",
             phoneNumber: user?.phoneNumber ?? "",
             address: user?.address ?? "",
@@ -169,6 +171,8 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                 setLoading(true);
                 const data: CreateUserModel = {
                     fullname: values.fullname,
+                    class: values.class,
+                    school: values.school,
                     email: values.email,
                     phoneNumber: values.phoneNumber,
                     address: values.address,
@@ -196,6 +200,8 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
         if (user) {
             formik.setValues({
                 fullname: user?.fullname ?? "",
+                class: user?.class ?? "",
+                school: user?.school ?? "",
                 email: user?.email ?? "",
                 phoneNumber: user?.phoneNumber ?? "",
                 address: user?.address ?? "",
@@ -456,6 +462,68 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                                     </Grid>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
                                         <Grid item md={12}>
+                                            <Box style={{ width: "100%" }}>
+                                                <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
+                                                    Lớp
+                                                </Typography>
+                                                <TextField
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    id="class"
+                                                    name="class"
+                                                    value={formik.values.class}
+                                                    onChange={formik.handleChange}
+                                                    onBlur={formik.handleBlur}
+                                                    error={
+                                                        formik.touched.class &&
+                                                        Boolean(formik.errors.class)
+                                                    }
+                                                />
+                                                {formik.touched.class &&
+                                                    Boolean(formik.errors.class) && (
+                                                        <FormHelperText className="required_text">
+                                                            {" "}
+                                                            {formik.errors.class
+                                                                ? formik.errors.class.toString()
+                                                                : ""}
+                                                        </FormHelperText>
+                                                    )}
+                                            </Box>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container spacing={3} sx={{ mb: 1.5 }}>
+                                        <Grid item md={12}>
+                                            <Box style={{ width: "100%" }}>
+                                                <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
+                                                    Trường
+                                                </Typography>
+                                                <TextField
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    id="school"
+                                                    name="school"
+                                                    value={formik.values.school}
+                                                    onChange={formik.handleChange}
+                                                    onBlur={formik.handleBlur}
+                                                    error={
+                                                        formik.touched.school &&
+                                                        Boolean(formik.errors.school)
+                                                    }
+                                                />
+                                                {formik.touched.school &&
+                                                    Boolean(formik.errors.school) && (
+                                                        <FormHelperText className="required_text">
+                                                            {" "}
+                                                            {formik.errors.school
+                                                                ? formik.errors.school.toString()
+                                                                : ""}
+                                                        </FormHelperText>
+                                                    )}
+                                            </Box>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container spacing={3} sx={{ mb: 1.5 }}>
+                                        <Grid item md={12}>
                                             <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                 Địa chỉ    <span className="required_text">(*)</span>
                                             </Typography>
@@ -478,6 +546,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                                                 )}
                                         </Grid>
                                     </Grid>
+
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
                                         <Grid item md={12}>
                                             <Box style={{ width: "100%" }} sx={{ mb: 1.5 }}>

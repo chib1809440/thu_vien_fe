@@ -30,6 +30,8 @@ export interface CreateUserModel {
     gender: string;
     roleId: string;
     libraryId: string;
+    class?: string;
+    school?: string;
 }
 export interface CreateAdminModel {
     _id?: string;

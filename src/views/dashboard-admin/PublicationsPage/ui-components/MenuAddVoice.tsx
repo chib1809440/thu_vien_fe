@@ -1,6 +1,6 @@
 import { Box, Divider, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material";
 import { IconFlag, IconPlus, IconVolume, IconVolumeOff } from "@tabler/icons-react";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "../../../../contexts/JWTContext";
 import { useAddVoice, useEditVoice } from "../../../../hooks/services/voice/voice-mutation";
@@ -34,7 +34,7 @@ const MenuAddVoice: FC<Props> = ({
     const mutationEdit = useEditVoice();
     const revalidate = useReFetchVoice();
     const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
-    const [hoveredTypeId, setHoveredTypeId] = useState<string | null>(null);
+    // const [hoveredTypeId, setHoveredTypeId] = useState<string | null>(null);
     const [activeTypeVoiceId, setActiveTypeVoiceId] = useState<string | null>(null);
     const [openVoices, setOpenVoices] = useState<string | null>(null);
     const { user } = useAuth();
@@ -51,8 +51,14 @@ const MenuAddVoice: FC<Props> = ({
     };
 
     const handleClose = () => {
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            setCurrentAudio(null); 
+        }
         setOpenAddEdit(false);
         setSelectedEdit(null);
+        
     };
 
     const handleSelectedVoice = (row: TVoice | null) => {
@@ -173,15 +179,6 @@ const MenuAddVoice: FC<Props> = ({
 
         playVoicesSequentially(voicesToPlay);
     };
-
-    useEffect(() => {
-        return () => {
-            if (currentAudio) {
-                currentAudio.pause();
-                currentAudio.currentTime = 0;
-            }
-        };
-    }, [currentAudio]); 
 
     const filterByTypeVoiceId = typeVoiceData?.map((typeVoice) => {
         const voices = voiceData?.filter((voice) => (

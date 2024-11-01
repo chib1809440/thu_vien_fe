@@ -117,7 +117,9 @@ const CoverCard = ({
                         transition: "box-shadow 0.3s ease",
                     }}
                 >
-                    <ImageCard id={""} isBorderRadius photo={photo} aspectRatio={"3/4"} objectFit={subtitle === "ấn phẩm mềm" ? "contain" : "fill"} />
+                    {/* <ImageCard id={""} isBorderRadius photo={photo} aspectRatio={"3/4"} objectFit={subtitle === "ấn phẩm mềm" ? "contain" : "fill"} /> */}
+                    <ImageCard id={""} isBorderRadius photo={photo} aspectRatio={"3/4"} objectFit={"contain"} />
+                
                 </Paper>
             </Box>
 

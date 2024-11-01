@@ -20,8 +20,8 @@ class PublicationsService extends BaseApi {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
-        });
-        return response.data as TApiOneRecord<boolean>;
+        });        
+        return response.data as TApiModifyRecord<{ publications: any; errors?: any }>;
     }
 
     public async updateShelvesQuantity(data: { id: string; shelvesId: string; quantity: number }) {

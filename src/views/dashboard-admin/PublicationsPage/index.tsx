@@ -548,10 +548,39 @@ const PublicationsPage = () => {
 
     const handleSubmitImportFile = async (file: File) => {
         try {
-            await publicationsService.importExcel(file);
-
+            const response = await publicationsService.importExcel(file);
             revalidate();
-            toast.success("Import file excel thành công");
+            const duplicateBarcodeErrors = response?.data?.errors.filter(error =>
+                error.error === "Barcode đã tồn tại!"
+            );
+
+            if (duplicateBarcodeErrors.length > 0) {
+                const rows = duplicateBarcodeErrors.map(({ row }) => row);
+                const uniqueRows = Array.from(new Set(rows));
+                const rowList = uniqueRows.join(", ");
+
+                if (response?.data?.publications?.length === 0) {
+                    // Nếu không có publications nào và có lỗi
+                    toast.error(
+                        <span>
+                            Barcode đã tồn tại ở dòng: <strong style={{ color: 'red' }}>[ {rowList} ]</strong>.
+                        </span>
+                    );
+                } else {
+                    // Nếu có publications nhưng vẫn có lỗi
+                    toast.success("Import file excel thành công");
+                    toast.error(
+                        <span>
+                            Barcode đã tồn tại ở dòng: <strong style={{ color: 'red' }}>[ {rowList} ]</strong>.
+                        </span>,
+                        { autoClose: 4000 }
+                    );
+                }
+            } else {
+                // Nếu không có lỗi nào
+                toast.success("Import file excel thành công");
+            }
+
             setOpenImportFile(false);
         } catch (error) {
             toast.error(error?.message);
@@ -560,7 +589,7 @@ const PublicationsPage = () => {
 
     const actionMenus = useMemo((): TMenuOption[] => {
         if (userRole === "Student") {
-            return []; 
+            return [];
         }
 
         return [
@@ -623,8 +652,6 @@ const PublicationsPage = () => {
         };
     }, [selectedEdit]);
 
-
-
     return (
         <div>
             <IBreadcrumsCustom
@@ -659,7 +686,7 @@ const PublicationsPage = () => {
                                 ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
                                 : ""
                     }
-                    isFetching={mutationAdd.isPending || mutationEdit.isPending}
+                    isFetching={mutationAdd.isPending || mutationEdit.isPending} 
                 />
             )}
 

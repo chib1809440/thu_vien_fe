@@ -144,10 +144,7 @@ const FormAddEditGroup: FC<Props> = ({
                                 label="Thư viện"
                                 required
                                 value={(values.libraries as unknown as TLibrary[]) || []}
-                                options={libOptions?.map((item) => ({
-                                    ...item,
-                                    name: capitalizeFirstLetter(item.name), 
-                                })) || []}
+                                options={libOptions}
                                 keyLabel={"name"}
                                 onChange={handleChangedLibs}
                                 error={touched.libraries && Boolean(errors.libraries)}

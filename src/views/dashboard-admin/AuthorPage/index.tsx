@@ -56,6 +56,8 @@ const AuthorPage = () => {
     };
 
     const handleSubmit = (values: TAuthorCreate) => {
+        console.log(values);
+        
         if (selectedEdit) {
             mutationEdit.mutate(
                 { ...values, _id: selectedEdit._id },
@@ -121,7 +123,7 @@ const AuthorPage = () => {
                 disablePadding: "none",
                 label: "Tên tác giả",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
+                sxRow: { paddingRight: 3, maxWidth: 200, textTransform: "capitalize"  },
                 render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
@@ -237,6 +239,8 @@ const AuthorPage = () => {
     const initialValues = useMemo((): TAuthorCreate => {
         
         if (selectedEdit) {
+            console.log(selectedEdit);
+            
             return {
                 name: selectedEdit.name,
                 description: selectedEdit.description,

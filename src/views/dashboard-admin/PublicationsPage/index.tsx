@@ -331,7 +331,11 @@ const PublicationsPage = () => {
                             </Box>
                             <Box mt={1}>
                                 {
-                                    (!row?.mimetype) && (
+                                    (!row?.mimetype || (row?.mimetype === "image/jpeg" ||
+                                        row?.mimetype === "image/png" ||
+                                        row?.mimetype === "image/gif" ||
+                                        row?.mimetype === "image/bmp" ||
+                                        row?.mimetype === "image/webp") && row?.type === "ấn phẩm cứng") && (
                                         <IconBook
                                             size={30}
                                             stroke={1.5}
@@ -381,7 +385,7 @@ const PublicationsPage = () => {
                                         row?.mimetype === "image/png" ||
                                         row?.mimetype === "image/gif" ||
                                         row?.mimetype === "image/bmp" ||
-                                        row?.mimetype === "image/webp") && (
+                                        row?.mimetype === "image/webp") && row?.type === "ấn phẩm mềm" && (
                                         <IconPhoto
                                             size={30}
                                             stroke={1.5}
@@ -714,7 +718,7 @@ const PublicationsPage = () => {
                     barcodeSearch={barcodeSearch}
                     handleBarcodeSearch={handleBarcodeSearch}
                     // nếu người dùng là thủ thư hoặc giáo viên
-                    {...((userRole === "Admin" || userRole === "Teacher") ? {
+                    {...((userRole === "Admin" || userRole === "Teacher" || userRole === "Owner") ? {
                         selectedValuePublication: selectedValuePublication,
                         handleValuePublication: handleValuePublication
                     } : {})}

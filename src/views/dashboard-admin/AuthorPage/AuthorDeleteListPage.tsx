@@ -93,7 +93,7 @@ const AuthorDeleteListPage = () => {
                 disablePadding: "none",
                 label: "Tên tác giả",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
+                sxRow: { paddingRight: 3, maxWidth: 200, textTransform: "capitalize"  },
                 render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {

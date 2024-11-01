@@ -17,6 +17,7 @@ import IBreadcrumsCustom from "../../../../../ui-component/breadcrums";
 import MainCard from "../../../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../../../utils/object";
 import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
+import { textTransform } from "@mui/system";
 
 
 const LibAuthorPage = () => {
@@ -42,6 +43,8 @@ const LibAuthorPage = () => {
         ...filter,
     });
     const { data: libraryData } = useFetchLibrariesFromGroup();
+    console.log(libraryData);
+    
     const mutationPullLink = useAddAuthorPullLink();
     const revalidate = useReFetchAuthorLink();
     const [openConfirmPullLinkMultiple, setOpenConfirmPullLinkMultiple] = useState(false);
@@ -102,7 +105,7 @@ const LibAuthorPage = () => {
                 disablePadding: "none",
                 label: "Tên tác giả",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
+                sxRow: { paddingRight: 3, maxWidth: 200, textTransform: "capitalize" },
                 render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {

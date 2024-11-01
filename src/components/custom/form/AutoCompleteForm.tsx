@@ -68,7 +68,7 @@ const AutocompleteForm = <Type extends Record<string, any>>({
             error={error}
         >
             <Box sx={{ display: "flex", alignItems: "center", my: 1 }}>
-                <Typography sx={{ fontWeight: "bold"}}>
+                <Typography sx={{ fontWeight: "bold" }}>
                     {label} {required && <span className="required_text">(*)</span>}
                 </Typography>
                 {handleAdd && (
@@ -102,16 +102,16 @@ const AutocompleteForm = <Type extends Record<string, any>>({
 
                     return (
                         <Typography variant="body2" textTransform={isCapitalize ? "capitalize" : "none"}>
-                            {capitalizeFirstLetter(
+                            {
                                 value
                                     .slice(0, limitTags)
                                     .map((option, _) =>
                                         option?.[keyLabel]?.length > limitText
-                                            ? option?.[keyLabel].slice(0, limitText) + "..."
-                                            : option?.[keyLabel]
+                                            ? capitalizeFirstLetter(option?.[keyLabel]).slice(0, limitText) + "..."
+                                            : capitalizeFirstLetter(option?.[keyLabel])
                                     )
                                     .join(", ")
-                            )}
+                            }
 
                             <Typography
                                 variant="body2"

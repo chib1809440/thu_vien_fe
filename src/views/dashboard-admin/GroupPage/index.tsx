@@ -2,7 +2,7 @@ import { Chip } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconEye, IconTrashXFilled } from "@tabler/icons-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
@@ -31,6 +31,7 @@ const GroupPage = () => {
 
     const { data, isLoading, isFetching } = useFetchGroup({ limit, page, search });
     const { data: libsGroup } = useFetchLibrary({ groupId });
+    const [combinedLibraries, setCombinedLibraries] = useState<TLibrary[]>([]);
 
     const mutationAdd = useAddGroup();
     const mutationEdit = useEditGroup();
@@ -295,7 +296,7 @@ const GroupPage = () => {
     }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TGroupCreate => {
-        if (selectedEdit) {            
+        if (selectedEdit) {
             const libraries = [];
 
             if (selectedEdit?.libraries?.length === 0 && selectedEdit?.mainLibrary) {
@@ -318,11 +319,20 @@ const GroupPage = () => {
         };
     }, [selectedEdit]);
 
-    const combinedLibraries = [
-        ...(libsGroup?.data?.result || []),
-        ...(initialValues?.libraries || [])
-    ].filter((item): item is TLibrary => typeof item !== 'string' && item !== null);
-    
+    useEffect(() => {
+        const libraries = [
+            ...(libsGroup?.data?.result || []),
+            ...(initialValues?.libraries || [])
+        ].filter((item): item is TLibrary => typeof item !== 'string' && item !== null);
+
+        setCombinedLibraries(libraries);
+    }, [libsGroup, initialValues]);
+    // console.log(combinedLibraries);
+
+    const { data: libs } = useFetchLibrary()
+    // console.log(libs);
+
+
 
     return (
         <div>

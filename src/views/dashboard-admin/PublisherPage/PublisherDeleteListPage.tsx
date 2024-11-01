@@ -93,7 +93,7 @@ const PublisherDeleteListPage = () => {
                 disablePadding: "none",
                 label: "Tên nhà sản xuất",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
+                sxRow: { paddingRight: 3, maxWidth: 200, textTransform: "capitalize"  },
                 render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {

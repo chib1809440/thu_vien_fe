@@ -1,5 +1,6 @@
 import {
     IconArticle,
+    IconBook,
     IconBrandWechat,
     IconBrowser,
     IconBrowserPlus,
@@ -25,7 +26,7 @@ import {
     IconSmartHome,
     IconUserPlus,
     IconUsers,
-    IconVocabulary, IconBook
+    IconVocabulary
 } from '@tabler/icons';
 import { VERSION } from '../config';
 
@@ -316,6 +317,14 @@ export const dashboardAdminV2 = {
     title: `Version ${VERSION}`,
     type: 'group',
     children: [
+        {
+            id: 'trang-chu',
+            title: "Trang chủ thư viện",
+            type: 'item',
+            url: '/trang-chu',
+            icon: icons.IconHome2,
+            breadcrumbs: false
+        },
         {
             id: 'lien-thong',
             title: "Chia sẻ ấn phẩm",

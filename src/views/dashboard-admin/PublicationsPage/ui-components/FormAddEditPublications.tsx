@@ -378,7 +378,7 @@ const FormAddEditPublications: FC<Props> = ({
                     {isEditMode ? "Sửa thông tin ấn phẩm" : "Thêm thông tin ấn phẩm mới"}
                 </DialogTitle>
 
-                <DialogContent>
+                <DialogContent sx={{ px: 6 }}>
                     <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
                         <Box
                             sx={{
@@ -551,7 +551,7 @@ const FormAddEditPublications: FC<Props> = ({
                         />
 
                         <SwitchForm
-                             value={values.type === "ấn phẩm cứng" ? true : values?.isPublic ?? false}
+                            value={values.type === "ấn phẩm cứng" ? true : values?.isPublic ?? false}
                             onChange={(checked) => {
                                 if (values.type === "ấn phẩm cứng") {
                                     setFieldValue("isPublic", true);
@@ -560,7 +560,7 @@ const FormAddEditPublications: FC<Props> = ({
                                 }
                             }}
                             label="Chia sẻ lên thư viện"
-                            disable={values.type === "ấn phẩm cứng"} 
+                            disable={values.type === "ấn phẩm cứng"}
                         />
 
                         <SwitchForm
@@ -579,7 +579,7 @@ const FormAddEditPublications: FC<Props> = ({
                     </Form>
                 </DialogContent>
 
-                <DialogActions>
+                <DialogActions sx={{ pr: 6, pb:2 }}>
                     <Button disabled={isFetching} onClick={onClose} color="error">
                         Huỷ
                     </Button>

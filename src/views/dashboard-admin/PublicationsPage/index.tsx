@@ -686,7 +686,7 @@ const PublicationsPage = () => {
                                 ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
                                 : ""
                     }
-                    isFetching={mutationAdd.isPending || mutationEdit.isPending} 
+                    isFetching={mutationAdd.isPending || mutationEdit.isPending}
                 />
             )}
 

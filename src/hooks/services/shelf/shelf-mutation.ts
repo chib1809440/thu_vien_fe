@@ -9,7 +9,11 @@ export const useAddShelf = () => {
             return await shelfService.create<TShelvesCreate, TShelves>(data)
         },
         onError: (error: any) => {
-            toast.error(error.message);
+            if (error.message === "name already exists") {
+                toast.error("Tên đã tồn tại");
+            } else {
+                toast.error(error.message);
+            }
         },
     })
 }
@@ -20,7 +24,11 @@ export const useEditShelf = () => {
             return await shelfService.update<TShelvesEdit, TShelves>(data, data._id);
         },
         onError: (error: any) => {
-            toast.error(error.message);
+            if (error.message === "name already exists") {
+                toast.error("Tên đã tồn tại");
+            } else {
+                toast.error(error.message);
+            }
         },
     })
 }

@@ -9,7 +9,11 @@ export const useAddLibrary = () => {
             return await libraryService.create<TLibraryCreate, TLibrary>(data)
         },
         onError: (error: any) => {
-            toast.error(error.message);
+            if (error.message === "name already exists") {
+                toast.error("Tên đã tồn tại");
+            } else {
+                toast.error(error.message);
+            }
         },
     })
 }
@@ -20,7 +24,11 @@ export const useEditLibrary = () => {
             return await libraryService.update<TLibraryEdit, TLibrary>(data, data._id);
         },
         onError: (error: any) => {
-            toast.error(error.message);
+            if (error.message === "name already exists") {
+                toast.error("Tên đã tồn tại");
+            } else {
+                toast.error(error.message);
+            }
         },
     })
 }

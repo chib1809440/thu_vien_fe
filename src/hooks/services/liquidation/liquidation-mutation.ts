@@ -9,7 +9,11 @@ export const useAddLiquidation = () => {
             return await liquidationService.create<TLiquidationCreate, TLiquidation>(data)
         },
         onError: (error: any) => {
-            toast.error(error.message);
+            if (error.message === "name already exists") {
+                toast.error("Tên đã tồn tại");
+            } else {
+                toast.error(error.message);
+            }
         },
     })
 }
@@ -20,7 +24,11 @@ export const useEditLiquidation = () => {
             return await liquidationService.update<TLiquidationEdit, TLiquidation>(data, data._id);
         },
         onError: (error: any) => {
-            toast.error(error.message);
+            if (error.message === "name already exists") {
+                toast.error("Tên đã tồn tại");
+            } else {
+                toast.error(error.message);
+            }
         },
     })
 }

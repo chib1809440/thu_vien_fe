@@ -9,18 +9,21 @@ import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
 import { CsFlexRowBetween } from "../../../components/default/flex";
+import { useAuth } from "../../../contexts/JWTContext";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { useAddGroup, useDeleteGroup, useDeleteManyGroup, useEditGroup } from "../../../hooks/services/group/group-mutation";
 import { useFetchGroup, useReFetchGroup } from "../../../hooks/services/group/group-query";
 import { useFetchLibrary, useReFetchLibrary } from "../../../hooks/services/library/library-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TGroup, TGroupCreate } from "../../../types/models/group.type";
+import { TLibrary } from "../../../types/models/library.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditGroup from "./ui-components/FormAddEditGroup";
 import GroupDetailsDialog from "./ui-components/GroupDetailsDialog";
-import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
-import { TLibrary } from "../../../types/models/library.type";
+import groupService from "../../../_apis/services/group.service";
+import { getUserById } from "../../../_apis/user.api";
 
 const GroupPage = () => {
     const queryString = useQueryString();
@@ -49,6 +52,23 @@ const GroupPage = () => {
     const [openConfirmDeleteMultiple, setOpenConfirmDeleteMultiple] = useState(false);
     const [openViewDetails, setOpenViewDetails] = useState(false);
     const [groupDetails, setGroupDetails] = useState<TGroup | null>(null);
+
+    const { user } = useAuth();
+
+    const groupLibs = useMemo(() => {
+        if (!user) return null;
+        const _user = { ...user } as any;
+        return _user?.data?.libraryDetail?.groupId;
+    }, [user]);
+
+    console.log(user);
+
+
+    const userRole = useMemo(() => {
+        if (!user) return null;
+        const _user = { ...user } as any;
+        return _user?.data?.roleId?.name;
+    }, [user]);
 
     const addGroup = () => {
         setOpenAddEdit(true);
@@ -127,6 +147,12 @@ const GroupPage = () => {
         setOpenViewDetails(false);
         setGroupDetails(null);
     };
+
+    const handleLeaveGroup = async () => {
+        const response = await groupService.leaveGroup();
+        toast.success("Rời nhóm thành công.");
+        return response;
+    }
 
     const columns: TColumn<TGroup>[] = useMemo(
         () => [
@@ -225,22 +251,48 @@ const GroupPage = () => {
                                 stroke={1.5}
                                 onClick={() => handleViewDetails(row)}
                             />
-                            <IconPencil
-                                onClick={() => handleEditGroup(row)}
-                                size={20}
-                                stroke={1.5}
-                            />
-                            <IconTrash
-                                size={20}
-                                stroke={1.5}
-                                onClick={() => handleOpenConfirmDialog(row)}
-                            />
+
+                            <>
+                                <IconPencil
+                                    onClick={() => handleEditGroup(row)}
+                                    size={20}
+                                    stroke={1.5}
+                                />
+                                <IconTrash
+                                    size={20}
+                                    stroke={1.5}
+                                    onClick={() => handleOpenConfirmDialog(row)}
+                                />
+                            </>
+                            {
+                                groupLibs === null && userRole === "Admin" && (
+                                    <StyledButton
+                                        color="primary"
+                                        size="small"
+                                        variant="contained"
+                                    >
+                                        Yêu cầu vào nhóm
+                                    </StyledButton>
+                                )
+                            }
+
+                            {userRole === "Admin" && (
+                                <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    variant="contained"
+                                    onClick={handleLeaveGroup}
+                                >
+                                    Rời nhóm
+                                </StyledButton>
+                            )}
+
                         </Box>
                     );
                 },
             },
         ],
-        [handleEditGroup, handleOpenConfirmDialog]
+        [handleEditGroup, handleOpenConfirmDialog, handleLeaveGroup]
     );
 
     const handleCheckedDelete = useCallback((row: TGroup, checked: boolean) => {

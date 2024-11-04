@@ -9,7 +9,11 @@ export const useAddPublisher = () => {
             return await publisherService.create<TPublisherCreate, TPublisher>(data)
         },
         onError: (error: any) => {
-            toast.error(error.message);
+            if (error.message === "name already exists") {
+                toast.error("Tên đã tồn tại");
+            } else {
+                toast.error(error.message);
+            }
         },
     })
 }
@@ -20,7 +24,11 @@ export const useEditPublisher = () => {
             return await publisherService.update<TPublisherEdit, TPublisher>(data, data._id);
         },
         onError: (error: any) => {
-            toast.error(error.message);
+            if (error.message === "name already exists") {
+                toast.error("Tên đã tồn tại");
+            } else {
+                toast.error(error.message);
+            }
         },
     })
 }

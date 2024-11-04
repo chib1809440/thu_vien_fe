@@ -39,6 +39,7 @@ import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
+import { TLibrary } from "../../../types/models/library.type";
 
 const PublicationsPage = () => {
     const queryString = useQueryString();
@@ -262,7 +263,7 @@ const PublicationsPage = () => {
         setSelectedValue(event.target.value);
     };
 
-    const columns: TColumn<TPublications>[] = useMemo(
+    const columns: TColumn<TPublications & { libraryId: TLibrary }>[] = useMemo(
         () => [
             {
                 id: "name",
@@ -306,6 +307,18 @@ const PublicationsPage = () => {
                 render: (row) => {
                     return (
                         <>
+                            {
+                                row?.libraryId === null ? (
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        Thư viện: <Typography ml={1} fontWeight={600}>Thư viện không tồn tại</Typography>
+                                    </Box>
+                                ) : (
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        Thư viện: <Typography ml={1} fontWeight={600}>{capitalizeFirstLetter((row?.libraryId as TLibrary)?.name)}</Typography>
+                                    </Box>
+                                )
+
+                            }
                             {
                                 row?.barcode && (
                                     <Box sx={{ display: "flex", alignItems: "center" }}>

@@ -9,7 +9,11 @@ export const useAddVoice = () => {
             return await voiceService.create<TVoiceCreate, TVoice>(data, true)
         },
         onError: (error: any) => {
-            toast.error(error.message);
+             if (error.message === "name already exists") {
+                toast.error("Tên đã tồn tại");
+            } else {
+                toast.error(error.message);
+            }
         },
     })
 }
@@ -20,7 +24,11 @@ export const useEditVoice = () => {
             return await voiceService.update<TVoiceEdit, TVoice>(data, data._id, true);
         },
         onError: (error: any) => {
-            toast.error(error.message);
+             if (error.message === "name already exists") {
+                toast.error("Tên đã tồn tại");
+            } else {
+                toast.error(error.message);
+            }
         },
     })
 }

@@ -84,9 +84,6 @@ const FormAddEditGroup: FC<Props> = ({
                 toast.success("Thêm thành công.");
                 setOpenAdd(false);
             },
-            onError: (error) => {
-                toast.error("Thêm thất bại: " + error.message);
-            },
         });
         return;
     };

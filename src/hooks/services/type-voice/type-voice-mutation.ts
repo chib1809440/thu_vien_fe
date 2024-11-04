@@ -9,7 +9,11 @@ export const useAddTypeVoice = () => {
             return await typeVoiceService.create<TTypeVoiceCreate, TTypeVoice>(data)
         },
         onError: (error: any) => {
-            toast.error(error.message);
+             if (error.message === "name already exists") {
+                toast.error("Tên đã tồn tại");
+            } else {
+                toast.error(error.message);
+            }
         },
     })
 }
@@ -20,7 +24,11 @@ export const useEditTypeVoice = () => {
             return await typeVoiceService.update<TTypeVoiceEdit, TTypeVoice>(data, data._id);
         },
         onError: (error: any) => {
-            toast.error(error.message);
+             if (error.message === "name already exists") {
+                toast.error("Tên đã tồn tại");
+            } else {
+                toast.error(error.message);
+            }
         },
     })
 }

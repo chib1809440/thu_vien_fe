@@ -9,7 +9,11 @@ export const useAddMaterial = () => {
             return await materialService.create<TMaterialCreate, TMaterial>(data)
         },
         onError: (error: any) => {
-            toast.error(error.message);
+            if (error.message === "name already exists") {
+                toast.error("Tên đã tồn tại");
+            } else {
+                toast.error(error.message);
+            }
         },
     })
 }
@@ -20,7 +24,11 @@ export const useEditMaterial = () => {
             return await materialService.update<TMaterialEdit, TMaterial>(data, data._id);
         },
         onError: (error: any) => {
-            toast.error(error.message);
+            if (error.message === "name already exists") {
+                toast.error("Tên đã tồn tại");
+            } else {
+                toast.error(error.message);
+            }
         },
     })
 }

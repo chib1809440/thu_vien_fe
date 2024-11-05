@@ -169,9 +169,13 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
     const updateProfile = () => { };
 
     const refreshUser = async () => {
+        console.log("aaaa", state.user);
+        
         if (!state.user) return;
         try {
-            const response = await getUserById(state.user.userID);
+            const response = await getUserById(state?.user?.userID);
+            console.log(response);
+            
             if (response.statusCode === 200 || response.statusCode === 201) {
                 dispatch({
                     type: LOGIN,
@@ -182,9 +186,7 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
                 });
             }
         } catch (error) {
-            dispatch({
-                type: LOGOUT,
-            });
+            console.log(error); 
         }
     };
 

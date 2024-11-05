@@ -1,4 +1,4 @@
-import { TApiModifyRecord, TApiMultipleRecords, TApiOneRecord } from "../../types/api/api.type";
+import { TApiModifyRecord, TApiOneRecord } from "../../types/api/api.type";
 import { TFilter } from "../../types/models/entity-common.type";
 import BaseApi from "./base-api";
 

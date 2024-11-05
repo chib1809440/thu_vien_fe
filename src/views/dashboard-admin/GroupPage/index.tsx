@@ -3,6 +3,7 @@ import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconEye, IconTrashXFilled } from "@tabler/icons-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import groupService from "../../../_apis/services/group.service";
 import ActionsForm from "../../../components/custom/form/ActionForm";
@@ -15,6 +16,8 @@ import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { useAddGroup, useDeleteGroup, useDeleteManyGroup, useEditGroup } from "../../../hooks/services/group/group-mutation";
 import { useFetchGroup, useReFetchGroup } from "../../../hooks/services/group/group-query";
 import { useFetchLibrary, useReFetchLibrary } from "../../../hooks/services/library/library-query";
+import { useAddRequestGroup } from "../../../hooks/services/request-group/request-group-mutation";
+import { useFetchRequestGroupFromAdmin, useReFetchRequestGroup, useReFetchRequestGroupFromAdmin } from "../../../hooks/services/request-group/request-group-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TGroup, TGroupCreate } from "../../../types/models/group.type";
@@ -34,6 +37,7 @@ const GroupPage = () => {
 
     const { data, isLoading, isFetching } = useFetchGroup({ limit, page, search });
     const { data: libsGroup } = useFetchLibrary({ groupId });
+    const { data: listRequestGroupFromAdmin } = useFetchRequestGroupFromAdmin();
     const [combinedLibraries, setCombinedLibraries] = useState<TLibrary[]>([]);
 
     const mutationAdd = useAddGroup();
@@ -42,6 +46,9 @@ const GroupPage = () => {
     const mutationDeleteMany = useDeleteManyGroup();
     const revalidate = useReFetchGroup();
     const revalidateLibs = useReFetchLibrary();
+    const mutationJoinGroup = useAddRequestGroup();
+    const revalidateJoinGroup = useReFetchRequestGroup();
+    const revalidateRequestGroupFromAdmin = useReFetchRequestGroupFromAdmin();
 
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TGroup | null>(null);
@@ -55,21 +62,21 @@ const GroupPage = () => {
 
     const { user, refreshUser } = useAuth();
     const { hasPermission } = usePermission();
-
+    console.log(user);
+    
     const groupLibs = useMemo(() => {
         if (!user) return null;
         const _user = { ...user } as any;
         return _user?.data?.libraryDetail?.groupId;
     }, [user]);
 
-    console.log(user);
-
-
     const userRole = useMemo(() => {
         if (!user) return null;
         const _user = { ...user } as any;
         return _user?.data?.roleId?.name;
     }, [user]);
+
+    const groupIdsRequest = listRequestGroupFromAdmin?.data?.result?.map(item => (item?.groupId)?._id);
 
     const addGroup = () => {
         setOpenAddEdit(true);
@@ -103,9 +110,7 @@ const GroupPage = () => {
                     },
                 }
             );
-
             return;
-
         }
 
         mutationAdd.mutate(payload, {
@@ -154,6 +159,16 @@ const GroupPage = () => {
         toast.success("Rời nhóm thành công.");
         await refreshUser();
         return response;
+    }
+
+    const handleJoinGroup = (row: TGroup) => {
+        mutationJoinGroup.mutate(row._id, {
+            onSuccess: () => {
+                revalidateJoinGroup();
+                revalidateRequestGroupFromAdmin();
+                toast.success('Yêu cầu tham gia nhóm thành công.');
+            },
+        });
     }
 
     const columns: TColumn<TGroup>[] = useMemo(
@@ -239,71 +254,144 @@ const GroupPage = () => {
                 align: "center",
                 label: "Hành động",
                 render: (row) => {
-                    return (
-                        <Box
-                            sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                gap: 1,
-                            }}
-                        >
-                            <IconEye
-                                size={20}
-                                stroke={1.5}
-                                onClick={() => handleViewDetails(row)}
-                            />
+                    if (groupIdsRequest?.some((item) => item === row?._id)) {
+                        return (
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    gap: 1,
+                                }}
+                            >
+                                <IconEye
+                                    size={20}
+                                    stroke={1.5}
+                                    onClick={() => handleViewDetails(row)}
+                                />
 
-                            <>
-                                {hasPermission([
-                                    { resource: "all", action: "manage" },
-                                    { resource: "groups", action: "manage" },
-                                    { resource: "groups", action: "update" },
-                                ]) && (
-                                        <IconPencil
-                                            onClick={() => handleEditGroup(row)}
-                                            size={20}
-                                            stroke={1.5}
-                                        />
-                                    )}
+                                <>
+                                    {hasPermission([
+                                        { resource: "all", action: "manage" },
+                                        { resource: "groups", action: "manage" },
+                                        { resource: "groups", action: "update" },
+                                    ]) && (
+                                            <IconPencil
+                                                onClick={() => handleEditGroup(row)}
+                                                size={20}
+                                                stroke={1.5}
+                                            />
+                                        )}
 
-                                {hasPermission([
-                                    { resource: "all", action: "manage" },
-                                    { resource: "group", action: "manage" },
-                                    { resource: "group", action: "delete" },
-                                ]) && (
-                                        <IconTrash
-                                            size={20}
-                                            stroke={1.5}
-                                            onClick={() => handleOpenConfirmDialog(row)}
-                                        />
-                                    )}
-                            </>
-                            {
-                                groupLibs === null && userRole === "Admin" && (
+                                    {hasPermission([
+                                        { resource: "all", action: "manage" },
+                                        { resource: "group", action: "manage" },
+                                        { resource: "group", action: "delete" },
+                                    ]) && (
+                                            <IconTrash
+                                                size={20}
+                                                stroke={1.5}
+                                                onClick={() => handleOpenConfirmDialog(row)}
+                                            />
+                                        )}
+                                </>
+                                {
+                                    groupLibs === null && userRole === "Admin" && (
+                                        <StyledButton
+                                            size="small"
+                                            variant="contained"
+                                            onClick={() => handleJoinGroup(row)}
+                                            sx={{ background: "#53a828", color: "white" }}
+                                            disabled={true}
+                                        >
+                                            Đã Yêu cầu
+                                        </StyledButton>
+                                    )
+                                }
+
+                                {groupLibs !== null && userRole === "Admin" && (
                                     <StyledButton
                                         color="primary"
                                         size="small"
                                         variant="contained"
+                                        onClick={handleLeaveGroup}
                                     >
-                                        Yêu cầu vào nhóm
+                                        Rời nhóm
                                     </StyledButton>
-                                )
-                            }
+                                )}
 
-                            {groupLibs !== null && userRole === "Admin" && (
-                                <StyledButton
-                                    color="primary"
-                                    size="small"
-                                    variant="contained"
-                                    onClick={handleLeaveGroup}
-                                >
-                                    Rời nhóm
-                                </StyledButton>
-                            )}
+                            </Box>
+                        );
+                    } else {
+                        return (
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    gap: 1,
+                                }}
+                            >
+                                <IconEye
+                                    size={20}
+                                    stroke={1.5}
+                                    onClick={() => handleViewDetails(row)}
+                                />
 
-                        </Box>
-                    );
+                                <>
+                                    {hasPermission([
+                                        { resource: "all", action: "manage" },
+                                        { resource: "groups", action: "manage" },
+                                        { resource: "groups", action: "update" },
+                                    ]) && (
+                                            <IconPencil
+                                                onClick={() => handleEditGroup(row)}
+                                                size={20}
+                                                stroke={1.5}
+                                            />
+                                        )}
+
+                                    {hasPermission([
+                                        { resource: "all", action: "manage" },
+                                        { resource: "group", action: "manage" },
+                                        { resource: "group", action: "delete" },
+                                    ]) && (
+                                            <IconTrash
+                                                size={20}
+                                                stroke={1.5}
+                                                onClick={() => handleOpenConfirmDialog(row)}
+                                            />
+                                        )}
+                                </>
+                                {
+                                    groupLibs === null && userRole === "Admin" && (
+                                        <StyledButton
+                                            size="small"
+                                            variant="contained"
+                                            onClick={() => handleJoinGroup(row)}
+                                            sx={{ background: "#3078ec", color: "white" }}
+                                        >
+                                            Yêu cầu vào nhóm
+                                        </StyledButton>
+                                    )
+                                }
+
+                                {groupLibs !== null && userRole === "Admin" && (
+                                    <StyledButton
+                                        color="primary"
+                                        size="small"
+                                        variant="contained"
+                                        onClick={handleLeaveGroup}
+                                    >
+                                        Rời nhóm
+                                    </StyledButton>
+                                )}
+
+                            </Box>
+                        );
+                    }
+
+
                 },
             },
         ],
@@ -411,6 +499,7 @@ const GroupPage = () => {
                     onSubmit={handleSubmit}
                     isEditMode={selectedEdit ? true : false}
                     libOptions={combinedLibraries}
+                    userRole={userRole}
                 />
             )}
 
@@ -427,6 +516,20 @@ const GroupPage = () => {
                             >
                                 Thêm mới
                             </StyledButton>
+                            {
+                                userRole === "Owner" && (
+
+                                    <Link to="/he-thong/quan-ly-tham-gia-nhom" style={{ textDecoration: 'none' }}>
+                                        <StyledButton
+                                            sx={{ background: "#a36e21", color: "white", marginLeft: "10px", paddingTop: 1.2, paddingBottom: 1.2 }}
+                                            size="small"
+                                            variant="contained"
+                                        >
+                                            Danh sách yêu cầu vào nhóm
+                                        </StyledButton>
+                                    </Link>
+                                )
+                            }
                         </Box>
                     </CsFlexRowBetween>
                 </Stack>

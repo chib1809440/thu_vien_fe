@@ -21,6 +21,7 @@ type Props = {
     initialValues: TGroupCreate;
     isEditMode?: boolean;
     libOptions?: TLibrary[];
+    userRole?: string;
 };
 
 const schema = yup.object().shape({
@@ -38,6 +39,7 @@ const FormAddEditGroup: FC<Props> = ({
     onClose,
     onSubmit,
     libOptions,
+    userRole,
     initialValues = {
         mainLibrary: "",
         name: "",
@@ -161,6 +163,7 @@ const FormAddEditGroup: FC<Props> = ({
                                 {...getFieldProps("mainLibrary")}
                                 error={touched.mainLibrary && Boolean(errors.mainLibrary)}
                                 helperText={touched.mainLibrary && errors.mainLibrary}
+                                disabled={userRole !== "Super Admin"}
                             />
                         </Form>
                     </DialogContent>

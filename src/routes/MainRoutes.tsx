@@ -39,6 +39,9 @@ const RolePage = Loadable(
 const GroupPage = Loadable(
   lazy(() => import("../views/dashboard-admin/GroupPage"))
 );
+const JoinGroup = Loadable(
+  lazy(() => import("../views/dashboard-admin/GroupPage/JoinGroup"))
+);
 const LibraryPage = Loadable(
   lazy(() => import("../views/dashboard-admin/LibraryPage"))
 );
@@ -192,6 +195,10 @@ const MainRoutes = {
     {
       path: "/he-thong/quan-ly-nhom",
       element: <GroupPage />,
+    },
+    {
+      path: "/he-thong/quan-ly-tham-gia-nhom",
+      element: <JoinGroup />,
     },
     {
       path: "/he-thong/quan-ly-thu-vien",

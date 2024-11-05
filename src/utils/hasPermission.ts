@@ -10,7 +10,6 @@ const usePermission = () => {
         const _user = { ...user } as any;
         return _user?.data as User;
     }, [user]);
-    console.log("dataUser", dataUser);
 
     const hasPermission = useMemo(() => {
         return (allowPermissions: { resource: string; action: string }[]) => {

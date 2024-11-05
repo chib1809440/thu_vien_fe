@@ -226,11 +226,8 @@ const MainRoutes = {
 
     {
       path: "/vai-tro",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }]}
-      >
+      element:
         <RolePage />
-      </PermissionGuard>,
     },
     {
       path: "/tai-san-thu-vien",

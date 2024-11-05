@@ -50,7 +50,7 @@ import { vi } from "date-fns/locale";
 import DatePicker from "react-datepicker";
 import { generateUserName } from "../../../helpers/generateUserName";
 import { IconHttpDelete, IconSquareXFilled } from "@tabler/icons-react";
-import { useRoleList } from "../../../hooks/react-query/roleData";
+import { useRoleBySuperAdminList, useRoleList } from "../../../hooks/react-query/roleData";
 import { useFetchGroup } from "../../../hooks/services/group/group-query";
 import { useFetchLibrary } from "../../../hooks/services/library/library-query";
 import { TLibrary } from "../../../types/models/library.type";
@@ -98,7 +98,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
     const [avatarFile, setAvatarFile] = useState<File>(null); // State cho ảnh xem trước
     // Hàm để xử lý khi người dùng chọn ảnh
     const { data: roles, isPending, error, isError, isPlaceholderData, isFetching, refetch } =
-        useRoleList();
+        useRoleBySuperAdminList();
     const { data: libraries } = useFetchLibrary();
     const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -179,7 +179,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                     gender: values.gender,
                     birthday: values.birthday,
                     roleId: values.roleId,
-                    libraryId: values.libraryId ,
+                    libraryId: values.libraryId,
                 };
 
                 if (!user) {

@@ -14,7 +14,7 @@ import { DataType, HeadCell, Order } from "../../../../../components/custom/tabl
 import { EntityResponse } from "../../../../../interfaces/entityResponse";
 import { Role } from "../../../../../interfaces/role";
 import useDebounce, { searchDelay } from "../../../../../hooks/useDebounce";
-import { useDeleteRole, useDeleteRoleSelected, useRoleList } from "../../../../../hooks/react-query/roleData";
+import { useDeleteRole, useDeleteRoleSelected, useRoleBySuperAdminList, useRoleList } from "../../../../../hooks/react-query/roleData";
 import { SearchAndFilter } from "../../../../../components/custom/table/TableSearchAndFilter";
 import { EnhancedTableHead } from "../../../../../components/custom/table/TableHead";
 import { StyledTableCell, StyledTableRow } from "../../../../../components/custom/table/style";
@@ -59,7 +59,7 @@ function TableRoleList<T extends DataType>({
     const [checked, setChecked] = useState<string[]>([]);
     const [checkedAll, setCheckedAll] = useState<boolean>(false);
     const { data: roles, isPending, error, isError, isPlaceholderData, isFetching, refetch } =
-        useRoleList(page, rowsPerPage, debouncedSearch);
+        useRoleBySuperAdminList(page, rowsPerPage, debouncedSearch);
 
 
     const { mutate: deleteRole, isPending: isPendingDecentralize } = useDeleteRole();

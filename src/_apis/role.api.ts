@@ -1,5 +1,6 @@
 import { EntityResponse } from '../interfaces/entityResponse';
 import { AddPermissionToRoleModel, CreateRoleModel, Role } from '../interfaces/role';
+import { User } from '../interfaces/user';
 import axios from '../utils/axios';
 
 const ROLE_API = '/role';
@@ -49,5 +50,17 @@ export const deleteRoleSelected = async (ids: string[]): Promise<EntityResponse<
     const response = await axios.delete<EntityResponse<Role>>(`${ROLE_API}/selected`, {
         data: ids,  // Use `data` to send the body with axios.delete
     });
+    return response.data;
+};
+export const getAllRoleBySuperAdmins = async (page?: number, limit?: number, search?: string, order: string = "ASC"): Promise<EntityResponse<Role[]>> => {
+    let url = `${ROLE_API}/super-admin/?order=${order}`;
+
+    if (page !== undefined && limit !== undefined) {
+        url += `&page=${page}&limit=${limit}`;
+    }
+    if (search && search.trim() !== '') {
+        url += `&search=${encodeURIComponent(search.trim())}`;
+    }
+    const response = await axios.get<EntityResponse<Role[]>>(url);
     return response.data;
 };

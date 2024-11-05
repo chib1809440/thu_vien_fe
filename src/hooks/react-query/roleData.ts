@@ -5,8 +5,8 @@
 // import { ErrorResponse } from 'react-router-dom';
 
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addPermissionToRole, createRole, deleteRole, deleteRoleSelected, getAllRoles, getRoleById, updateRole } from "../../_apis/role.api";
-import { RQ_ROLE, RQ_ROLELIST } from "./constants_react_query";
+import { addPermissionToRole, createRole, deleteRole, deleteRoleSelected, getAllRoleBySuperAdmins, getAllRoles, getRoleById, updateRole } from "../../_apis/role.api";
+import { RQ_ROLE, RQ_ROLEBYSUPERADMINLIST, RQ_ROLELIST } from "./constants_react_query";
 import { AddPermissionToRoleModel, CreateRoleModel, Role } from "../../interfaces/role";
 
 // // useRolesData Hook
@@ -101,7 +101,13 @@ export function useRoleList(page?: number, limit?: number, search?: string) {
         placeholderData: keepPreviousData,  // Sử dụng dữ liệu trước đó để tránh loading
     });
 }
-
+export function useRoleBySuperAdminList(page?: number, limit?: number, search?: string) {
+    return useQuery({
+        queryKey: [RQ_ROLEBYSUPERADMINLIST, { page, limit, search }],
+        queryFn: () => getAllRoleBySuperAdmins(page, limit, search),
+        placeholderData: keepPreviousData,  // Sử dụng dữ liệu trước đó để tránh loading
+    });
+}
 export function useCreateRole(onSuccess, onError) {
     const queryClient = useQueryClient();
 

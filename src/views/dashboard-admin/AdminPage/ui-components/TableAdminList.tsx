@@ -16,7 +16,7 @@ import { EntityResponse } from "../../../../interfaces/entityResponse";
 import { User } from "../../../../interfaces/user";
 import useDebounce, { searchDelay } from "../../../../hooks/useDebounce";
 import { useDeleteUserSelected, useSoftDeleteUser, useUserList } from "../../../../hooks/react-query/userData";
-import { useRoleList } from "../../../../hooks/react-query/roleData";
+import { useRoleBySuperAdminList } from "../../../../hooks/react-query/roleData";
 import { SearchAndFilter } from "../../../../components/custom/table/TableSearchAndFilter";
 import CustomInput from "../../../../components/default/input/CustomInput";
 import { EnhancedTableHead } from "../../../../components/custom/table/TableHead";
@@ -68,11 +68,10 @@ function TableAdminList<T extends DataType>({
     const debouncedSearch = useDebounce<string>(contentSearch, searchDelay);
     const [checked, setChecked] = useState<string[]>([]);
     const [checkedAll, setCheckedAll] = useState<boolean>(false);
-    const { data: roles } = useRoleList();
+    const { data: roles } = useRoleBySuperAdminList();
     const { data: users, isPending, error, isError, isPlaceholderData, isFetching, refetch } =
         useUserList(page, rowsPerPage, debouncedSearch, filterRoleId);
     useEffect(() => {
-        console.log('hehehe', filterRoleId);
 
         refetch()
     }, [filterRoleId])

@@ -19,3 +19,6 @@ export const RQ_ASSETTRASH = 'assetTrash'
 
 export const RQ_USERTRASHLIST = 'userTrashList'
 export const RQ_USERTRASH = 'userTrash'
+
+export const RQ_ROLEBYSUPERADMINLIST = 'roleBySuperAdminList'
+

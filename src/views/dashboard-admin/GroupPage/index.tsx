@@ -53,7 +53,7 @@ const GroupPage = () => {
     const [openViewDetails, setOpenViewDetails] = useState(false);
     const [groupDetails, setGroupDetails] = useState<TGroup | null>(null);
 
-    const { user } = useAuth();
+    const { user, refreshUser } = useAuth();
     const { hasPermission } = usePermission();
 
     const groupLibs = useMemo(() => {
@@ -152,6 +152,7 @@ const GroupPage = () => {
     const handleLeaveGroup = async () => {
         const response = await groupService.leaveGroup();
         toast.success("Rời nhóm thành công.");
+        await refreshUser();
         return response;
     }
 
@@ -290,7 +291,7 @@ const GroupPage = () => {
                                 )
                             }
 
-                            {userRole === "Admin" && (
+                            {groupLibs !== null && userRole === "Admin" && (
                                 <StyledButton
                                     color="primary"
                                     size="small"

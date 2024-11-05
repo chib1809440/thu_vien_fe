@@ -179,13 +179,7 @@ const MainRoutes = {
   children: [
     {
       path: "/trang-chu",
-      element: (
-        <PermissionGuard
-          requiredPermissions={[{ resource: 'all', action: 'manage' }]}
-        >
-          <HomePage />
-        </PermissionGuard>
-      ),
+      element: <HomePage />,
     },
     {
       path: "/403",
@@ -201,11 +195,7 @@ const MainRoutes = {
     },
     {
       path: "/he-thong/quan-ly-thu-vien",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'libraries', action: 'manage' }]}
-      >
-        <LibraryPage />
-      </PermissionGuard>,
+      element: <LibraryPage />,
     },
     {
       path: "/thong-tin",
@@ -226,128 +216,67 @@ const MainRoutes = {
 
     {
       path: "/vai-tro",
-      element:
-        <RolePage />
+      element: <RolePage />
     },
     {
       path: "/tai-san-thu-vien",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'assets', action: 'manage' }, { resource: 'all', action: 'manage' }]}
-      >
-        <AssetPage />
-      </PermissionGuard>,
+      element: <AssetPage />,
     },
     {
       path: "quan-ly-danh-muc/dang-hoc-lieu",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
-      >
-        <MaterialPage />
-      </PermissionGuard>,
+      element: <MaterialPage />,
     },
     {
       path: "quan-ly-danh-muc/linh-vuc",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
-      >
-        <CategoryPage />
-      </PermissionGuard>,
+      element: <CategoryPage />
     },
     {
       path: "/quan-ly-danh-muc/tac-gia",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
-      >
-        <AuthorPage />
-      </PermissionGuard>,
+      element: <AuthorPage />,
     },
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-tac-gia",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
-      >
-        <AuthorDeleteListPage />
-      </PermissionGuard>,
+      element: <AuthorDeleteListPage />,
     },
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-linh-vuc",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
-      >
-        <CategoryDeleteListPage />
-      </PermissionGuard>,
+      element: <CategoryDeleteListPage />,
     },
     {
       path: "/quan-ly-danh-muc/nha-san-xuat",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
-      >
-        <PublisherPage />
-      </PermissionGuard>,
+      element: <PublisherPage />,
     },
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-nha-san-xuat",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
-      >
-        <PublisherDeleteListPage />
-      </PermissionGuard>,
+      element: <PublisherDeleteListPage />,
     },
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-dang-hoc-lieu",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
-      >
-        <MaterialDeleteListPage />
-      </PermissionGuard>,
+      element: <MaterialDeleteListPage />,
     },
     {
       path: "/quan-ly-danh-muc/tu-ke",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
-      >
-        <ShelfPage />
-      </PermissionGuard>,
+      element: <ShelfPage />,
     },
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-tu-ke",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
-      >
-        <ShelfDeleteListPage />
-      </PermissionGuard>,
+      element: <ShelfDeleteListPage />,
     },
     {
       path: "/quan-ly-danh-muc/loai-voice",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
-      >
-        <TypeVoicePage />
-      </PermissionGuard>,
+      element: <TypeVoicePage />,
     },
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-loai-voice",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
-      >
-        <TypeVoiceDeleteListPage />
-      </PermissionGuard>,
+      element: <TypeVoiceDeleteListPage />,
     },
     {
       path: "/quan-ly-danh-muc/voice",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
-      >
-        <VoicePage />
-      </PermissionGuard>,
+      element: <VoicePage />,
     },
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-voice",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
-      >
-        <VoiceDeleteListPage />
-      </PermissionGuard>,
+      element: <VoiceDeleteListPage />,
     },
 
     // sách
@@ -363,85 +292,45 @@ const MainRoutes = {
     // kho
     {
       path: "/quan-ly-kho/tu-ke",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'publications', action: 'manage' }, { resource: 'warehousereceipts', action: 'manage' }]}
-      >
-        <ShelvesProductPage />
-      </PermissionGuard>,
+      element: <ShelvesProductPage />,
     },
     {
       path: "/quan-ly-kho/kho",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'publications', action: 'manage' }, { resource: 'warehousereceipts', action: 'manage' }]}
-      >
-        <StockProductPage />
-      </PermissionGuard>,
+      element: <StockProductPage />,
     },
     {
       path: "/quan-ly-kho/thanh-ly-hu-hong",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'publications', action: 'manage' }, { resource: 'warehousereceipts', action: 'manage' }]}
-      >
-        <LiquidationProductPage />
-      </PermissionGuard>,
+      element: <LiquidationProductPage />,
     },
 
     {
       path: "/tai-san-thu-vien/thung-rac",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }]}
-      >
-        <AssetTrashPage />
-      </PermissionGuard>,
+      element: <AssetTrashPage />,
     },
     // Nhập kho
     {
       path: "/quan-ly-nhap-kho/nha-cung-cap",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'suppliers', action: 'manage' }]}
-      >
-        <SupplierPage />
-      </PermissionGuard>,
+      element: <SupplierPage />,
     },
     {
       path: "/quan-ly-nhap-kho/nha-cung-cap/danh-sach-xoa-nha-cung-cap",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'suppliers', action: 'manage' }]}
-      >
-        <SupplierDeleteListPage />
-      </PermissionGuard>,
+      element: <SupplierDeleteListPage />,
     },
     {
       path: "/quan-ly-nhap-kho/phieu-nhap-kho",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'warehousereceipts', action: 'manage' }]}
-      >
-        <WareHouseReceiptPage />
-      </PermissionGuard>,
+      element: <WareHouseReceiptPage />,
     },
     {
       path: "/quan-ly-nhap-kho/phieu-nhap-kho/danh-sach-xoa-phieu-nhap-kho",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'warehousereceipts', action: 'manage' }]}
-      >
-        <WareHouseReceiptDeleteListPage />
-      </PermissionGuard>,
+      element: <WareHouseReceiptDeleteListPage />,
     },
     {
       path: "/quan-ly-muon-tra/phieu-muon",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'loanslips', action: 'manage' }]}
-      >
-        <LoanSlipPage />
-      </PermissionGuard>,
+      element: <LoanSlipPage />,
     },
     {
       path: "/quan-ly-muon-tra/phieu-muon/danh-sach-xoa-phieu-muon",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'loanslips', action: 'manage' }]}
-      >
-        <LoanSlipDeleteListPage />
-      </PermissionGuard>,
+      element: <LoanSlipDeleteListPage />,
     },
     {
       path: "/ho-tro-ai",
@@ -453,11 +342,7 @@ const MainRoutes = {
     },
     {
       path: "/lien-ket-thu-vien",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }, { resource: 'categories', action: 'manage' }, { resource: 'authors', action: 'manage' }, { resource: 'publishers', action: 'manage' }]}
-      >
-        <LibraryConnection />
-      </PermissionGuard>,
+      element: <LibraryConnection />,
     }
   ],
 };
@@ -466,13 +351,9 @@ const MainRoutes = {
 export const MainRoutesV2 = {
   path: "/",
   element: (
-    <PermissionGuard
-      requiredPermissions={[{ resource: 'materials', action: 'read' }, { resource: 'categories', action: 'read' }, { resource: 'authors', action: 'read' }, { resource: 'publishers', action: 'read' }]}
-    >
-      <AuthGuard>
-        <MainLayoutV2 />
-      </AuthGuard>
-    </PermissionGuard>
+    <AuthGuard>
+      <MainLayoutV2 />
+    </AuthGuard>
   ),
   children: [
     {
@@ -482,35 +363,19 @@ export const MainRoutesV2 = {
     // danh mục chia sẽ liên thông
     {
       path: "lien-thong/chia-se-danh-muc/dang-hoc-lieu",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }, { resource: 'categories', action: 'manage' }, { resource: 'authors', action: 'manage' }, { resource: 'publishers', action: 'manage' }]}
-      >
-        <LibMaterialPage />
-      </PermissionGuard>,
+      element: <LibMaterialPage />,
     },
     {
       path: "lien-thong/chia-se-danh-muc/linh-vuc",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }, { resource: 'categories', action: 'manage' }, { resource: 'authors', action: 'manage' }, { resource: 'publishers', action: 'manage' }]}
-      >
-        <LibCategoryPage />
-      </PermissionGuard>,
+      element: <LibCategoryPage />,
     },
     {
       path: "lien-thong/chia-se-danh-muc/tac-gia",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }, { resource: 'categories', action: 'manage' }, { resource: 'authors', action: 'manage' }, { resource: 'publishers', action: 'manage' }]}
-      >
-        <LibAuthorPage />
-      </PermissionGuard>,
+      element: <LibAuthorPage />,
     },
     {
       path: "lien-thong/chia-se-danh-muc/nha-san-xuat",
-      element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }, { resource: 'categories', action: 'manage' }, { resource: 'authors', action: 'manage' }, { resource: 'publishers', action: 'manage' }]}
-      >
-        <LibPublisherPage />
-      </PermissionGuard>,
+      element: <LibPublisherPage />,
     },
     {
       path: "lien-thong/chia-se-danh-muc/phieu-muon-lien-thong",

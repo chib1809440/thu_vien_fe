@@ -40,6 +40,7 @@ export type JWTContextType = {
     register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
     resetPassword: (email: string) => void;
     updateProfile: VoidFunction;
+    refreshUser: () => Promise<void>;
 };
 
 export type AWSCognitoContextType = {

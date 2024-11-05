@@ -181,7 +181,7 @@ const MainRoutes = {
       path: "/trang-chu",
       element: (
         <PermissionGuard
-          requiredPermissions={[{ resource: 'statisticals', action: 'read' }]}
+          requiredPermissions={[{ resource: 'all', action: 'manage' }]}
         >
           <HomePage />
         </PermissionGuard>
@@ -202,7 +202,7 @@ const MainRoutes = {
     {
       path: "/he-thong/quan-ly-thu-vien",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'libraries', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'libraries', action: 'manage' }]}
       >
         <LibraryPage />
       </PermissionGuard>,
@@ -227,7 +227,7 @@ const MainRoutes = {
     {
       path: "/vai-tro",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'roles', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }]}
       >
         <RolePage />
       </PermissionGuard>,
@@ -235,7 +235,7 @@ const MainRoutes = {
     {
       path: "/tai-san-thu-vien",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'assets', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'assets', action: 'manage' }, { resource: 'all', action: 'manage' }]}
       >
         <AssetPage />
       </PermissionGuard>,
@@ -243,7 +243,7 @@ const MainRoutes = {
     {
       path: "quan-ly-danh-muc/dang-hoc-lieu",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
       >
         <MaterialPage />
       </PermissionGuard>,
@@ -251,7 +251,7 @@ const MainRoutes = {
     {
       path: "quan-ly-danh-muc/linh-vuc",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
       >
         <CategoryPage />
       </PermissionGuard>,
@@ -259,7 +259,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-danh-muc/tac-gia",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
       >
         <AuthorPage />
       </PermissionGuard>,
@@ -267,7 +267,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-tac-gia",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
       >
         <AuthorDeleteListPage />
       </PermissionGuard>,
@@ -275,7 +275,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-linh-vuc",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
       >
         <CategoryDeleteListPage />
       </PermissionGuard>,
@@ -283,7 +283,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-danh-muc/nha-san-xuat",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
       >
         <PublisherPage />
       </PermissionGuard>,
@@ -291,7 +291,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-nha-san-xuat",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
       >
         <PublisherDeleteListPage />
       </PermissionGuard>,
@@ -299,7 +299,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-dang-hoc-lieu",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
       >
         <MaterialDeleteListPage />
       </PermissionGuard>,
@@ -307,7 +307,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-danh-muc/tu-ke",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
       >
         <ShelfPage />
       </PermissionGuard>,
@@ -315,7 +315,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-tu-ke",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
       >
         <ShelfDeleteListPage />
       </PermissionGuard>,
@@ -323,7 +323,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-danh-muc/loai-voice",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
       >
         <TypeVoicePage />
       </PermissionGuard>,
@@ -331,7 +331,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-loai-voice",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
       >
         <TypeVoiceDeleteListPage />
       </PermissionGuard>,
@@ -339,7 +339,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-danh-muc/voice",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
       >
         <VoicePage />
       </PermissionGuard>,
@@ -347,7 +347,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-voice",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'materials', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'materials', action: 'manage' }]}
       >
         <VoiceDeleteListPage />
       </PermissionGuard>,
@@ -367,7 +367,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-kho/tu-ke",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'publications', action: 'manage' }, { resource: 'warehousereceipts', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'publications', action: 'manage' }, { resource: 'warehousereceipts', action: 'manage' }]}
       >
         <ShelvesProductPage />
       </PermissionGuard>,
@@ -375,7 +375,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-kho/kho",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'publications', action: 'manage' }, { resource: 'warehousereceipts', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'publications', action: 'manage' }, { resource: 'warehousereceipts', action: 'manage' }]}
       >
         <StockProductPage />
       </PermissionGuard>,
@@ -383,7 +383,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-kho/thanh-ly-hu-hong",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'publications', action: 'manage' }, { resource: 'warehousereceipts', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'publications', action: 'manage' }, { resource: 'warehousereceipts', action: 'manage' }]}
       >
         <LiquidationProductPage />
       </PermissionGuard>,
@@ -392,7 +392,7 @@ const MainRoutes = {
     {
       path: "/tai-san-thu-vien/thung-rac",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'assets', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }]}
       >
         <AssetTrashPage />
       </PermissionGuard>,
@@ -401,7 +401,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-nhap-kho/nha-cung-cap",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'suppliers', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'suppliers', action: 'manage' }]}
       >
         <SupplierPage />
       </PermissionGuard>,
@@ -409,7 +409,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-nhap-kho/nha-cung-cap/danh-sach-xoa-nha-cung-cap",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'suppliers', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'suppliers', action: 'manage' }]}
       >
         <SupplierDeleteListPage />
       </PermissionGuard>,
@@ -417,7 +417,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-nhap-kho/phieu-nhap-kho",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'warehousereceipts', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'warehousereceipts', action: 'manage' }]}
       >
         <WareHouseReceiptPage />
       </PermissionGuard>,
@@ -425,7 +425,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-nhap-kho/phieu-nhap-kho/danh-sach-xoa-phieu-nhap-kho",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'warehousereceipts', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'warehousereceipts', action: 'manage' }]}
       >
         <WareHouseReceiptDeleteListPage />
       </PermissionGuard>,
@@ -433,7 +433,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-muon-tra/phieu-muon",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'loanslips', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'loanslips', action: 'manage' }]}
       >
         <LoanSlipPage />
       </PermissionGuard>,
@@ -441,7 +441,7 @@ const MainRoutes = {
     {
       path: "/quan-ly-muon-tra/phieu-muon/danh-sach-xoa-phieu-muon",
       element: <PermissionGuard
-        requiredPermissions={[{ resource: 'loanslips', action: 'manage' }]}
+        requiredPermissions={[{ resource: 'all', action: 'manage' }, { resource: 'loanslips', action: 'manage' }]}
       >
         <LoanSlipDeleteListPage />
       </PermissionGuard>,

@@ -168,13 +168,33 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
 
     const updateProfile = () => { };
 
+    const refreshUser = async () => {
+        if (!state.user) return;
+        try {
+            const response = await getUserById(state.user.userID);
+            if (response.statusCode === 200 || response.statusCode === 201) {
+                dispatch({
+                    type: LOGIN,
+                    payload: {
+                        isLoggedIn: true,
+                        user: response.data.result,
+                    },
+                });
+            }
+        } catch (error) {
+            dispatch({
+                type: LOGOUT,
+            });
+        }
+    };
+
     if (state.isInitialized !== undefined && !state.isInitialized) {
         return <Loader />;
     }
 
     return (
         <JWTContext.Provider
-            value={{ ...state, login, logout, register, resetPassword, updateProfile }}
+            value={{ ...state, login, logout, register, resetPassword, updateProfile, refreshUser }}
         >
             {children}
         </JWTContext.Provider>

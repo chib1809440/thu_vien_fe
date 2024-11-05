@@ -14,13 +14,18 @@ const PermissionGuard = ({ children, requiredPermissions }) => {
     console.log('dsds', dataUser);
 
     // Kiểm tra quyền truy cập
-    const hasPermission = requiredPermissions.every(permission =>
+    const hasPermission = requiredPermissions.some(permission =>
         dataUser.data.roleId.permissions.some(
             userPermission =>
                 userPermission.resource === permission.resource &&
                 userPermission.action === permission.action
         )
     );
+
+    console.log("hasPermission", requiredPermissions);
+    console.log("permissions",  dataUser.data.roleId.permissions);
+
+    
 
     if (!hasPermission) {
         return <Navigate to="/403" />;

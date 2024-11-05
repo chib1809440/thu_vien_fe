@@ -4,6 +4,7 @@ import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconEye, IconTrashXFilled } from "@tabler/icons-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import groupService from "../../../_apis/services/group.service";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
@@ -20,10 +21,9 @@ import { TGroup, TGroupCreate } from "../../../types/models/group.type";
 import { TLibrary } from "../../../types/models/library.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
+import usePermission from "../../../utils/hasPermission";
 import FormAddEditGroup from "./ui-components/FormAddEditGroup";
 import GroupDetailsDialog from "./ui-components/GroupDetailsDialog";
-import groupService from "../../../_apis/services/group.service";
-import { getUserById } from "../../../_apis/user.api";
 
 const GroupPage = () => {
     const queryString = useQueryString();
@@ -54,6 +54,7 @@ const GroupPage = () => {
     const [groupDetails, setGroupDetails] = useState<TGroup | null>(null);
 
     const { user } = useAuth();
+    const { hasPermission } = usePermission();
 
     const groupLibs = useMemo(() => {
         if (!user) return null;
@@ -253,16 +254,29 @@ const GroupPage = () => {
                             />
 
                             <>
-                                <IconPencil
-                                    onClick={() => handleEditGroup(row)}
-                                    size={20}
-                                    stroke={1.5}
-                                />
-                                <IconTrash
-                                    size={20}
-                                    stroke={1.5}
-                                    onClick={() => handleOpenConfirmDialog(row)}
-                                />
+                                {hasPermission([
+                                    { resource: "all", action: "manage" },
+                                    { resource: "groups", action: "manage" },
+                                    { resource: "groups", action: "update" },
+                                ]) && (
+                                        <IconPencil
+                                            onClick={() => handleEditGroup(row)}
+                                            size={20}
+                                            stroke={1.5}
+                                        />
+                                    )}
+
+                                {hasPermission([
+                                    { resource: "all", action: "manage" },
+                                    { resource: "group", action: "manage" },
+                                    { resource: "group", action: "delete" },
+                                ]) && (
+                                        <IconTrash
+                                            size={20}
+                                            stroke={1.5}
+                                            onClick={() => handleOpenConfirmDialog(row)}
+                                        />
+                                    )}
                             </>
                             {
                                 groupLibs === null && userRole === "Admin" && (
@@ -379,12 +393,6 @@ const GroupPage = () => {
 
         setCombinedLibraries(libraries);
     }, [libsGroup, initialValues]);
-    // console.log(combinedLibraries);
-
-    const { data: libs } = useFetchLibrary()
-    // console.log(libs);
-
-
 
     return (
         <div>

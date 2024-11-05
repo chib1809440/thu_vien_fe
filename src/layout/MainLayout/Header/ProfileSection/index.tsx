@@ -66,8 +66,7 @@ const ProfileSection = () => {
         return _user?.data?.libraryDetail;
     }, [user]);
     const { data: userData } = useUser(userID);
-    const { data: roleOptions } = useRoleList();
-    const { data: libraryOptions } = useFetchLibrary();    
+   
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);

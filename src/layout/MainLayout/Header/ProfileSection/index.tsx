@@ -12,7 +12,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { IconLogout, IconUser } from '@tabler/icons';
-import { IconChevronDown, IconHomeBitcoin } from '@tabler/icons-react';
+import { IconCarTurbine, IconChevronDown, IconHomeBitcoin, IconShoppingCartFilled } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { CsFlexRowBetween } from '../../../../components/default/flex';
 import ImageComponent from '../../../../components/default/image';
@@ -26,6 +26,8 @@ import { getLabelFromOptions } from '../../../../utils/object';
 import FormProfile from './FormProfile';
 import { Role } from '../../../../interfaces/role';
 import { TLibrary } from '../../../../types/models/library.type';
+import { useSelector } from 'react-redux';
+import { CreatePublication } from '../../../../types/models/loanSlip.type';
 
 // ==============================|| PROFILE MENU ||============================== //
 const settings = [
@@ -41,6 +43,7 @@ const ProfileSection = () => {
     const theme = useTheme();
     const anchorRef = useRef<any>(null);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+    const items = useSelector((state: { cartLoanSlip: { items: CreatePublication[] } }) => state.cartLoanSlip.items);
 
     const roleId = useMemo(() => {
         if (!user) return null;
@@ -66,7 +69,7 @@ const ProfileSection = () => {
         return _user?.data?.libraryDetail;
     }, [user]);
     const { data: userData } = useUser(userID);
-   
+
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
@@ -103,7 +106,7 @@ const ProfileSection = () => {
     const handleDialogClose = () => {
         setOpenDialog(false);
     };
-    
+
     const initialValues = useMemo((): CreateUserModel => {
         if (userData) {
             const user = userData?.data?.result;
@@ -123,6 +126,30 @@ const ProfileSection = () => {
     return (
         <Grid item>
             <Box sx={{ display: "flex", gap: 1 }}>
+                <Box sx={{ mt: 1, position: 'relative', display: 'inline-flex', alignItems: 'center', mr: 2 }}>
+                    <IconShoppingCartFilled size={32} />
+                    {items?.length > 0 && ( // Chỉ hiển thị badge nếu số lượng lớn hơn 0
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                top: -8,
+                                right: -12,
+                                bgcolor: 'black', // Màu nền của badge
+                                color: 'white', // Màu chữ
+                                borderRadius: '50%',
+                                width: '20px', // Đường kính badge
+                                height: '20px', // Đường kính badge
+                                display: 'flex',
+                                padding: 1,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '20px', // Kích thước chữ
+                            }}
+                        >
+                            <Typography variant="h5" sx={{ color: "white" }}>{items?.length}</Typography> {/* Hiển thị số lượng */}
+                        </Box>
+                    )}
+                </Box>
                 <CsFlexRowBetween onClick={handleOpenUserMenu} gap={1}
                     sx={{
                         bgcolor: theme.palette.background.paper,

@@ -1,6 +1,6 @@
 import { Button, Chip, FormControl, Grid, MenuItem, Select, Switch, useTheme } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { IconCalendar, IconFileExport, IconPencil, IconPlus, IconPrinter, IconTrash, IconX } from "@tabler/icons";
+import { IconCalendar, IconEye, IconFileExport, IconPencil, IconPlus, IconPrinter, IconTrash, IconX } from "@tabler/icons";
 import { IconClockSearch, IconTrashXFilled } from "@tabler/icons-react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -26,6 +26,7 @@ import { useFetchPublications } from "../../../../../hooks/services/publications
 import DatePicker from "react-datepicker";
 import ExcelJS from 'exceljs';
 import FormAddEditLibLoanSlip from "./ui-components/FormAddEditLibLoanSlip";
+import ViewDetailLoanSlip from "../../../LoanSlipPage/ui-components/ViewDetailLoanSlip";
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -105,11 +106,7 @@ const LoanSlipRequestLink = () => {
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
-
-    const addLoanSlip = () => {
-        setOpenAddEdit(true);
-    };
-
+    const [openViewDetail, setOpenViewDetail] = useState(false);
 
 
     const handleEditLoanSlip = (row: TLoanSlip) => {
@@ -195,6 +192,10 @@ const LoanSlipRequestLink = () => {
 
     const handleCloseConfirmDialog = () => {
         setOpenConfirmDialog(false);
+    };
+    const handleViewDetailLoanSlip = (row: TLoanSlip) => {
+        setSelectedEdit(row);
+        setOpenViewDetail(true);
     };
     const componentRef = useRef();
     // Hàm xử lý in
@@ -332,6 +333,11 @@ const LoanSlipRequestLink = () => {
                                 gap: 1,
                             }}
                         >
+                            <IconEye
+                                onClick={() => handleViewDetailLoanSlip(row)}
+                                size={20}
+                                stroke={1.5}
+                            />
                             <IconPencil
                                 onClick={() => handleEditLoanSlip(row)}
                                 size={20}
@@ -375,7 +381,10 @@ const LoanSlipRequestLink = () => {
         },
         [data]
     );
-
+    const handleCloseViewDetail = () => {
+        setOpenViewDetail(false);
+        setSelectedEdit(null);
+    };
     const checkedAll = useMemo(() => {
         if (data?.data?.result?.length === 0 || checkedDelete.length === 0) return false;
         return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
@@ -578,7 +587,13 @@ const LoanSlipRequestLink = () => {
                     isEditMode={selectedEdit ? true : false}
                 />
             )}
-
+            {openViewDetail && (
+                <ViewDetailLoanSlip
+                    open={openViewDetail}
+                    onClose={handleCloseViewDetail}
+                    loanSlip={selectedEdit}
+                />
+            )}
             <MainCard>
 
                 {/* <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>

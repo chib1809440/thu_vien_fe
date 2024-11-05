@@ -38,6 +38,7 @@ export type CreatePublication = {
     quantityReturn?: number;
     quantityModify?: number;
     barcode: string;
+    libraryId?:string;
 };
 export type TLoanSlipCreate = {
     note: string | null;

@@ -1,7 +1,7 @@
 import { Chip, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { IconBook } from "@tabler/icons";
-import { IconEye, IconFileWord, IconPdf, IconPhoto, IconPresentation, IconVideo } from "@tabler/icons-react";
+import { IconEye, IconFileWord, IconPdf, IconPhoto, IconPlus, IconPlusMinus, IconPresentation, IconVideo } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import ActionsForm from "../../../../../components/custom/form/ActionForm";
 import TableList from "../../../../../components/custom/table-list/TableList";
@@ -22,6 +22,10 @@ import PublicationsDetailsDialog from "../../../PublicationsPage/ui-components/P
 import { TLibrary } from "../../../../../types/models/library.type";
 import { useFetchLibrariesFromGroup } from "../../../../../hooks/services/group/group-query";
 import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
+import { useDispatch } from "react-redux";
+import { CreatePublication } from "../../../../../types/models/loanSlip.type";
+import { addItem } from "../../../../../store/slices/cartLoanSlip";
+import { toast } from "react-toastify";
 
 const LibraryPublicationsPage = () => {
     const queryString = useQueryString();
@@ -72,7 +76,7 @@ const LibraryPublicationsPage = () => {
     const { data: publisherData } = useFetchPublisherLink();
     const [openViewDetails, setOpenViewDetails] = useState(false);
     const [publicationsDetails, setPublicationsDetails] = useState<TPublications | null>(null);
-
+    const dispatch = useDispatch();
     const handleViewDetails = (row: TPublications) => {
         setPublicationsDetails(row);
         setOpenViewDetails(true);
@@ -110,7 +114,23 @@ const LibraryPublicationsPage = () => {
     const handleLibraryFilterChange = (event) => {
         setSelectedLibrary(event.target.value);
     };
+    const handleAddItem = (item: TPublications & { libraryDetails?: TLibrary }) => {
+        const createPublication: CreatePublication = {
+            publicationId: item._id, // Giả định item có publicationId
+            name: item.name, // Giả định item có name
+            quantityLoan: 1, // Giả định item có quantityLoan
+            quantity: item.quantity, // Giả định item có quantity
+            shelvesQuantity: item.shelvesQuantity, // Giả định item có shelvesQuantity
+            position: "trên kệ", // Giả định item có position
+            quantityModify: 1, // Có thể có hoặc không
+            barcode: item.barcode, // Giả định item có barcode
+            libraryId: (item?.libraryDetails as TLibrary)?._id
+        };
 
+        // Dispatch action để thêm item vào giỏ hàng
+        dispatch(addItem(createPublication));
+        toast.success("Thêm sản phẩm vào phiếu mượn thành công")
+    };
     const columns: TColumn<TPublications & { libraryDetails?: TLibrary }>[] = useMemo(
         () => [
             {
@@ -255,6 +275,11 @@ const LibraryPublicationsPage = () => {
                                 size={25}
                                 stroke={1.5}
                                 onClick={() => handleViewDetails(row)}
+                            />
+                            <IconPlus
+                                size={25}
+                                stroke={1.5}
+                                onClick={() => handleAddItem(row)}
                             />
                         </Box>
                     );

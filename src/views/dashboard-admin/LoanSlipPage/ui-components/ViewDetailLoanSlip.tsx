@@ -31,8 +31,25 @@ import { Role } from "../../../../interfaces/role";
 import { useAuth } from "../../../../contexts/JWTContext";
 import { formatDate } from "../../../../helpers/formatDate";
 import Barcode from "react-barcode";
-import { StyledTableCell, StyledTableRow } from "../../../../components/custom/table-list/style";
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+        backgroundColor: theme.palette.common.black,
+        color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+        fontSize: 14,
+    },
+}));
 
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    '&:nth-of-type(odd)': {
+        backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    '&:last-child td, &:last-child th': {
+        border: 0,
+    },
+}));
 
 
 type Props = {
@@ -59,6 +76,8 @@ const ViewDetailLoanSlip: FC<Props> = ({
 
         return _user?.data?.libraryDetail;
     }, [user]);
+    console.log(loanSlip?.publications);
+
     return (
         <Dialog
             maxWidth="xl"
@@ -124,13 +143,12 @@ const ViewDetailLoanSlip: FC<Props> = ({
                             </Box>
                             <TableContainer component={Paper} sx={{ mt: 4 }}>
                                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                                    <TableHead>
+                                    <TableHead >
                                         <TableRow>
                                             <StyledTableCell align="left" width='20%'>BarCode</StyledTableCell>
                                             <StyledTableCell align="left" width='40%'>Tên sách</StyledTableCell>
                                             <StyledTableCell align="left" width='15%'>Số lượng trả</StyledTableCell>
                                             <StyledTableCell align="left" width='15%'>Số lượng đã trả</StyledTableCell>
-                                            <StyledTableCell align="left" width='15%'>Ngày trả</StyledTableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -148,7 +166,7 @@ const ViewDetailLoanSlip: FC<Props> = ({
                                                     {row?.quantityLoan || "Không có dữ liệu"}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left">
-                                                    {(row?.quantityLoan - row?.quantityReturn) || "Không có dữ liệu"}
+                                                    {(row?.quantityReturn) || "Không có dữ liệu"}
                                                 </StyledTableCell>
                                             </StyledTableRow>
                                         ))}

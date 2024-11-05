@@ -15,44 +15,40 @@ import Locales from './ui-component/Locales';
 import ProviderLoader from './layout/Loader';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useAxiosInterceptors } from './utils/axios';
 
 // import ProviderLoader from './layout/Loader';
 // import { Auth0Provider as AuthProvider } from 'contexts/Auth0Context';
 
 // ==============================|| APP ||============================== //
 
-const App = () => {
-    useAxiosInterceptors(); // Gọi custom hook để thiết lập interceptor
+const App = () => (
+    <ThemeCustomization>
+        {/* RTL layout */}
+        <RTLLayout>
+            <NavigationScroll>
+                <ProviderLoader>
+                    <AuthProvider>
+                        <>
+                            <Routes />
+                            <ToastContainer
+                                position="top-right"
+                                autoClose={2000}
+                                hideProgressBar={false}
+                                newestOnTop={false}
+                                closeOnClick
+                                rtl={false}
+                                pauseOnFocusLoss
+                                draggable
+                                pauseOnHover
+                            />
+                            <Snackbar />
+                        </>
+                    </AuthProvider>
+                </ProviderLoader>
 
-    return (
-        <ThemeCustomization>
-            {/* RTL layout */}
-            <RTLLayout>
-                <NavigationScroll>
-                    <ProviderLoader>
-                        <AuthProvider>
-                            <>
-                                <Routes />
-                                <ToastContainer
-                                    position="top-right"
-                                    autoClose={2000}
-                                    hideProgressBar={false}
-                                    newestOnTop={false}
-                                    closeOnClick
-                                    rtl={false}
-                                    pauseOnFocusLoss
-                                    draggable
-                                    pauseOnHover
-                                />
-                                <Snackbar />
-                            </>
-                        </AuthProvider>
-                    </ProviderLoader>
-                </NavigationScroll>
-            </RTLLayout>
-        </ThemeCustomization>
-    );
-};
+            </NavigationScroll>
+        </RTLLayout>
+    </ThemeCustomization>
+);
 
 export default App;

@@ -23,6 +23,7 @@ import { TPublicationsCreate } from "../../../../types/models/publications.type"
 import { TPublisher } from "../../../../types/models/publisher";
 import { statusOptions, typeOptions } from "../../../../utils/constants.utils";
 import FormAddCommonDialog from "./FormAddCommonDialog";
+import usePermission from "../../../../utils/hasPermission";
 
 type Props = {
     open: boolean;
@@ -84,12 +85,12 @@ const schema = (isEditMode: boolean) =>
         }),
         ...(!isEditMode
             ? {
-                  file: yup.mixed().when("type", {
-                      is: "ấn phẩm mềm",
-                      then: yup.mixed().required("Vui lòng upload file").nullable(),
-                      otherwise: yup.mixed().notRequired(),
-                  }),
-              }
+                file: yup.mixed().when("type", {
+                    is: "ấn phẩm mềm",
+                    then: yup.mixed().required("Vui lòng upload file").nullable(),
+                    otherwise: yup.mixed().notRequired(),
+                }),
+            }
             : { file: yup.mixed() }),
     });
 
@@ -153,6 +154,7 @@ const FormAddEditPublications: FC<Props> = ({
     const revalidateCategory = useReFetchCategory();
     const revalidateMaterial = useReFetchMaterial();
     const revalidateAuthor = useReFetchAuthor();
+    const { hasPermission } = usePermission();
 
     const isMounted = useRef(true);
 
@@ -469,7 +471,10 @@ const FormAddEditPublications: FC<Props> = ({
                                 onChange={handleChangedMaterial}
                                 error={touched.materialIds && Boolean(errors.materialIds)}
                                 helperText={touched.materialIds && errors.materialIds}
-                                handleAdd={handleAddMaterial}
+                                handleAdd={hasPermission([
+                                    { resource: "materials", action: "manage" },
+                                    { resource: "materials", action: "create" },
+                                ]) ? handleAddMaterial : null}
                                 limitTags={1}
                                 limitText={10}
                                 noOptionsText="Vui lòng thêm dạng học liệu mới"
@@ -484,7 +489,10 @@ const FormAddEditPublications: FC<Props> = ({
                                 onChange={handleChangedCategory}
                                 error={touched.categoryIds && Boolean(errors.categoryIds)}
                                 helperText={touched.categoryIds && errors.categoryIds}
-                                handleAdd={handleAddCategory}
+                                handleAdd={hasPermission([
+                                    { resource: "categories", action: "manage" },
+                                    { resource: "categories", action: "create" },
+                                ]) ? handleAddCategory : null}
                                 limitTags={1}
                                 limitText={10}
                                 noOptionsText="Vui lòng thêm lĩnh vực mới"
@@ -499,7 +507,10 @@ const FormAddEditPublications: FC<Props> = ({
                                 onChange={handleChangedAuthor}
                                 error={touched.authorIds && Boolean(errors.authorIds)}
                                 helperText={touched.authorIds && errors.authorIds}
-                                handleAdd={handleAddAuthor}
+                                handleAdd={hasPermission([
+                                    { resource: "authors", action: "manage" },
+                                    { resource: "authors", action: "create" },
+                                ]) ? handleAddAuthor : null}
                                 limitTags={1}
                                 limitText={10}
                                 noOptionsText="Vui lòng thêm tác giả mới"
@@ -515,7 +526,10 @@ const FormAddEditPublications: FC<Props> = ({
                                 onChange={handleChangedPublisher}
                                 error={touched.publisherIds && Boolean(errors.publisherIds)}
                                 helperText={touched.publisherIds && errors.publisherIds}
-                                handleAdd={handleAddPublisher}
+                                handleAdd={hasPermission([
+                                    { resource: "publishers", action: "manage" },
+                                    { resource: "publishers", action: "create" },
+                                ]) ? handleAddPublisher : null}
                                 limitTags={1}
                                 limitText={10}
                                 noOptionsText="Vui lòng thêm nhà xuất bản mới"

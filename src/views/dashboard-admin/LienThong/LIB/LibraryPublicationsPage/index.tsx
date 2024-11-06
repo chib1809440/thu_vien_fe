@@ -124,10 +124,17 @@ const LibraryPublicationsPage = () => {
         setSelectedLibrary(event.target.value);
     };
     const handleAddItem = (item: TPublications & { libraryDetails?: TLibrary }) => {
-        if (item.type = "ấn phẩm mềm") {
+        if (item.type === "ấn phẩm mềm") {
             toast.warning(`Không thể mượn ấn phẩm mềm`, {
-                toastId: '2'
+                toastId: '2',
+                position: "bottom-right", // Đặt vị trí ở góc dưới bên phải
+                autoClose: 3000, // Thời gian tự động đóng (ms)
+                hideProgressBar: false, // Hiện thanh tiến trình
+                closeOnClick: true, // Cho phép đóng thông báo bằng cách nhấp
+                pauseOnHover: true, // Tạm dừng khi di chuột
+                draggable: true, // Cho phép kéo thả để đóng thông báo
             });
+            return;
         }
 
         const createPublication: CreatePublication = {
@@ -147,7 +154,14 @@ const LibraryPublicationsPage = () => {
         if (!duplicateItem && items.length > 0) {
             const item = items[0];
             toast.warning(`Chi thêm sách của một thư viện là ${item.libraryName}`, {
-                toastId: '1'
+                toastId: '1',
+                position: "bottom-right", // Đặt vị trí ở góc dưới bên phải
+                autoClose: 3000, // Thời gian tự động đóng (ms)
+                hideProgressBar: false, // Hiện thanh tiến trình
+                closeOnClick: true, // Cho phép đóng thông báo bằng cách nhấp
+                pauseOnHover: true, // Tạm dừng khi di chuột
+                draggable: true, // Cho phép kéo thả để đóng thông báo
+
             });
             return;
         }

@@ -629,11 +629,20 @@ const PublicationsPage = () => {
     };
 
     const actionMenus = useMemo((): TMenuOption[] => {
-        if (userRole === "Student") {
-            return [];
-        }
 
-        return [
+        return hasPermission([
+            { resource: "all", action: "manage" },
+        ]) ? [
+            {
+                label: "Xóa các dữ liệu đã chọn",
+                icon: <IconTrashXFilled size={20} stroke={1.5} />,
+                onClick: handleDeleteMultiple,
+            },
+        ] : hasPermission([
+            { resource: "publications", action: "manage" },
+            { resource: "publications", action: "create" },
+            { resource: "publications", action: "delete" },
+        ]) ? [
             {
                 label: "Tải file mẫu",
                 icon: <IconFileDownload size={20} stroke={1.5} />,
@@ -649,7 +658,7 @@ const PublicationsPage = () => {
                 icon: <IconTrashXFilled size={20} stroke={1.5} />,
                 onClick: handleDeleteMultiple,
             },
-        ];
+        ] : [];
     }, [userRole, handleDeleteMultiple, handleDownloadTemplate, handleImportExcel]);
 
     const initialValues = useMemo((): TPublicationsCreate => {

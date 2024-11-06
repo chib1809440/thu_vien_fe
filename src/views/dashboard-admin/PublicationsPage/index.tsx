@@ -40,6 +40,8 @@ import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { TLibrary } from "../../../types/models/library.type";
+import { useSelector } from "react-redux";
+import { CreatePublication } from "../../../types/models/loanSlip.type";
 
 const PublicationsPage = () => {
     const queryString = useQueryString();

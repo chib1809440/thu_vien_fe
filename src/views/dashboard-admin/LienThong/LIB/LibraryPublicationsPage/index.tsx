@@ -22,10 +22,11 @@ import PublicationsDetailsDialog from "../../../PublicationsPage/ui-components/P
 import { TLibrary } from "../../../../../types/models/library.type";
 import { useFetchLibrariesFromGroup } from "../../../../../hooks/services/group/group-query";
 import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CreatePublication } from "../../../../../types/models/loanSlip.type";
 import { addItem } from "../../../../../store/slices/cartLoanSlip";
 import { toast } from "react-toastify";
+import { useAuth } from "../../../../../contexts/JWTContext";
 
 const LibraryPublicationsPage = () => {
     const queryString = useQueryString();
@@ -40,7 +41,15 @@ const LibraryPublicationsPage = () => {
     const [selectedCategory, setSelectedCategory] = useState(0);
     const [selectedPublisher, setSelectedPublisher] = useState(0);
     const [barcodeSearch, setBarcodeSearch] = useState("");
+    const items = useSelector((state: { cartLoanSlip: { items: CreatePublication[] } }) => state.cartLoanSlip.items);
+    const { logout, user } = useAuth();
+    const libraryId = useMemo(() => {
+        if (!user) return null;
 
+        const _user = { ...user } as any;
+
+        return _user?.data?.libraryId;
+    }, [user]);
     const filter = useMemo(
         () =>
             parserParams([
@@ -115,6 +124,12 @@ const LibraryPublicationsPage = () => {
         setSelectedLibrary(event.target.value);
     };
     const handleAddItem = (item: TPublications & { libraryDetails?: TLibrary }) => {
+        if (item.type = "ấn phẩm mềm") {
+            toast.warning(`Không thể mượn ấn phẩm mềm`, {
+                toastId: '2'
+            });
+        }
+
         const createPublication: CreatePublication = {
             publicationId: item._id, // Giả định item có publicationId
             name: item.name, // Giả định item có name
@@ -124,12 +139,28 @@ const LibraryPublicationsPage = () => {
             position: "trên kệ", // Giả định item có position
             quantityModify: 1, // Có thể có hoặc không
             barcode: item.barcode, // Giả định item có barcode
-            libraryId: (item?.libraryDetails as TLibrary)?._id
+            libraryId: (item?.libraryDetails as TLibrary)?._id,
+            libraryName: (item?.libraryDetails as TLibrary)?.name,
         };
+        const duplicateItem = items.find(cartItem => cartItem.libraryId === createPublication.libraryId);
 
+        if (!duplicateItem && items.length > 0) {
+            const item = items[0];
+            toast.warning(`Chi thêm sách của một thư viện là ${item.libraryName}`, {
+                toastId: '1'
+            });
+            return;
+        }
         // Dispatch action để thêm item vào giỏ hàng
         dispatch(addItem(createPublication));
-        toast.success("Thêm sản phẩm vào phiếu mượn thành công")
+        toast.success("Thêm sản phẩm vào phiếu mượn thành công", {
+            position: "bottom-right", // Đặt vị trí ở góc dưới bên phải
+            autoClose: 3000, // Thời gian tự động đóng (ms)
+            hideProgressBar: false, // Hiện thanh tiến trình
+            closeOnClick: true, // Cho phép đóng thông báo bằng cách nhấp
+            pauseOnHover: true, // Tạm dừng khi di chuột
+            draggable: true, // Cho phép kéo thả để đóng thông báo
+        })
     };
     const columns: TColumn<TPublications & { libraryDetails?: TLibrary }>[] = useMemo(
         () => [
@@ -276,11 +307,15 @@ const LibraryPublicationsPage = () => {
                                 stroke={1.5}
                                 onClick={() => handleViewDetails(row)}
                             />
-                            <IconPlus
-                                size={25}
-                                stroke={1.5}
-                                onClick={() => handleAddItem(row)}
-                            />
+                            {
+                                row?.libraryDetails && row.libraryDetails._id !== libraryId && (
+                                    <IconPlus
+                                        size={25}
+                                        stroke={1.5}
+                                        onClick={() => handleAddItem(row)}
+                                    />
+                                )
+                            }
                         </Box>
                     );
                 },

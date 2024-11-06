@@ -31,7 +31,8 @@ import { Role } from "../../../../../../interfaces/role";
 import { useAuth } from "../../../../../../contexts/JWTContext";
 import PrintLoanSlip from "../../../../LoanSlipPage/ui-components/PrintLoanSlip";
 import { formatDate } from "../../../../../../helpers/formatDate";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { removeItem } from "../../../../../../store/slices/cartLoanSlip";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -53,27 +54,18 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-function createData(
-    name: string,
-    calories: number,
-    fat: number,
-    carbs: number,
-    protein: number,
-) {
-    return { name, calories, fat, carbs, protein };
-}
-
 
 
 type Props = {
     open: boolean;
     onClose: () => void;
-    onHandleReturnLoanSlip: (loanSlip: TLoanSlip, publications: CreatePublication[]) => void;
+    onHandleReturnLoanSlip?: (loanSlip: TLoanSlip, publications: CreatePublication[]) => void;
     onSubmit?: (values: TLoanSlipCreate, resetForm: () => void) => void;
     isFetching?: boolean;
-    initialValues: TLoanSlipCreate;
+    initialValues?: TLoanSlipCreate;
     loanSlip?: TLoanSlip;
     isEditMode?: boolean;
+    isCart?: boolean;
 
 };
 
@@ -103,12 +95,13 @@ const FormAddEditLoanSlip: FC<Props> = ({
     isFetching = false,
     isEditMode = false,
     loanSlip,
+    isCart,
 }) => {
     const [arrayError, setArrayError] = useState<{ name: string; position: string }[]>([]);
-    const { logout, user } = useAuth();
     const items = useSelector((state: { cartLoanSlip: { items: CreatePublication[] } }) => state.cartLoanSlip.items);
+    const dispatch = useDispatch();
 
-
+    const { logout, user } = useAuth();
     const userID = useMemo(() => {
         if (!user) return null;
 
@@ -116,6 +109,8 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
         return _user?.data?._id;
     }, [user]);
+  
+
     const libraryId = useMemo(() => {
         if (!user) return null;
 
@@ -200,9 +195,15 @@ const FormAddEditLoanSlip: FC<Props> = ({
     useEffect(() => {
         if (items?.length > 0 && !loanSlip) {
             setPublications(items);
+            if (isCart === true) {
+                const firstItem = items[0];
+                formik.setFieldValue('libraryId', firstItem.libraryId)
+            }
         }
+
     }, [items])
-    console.log('tai sao', publications);
+    console.log('wile', formik.values.libraryId);
+    console.log('wile', dataGroups);
 
     const debouncedBarCodeUserId = useDebounce(barcodeUserId, 500);
     const [dropdownOptions, setDropdownOptions] = useState<CreatePublication[]>([]);
@@ -358,8 +359,15 @@ const FormAddEditLoanSlip: FC<Props> = ({
     }, [publications.length]);
     const handleRemovePublication = (index: number) => {
         const updatedPublications = [...publications];
+        const removedPublication = updatedPublications[index];
         updatedPublications.splice(index, 1); // Xóa phần tử tại vị trí index
         setPublications(updatedPublications); // Cập nhật lại state
+        if (items?.length > 0) {
+            const itemToRemove = items.find(item => item.publicationId === removedPublication.publicationId);
+            if (itemToRemove) {
+                dispatch(removeItem(itemToRemove.publicationId)); // Gọi dispatch với ID của item cần xóa
+            }
+        }
     };
     // Hàm để thêm một phần tử mới vào danh sách publications
     const handleAddPublication = () => {
@@ -565,7 +573,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                         id="libraryId"
                                         name="libraryId"
                                         type="libraryId"
-                                        disabled={loanSlip ? true : false}
+                                        disabled={loanSlip ? true : false || isCart}
                                         value={formik?.values?.libraryId}
                                         onChange={handleLibraryChange}
                                         onBlur={formik.handleBlur}
@@ -818,8 +826,15 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                                 stroke={1.5}
                                                             />
                                                         }
-
-
+                                                        {
+                                                            isCart === true && <IconTrash
+                                                                style={{ cursor: 'pointer', color: 'red' }}
+                                                                onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
+                                                                color="red"
+                                                                size={20}
+                                                                stroke={1.5}
+                                                            />
+                                                        }
                                                     </StyledTableCell>
                                                 </StyledTableRow>
                                             ))}

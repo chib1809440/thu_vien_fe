@@ -9,6 +9,9 @@ import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
+import { useAuth } from "../../../contexts/JWTContext";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
+import { useFetchLibrary } from "../../../hooks/services/library/library-query";
 import { useAddPublisher, useDeleteSoftManyPublisher, useDeleteSoftPublisher, useEditPublisher } from "../../../hooks/services/publisher/publisher-mutation";
 import { useFetchPublisher, useReFetchPublisher } from "../../../hooks/services/publisher/publisher-query";
 import useQueryString from "../../../hooks/services/useQueryString";
@@ -16,8 +19,8 @@ import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TPublisher, TPublisherCreate } from "../../../types/models/publisher";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
+import { parserParams } from "../../../utils/object";
 import FormAddEditPublisher from "./ui-components/FormAddEditPublisher";
-import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 
 const PublisherPage = () => {
@@ -25,8 +28,25 @@ const PublisherPage = () => {
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
+    const [selectedLibrary, setSelectedLibrary] = useState(0);
+    const filter = useMemo(
+        () =>
+            parserParams([
+                { compare: "", target: { search } },
+                { compare: 0, target: { libraryId: selectedLibrary } },
+            ]),
+        [
+            selectedLibrary,
+            search,
+        ]
+    );
 
-    const { data, isLoading, isFetching } = useFetchPublisher({ limit, page, search });
+    const { data, isLoading, isFetching } = useFetchPublisher({
+        limit,
+        page,
+        ...filter,
+    });
+    const { data: libraryData } = useFetchLibrary();
     const mutationAdd = useAddPublisher();
     const mutationEdit = useEditPublisher();
     const mutationSoftDelete = useDeleteSoftPublisher();
@@ -40,6 +60,13 @@ const PublisherPage = () => {
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
+
+    const { user } = useAuth();
+    const userRole = useMemo(() => {
+        if (!user) return null;
+        const _user = { ...user } as any;
+        return _user?.data?.roleId?.name;
+    }, [user]);
 
     const addPublisher = () => {
         setOpenAddEdit(true);
@@ -113,6 +140,10 @@ const PublisherPage = () => {
         );
         return;
     };
+    // loc
+    const handleLibraryFilterChange = (event) => {
+        setSelectedLibrary(event.target.value);
+    };
 
     const columns: TColumn<TPublisher>[] = useMemo(
         () => [
@@ -121,7 +152,7 @@ const PublisherPage = () => {
                 disablePadding: "none",
                 label: "Tên nhà sản xuất",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200, textTransform: "capitalize"  },
+                sxRow: { paddingRight: 3, maxWidth: 200, textTransform: "capitalize" },
                 render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
@@ -300,7 +331,14 @@ const PublisherPage = () => {
                     </Box>
                 </Stack>
 
-                <ActionsForm actions={actionMenus} />
+                <ActionsForm actions={actionMenus}
+                    {...((userRole === "Super Admin") ? {
+                        selectedLibrary: selectedLibrary,
+                        handleLibraryFilterChange: handleLibraryFilterChange,
+                        libraryData: libraryData?.data?.result
+
+                    } : {})}
+                />
 
                 <TableList
                     checked={checkedDelete}

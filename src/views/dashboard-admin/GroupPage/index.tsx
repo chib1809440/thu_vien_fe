@@ -62,6 +62,8 @@ const GroupPage = () => {
 
     const { user, refreshUser } = useAuth();
     const { hasPermission } = usePermission();
+    console.log(user);
+    
 
     const libId = useMemo(() => {
         if (!user) return null;

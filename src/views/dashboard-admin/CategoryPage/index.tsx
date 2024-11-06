@@ -18,6 +18,9 @@ import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditCategory from "./ui-components/FormAddEditCategory";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
+import { parserParams } from "../../../utils/object";
+import { useFetchLibrary } from "../../../hooks/services/library/library-query";
+import { useAuth } from "../../../contexts/JWTContext";
 
 
 const CategoryPage = () => {
@@ -25,8 +28,25 @@ const CategoryPage = () => {
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
+    const [selectedLibrary, setSelectedLibrary] = useState(0);
+    const filter = useMemo(
+        () =>
+            parserParams([
+                { compare: "", target: { search } },
+                { compare: 0, target: { libraryId: selectedLibrary } },
+            ]),
+        [
+            selectedLibrary,
+            search,
+        ]
+    );
 
-    const { data, isLoading, isFetching } = useFetchCategory({ limit, page, search });
+    const { data, isLoading, isFetching } = useFetchCategory({
+        limit,
+        page,
+        ...filter,
+    });
+    const { data: libraryData } = useFetchLibrary();
     const mutationAdd = useAddCategory();
     const mutationEdit = useEditCategory();
     const mutationSoftDelete = useDeleteSoftCategory();
@@ -41,6 +61,12 @@ const CategoryPage = () => {
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmDeleteMultiple, setOpenConfirmDeleteMultiple] = useState(false);
 
+    const { user } = useAuth();
+    const userRole = useMemo(() => {
+        if (!user) return null;
+        const _user = { ...user } as any;
+        return _user?.data?.roleId?.name;
+    }, [user]);
 
     const addCategory = () => {
         setOpenAddEdit(true);
@@ -113,6 +139,11 @@ const CategoryPage = () => {
             }
         );
         return;
+    };
+
+    // loc
+    const handleLibraryFilterChange = (event) => {
+        setSelectedLibrary(event.target.value);
     };
 
     const columns: TColumn<TCategory>[] = useMemo(
@@ -298,7 +329,14 @@ const CategoryPage = () => {
                     </Box>
                 </Stack>
 
-                <ActionsForm actions={actionMenus} />
+                <ActionsForm actions={actionMenus}
+                    {...((userRole === "Super Admin") ? {
+                        selectedLibrary: selectedLibrary,
+                        handleLibraryFilterChange: handleLibraryFilterChange,
+                        libraryData: libraryData?.data?.result
+
+                    } : {})}
+                />
 
                 <TableList
                     checked={checkedDelete}

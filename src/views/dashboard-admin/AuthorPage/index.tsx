@@ -18,6 +18,9 @@ import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditAuthor from "./ui-components/FormAddEditAuthor";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
+import { parserParams } from "../../../utils/object";
+import { useFetchLibrary } from "../../../hooks/services/library/library-query";
+import { useAuth } from "../../../contexts/JWTContext";
 
 
 const AuthorPage = () => {
@@ -25,8 +28,25 @@ const AuthorPage = () => {
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
+    const [selectedLibrary, setSelectedLibrary] = useState(0);
+    const filter = useMemo(
+        () =>
+            parserParams([
+                { compare: "", target: { search } },
+                { compare: 0, target: { libraryId: selectedLibrary } },
+            ]),
+        [
+            selectedLibrary,
+            search,
+        ]
+    );
 
-    const { data, isLoading, isFetching } = useFetchAuthor({ limit, page, search });
+    const { data, isLoading, isFetching } = useFetchAuthor({
+        limit,
+        page,
+        ...filter,
+    });
+    const { data: libraryData } = useFetchLibrary();
     const mutationAdd = useAddAuthor();
     const mutationEdit = useEditAuthor();
     const mutationSoftDelete = useDeleteSoftAuthor();
@@ -40,6 +60,13 @@ const AuthorPage = () => {
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
+
+    const { user } = useAuth();
+    const userRole = useMemo(() => {
+        if (!user) return null;
+        const _user = { ...user } as any;
+        return _user?.data?.roleId?.name;
+    }, [user]);
 
     const addAuthor = () => {
         setOpenAddEdit(true);
@@ -57,7 +84,7 @@ const AuthorPage = () => {
 
     const handleSubmit = (values: TAuthorCreate) => {
         console.log(values);
-        
+
         if (selectedEdit) {
             mutationEdit.mutate(
                 { ...values, _id: selectedEdit._id },
@@ -116,6 +143,11 @@ const AuthorPage = () => {
         return;
     };
 
+    // loc
+    const handleLibraryFilterChange = (event) => {
+        setSelectedLibrary(event.target.value);
+    };
+
     const columns: TColumn<TAuthor>[] = useMemo(
         () => [
             {
@@ -123,7 +155,7 @@ const AuthorPage = () => {
                 disablePadding: "none",
                 label: "Tên tác giả",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200, textTransform: "capitalize"  },
+                sxRow: { paddingRight: 3, maxWidth: 200, textTransform: "capitalize" },
                 render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
@@ -237,10 +269,10 @@ const AuthorPage = () => {
     }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TAuthorCreate => {
-        
+
         if (selectedEdit) {
             console.log(selectedEdit);
-            
+
             return {
                 name: selectedEdit.name,
                 description: selectedEdit.description,
@@ -303,7 +335,14 @@ const AuthorPage = () => {
                     </Box>
                 </Stack>
 
-                <ActionsForm actions={actionMenus} />
+                <ActionsForm actions={actionMenus}
+                {...((userRole === "Super Admin") ? {
+                    selectedLibrary: selectedLibrary,
+                    handleLibraryFilterChange: handleLibraryFilterChange,
+                    libraryData: libraryData?.data?.result
+
+                } : {})}
+                 />
 
                 <TableList
                     checked={checkedDelete}

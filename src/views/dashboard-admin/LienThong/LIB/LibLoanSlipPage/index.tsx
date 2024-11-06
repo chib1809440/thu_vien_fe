@@ -1,6 +1,6 @@
 import { Button, Chip, FormControl, Grid, MenuItem, Select, Switch, useTheme } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { IconCalendar, IconFileExport, IconPencil, IconPlus, IconPrinter, IconTrash, IconX } from "@tabler/icons";
+import { IconCalendar, IconEye, IconFileExport, IconPencil, IconPlus, IconPrinter, IconTrash, IconX } from "@tabler/icons";
 import { IconClockSearch, IconTrashXFilled } from "@tabler/icons-react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -27,6 +27,7 @@ import DatePicker from "react-datepicker";
 import ExcelJS from 'exceljs';
 import FormAddEditLibLoanSlip from "./ui-components/FormAddEditLibLoanSlip";
 import { useAuth } from "../../../../../contexts/JWTContext";
+import ViewDetailLoanSlip from "../../../LoanSlipPage/ui-components/ViewDetailLoanSlip";
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -60,6 +61,7 @@ const LoanSlipPage = () => {
     const [endDate, setEndDate] = useState(null);
     const [filterDateType, setFilterDateType] = useState<string | number>(0);
     const [filterStatus, setFilterStatus] = useState<string | number>(0);
+    const [openViewDetail, setOpenViewDetail] = useState(false);
     const { user } = useAuth();
     const libraryId = useMemo(() => {
         if (!user) return null;
@@ -201,7 +203,10 @@ const LoanSlipPage = () => {
             });
         }
     };
-
+    const handleViewDetailLoanSlip = (row: TLoanSlip) => {
+        setSelectedEdit(row);
+        setOpenViewDetail(true);
+    };
     const handleCloseConfirmDialog = () => {
         setOpenConfirmDialog(false);
     };
@@ -347,6 +352,11 @@ const LoanSlipPage = () => {
                                 gap: 1,
                             }}
                         >
+                            <IconEye
+                                onClick={() => handleViewDetailLoanSlip(row)}
+                                size={20}
+                                stroke={1.5}
+                            />
                             {
                                 row.isAgree === false && libraryId !== row.libraryId &&
                                 <IconPencil
@@ -407,7 +417,10 @@ const LoanSlipPage = () => {
         }
         setOpenConfirmSoftDeleteMultiple(true);
     }, [checkedDelete]);
-
+    const handleCloseViewDetail = () => {
+        setOpenViewDetail(false);
+        setSelectedEdit(null);
+    };
 
     const handleExportLoanSlipExcel = () => {
         // Tạo một workbook mới
@@ -531,7 +544,7 @@ const LoanSlipPage = () => {
 
     const actionMenus = useMemo((): TMenuOption[] => {
         return [
-          
+
         ];
     }, [handleDeleteMultiple, handleExportLoanSlipExcel]);
 
@@ -559,6 +572,7 @@ const LoanSlipPage = () => {
             userId: ''
         };
     }, [selectedEdit]);
+
     return (
         <div>
             <IBreadcrumsCustom
@@ -578,7 +592,13 @@ const LoanSlipPage = () => {
                     isEditMode={selectedEdit ? true : false}
                 />
             )}
-
+            {openViewDetail && (
+                <ViewDetailLoanSlip
+                    open={openViewDetail}
+                    onClose={handleCloseViewDetail}
+                    loanSlip={selectedEdit}
+                />
+            )}
             <MainCard>
 
                 <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>

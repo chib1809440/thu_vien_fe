@@ -39,6 +39,7 @@ import getBarcodeReducer from './slices/barcode'
 import getApiLTReducer from './slices/apiLT'
 import getUserLTReducer from './slices/userLT'
 import isLoginReducer from './slices/isLoginLT'
+import cartLoanSlipReducer from './slices/cartLoanSlip'
 
 // ==============================|| COMBINE REDUCER ||============================== //
 
@@ -62,6 +63,14 @@ const reducer = combineReducers({
     mail: mailReducer,
     user: userReducer,
     menu: menuReducer,
+    cartLoanSlip: persistReducer(
+        {
+            key: 'cartLoanSlip',
+            storage,
+            keyPrefix: 'berry-'
+        },
+        cartLoanSlipReducer
+    ),
     getlistprojectwaiting: getListWaitingReducer,
     getAllAccount: getAllAccountReducer,
     getGroupPower: getGroupPowerReducer,

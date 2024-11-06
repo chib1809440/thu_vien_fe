@@ -1,7 +1,7 @@
 import { Chip } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconArrowBack } from "@tabler/icons";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
@@ -9,12 +9,13 @@ import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
 import { CsFlexRowBetween } from "../../../components/default/flex";
+import { useAuth } from "../../../contexts/JWTContext";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { useEditRequestGroup } from "../../../hooks/services/request-group/request-group-mutation";
 import { useFetchRequestGroup, useReFetchRequestGroup } from "../../../hooks/services/request-group/request-group-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
-import { TGroup, TGroupEdit } from "../../../types/models/group.type";
+import { TGroup } from "../../../types/models/group.type";
 import { TLibrary } from "../../../types/models/library.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
@@ -25,16 +26,13 @@ const JoinGroup = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
     const { data, isLoading, isFetching } = useFetchRequestGroup({ limit, page, search });
-    const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
-    const [openConfirmDeleteMultiple, setOpenConfirmDeleteMultiple] = useState(false);
     const mutationApproveJoinGroup = useEditRequestGroup();
     const revalidateJoinGroup = useReFetchRequestGroup();
     const [selectedEdit, setSelectedEdit] = useState<TGroup | null>(null);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const { refreshUser } = useAuth();
 
     const handleApproveJoinGroup = (row: TGroup) => {
-        console.log(row);
-
         setSelectedEdit(row);
         setOpenConfirmDialog(true);
     }
@@ -44,8 +42,10 @@ const JoinGroup = () => {
         mutationApproveJoinGroup.mutate(
             { _id: values._id },
             {
-                onSuccess: () => {
+                onSuccess: async () => {
                     revalidateJoinGroup();
+                    await refreshUser();
+                    
                     toast.success('Đã duyệt thành công.');
                     setOpenConfirmDialog(false);
                 },
@@ -155,39 +155,9 @@ const JoinGroup = () => {
         [handleApproveJoinGroup]
     );
 
-    const handleCheckedDelete = useCallback((row: TGroup, checked: boolean) => {
-        setCheckedDelete((prev) => {
-            if (prev.includes(row._id)) {
-                return prev.filter((t) => t !== row._id);
-            }
-            return [...prev, row._id];
-        });
-    }, []);
-
-    const handleCheckedDeleteAll = useCallback(
-        (checked: boolean) => {
-            if (data?.data?.result?.length === 0) return;
-            setCheckedDelete((prev) => (checked ? data?.data?.result.map((t) => t._id) : []));
-        },
-        [data]
-    );
-
-    const checkedAll = useMemo(() => {
-        if (data?.data?.result?.length === 0 || checkedDelete.length === 0) return false;
-        return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
-    }, [checkedDelete, data]);
-
-    const handleDeleteMultiple = useCallback(() => {
-        if (checkedDelete.length === 0) {
-            toast.error("Vui lòng chọn dữ liệu để xóa");
-            return;
-        }
-        setOpenConfirmDeleteMultiple(true);
-    }, [checkedDelete]);
-
     const actionMenus = useMemo((): TMenuOption[] => {
         return [];
-    }, [handleDeleteMultiple]);
+    }, []);
 
     return (
         <div>
@@ -218,12 +188,8 @@ const JoinGroup = () => {
                 <ActionsForm actions={actionMenus} />
 
                 <TableList
-                    checked={checkedDelete}
                     columns={columns}
                     rows={data?.data?.result || []}
-                    onChecked={handleCheckedDelete}
-                    onToggleCheckedAll={handleCheckedDeleteAll}
-                    checkedAll={checkedAll}
                     isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}

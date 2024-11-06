@@ -22,6 +22,7 @@ type UploadAvatarProps = {
 
 export type UploadAvatarRefProps = {
     clearState: () => void;
+    setImage: (img: string) => void;
 };
 
 export const getBlobImg = (file: File): Promise<{ url: string; id: number }> =>
@@ -87,7 +88,16 @@ const Uploadimage = forwardRef<UploadAvatarRefProps, UploadAvatarProps>(
             setImageBlob("");
         };
 
-        useImperativeHandle(ref, () => ({ clearState }), [clearState]);
+        useImperativeHandle(
+            ref,
+            () => ({
+                clearState,
+                setImage: (img) => {
+                    setImageBlob(img);
+                },
+            }),
+            [clearState]
+        );
 
         return (
             <Box
@@ -193,7 +203,14 @@ const Uploadimage = forwardRef<UploadAvatarRefProps, UploadAvatarProps>(
                                             <Typography color={"inherit"}>Chọn file</Typography>
                                         )}
 
-                                        <Typography variant="body2" color="inherit" mt={1} px={1}>
+                                        <Typography
+                                            variant="body2"
+                                            color="inherit"
+                                            mt={1}
+                                            px={1}
+                                            sx={{ width: "100%" }}
+                                            noWrap
+                                        >
                                             {fileName}
                                         </Typography>
 

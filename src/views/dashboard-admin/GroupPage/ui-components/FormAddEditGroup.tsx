@@ -12,6 +12,7 @@ import { useReFetchLibrary } from "../../../../hooks/services/library/library-qu
 import { toast } from "react-toastify";
 import FormAddEditLibrary from "../../LibraryPage/ui-components/FormAddEditLibrary";
 import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
+import usePermission from "../../../../utils/hasPermission";
 
 type Props = {
     open: boolean;
@@ -51,6 +52,8 @@ const FormAddEditGroup: FC<Props> = ({
     const [openAdd, setOpenAdd] = useState(false);
     const mutationAdd = useAddLibrary();
     const revalidate = useReFetchLibrary();
+    const { hasPermission } = usePermission();
+
     const formik = useFormik<TGroupCreate>({
         initialValues,
         validationSchema: schema,
@@ -148,7 +151,11 @@ const FormAddEditGroup: FC<Props> = ({
                                 onChange={handleChangedLibs}
                                 error={touched.libraries && Boolean(errors.libraries)}
                                 helperText={touched.libraries && errors.libraries}
-                                handleAdd={handleAddLibrary}
+                                handleAdd={ hasPermission([
+                                    { resource: "all", action: "manage" },
+                                    { resource: "groups", action: "manage" },
+                                    { resource: "groups", action: "create" },
+                                ]) ? handleAddLibrary : null}
                                 noOptionsText="Vui lòng thêm thư viện mới"
                             />
 

@@ -40,6 +40,8 @@ import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { TLibrary } from "../../../types/models/library.type";
+import { useFetchLibrary } from "../../../hooks/services/library/library-query";
+import usePermission from "../../../utils/hasPermission";
 
 const PublicationsPage = () => {
     const queryString = useQueryString();
@@ -54,8 +56,10 @@ const PublicationsPage = () => {
     const [selectedPublisher, setSelectedPublisher] = useState(0);
     const [barcodeSearch, setBarcodeSearch] = useState("");
     const [selectedValuePublication, setSelectedValue] = useState("thuvien");
+    const [selectedLibrary, setSelectedLibrary] = useState(0);
 
     const { user } = useAuth();
+    const { hasPermission } = usePermission();
 
     const userId = useMemo(() => {
         if (!user) return null;
@@ -79,6 +83,7 @@ const PublicationsPage = () => {
                 { compare: "", target: { search } },
                 { compare: 0, target: { type: selectedPublications } },
                 { compare: "", target: { barcode: barcodeSearch } },
+                { compare: 0, target: { libraryId: selectedLibrary } },
             ]),
         [
             selectedMaterial,
@@ -86,6 +91,7 @@ const PublicationsPage = () => {
             selectedCategory,
             selectedPublisher,
             selectedPublications,
+            selectedLibrary,
             barcodeSearch,
             search,
         ]
@@ -106,6 +112,7 @@ const PublicationsPage = () => {
     const { data: materialData } = useFetchMaterial();
     const { data: authorData } = useFetchAuthor();
     const { data: publisherData } = useFetchPublisher();
+    const { data: libraryData } = useFetchLibrary();
 
     const mutationAdd = useAddPublications();
     const mutationEdit = useEditPublications();
@@ -253,6 +260,8 @@ const PublicationsPage = () => {
 
     const handlePublisherFilterChange = (event) => {
         setSelectedPublisher(event.target.value);
+        console.log(event.target.value);
+
     };
 
     const handleBarcodeSearch = (value) => {
@@ -261,6 +270,11 @@ const PublicationsPage = () => {
 
     const handleValuePublication = (event) => {
         setSelectedValue(event.target.value);
+    };
+
+    const handleLibraryFilterChange = (event) => {
+        setSelectedLibrary(event.target.value);
+        console.log(event.target.value);
     };
 
     const columns: TColumn<TPublications & { libraryId: TLibrary }>[] = useMemo(
@@ -308,16 +322,17 @@ const PublicationsPage = () => {
                     return (
                         <>
                             {
-                                row?.libraryId === null ? (
-                                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                                        Thư viện: <Typography ml={1} fontWeight={600}>Thư viện không tồn tại</Typography>
-                                    </Box>
-                                ) : (
-                                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                                        Thư viện: <Typography ml={1} fontWeight={600}>{capitalizeFirstLetter((row?.libraryId as TLibrary)?.name)}</Typography>
-                                    </Box>
+                                userRole === "Super Admin" && (
+                                    row?.libraryId !== null ? (
+                                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                                            Thư viện: <Typography ml={1} fontWeight={600}>{capitalizeFirstLetter((row?.libraryId as TLibrary)?.name)}</Typography>
+                                        </Box>
+                                    ) : (
+                                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                                            Thư viện: <Typography ml={1} fontWeight={600}>Thư viện không tồn tại</Typography>
+                                        </Box>
+                                    )
                                 )
-
                             }
                             {
                                 row?.barcode && (
@@ -430,6 +445,7 @@ const PublicationsPage = () => {
                         <Switch
                             checked={row?.isLink}
                             value={row?.isLink}
+                            disabled={userRole === "Super Admin" ? true : false}
                             onChange={(event) =>
                                 handleChangeShareConnect(row, event.target.checked)
                             }
@@ -444,7 +460,19 @@ const PublicationsPage = () => {
                 align: "center",
                 label: "Hành động",
                 render: (row) => {
+
+                    const canManagePublications = hasPermission([
+                        { resource: "publications", action: "manage" },
+                        { resource: "publications", action: "update" },
+                    ]);
+                    const canDeletePublications = hasPermission([
+                        { resource: "all", action: "manage" },
+                        { resource: "publications", action: "manage" },
+                        { resource: "publications", action: "delete" },
+                    ]);
+
                     return (
+
                         <Box
                             sx={{
                                 display: "flex",
@@ -459,20 +487,20 @@ const PublicationsPage = () => {
                                 onClick={() => handleViewDetails(row)}
                             />
                             {
-                                (userRole !== "Student") ?
-                                    <>
-                                        <IconPencil
-                                            onClick={() => handleEditPublications(row)}
-                                            size={20}
-                                            stroke={1.5}
-                                        />
-                                        <IconTrash
-                                            size={20}
-                                            stroke={1.5}
-                                            onClick={() => handleOpenConfirmDialog(row)}
-                                        />
-                                    </>
-                                    : <></>
+                                canManagePublications &&
+                                <IconPencil
+                                    onClick={() => handleEditPublications(row)}
+                                    size={20}
+                                    stroke={1.5}
+                                />
+                            }
+                            {
+                                canDeletePublications &&
+                                <IconTrash
+                                    size={20}
+                                    stroke={1.5}
+                                    onClick={() => handleOpenConfirmDialog(row)}
+                                />
                             }
 
                         </Box>
@@ -716,15 +744,23 @@ const PublicationsPage = () => {
                         >
                             <Box display="flex" flexWrap="wrap">
                                 <Box>
-                                    <StyledButton
-                                        color="primary"
-                                        size="small"
-                                        startIcon={<IconPlus stroke={2} />}
-                                        variant="contained"
-                                        onClick={addPublications}
-                                    >
-                                        Thêm mới
-                                    </StyledButton>
+                                    {
+                                        hasPermission([
+                                            { resource: "publications", action: "manage" },
+                                            { resource: "publications", action: "update" },
+                                        ]) ?
+                                            <StyledButton
+                                                color="primary"
+                                                size="small"
+                                                startIcon={<IconPlus stroke={2} />}
+                                                variant="contained"
+                                                onClick={addPublications}
+                                            >
+                                                Thêm mới
+                                            </StyledButton>
+                                            : <></>
+                                    }
+
                                 </Box>
 
                                 <Box>
@@ -761,6 +797,12 @@ const PublicationsPage = () => {
                     {...((userRole === "Admin" || userRole === "Teacher" || userRole === "Owner") ? {
                         selectedValuePublication: selectedValuePublication,
                         handleValuePublication: handleValuePublication
+                    } : {})}
+                    {...((userRole === "Super Admin") ? {
+                        selectedLibrary: selectedLibrary,
+                        handleLibraryFilterChange: handleLibraryFilterChange,
+                        libraryData: libraryData?.data?.result
+
                     } : {})}
                 />
 

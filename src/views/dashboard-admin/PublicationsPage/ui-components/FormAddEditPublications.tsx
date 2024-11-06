@@ -43,9 +43,7 @@ const schema = (isEditMode: boolean) =>
         name: yup.string().required("Vui lòng nhập tên"),
         barcode: yup.string().when("type", {
             is: "ấn phẩm cứng",
-            then: yup
-                .string()
-                .required("Vui lòng nhập barcode"),
+            then: yup.string().required("Vui lòng nhập barcode"),
             otherwise: yup.string().notRequired(),
         }),
         categoryIds: yup.array().when("type", {
@@ -86,12 +84,12 @@ const schema = (isEditMode: boolean) =>
         }),
         ...(!isEditMode
             ? {
-                file: yup.mixed().when("type", {
-                    is: "ấn phẩm mềm",
-                    then: yup.mixed().required("Vui lòng upload file").nullable(),
-                    otherwise: yup.mixed().notRequired(),
-                }),
-            }
+                  file: yup.mixed().when("type", {
+                      is: "ấn phẩm mềm",
+                      then: yup.mixed().required("Vui lòng upload file").nullable(),
+                      otherwise: yup.mixed().notRequired(),
+                  }),
+              }
             : { file: yup.mixed() }),
     });
 
@@ -296,69 +294,60 @@ const FormAddEditPublications: FC<Props> = ({
         pdf: ["application/pdf"],
         word: [
             "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         ],
         powerpoint: [
             "application/vnd.ms-powerpoint",
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
         ],
-        image: [
-            "image/jpeg",
-            "image/png",
-            "image/gif",
-            "image/bmp",
-            "image/webp"
-        ],
-        video: [
-            "video/mp4",
-            "video/x-msvideo",
-            "video/x-matroska",
-            "video/webm"
-        ]
+        image: ["image/jpeg", "image/png", "image/gif", "image/bmp", "image/webp"],
+        video: ["video/mp4", "video/x-msvideo", "video/x-matroska", "video/webm"],
     };
 
     // Xét ảnh
-    const handleChangeImage = useCallback(async (file: File) => {
+    const handleChangeImage = useCallback(
+        async (file: File) => {
+            const mimetype = initialValues?.mimetype;
+            console.log(mimetype);
 
-        const mimetype = initialValues?.mimetype;
-        console.log(mimetype);
+            // Kiểm tra loại file
+            const isValidType = Object.values(VALID_MIME_TYPES).some((mimeArray) =>
+                mimeArray.includes(file.type)
+            );
+            if (!mimetype) {
+                if (!isValidType) {
+                    toast.error("Vui lòng chọn file có đúng định dạng: " + mimetype);
+                    console.log("aaa");
 
+                    imageRef.current.clearState();
+                    return;
+                }
+            } else {
+                if (!isValidType || file.type !== mimetype) {
+                    toast.error("Vui lòng chọn file có đúng định dạng: " + mimetype);
+                    console.log("bbbb");
+                    console.log(imageUrl);
 
-        // Kiểm tra loại file
-        const isValidType = Object.values(VALID_MIME_TYPES).some(mimeArray =>
-            mimeArray.includes(file.type)
-        );
-        if (!mimetype) {
-            if (!isValidType) {
-                toast.error("Vui lòng chọn file có đúng định dạng: " + mimetype);
-                console.log("aaa");
-
-                imageRef.current.clearState();
-                return;
+                    imageRef.current.setImage(imageUrl);
+                    return;
+                } else {
+                    imageRef.current.clearState();
+                }
             }
-        } else {
-            if (!isValidType || file.type !== mimetype) {
-                toast.error("Vui lòng chọn file có đúng định dạng: " + mimetype);
-                console.log("bbbb");
 
-                imageRef.current.clearState();
-                return;
+            if (!typeHardPublications) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    setDefaultImage(event.target?.result as string);
+                };
+                reader.readAsDataURL(file);
+                setFileName(file.name);
             }
-        }
 
-        if (!typeHardPublications) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                setDefaultImage(event.target?.result as string);
-            };
-            reader.readAsDataURL(file);
-        } else {
-            setFileName(file.name);
-        }
-
-        setFieldValue("file", file);
-    }, [initialValues, setFieldValue]);
-
+            setFieldValue("file", file);
+        },
+        [initialValues, setFieldValue, defaultImage, typeHardPublications]
+    );
 
     return (
         <FormikProvider value={formik}>
@@ -551,7 +540,9 @@ const FormAddEditPublications: FC<Props> = ({
                         />
 
                         <SwitchForm
-                            value={values.type === "ấn phẩm cứng" ? true : values?.isPublic ?? false}
+                            value={
+                                values.type === "ấn phẩm cứng" ? true : values?.isPublic ?? false
+                            }
                             onChange={(checked) => {
                                 if (values.type === "ấn phẩm cứng") {
                                     setFieldValue("isPublic", true);
@@ -579,7 +570,7 @@ const FormAddEditPublications: FC<Props> = ({
                     </Form>
                 </DialogContent>
 
-                <DialogActions sx={{ pr: 6, pb:2 }}>
+                <DialogActions sx={{ pr: 6, pb: 2 }}>
                     <Button disabled={isFetching} onClick={onClose} color="error">
                         Huỷ
                     </Button>

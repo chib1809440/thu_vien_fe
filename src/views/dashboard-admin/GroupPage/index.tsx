@@ -1,4 +1,4 @@
-import { Chip } from "@mui/material";
+import { Button, Chip } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconEye, IconTrashXFilled } from "@tabler/icons-react";
@@ -17,7 +17,7 @@ import { useAddGroup, useDeleteGroup, useDeleteManyGroup, useEditGroup } from ".
 import { useFetchGroup, useReFetchGroup } from "../../../hooks/services/group/group-query";
 import { useFetchLibrary, useReFetchLibrary } from "../../../hooks/services/library/library-query";
 import { useAddRequestGroup } from "../../../hooks/services/request-group/request-group-mutation";
-import { useFetchRequestGroupFromAdmin, useReFetchRequestGroup, useReFetchRequestGroupFromAdmin } from "../../../hooks/services/request-group/request-group-query";
+import { useFetchRequestGroup, useFetchRequestGroupFromAdmin, useReFetchRequestGroup, useReFetchRequestGroupFromAdmin } from "../../../hooks/services/request-group/request-group-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TGroup, TGroupCreate } from "../../../types/models/group.type";
@@ -62,12 +62,11 @@ const GroupPage = () => {
 
     const { user, refreshUser } = useAuth();
     const { hasPermission } = usePermission();
-    console.log(user);
-    
-    const groupLibs = useMemo(() => {
+
+    const libId = useMemo(() => {
         if (!user) return null;
         const _user = { ...user } as any;
-        return _user?.data?.libraryDetail?.groupId;
+        return _user?.data?.libraryDetail?._id;
     }, [user]);
 
     const userRole = useMemo(() => {
@@ -75,8 +74,10 @@ const GroupPage = () => {
         const _user = { ...user } as any;
         return _user?.data?.roleId?.name;
     }, [user]);
+    const { data: requestGroup } = useFetchRequestGroup();
 
-    const groupIdsRequest = listRequestGroupFromAdmin?.data?.result?.map(item => (item?.groupId)?._id);
+    // Chỉ sử dụng requestGroup nếu userRole là "Owner"
+    const requestGroupData = userRole === "Owner" ? requestGroup : null;
 
     const addGroup = () => {
         setOpenAddEdit(true);
@@ -156,6 +157,8 @@ const GroupPage = () => {
 
     const handleLeaveGroup = async () => {
         const response = await groupService.leaveGroup();
+        revalidate();
+        revalidateLibs();
         toast.success("Rời nhóm thành công.");
         await refreshUser();
         return response;
@@ -206,7 +209,7 @@ const GroupPage = () => {
             {
                 id: "libraries",
                 disablePadding: "none",
-                label: "Thư viện",
+                label: "Thư viện trong nhóm",
                 sxRow: { paddingRight: 4, maxWidth: 200 },
                 render: (row) => {
                     return (
@@ -254,148 +257,65 @@ const GroupPage = () => {
                 align: "center",
                 label: "Hành động",
                 render: (row) => {
-                    if (groupIdsRequest?.some((item) => item === row?._id)) {
-                        return (
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    gap: 1,
-                                }}
-                            >
-                                <IconEye
-                                    size={20}
-                                    stroke={1.5}
-                                    onClick={() => handleViewDetails(row)}
-                                />
+                    const groupIdsRequest = listRequestGroupFromAdmin?.data?.result?.map(item => (item?.groupId)?._id);
+                    const isGroupRequested = groupIdsRequest?.some((item) => item === row?._id);
+                    const canManageGroups = hasPermission([
+                        { resource: "all", action: "manage" },
+                        { resource: "groups", action: "manage" },
+                        { resource: "groups", action: "update" },
+                    ]);
+                    const canDeleteGroup = hasPermission([
+                        { resource: "all", action: "manage" },
+                        { resource: "groups", action: "manage" },
+                        { resource: "groups", action: "delete" },
+                    ]);
+                    const groupLibraryIds = data?.data?.result?.flatMap(group =>
+                        group?.libraries?.map((lib: TLibrary) => lib._id) || []
+                    ) || [];
 
-                                <>
-                                    {hasPermission([
-                                        { resource: "all", action: "manage" },
-                                        { resource: "groups", action: "manage" },
-                                        { resource: "groups", action: "update" },
-                                    ]) && (
-                                            <IconPencil
-                                                onClick={() => handleEditGroup(row)}
-                                                size={20}
-                                                stroke={1.5}
-                                            />
-                                        )}
+                    const shouldShowLeaveButton = libId && groupLibraryIds.includes(libId);
 
-                                    {hasPermission([
-                                        { resource: "all", action: "manage" },
-                                        { resource: "group", action: "manage" },
-                                        { resource: "group", action: "delete" },
-                                    ]) && (
-                                            <IconTrash
-                                                size={20}
-                                                stroke={1.5}
-                                                onClick={() => handleOpenConfirmDialog(row)}
-                                            />
-                                        )}
-                                </>
-                                {
-                                    groupLibs === null && userRole === "Admin" && (
-                                        <StyledButton
-                                            size="small"
-                                            variant="contained"
-                                            onClick={() => handleJoinGroup(row)}
-                                            sx={{ background: "#53a828", color: "white" }}
-                                            disabled={true}
-                                        >
-                                            Đã Yêu cầu
-                                        </StyledButton>
-                                    )
-                                }
+                    const renderActions = () => (
+                        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 1 }}>
+                            <IconEye size={20} stroke={1.5} onClick={() => handleViewDetails(row)} />
 
-                                {groupLibs !== null && userRole === "Admin" && (
-                                    <StyledButton
-                                        color="primary"
-                                        size="small"
-                                        variant="contained"
-                                        onClick={handleLeaveGroup}
-                                    >
-                                        Rời nhóm
-                                    </StyledButton>
-                                )}
+                            {canManageGroups && (
+                                <IconPencil size={20} stroke={1.5} onClick={() => handleEditGroup(row)} />
+                            )}
 
-                            </Box>
-                        );
-                    } else {
-                        return (
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    gap: 1,
-                                }}
-                            >
-                                <IconEye
-                                    size={20}
-                                    stroke={1.5}
-                                    onClick={() => handleViewDetails(row)}
-                                />
+                            {canDeleteGroup && (
+                                <IconTrash size={20} stroke={1.5} onClick={() => handleOpenConfirmDialog(row)} />
+                            )}
 
-                                <>
-                                    {hasPermission([
-                                        { resource: "all", action: "manage" },
-                                        { resource: "groups", action: "manage" },
-                                        { resource: "groups", action: "update" },
-                                    ]) && (
-                                            <IconPencil
-                                                onClick={() => handleEditGroup(row)}
-                                                size={20}
-                                                stroke={1.5}
-                                            />
-                                        )}
+                            {!shouldShowLeaveButton && userRole === "Admin" && (
+                                <StyledButton
+                                    size="small"
+                                    variant="contained"
+                                    onClick={() => handleJoinGroup(row)}
+                                    sx={{ background: isGroupRequested ? "#53a828" : "#3078ec", color: "white" }}
+                                    disabled={isGroupRequested}
+                                >
+                                    {isGroupRequested ? "Đã Yêu cầu" : "Yêu cầu vào nhóm"}
+                                </StyledButton>
+                            )}
 
-                                    {hasPermission([
-                                        { resource: "all", action: "manage" },
-                                        { resource: "group", action: "manage" },
-                                        { resource: "group", action: "delete" },
-                                    ]) && (
-                                            <IconTrash
-                                                size={20}
-                                                stroke={1.5}
-                                                onClick={() => handleOpenConfirmDialog(row)}
-                                            />
-                                        )}
-                                </>
-                                {
-                                    groupLibs === null && userRole === "Admin" && (
-                                        <StyledButton
-                                            size="small"
-                                            variant="contained"
-                                            onClick={() => handleJoinGroup(row)}
-                                            sx={{ background: "#3078ec", color: "white" }}
-                                        >
-                                            Yêu cầu vào nhóm
-                                        </StyledButton>
-                                    )
-                                }
-
-                                {groupLibs !== null && userRole === "Admin" && (
-                                    <StyledButton
-                                        color="primary"
-                                        size="small"
-                                        variant="contained"
-                                        onClick={handleLeaveGroup}
-                                    >
-                                        Rời nhóm
-                                    </StyledButton>
-                                )}
-
-                            </Box>
-                        );
-                    }
-
-
+                            {shouldShowLeaveButton && userRole === "Admin" && (
+                                <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    variant="contained"
+                                    onClick={handleLeaveGroup}
+                                >
+                                    Rời nhóm
+                                </StyledButton>
+                            )}
+                        </Box>
+                    );
+                    return renderActions();
                 },
             },
         ],
-        [handleEditGroup, handleOpenConfirmDialog, handleLeaveGroup]
+        [handleViewDetails, handleEditGroup, handleOpenConfirmDialog, handleLeaveGroup, handleJoinGroup]
     );
 
     const handleCheckedDelete = useCallback((row: TGroup, checked: boolean) => {
@@ -441,13 +361,15 @@ const GroupPage = () => {
     }, [checkedDelete]);
 
     const actionMenus = useMemo((): TMenuOption[] => {
-        return [
+        return hasPermission([
+            { resource: "all", action: "manage" }
+        ]) ? [
             {
                 label: "Xóa các dữ liệu đã chọn",
                 icon: <IconTrashXFilled size={20} stroke={1.5} />,
                 onClick: handleDeleteMultiple,
             },
-        ];
+        ] : [];
     }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TGroupCreate => {
@@ -507,26 +429,65 @@ const GroupPage = () => {
                 <Stack spacing={2}>
                     <CsFlexRowBetween>
                         <Box sx={{ ml: 4, mb: 2 }}>
-                            <StyledButton
-                                color="primary"
-                                size="small"
-                                startIcon={<IconPlus stroke={2} />}
-                                variant="contained"
-                                onClick={addGroup}
-                            >
-                                Thêm mới
-                            </StyledButton>
+                            {
+                                hasPermission([
+                                    { resource: "all", action: "manage" },
+                                    { resource: "groups", action: "manage" },
+                                    { resource: "groups", action: "create" },
+                                ]) && <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<IconPlus stroke={2} />}
+                                    variant="contained"
+                                    onClick={addGroup}
+                                >
+                                    Thêm mới
+                                </StyledButton>
+                            }
+
                             {
                                 userRole === "Owner" && (
 
                                     <Link to="/he-thong/quan-ly-tham-gia-nhom" style={{ textDecoration: 'none' }}>
-                                        <StyledButton
-                                            sx={{ background: "#a36e21", color: "white", marginLeft: "10px", paddingTop: 1.2, paddingBottom: 1.2 }}
+                                        <Button
+                                            sx={{
+                                                background: "#a36e21",
+                                                color: "white",
+                                                marginLeft: "10px",
+                                                paddingTop: 1,
+                                                paddingBottom: 1,
+                                                position: "relative",
+                                                borderRadius: "8px",
+                                                "&:hover": {
+                                                    background: "#a36e21", 
+                                                }
+                                            }}
                                             size="small"
                                             variant="contained"
                                         >
                                             Danh sách yêu cầu vào nhóm
-                                        </StyledButton>
+                                            {requestGroupData?.data?.meta?.itemCount > 0 && (
+                                                <span
+                                                    style={{
+                                                        position: "absolute",
+                                                        top: "-10px",
+                                                        right: "-10px",
+                                                        backgroundColor: "#f44336",
+                                                        color: "white",
+                                                        borderRadius: "50%",
+                                                        width: 25,
+                                                        height: 25,
+                                                        fontSize: "12px",
+                                                        fontWeight: "bold",
+                                                        display: "flex",
+                                                        justifyContent: "center",
+                                                        alignItems: "center"
+                                                    }}
+                                                >
+                                                    {requestGroupData?.data?.meta?.itemCount}
+                                                </span>
+                                            )}
+                                        </Button>
                                     </Link>
                                 )
                             }

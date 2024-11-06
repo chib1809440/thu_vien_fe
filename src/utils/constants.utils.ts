@@ -31,5 +31,6 @@ export const statusRole = [
     { value: "Admin", label: 'Thủ thư' },
     { value: "Teacher", label: 'Giáo viên' },
     { value: "Student", label: 'Học sinh' },
+    { value: "Owner", label: 'Trưởng nhóm' },
     { value: "Super Admin", label: 'Super Admin' },
 ]

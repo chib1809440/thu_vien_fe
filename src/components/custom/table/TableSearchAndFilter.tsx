@@ -1,10 +1,8 @@
+import { Box, Grid, Menu, MenuItem } from "@mui/material";
+import { IconBookUpload, IconDownload, IconFileImport, IconPrinter, IconRestore, IconSettings, IconTransformFilled, IconTrashXFilled } from "@tabler/icons-react";
 import { useState } from "react";
-import { Box, Button, Grid, Menu, MenuItem, TextField, Tooltip } from "@mui/material";
-import { IconBookUpload, IconDownload, IconFileImport, IconFilter, IconPrinter, IconRestore, IconSettings, IconTransformFilled, IconTrashXFilled } from "@tabler/icons-react";
-import SearchNoButtonSection from "../search/SearchNoButton";
 import StyledButton from "../../default/button/StyledButton";
-import { AccountCircle } from "@mui/icons-material";
-import { IconSearch } from "@tabler/icons";
+import SearchNoButtonSection from "../search/SearchNoButton";
 interface PropSearch {
     contentSearch: string,
     placeholderText?: string,
@@ -18,6 +16,7 @@ interface PropSearch {
     actionChangeClass?: boolean,
     actionPromotedClass?: boolean,
     actionRestoreSelectedItem?: boolean,
+    actionLibCardSelectedItem?: boolean,
     handleContentSearch: (e: any) => void
     onHandleDownloadFile?: () => void
     onHandleImportFile?: () => void
@@ -28,9 +27,10 @@ interface PropSearch {
     onHandleChangeClass?: () => void
     onHandlePromotedClass?: () => void,
     onHandleRestoreSelectedItem?: () => void,
+    onHandleLibCardSeletedItem?: () => void,
 
 }
-export function SearchAndFilter({ contentSearch, actionPromotedClass, actionRestoreSelectedItem, onHandleRestoreSelectedItem, onHandleImportQuestionFile, actionImportQuestionFile, onHandlePromotedClass, actionChangeClass, onHandleChangeClass, onHandleDeleteSelectedItem, actionDeleteSelectedItem, handleContentSearch, onHandleImportFile, onHandleDownloadFile, onHandlePrintFile, placeholderText, actionDownLoadFile, actionImportFile, pathFileActionDownLoadFile, actionPrintFile, actionExportFile, onHandleExportFile }: PropSearch) {
+export function SearchAndFilter({ contentSearch, actionPromotedClass, actionRestoreSelectedItem, onHandleRestoreSelectedItem, onHandleImportQuestionFile, actionImportQuestionFile, onHandlePromotedClass, actionChangeClass, onHandleChangeClass, onHandleDeleteSelectedItem, actionDeleteSelectedItem, handleContentSearch, onHandleImportFile, onHandleDownloadFile, onHandlePrintFile, placeholderText, actionDownLoadFile, actionImportFile, pathFileActionDownLoadFile, actionPrintFile, actionExportFile, onHandleExportFile, actionLibCardSelectedItem, onHandleLibCardSeletedItem }: PropSearch) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -65,6 +65,10 @@ export function SearchAndFilter({ contentSearch, actionPromotedClass, actionRest
     };
     const handleRestoreSeletedItem = () => {
         onHandleRestoreSelectedItem();
+        setAnchorEl(null);
+    };
+    const handleLibCardSeletedItem = () => {
+        onHandleLibCardSeletedItem();
         setAnchorEl(null);
     };
     const handleChangeClass = () => {
@@ -187,6 +191,14 @@ export function SearchAndFilter({ contentSearch, actionPromotedClass, actionRest
                                 <Box sx={{ display: "flex", alignItems: "center" }}>
                                     <IconRestore size={20} stroke={1.5} />
                                     <Box sx={{ ml: 1 }}>Khối phục dữ liệu đã chọn</Box>
+                                </Box>
+                            </MenuItem>
+                        }
+                        {
+                            actionLibCardSelectedItem && <MenuItem onClick={handleLibCardSeletedItem} sx={{ fontSize: '0.875rem' }}>
+                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    <IconPrinter size={20} stroke={1.5} />
+                                    <Box sx={{ ml: 1 }}>In thẻ thư viện</Box>
                                 </Box>
                             </MenuItem>
                         }

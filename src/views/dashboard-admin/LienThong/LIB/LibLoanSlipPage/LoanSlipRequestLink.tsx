@@ -27,6 +27,7 @@ import DatePicker from "react-datepicker";
 import ExcelJS from 'exceljs';
 import FormAddEditLibLoanSlip from "./ui-components/FormAddEditLibLoanSlip";
 import ViewDetailLoanSlip from "../../../LoanSlipPage/ui-components/ViewDetailLoanSlip";
+import { User } from "../../../../../interfaces/user";
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -121,12 +122,30 @@ const LoanSlipRequestLink = () => {
         content: () => componentRef.current,
     });
     const handleApprovalLoanSlip = (row: TLoanSlip) => {
-        mutationApproval.mutate(row._id, {
-            onSuccess: () => {
-                revalidate();
-                toast.success('Duyệt phiếu mượn thành công.');
-            },
-        });
+        row.status = "chờ nhận sách";
+
+        mutationEdit.mutate(
+            { ...row as any, _id: row._id, userId: row.userId._id },
+            {
+                onSuccess: () => {
+                    revalidate();
+                    toast.success('Chỉnh sửa thành công.');
+                    handleClose();
+                },
+            }
+        );
+    };
+    const handleDeliveryBook = (row: TLoanSlip) => {
+        mutationApproval.mutate(
+            row._id,
+            {
+                onSuccess: () => {
+                    revalidate();
+                    toast.success('Chỉnh sửa thành công.');
+                    handleClose();
+                },
+            }
+        );
     };
     const handleReturnLoanSlip = (row: TLoanSlip, publications: CreatePublication[]) => {
         mutationReturn.mutate(
@@ -304,15 +323,31 @@ const LoanSlipRequestLink = () => {
                         <Box
                         >
                             {
-                                row.isAgree === true ? <>
+                                row.isAgree === true ? (
                                     <Chip
                                         style={{ color: 'white', background: '#096A5E' }}
                                         label="Đã duyệt"
                                         variant="filled"
                                     />
-                                </> : <>
-                                    <Button variant="contained" sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }} onClick={() => handleApprovalLoanSlip(row)}>Chưa duyệt</Button>
-                                </>
+                                ) : (
+                                    row.status === "chờ nhận sách" ? (
+                                        <Button
+                                            variant="contained"
+                                            sx={{ color: theme.palette.common.white, background: theme.palette.success.dark }}
+                                            onClick={() => handleDeliveryBook(row)}
+                                        >
+                                            Giao sách
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            variant="contained"
+                                            sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }}
+                                            onClick={() => handleApprovalLoanSlip(row)}
+                                        >
+                                            Chưa duyệt
+                                        </Button>
+                                    )
+                                )
                             }
                         </Box>
                     );

@@ -109,7 +109,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
         return _user?.data?._id;
     }, [user]);
-  
+
 
     const libraryId = useMemo(() => {
         if (!user) return null;
@@ -465,7 +465,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
         return _user?.data?.libraryDetail;
     }, [user]);
-
+    console.log('dsds', loanSlip);
     return (
         <FormikProvider value={formik}>
             <Dialog
@@ -669,6 +669,10 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                         <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell></>
                                                 }
                                                 {
+                                                    loanSlip?.isAgree === false && <>  <StyledTableCell align="left" width='15%'>Số lượng trong kho</StyledTableCell>
+                                                        <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell></>
+                                                }
+                                                {
 
                                                     isEditMode ? <>  <StyledTableCell align="left" width='10%'>Số lượng mượn</StyledTableCell></> : <> </>
                                                 }
@@ -728,6 +732,14 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
                                                     {
                                                         isEditMode === false && <> <StyledTableCell align="left">
+                                                            {row.quantity}
+                                                        </StyledTableCell>
+                                                            <StyledTableCell align="left">
+                                                                {row.shelvesQuantity}
+                                                            </StyledTableCell></>
+                                                    }
+                                                    {
+                                                        loanSlip?.isAgree === false && <>   <StyledTableCell align="left">
                                                             {row.quantity}
                                                         </StyledTableCell>
                                                             <StyledTableCell align="left">
@@ -828,6 +840,15 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                         }
                                                         {
                                                             isCart === true && <IconTrash
+                                                                style={{ cursor: 'pointer', color: 'red' }}
+                                                                onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
+                                                                color="red"
+                                                                size={20}
+                                                                stroke={1.5}
+                                                            />
+                                                        }
+                                                        {
+                                                            !loanSlip && <IconTrash
                                                                 style={{ cursor: 'pointer', color: 'red' }}
                                                                 onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
                                                                 color="red"

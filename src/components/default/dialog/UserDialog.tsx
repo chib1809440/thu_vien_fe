@@ -52,6 +52,8 @@ import { generateUserName } from "../../../helpers/generateUserName";
 import { IconHttpDelete, IconSquareXFilled } from "@tabler/icons-react";
 import { useRoleList } from "../../../hooks/react-query/roleData";
 import { Role } from "../../../interfaces/role";
+import { getLabelFromOptions } from "../../../utils/object";
+import { statusRole } from "../../../utils/constants.utils";
 export const validationUtilizedObjectSchema = yup.object({
     fullname: yup.string().required("Vui lòng nhập họ và tên"),
     email: yup.string().email("Vui lòng nhập đúng định dạng email"),
@@ -564,7 +566,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                                             roles.data.result
                                                                 .map((item, index) => (
                                                                     <MenuItem key={index} value={item._id}>
-                                                                        {item.name}
+                                                                        {getLabelFromOptions(statusRole, item.name)}
                                                                     </MenuItem>
                                                                 ))
                                                         ) : (

@@ -43,13 +43,13 @@ const LibraryPublicationsPage = () => {
     const [barcodeSearch, setBarcodeSearch] = useState("");
     const items = useSelector((state: { cartLoanSlip: { items: CreatePublication[] } }) => state.cartLoanSlip.items);
     const { logout, user } = useAuth();
+
     const libraryId = useMemo(() => {
         if (!user) return null;
-
         const _user = { ...user } as any;
-
         return _user?.data?.libraryId;
     }, [user]);
+
     const filter = useMemo(
         () =>
             parserParams([
@@ -236,7 +236,11 @@ const LibraryPublicationsPage = () => {
                             </Box>
                             <Box mt={1}>
                                 {
-                                    (!row?.mimetype) && (
+                                    (!row?.mimetype || (row?.mimetype === "image/jpeg" ||
+                                        row?.mimetype === "image/png" ||
+                                        row?.mimetype === "image/gif" ||
+                                        row?.mimetype === "image/bmp" ||
+                                        row?.mimetype === "image/webp") && row?.type === "ấn phẩm cứng") && (
                                         <IconBook
                                             size={30}
                                             stroke={1.5}
@@ -286,7 +290,7 @@ const LibraryPublicationsPage = () => {
                                         row?.mimetype === "image/png" ||
                                         row?.mimetype === "image/gif" ||
                                         row?.mimetype === "image/bmp" ||
-                                        row?.mimetype === "image/webp") && (
+                                        row?.mimetype === "image/webp") && row?.type === "ấn phẩm mềm" && (
                                         <IconPhoto
                                             size={30}
                                             stroke={1.5}

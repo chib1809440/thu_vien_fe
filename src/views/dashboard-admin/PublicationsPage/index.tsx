@@ -108,10 +108,30 @@ const PublicationsPage = () => {
                 : {}),
     });
 
-    const { data: categoryData } = useFetchCategory();
-    const { data: materialData } = useFetchMaterial();
-    const { data: authorData } = useFetchAuthor();
-    const { data: publisherData } = useFetchPublisher();
+    const filterByLibId = useMemo(
+        () =>
+            parserParams([
+                { compare: 0, target: { libraryId: selectedLibrary } },
+            ]),
+        [selectedLibrary]
+    );
+
+    const { data: categoryData } = useFetchCategory({
+        limit,
+        page, ...filterByLibId
+    });
+    const { data: materialData } = useFetchMaterial({
+        limit,
+        page, ...filterByLibId
+    });
+    const { data: authorData } = useFetchAuthor({
+        limit,
+        page, ...filterByLibId
+    });
+    const { data: publisherData } = useFetchPublisher({
+        limit,
+        page, ...filterByLibId
+    });
     const { data: libraryData } = useFetchLibrary();
 
     const mutationAdd = useAddPublications();
@@ -274,7 +294,6 @@ const PublicationsPage = () => {
 
     const handleLibraryFilterChange = (event) => {
         setSelectedLibrary(event.target.value);
-        console.log(event.target.value);
     };
 
     const columns: TColumn<TPublications & { libraryId: TLibrary }>[] = useMemo(

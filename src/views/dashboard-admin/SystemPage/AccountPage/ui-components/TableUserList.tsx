@@ -156,9 +156,12 @@ function TableUserList<T extends DataType>({
     }
     const [user, setUser] = useState<User>();
     const pageCount = useMemo(() => {
+        // Check if rowsPerPage is 0 to prevent division by zero
+        if (rowsPerPage === 0) {
+            return 0; // Or return a different value as needed
+        }
         return Math.ceil((users?.data?.meta?.itemCount || 0) / rowsPerPage);
     }, [users, page, rowsPerPage]);
-
     const handleDeleteItem = (e: React.MouseEventHandler<HTMLTableRowElement> | undefined, id: any) => {
         setIsOpenConfirmDialog(true);
         setSelectedDeleteID(id);
@@ -206,10 +209,126 @@ function TableUserList<T extends DataType>({
             toast.error(error.message);
         }
     };
+    const handleExportFile = () => {
+        // // Tạo một workbook mới
+        // console.log(users);
+        // console.log(isLoading);
 
+        // if (data) {
+        //     const workbook = new ExcelJS.Workbook();
+        //     const worksheet = workbook.addWorksheet('Loan Slips');
+
+        //     // Thêm hàng tiêu đề chính
+        //     worksheet.addRow(['Danh sách phiếu mượn']).font = { bold: true, size: 14 };
+        //     worksheet.addRow([]); // Thêm hàng trống
+
+        //     // Thêm hàng từ ngày đến ngày
+        //     const startDateExcel = startDate ? formatDate(startDate) : '';
+        //     const endDateExcel = endDate ? formatDate(endDate) : '';
+        //     worksheet.addRow([`Từ ngày: ${startDateExcel} đến ngày: ${endDateExcel}`]).font = { bold: true };
+
+        //     // Đặt header cho bảng
+        //     worksheet.addRow([
+        //         'Mã phiếu',
+        //         'Tên người mượn',
+        //         'Số điện thoại',
+        //         'Địa chỉ',
+        //         'Ngày mượn',
+        //         'Ngày trả',
+        //         'Trạng thái',
+        //         'Sách mượn'
+        //     ]);
+
+        //     // Đặt kiểu định dạng cho các cột
+        //     worksheet.getColumn('A').width = 15;
+        //     worksheet.getColumn('B').width = 30;
+        //     worksheet.getColumn('C').width = 15;
+        //     worksheet.getColumn('D').width = 15;
+        //     worksheet.getColumn('E').width = 20;
+        //     worksheet.getColumn('F').width = 20;
+        //     worksheet.getColumn('G').width = 15;
+        //     worksheet.getColumn('H').width = 50;
+
+        //     // Lấy dữ liệu từ API
+        //     const loanSlipsData = data?.data?.result?.map((loanSlip) => {
+        //         const bookTitles = loanSlip?.publications?.map(publication => {
+        //             return `${publication.name} (${publication.quantityLoan} quyển)`;
+        //         }).join('\n');
+
+        //         return {
+        //             barcode: loanSlip?.barcode,
+        //             borrowerName: loanSlip?.userId?.fullname,
+        //             phoneNumber: loanSlip?.userId?.phoneNumber,
+        //             address: loanSlip?.userId?.address,
+        //             borrowDate: formatDate(loanSlip?.borrowedDay),
+        //             returnDate: formatDate(loanSlip?.returnDay),
+        //             status: capitalizeFirstLetter(loanSlip?.status),
+        //             bookTitle: bookTitles || '',
+        //         };
+        //     });
+
+        //     console.log(loanSlipsData); // Kiểm tra dữ liệu đã chuyển đổi
+
+        //     // Thêm dữ liệu vào worksheet và kẻ đường viền
+        //     loanSlipsData.forEach((dataRow) => {
+        //         const row = worksheet.addRow([]);
+        //         row.values = [
+        //             dataRow.barcode,
+        //             dataRow.borrowerName,
+        //             dataRow.phoneNumber,
+        //             dataRow.address,
+        //             dataRow.borrowDate,
+        //             dataRow.returnDate,
+        //             dataRow.status,
+        //             dataRow.bookTitle
+        //         ];
+        //         row.eachCell((cell) => {
+        //             cell.border = {
+        //                 top: { style: 'thin' },
+        //                 left: { style: 'thin' },
+        //                 bottom: { style: 'thin' },
+        //                 right: { style: 'thin' }
+        //             };
+        //         });
+        //     });
+
+        //     // Kẻ đường viền cho header và thêm định dạng
+        //     const headerRow = worksheet.getRow(4); // Header bắt đầu ở hàng 4
+        //     headerRow.eachCell((cell) => {
+        //         cell.border = {
+        //             top: { style: 'thin' },
+        //             left: { style: 'thin' },
+        //             bottom: { style: 'thin' },
+        //             right: { style: 'thin' }
+        //         };
+        //         cell.fill = {
+        //             type: 'pattern',
+        //             pattern: 'solid',
+        //             fgColor: { argb: 'FFCCCCCC' } // Màu xám
+        //         };
+        //         cell.font = {
+        //             bold: true,
+        //             color: { argb: 'FF000000' } // Màu chữ đen
+        //         };
+        //     });
+
+        //     // Tạo file Excel và lưu
+        //     workbook.xlsx.writeBuffer().then((buffer) => {
+        //         const blob = new Blob([buffer], { type: 'application/octet-stream' });
+        //         const url = URL.createObjectURL(blob);
+        //         const a = document.createElement('a');
+        //         a.href = url;
+        //         a.download = 'loan_slips.xlsx'; // Tên file xuất
+        //         a.click();
+        //         URL.revokeObjectURL(url);
+        //     });
+        // } else {
+        //     toast.error("Không có dữ liệu để xuất excel");
+        // }
+    };
     return (
         <>
-            <SearchAndFilter onHandleDeleteSelectedItem={handleDeleteItemSelected} actionDeleteSelectedItem={true} contentSearch={contentSearch} handleContentSearch={setContentSearch} />
+            <SearchAndFilter actionExportFile={true} onHandleExportFile={handleExportFile} onHandleDeleteSelectedItem={handleDeleteItemSelected} actionDeleteSelectedItem={true} contentSearch={contentSearch} handleContentSearch={setContentSearch} />
             <Grid container pl={4} pr={4} xs={12} sm={12} md={12} lg={12} gap={2} sx={{ display: "flex", mb: 1, flexWrap: "wrap", mt: 1 }}>
                 <Grid item xs={12} sm={12} md={2} lg={2}>
                     <Select
@@ -352,6 +471,7 @@ function TableUserList<T extends DataType>({
                                 <MenuItem value={5}>5</MenuItem>
                                 <MenuItem value={10}>10</MenuItem>
                                 <MenuItem value={20}>20</MenuItem>
+                                <MenuItem value={0}>Tất cả</MenuItem>
                             </Select>
                         </FormControl>
                         <Typography variant="body2">Dòng trên trang</Typography>

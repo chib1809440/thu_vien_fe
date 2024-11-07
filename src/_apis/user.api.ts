@@ -16,8 +16,7 @@ export const createUser = async (formData: FormData): Promise<EntityResponse<Use
 // Read all
 export const getAllUsers = async (page?: number, limit?: number, search?: string, roleId?: string | number, order: string = "ASC"): Promise<EntityResponse<User[]>> => {
     let url = `${USER_API}?order=${order}`;
-
-    if (page !== undefined && limit !== undefined) {
+    if (page !== undefined && limit !== undefined &&limit>0) {
         url += `&page=${page}&limit=${limit}`;
     }
     console.log(page);

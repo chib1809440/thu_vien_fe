@@ -26,6 +26,12 @@ export interface SingleRecordResponse<T> {
         result: T;  // Chỉnh sửa ở đây
     };
 }
+export interface ModifyRecordResponse<T> {
+    statusCode: number;
+    success: boolean;
+    message?: string | string[];
+    data: T;
+}
 export interface AbstractEntity {
     _id?: string;
     createdAt?: string;

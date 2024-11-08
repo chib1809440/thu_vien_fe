@@ -13,6 +13,7 @@ export const createUser = async (formData: FormData): Promise<EntityResponse<Use
     });
     return response.data;
 };
+
 // Read all
 export const getAllUsers = async (page?: number, limit?: number, search?: string, roleId?: string | number, order: string = "ASC"): Promise<EntityResponse<User[]>> => {
     let url = `${USER_API}?order=${order}`;

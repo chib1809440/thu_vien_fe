@@ -1,4 +1,5 @@
-import { EntityResponse } from '../interfaces/entityResponse';
+import { RefreshToken } from '../interfaces/auth';
+import { EntityResponse, ModifyRecordResponse, SingleRecordResponse } from '../interfaces/entityResponse';
 import { CreateExampleModel, Example } from '../interfaces/example';
 import { CreateAdminModel } from '../interfaces/user';
 import axios from '../utils/axios';
@@ -27,5 +28,15 @@ export const createAdminAcount = async (data: CreateAdminModel): Promise<EntityR
 export const updateAdminAcount = async (data: CreateAdminModel): Promise<EntityResponse<string[]>> => {
 
     const response = await axios.patch<EntityResponse<string[]>>(`${AUTH_API}/${data._id}`, data);
+    return response.data;
+};
+
+// RefreshToken
+export const refreshTokenAccount = async (formData: FormData): Promise<ModifyRecordResponse<RefreshToken>> => {
+    const response = await axios.post<ModifyRecordResponse<RefreshToken>>(`${AUTH_API}/refresh-token`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data', // Đặt header cho form-data
+        },
+    });
     return response.data;
 };

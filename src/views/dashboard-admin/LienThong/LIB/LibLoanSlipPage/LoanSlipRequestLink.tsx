@@ -329,24 +329,28 @@ const LoanSlipRequestLink = () => {
                                         label="Đã duyệt"
                                         variant="filled"
                                     />
+                                ) : row.status === "đã hủy" ? ( // Kiểm tra nếu status là 'đã hủy'
+                                    <Chip
+                                        style={{ color: 'white', background: '#D32F2F' }} // Màu cho chip "Không duyệt"
+                                        label="Không duyệt"
+                                        variant="filled"
+                                    />
+                                ) : row.status === "chờ nhận sách" ? (
+                                    <Button
+                                        variant="contained"
+                                        sx={{ color: theme.palette.common.white, background: theme.palette.success.dark }}
+                                        onClick={() => handleDeliveryBook(row)}
+                                    >
+                                        Giao sách
+                                    </Button>
                                 ) : (
-                                    row.status === "chờ nhận sách" ? (
-                                        <Button
-                                            variant="contained"
-                                            sx={{ color: theme.palette.common.white, background: theme.palette.success.dark }}
-                                            onClick={() => handleDeliveryBook(row)}
-                                        >
-                                            Giao sách
-                                        </Button>
-                                    ) : (
-                                        <Button
-                                            variant="contained"
-                                            sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }}
-                                            onClick={() => handleApprovalLoanSlip(row)}
-                                        >
-                                            Chưa duyệt
-                                        </Button>
-                                    )
+                                    <Button
+                                        variant="contained"
+                                        sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }}
+                                        onClick={() => handleApprovalLoanSlip(row)}
+                                    >
+                                        Chưa duyệt
+                                    </Button>
                                 )
                             }
                         </Box>

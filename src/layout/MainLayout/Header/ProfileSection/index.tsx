@@ -13,7 +13,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { IconLogout, IconUser } from '@tabler/icons';
 import { IconCarTurbine, IconChevronDown, IconHomeBitcoin, IconShoppingCartFilled } from '@tabler/icons-react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { CsFlexRowBetween } from '../../../../components/default/flex';
 import ImageComponent from '../../../../components/default/image';
 import { useRoleList } from '../../../../hooks/react-query/roleData';
@@ -50,6 +50,10 @@ const ProfileSection = () => {
     const items = useSelector((state: { cartLoanSlip: { items: CreatePublication[] } }) => state.cartLoanSlip.items);
     const [openCart, setOpenCart] = useState(false);
     const dispatch = useDispatch();
+    const location = useLocation(); // Lấy thông tin URL
+
+    // Lấy đường dẫn từ location.pathname
+    const currentPath = location.pathname; // Ví dụ: "/len-thong/"
     const roleId = useMemo(() => {
         if (!user) return null;
 
@@ -156,31 +160,43 @@ const ProfileSection = () => {
                         isCart={true}
                     />
                 )}
-                <Box sx={{ mt: 1, position: 'relative', display: 'inline-flex', alignItems: 'center', mr: 2 }} onClick={handleSetOpenCart}>
-                    <IconShoppingCartFilled size={32} />
-                    {items?.length > 0 && ( // Chỉ hiển thị badge nếu số lượng lớn hơn 0
-                        <Box
-                            sx={{
-                                position: 'absolute',
-                                top: -8,
-                                right: -12,
-                                bgcolor: 'black', // Màu nền của badge
-                                color: 'white', // Màu chữ
-                                borderRadius: '50%',
-                                width: '20px', // Đường kính badge
-                                height: '20px', // Đường kính badge
-                                display: 'flex',
-                                padding: 1,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '20px', // Kích thước chữ
-                            }}
-                        >
-                            <Typography variant="h5" sx={{ color: "white" }}>{items?.length}</Typography> {/* Hiển thị số lượng */}
-
-                        </Box>
-                    )}
-                </Box>
+                {location.pathname.includes("/lien-thong") && (
+                    <Box
+                        sx={{
+                            mt: 1,
+                            position: 'relative',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            mr: 2
+                        }}
+                        onClick={handleSetOpenCart}
+                    >
+                        <IconShoppingCartFilled size={32} />
+                        {items?.length > 0 && ( // Chỉ hiển thị badge nếu số lượng lớn hơn 0
+                            <Box
+                                sx={{
+                                    position: 'absolute',
+                                    top: -8,
+                                    right: -12,
+                                    bgcolor: 'black', // Màu nền của badge
+                                    color: 'white', // Màu chữ
+                                    borderRadius: '50%',
+                                    width: '20px', // Đường kính badge
+                                    height: '20px', // Đường kính badge
+                                    display: 'flex',
+                                    padding: 1,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '20px', // Kích thước chữ
+                                }}
+                            >
+                                <Typography variant="h5" sx={{ color: "white" }}>
+                                    {items.length}
+                                </Typography> {/* Hiển thị số lượng */}
+                            </Box>
+                        )}
+                    </Box>
+                )}
                 <CsFlexRowBetween onClick={handleOpenUserMenu} gap={1}
                     sx={{
                         bgcolor: theme.palette.background.paper,

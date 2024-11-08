@@ -50,6 +50,16 @@ export const useReturnLoanSlip = () => {
         },
     });
 };
+export const useCancelLoanSlip = () => {
+    return useMutation({
+        mutationFn: async (id: string) => {
+            return await loanSlipsService.cancelLoanSlip<TLoanSlip>(id);
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    });
+};
 export const useEditLoanSlip = () => {
     return useMutation({
         mutationFn: async (data: TLoanSlipEdit) => {

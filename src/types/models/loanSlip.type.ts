@@ -2,7 +2,7 @@ import { User } from "../../interfaces/user";
 import { TEntityAbstract } from "./entity-common.type";
 import { TPublications } from "./publications.type";
 
-export type TStatusLoanSlip = 'đang mượn' | 'quá hạn' | 'đã trả' | 'đang xử lý';
+export type TStatusLoanSlip = 'đang mượn' | 'quá hạn' | 'đã trả' | 'đang xử lý' | 'chờ nhận sách' | 'đã hủy';
 
 export type TLoanSlip = TEntityAbstract & {
     note: string | null;
@@ -14,6 +14,7 @@ export type TLoanSlip = TEntityAbstract & {
     libraryId?: string;
     isAgree: boolean;
     isReturn: boolean,
+    isCancel?: boolean,
     receiptDate: string;
     status: TStatusLoanSlip;
     historys: {

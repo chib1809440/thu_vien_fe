@@ -60,6 +60,7 @@ type Props = {
     open: boolean;
     onClose: () => void;
     onHandleReturnLoanSlip?: (loanSlip: TLoanSlip, publications: CreatePublication[]) => void;
+    onHandleCancelLoanSlip?: (loanSlip: TLoanSlip) => void;
     onSubmit?: (values: TLoanSlipCreate, resetForm: () => void) => void;
     isFetching?: boolean;
     initialValues?: TLoanSlipCreate;
@@ -82,6 +83,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
     onClose,
     onSubmit,
     onHandleReturnLoanSlip,
+    onHandleCancelLoanSlip,
     initialValues = {
         note: "",
         borrowedDay: "",
@@ -100,7 +102,9 @@ const FormAddEditLoanSlip: FC<Props> = ({
     const [arrayError, setArrayError] = useState<{ name: string; position: string }[]>([]);
     const items = useSelector((state: { cartLoanSlip: { items: CreatePublication[] } }) => state.cartLoanSlip.items);
     const dispatch = useDispatch();
-
+    useEffect(() => {
+        console.log("Loan Slip nhận được:", loanSlip);
+    }, [loanSlip]);
     const { logout, user } = useAuth();
     const userID = useMemo(() => {
         if (!user) return null;
@@ -109,7 +113,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
         return _user?.data?._id;
     }, [user]);
-  
+
 
     const libraryId = useMemo(() => {
         if (!user) return null;
@@ -202,8 +206,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
         }
 
     }, [items])
-    console.log('wile', formik.values.libraryId);
-    console.log('wile', dataGroups);
 
     const debouncedBarCodeUserId = useDebounce(barcodeUserId, 500);
     const [dropdownOptions, setDropdownOptions] = useState<CreatePublication[]>([]);
@@ -262,8 +264,16 @@ const FormAddEditLoanSlip: FC<Props> = ({
         }));
         onHandleReturnLoanSlip(loanSlip, filteredPublications)
     };
+    const handleCancelLoanSlip = (loanSlip: TLoanSlip) => {
+        if (onHandleCancelLoanSlip) {
+            onHandleCancelLoanSlip(loanSlip); // Gọi hàm
+        } else {
+            console.error("onHandleCancelLoanSlip is not a function");
+        }
+    };
     // Use custom hook to debounce array of barcodes
     const debouncedBarcode = useDebounce(searchBarCode, 500);
+    console.log("dsdsd", loanSlip);
 
     useEffect(() => {
         if (debouncedBarcode && debouncedBarcode.length >= 5) {
@@ -465,7 +475,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
         return _user?.data?.libraryDetail;
     }, [user]);
-
     return (
         <FormikProvider value={formik}>
             <Dialog
@@ -481,7 +490,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                 disableEscapeKeyDown
             >
                 <DialogTitle sx={{ p: 4 }}>
-                    {isEditMode ? "Sửa phiếu mượn" : "Thêm phiếu mượn mới"}
+                    {isEditMode ? "Sửa phiếu mượn" : "Thêm phiếu mượn mới"} {loanSlip?.isCancel === true ? <span style={{ color: '#c62828' }}>(Đã hủy phiếu)</span> : ""}
                 </DialogTitle>
 
                 <DialogContent sx={{ p: 8 }} >
@@ -669,6 +678,10 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                         <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell></>
                                                 }
                                                 {
+                                                    loanSlip?.isAgree === false && <>  <StyledTableCell align="left" width='15%'>Số lượng trong kho</StyledTableCell>
+                                                        <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell></>
+                                                }
+                                                {
 
                                                     isEditMode ? <>  <StyledTableCell align="left" width='10%'>Số lượng mượn</StyledTableCell></> : <> </>
                                                 }
@@ -728,6 +741,14 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
                                                     {
                                                         isEditMode === false && <> <StyledTableCell align="left">
+                                                            {row.quantity}
+                                                        </StyledTableCell>
+                                                            <StyledTableCell align="left">
+                                                                {row.shelvesQuantity}
+                                                            </StyledTableCell></>
+                                                    }
+                                                    {
+                                                        loanSlip?.isAgree === false && <>   <StyledTableCell align="left">
                                                             {row.quantity}
                                                         </StyledTableCell>
                                                             <StyledTableCell align="left">
@@ -835,6 +856,15 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                                 stroke={1.5}
                                                             />
                                                         }
+                                                        {
+                                                            !loanSlip && <IconTrash
+                                                                style={{ cursor: 'pointer', color: 'red' }}
+                                                                onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
+                                                                color="red"
+                                                                size={20}
+                                                                stroke={1.5}
+                                                            />
+                                                        }
                                                     </StyledTableCell>
                                                 </StyledTableRow>
                                             ))}
@@ -915,7 +945,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
                 <DialogActions sx={{ p: 4 }}>
                     <Button disabled={isFetching} onClick={onClose} color="error">
-                        Huỷ
+                        Đóng
                     </Button>
                     {
 
@@ -929,7 +959,22 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             In
                         </Button>
                     }
-
+                    {
+                        loanSlip &&
+                        isEditMode && (
+                            !loanSlip.isCancel ? (
+                                <Button
+                                    onClick={() => handleCancelLoanSlip(loanSlip)}
+                                    style={{ background: '#c62828', color: 'white' }}
+                                    variant="contained"
+                                >
+                                    Hủy phiếu mượn
+                                </Button>
+                            ) : (
+                                <></>
+                            )
+                        )
+                    }
                     {
                         !loanSlip?.isReturn && <Button
                             disabled={isFetching}

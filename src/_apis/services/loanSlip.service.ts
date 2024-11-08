@@ -6,7 +6,12 @@ import BaseApi from "./base-api";
 class LoanSlipService extends BaseApi {
     public async approvalLoanSlip<DynamicType>(id: string | number, params?: TFilter) {
         const httpClientInstance = this.getHttpClient();
-        const response = await httpClientInstance.get(`${this.endpoint}/approval/${id}`, { params });
+        const response = await httpClientInstance.patch(`${this.endpoint}/approval/${id}`, { params });
+        return response.data as TApiOneRecord<DynamicType>;
+    }
+    public async cancelLoanSlip<DynamicType>(id: string | number, params?: TFilter) {
+        const httpClientInstance = this.getHttpClient();
+        const response = await httpClientInstance.patch(`${this.endpoint}/cancel/${id}`, { params });
         return response.data as TApiOneRecord<DynamicType>;
     }
     public async returnLoanSlip<DynamicType>(id: string | number, publications: CreatePublication[], params?: TFilter) {

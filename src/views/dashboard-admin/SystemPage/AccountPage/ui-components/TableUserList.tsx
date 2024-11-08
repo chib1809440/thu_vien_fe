@@ -159,9 +159,12 @@ function TableUserList<T extends DataType>({
     }
     const [user, setUser] = useState<User>();
     const pageCount = useMemo(() => {
+        // Check if rowsPerPage is 0 to prevent division by zero
+        if (rowsPerPage === 0) {
+            return 0; // Or return a different value as needed
+        }
         return Math.ceil((users?.data?.meta?.itemCount || 0) / rowsPerPage);
     }, [users, page, rowsPerPage]);
-
     const handleDeleteItem = (e: React.MouseEventHandler<HTMLTableRowElement> | undefined, id: any) => {
         setIsOpenConfirmDialog(true);
         setSelectedDeleteID(id);
@@ -212,7 +215,7 @@ function TableUserList<T extends DataType>({
             toast.error(error.message);
         }
     };
-
+  
     const handleOpenLibs = () => {
         setIsOpenLibCard(true);
     };
@@ -415,6 +418,7 @@ function TableUserList<T extends DataType>({
                                 <MenuItem value={5}>5</MenuItem>
                                 <MenuItem value={10}>10</MenuItem>
                                 <MenuItem value={20}>20</MenuItem>
+                                <MenuItem value={0}>Tất cả</MenuItem>
                             </Select>
                         </FormControl>
                         <Typography variant="body2">Dòng trên trang</Typography>

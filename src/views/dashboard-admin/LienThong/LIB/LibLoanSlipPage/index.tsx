@@ -9,7 +9,7 @@ import ActionsForm from "../../../../../components/custom/form/ActionForm";
 import TableList from "../../../../../components/custom/table-list/TableList";
 import StyledButton from "../../../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../../../components/default/dialog/ConfirmDeleteDialog";
-import { useAddLoanSlip, useApprovalLoanSlip, useDeleteLoanSlip, useDeleteManyLoanSlip, useDeleteSoftLoanSlip, useDeleteSoftManyLoanSlip, useEditLoanSlip, useReturnLoanSlip } from "../../../../../hooks/services/loanSlip/loanSlip-mutation";
+import { useAddLoanSlip, useApprovalLoanSlip, useCancelLoanSlip, useDeleteLoanSlip, useDeleteManyLoanSlip, useDeleteSoftLoanSlip, useDeleteSoftManyLoanSlip, useEditLoanSlip, useReturnLoanSlip } from "../../../../../hooks/services/loanSlip/loanSlip-mutation";
 import { useFetchLoanSlip, useFetchLoanSlipLink, useReFetchLoanSlip, useReFetchLoanSlipLink } from "../../../../../hooks/services/loanSlip/loanSlip-query";
 import useQueryString from "../../../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../../../types/common/table";
@@ -97,6 +97,7 @@ const LoanSlipPage = () => {
     const mutationAdd = useAddLoanSlip();
     const mutationApproval = useApprovalLoanSlip();
     const mutationReturn = useReturnLoanSlip();
+    const mutationCancel = useCancelLoanSlip();
     const mutationEdit = useEditLoanSlip();
     const mutationDelete = useDeleteLoanSlip();
     //const mutationSDeleteMany = useDeleteManyLoanSlip();
@@ -156,10 +157,27 @@ const LoanSlipPage = () => {
             }
         );
     };
+    const handleCancelLoanSlip = (row: TLoanSlip) => {
+        mutationCancel.mutate(
+            row._id,  // Chuyển đổi tham số thành đối tượng
+            {
+                onSuccess: (data) => {
+                    revalidate(); // Hàm này cần phải được định nghĩa trong component
+                    if (data?.data?.result) {
+                        console.log("kk", data.data.result);
+                        setSelectedEdit(data.data.result);
+                    }
+                    toast.success('Hủy phiếu mượn thành công.');
+                },
+            }
+        );
+    };
+
     const handleClose = () => {
         setOpenAddEdit(false);
         setSelectedEdit(null);
     };
+    console.log('edit', selectedEdit);
 
     const handleSubmit = (values: any) => {
         if (selectedEdit) {
@@ -314,24 +332,32 @@ const LoanSlipPage = () => {
                 sxRow: { paddingRight: 3, maxWidth: 200 },
                 render: (row) => {
                     return (
-                        <Box
-                        >
+                        <Box>
                             {
-                                row.isAgree === true ? <>
+                                row?.status === "đã hủy" ? (
+                                    // Nếu status là "đã hủy", render chip "Không duyệt"
                                     <Chip
-                                        style={{ color: 'white', background: '#096A5E' }}
-                                        label="Đã duyệt"
+                                        style={{ color: 'white', background: '#de524a' }}
+                                        label="Không duyệt"
                                         variant="filled"
                                     />
-                                </> : <>
-                                    <Chip
-                                        style={{ color: 'black', background: 'yellow' }}
-                                        label="Chưa duyệt"
-                                        variant="filled"
-                                    />
-
-                                    {/* <Button variant="contained" sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }} onClick={() => handleApprovalLoanSlip(row)}>Chưa duyệt</Button> */}
-                                </>
+                                ) : (
+                                    row.isAgree === true ? (
+                                        // Nếu isAgree là true, render chip "Đã duyệt"
+                                        <Chip
+                                            style={{ color: 'white', background: '#096A5E' }}
+                                            label="Đã duyệt"
+                                            variant="filled"
+                                        />
+                                    ) : (
+                                        // Nếu isAgree là false, render chip "Chưa duyệt"
+                                        <Chip
+                                            style={{ color: 'black', background: 'yellow' }}
+                                            label="Chưa duyệt"
+                                            variant="filled"
+                                        />
+                                    )
+                                )
                             }
                         </Box>
                     );
@@ -589,6 +615,7 @@ const LoanSlipPage = () => {
                     loanSlip={selectedEdit}
                     onSubmit={handleSubmit}
                     onHandleReturnLoanSlip={handleReturnLoanSlip}
+                    onHandleCancelLoanSlip={handleCancelLoanSlip}
                     isEditMode={selectedEdit ? true : false}
                 />
             )}

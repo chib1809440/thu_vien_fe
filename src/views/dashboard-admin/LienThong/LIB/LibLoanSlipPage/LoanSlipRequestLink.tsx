@@ -9,7 +9,7 @@ import ActionsForm from "../../../../../components/custom/form/ActionForm";
 import TableList from "../../../../../components/custom/table-list/TableList";
 import StyledButton from "../../../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../../../components/default/dialog/ConfirmDeleteDialog";
-import { useAddLoanSlip, useApprovalLoanSlip, useDeleteSoftLoanSlip, useDeleteSoftManyLoanSlip, useEditLoanSlip, useReturnLoanSlip } from "../../../../../hooks/services/loanSlip/loanSlip-mutation";
+import { useAddLoanSlip, useApprovalLoanSlip, useCancelLoanSlip, useDeleteSoftLoanSlip, useDeleteSoftManyLoanSlip, useEditLoanSlip, useReturnLoanSlip } from "../../../../../hooks/services/loanSlip/loanSlip-mutation";
 import { useFetchLoanSlip, useFetchLoanSlipLink, useFetchLoanSlipRequestLink, useReFetchLoanSlip, useReFetchLoanSlipLink, useReFetchLoanSlipRequestLink } from "../../../../../hooks/services/loanSlip/loanSlip-query";
 import useQueryString from "../../../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../../../types/common/table";
@@ -27,6 +27,7 @@ import DatePicker from "react-datepicker";
 import ExcelJS from 'exceljs';
 import FormAddEditLibLoanSlip from "./ui-components/FormAddEditLibLoanSlip";
 import ViewDetailLoanSlip from "../../../LoanSlipPage/ui-components/ViewDetailLoanSlip";
+import { User } from "../../../../../interfaces/user";
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -103,7 +104,7 @@ const LoanSlipRequestLink = () => {
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
     const [loanSlipToDelete, setLoanSlipToDelete] = useState<TLoanSlip | null>(null);
-
+    const mutationCancel = useCancelLoanSlip();
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
     const [openViewDetail, setOpenViewDetail] = useState(false);
@@ -121,12 +122,30 @@ const LoanSlipRequestLink = () => {
         content: () => componentRef.current,
     });
     const handleApprovalLoanSlip = (row: TLoanSlip) => {
-        mutationApproval.mutate(row._id, {
-            onSuccess: () => {
-                revalidate();
-                toast.success('Duyệt phiếu mượn thành công.');
-            },
-        });
+        row.status = "chờ nhận sách";
+
+        mutationEdit.mutate(
+            { ...row as any, _id: row._id, userId: row.userId._id },
+            {
+                onSuccess: () => {
+                    revalidate();
+                    toast.success('Chỉnh sửa thành công.');
+                    handleClose();
+                },
+            }
+        );
+    };
+    const handleDeliveryBook = (row: TLoanSlip) => {
+        mutationApproval.mutate(
+            row._id,
+            {
+                onSuccess: () => {
+                    revalidate();
+                    toast.success('Chỉnh sửa thành công.');
+                    handleClose();
+                },
+            }
+        );
     };
     const handleReturnLoanSlip = (row: TLoanSlip, publications: CreatePublication[]) => {
         mutationReturn.mutate(
@@ -304,15 +323,31 @@ const LoanSlipRequestLink = () => {
                         <Box
                         >
                             {
-                                row.isAgree === true ? <>
+                                row.isAgree === true ? (
                                     <Chip
                                         style={{ color: 'white', background: '#096A5E' }}
                                         label="Đã duyệt"
                                         variant="filled"
                                     />
-                                </> : <>
-                                    <Button variant="contained" sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }} onClick={() => handleApprovalLoanSlip(row)}>Chưa duyệt</Button>
-                                </>
+                                ) : (
+                                    row.status === "chờ nhận sách" ? (
+                                        <Button
+                                            variant="contained"
+                                            sx={{ color: theme.palette.common.white, background: theme.palette.success.dark }}
+                                            onClick={() => handleDeliveryBook(row)}
+                                        >
+                                            Giao sách
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            variant="contained"
+                                            sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }}
+                                            onClick={() => handleApprovalLoanSlip(row)}
+                                        >
+                                            Chưa duyệt
+                                        </Button>
+                                    )
+                                )
                             }
                         </Box>
                     );
@@ -527,8 +562,20 @@ const LoanSlipRequestLink = () => {
         }
     };
 
-
-
+    const handleCancelLoanSlip = (row: TLoanSlip) => {
+        mutationCancel.mutate(
+            row._id,  // Chuyển đổi tham số thành đối tượng
+            {
+                onSuccess: (data) => {
+                    revalidate(); // Hàm này cần phải được định nghĩa trong component
+                    if (data?.data?.result) {
+                        setSelectedEdit(data.data.result);
+                    }
+                    toast.success('Trả sách thành công.');
+                },
+            }
+        );
+    };
     const actionMenus = useMemo((): TMenuOption[] => {
         return [
             {
@@ -584,6 +631,7 @@ const LoanSlipRequestLink = () => {
                     loanSlip={selectedEdit}
                     onSubmit={handleSubmit}
                     onHandleReturnLoanSlip={handleReturnLoanSlip}
+                    onHandleCancelLoanSlip={handleCancelLoanSlip}
                     isEditMode={selectedEdit ? true : false}
                 />
             )}

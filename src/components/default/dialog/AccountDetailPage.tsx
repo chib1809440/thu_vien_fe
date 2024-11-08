@@ -143,7 +143,7 @@ export default function AccountDetailDialog({ title, maxWidth, id, content, acti
                             </Box>
                             <Box sx={{ display: 'none' }}>
                                 {
-                                    userDetail && <PrintAccount ref={componentRef} user={userDetail?.data?.result} />
+                                    userDetail && <PrintAccount ref={componentRef} dataUsers={userDetail?.data?.result} />
                                 }
                             </Box>
                         </Box>

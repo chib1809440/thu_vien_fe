@@ -16,7 +16,7 @@ interface PropSearch {
     actionChangeClass?: boolean,
     actionPromotedClass?: boolean,
     actionRestoreSelectedItem?: boolean,
-    actionLibCardSelectedItem?: boolean,
+    actionLibCardSelectedItem?: () => void,
     handleContentSearch: (e: any) => void
     onHandleDownloadFile?: () => void
     onHandleImportFile?: () => void
@@ -27,10 +27,10 @@ interface PropSearch {
     onHandleChangeClass?: () => void
     onHandlePromotedClass?: () => void,
     onHandleRestoreSelectedItem?: () => void,
-    onHandleLibCardSeletedItem?: () => void,
+    onHandleLibCardSelectedItem?: () => void,
 
 }
-export function SearchAndFilter({ contentSearch, actionPromotedClass, actionRestoreSelectedItem, onHandleRestoreSelectedItem, onHandleImportQuestionFile, actionImportQuestionFile, onHandlePromotedClass, actionChangeClass, onHandleChangeClass, onHandleDeleteSelectedItem, actionDeleteSelectedItem, handleContentSearch, onHandleImportFile, onHandleDownloadFile, onHandlePrintFile, placeholderText, actionDownLoadFile, actionImportFile, pathFileActionDownLoadFile, actionPrintFile, actionExportFile, onHandleExportFile, actionLibCardSelectedItem, onHandleLibCardSeletedItem }: PropSearch) {
+export function SearchAndFilter({ contentSearch, actionPromotedClass, actionRestoreSelectedItem, onHandleRestoreSelectedItem, onHandleImportQuestionFile, actionImportQuestionFile, onHandlePromotedClass, actionChangeClass, onHandleChangeClass, onHandleDeleteSelectedItem, actionDeleteSelectedItem, handleContentSearch, onHandleImportFile, onHandleDownloadFile, onHandlePrintFile, placeholderText, actionDownLoadFile, actionImportFile, pathFileActionDownLoadFile, actionPrintFile, actionExportFile, onHandleExportFile, actionLibCardSelectedItem, onHandleLibCardSelectedItem }: PropSearch) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -68,7 +68,7 @@ export function SearchAndFilter({ contentSearch, actionPromotedClass, actionRest
         setAnchorEl(null);
     };
     const handleLibCardSeletedItem = () => {
-        onHandleLibCardSeletedItem();
+        onHandleLibCardSelectedItem();
         setAnchorEl(null);
     };
     const handleChangeClass = () => {

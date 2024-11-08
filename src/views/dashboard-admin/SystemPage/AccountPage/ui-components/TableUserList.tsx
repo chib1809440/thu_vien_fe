@@ -1,6 +1,6 @@
 import { FormControl, MenuItem, Box, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme, CircularProgress, Alert, IconButton, Grid } from "@mui/material"
 import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconPencil, IconTrash } from "@tabler/icons-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Checkbox from '@mui/material/Checkbox';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -29,6 +29,8 @@ import { filterBreakpointKeys } from "@mui/system/Unstable_Grid/traverseBreakpoi
 import AccountDetailDialog from "../../../../../components/default/dialog/AccountDetailPage";
 import { IconEye } from "@tabler/icons";
 import { Role } from "../../../../../interfaces/role";
+import { useReactToPrint } from "react-to-print";
+import PrintAccount from "../PrintAccount";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -58,6 +60,7 @@ function TableUserList<T extends DataType>({
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isOpenUpdateDilog, setIsOpenUpdateDialog] = useState<boolean>(false);
     const [isOpenConfirmDialog, setIsOpenConfirmDialog] = useState(false);
+    const [isOpenLibCard, setIsOpenLibCard] = useState(false);
     const [isOpenConfirmDeleteSelectedDialog, setIsOpenConfirmDeleteSelectedDialog] = useState(false);
     const [selectedDeleteID, setSelectedDeleteID] = useState<string>()
     const [filterRoleId, setFilterRoleId] = useState<string | number>(0)
@@ -166,6 +169,9 @@ function TableUserList<T extends DataType>({
     const handleDeleteItemSelected = () => {
         setIsOpenConfirmDeleteSelectedDialog(true);
     }
+    const handleLibCardSelected = () => {
+        setIsOpenLibCard(true);
+    };
     const handleConfirmDeleteItem = async () => {
         if (selectedDeleteID)
             try {
@@ -207,9 +213,66 @@ function TableUserList<T extends DataType>({
         }
     };
 
+    const handleOpenLibs = () => {
+        setIsOpenLibCard(true);
+    };
+
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+        content: () => document.getElementById("printAccountBarCode"),
+        pageStyle: `
+          @page {
+            size: A4;
+            margin: 10mm;
+          }
+          body {
+            margin: 0;
+          }
+          .printAccountCard {
+            width: 100%;
+            height: 1250px;
+            margin-bottom: 10px;
+            page-break-inside: avoid;
+          }
+          .page {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 0;
+            margin-bottom: 0;
+          }
+          .page .printAccountCard {
+            page-break-before: always;
+          }
+          .page:last-child .printAccountCard {
+            page-break-before: auto;
+          }
+        `,
+      });
+      
+
+    const handleConfirmLibCard = async () => {
+        try {
+            handlePrint();
+            setIsOpenLibCard(false);
+        } catch (error) {
+            setIsOpenLibCard(false);
+            toast.error(error.message);
+        }
+    };
+    const checkedUsers = users?.data?.result?.filter((user) => checked.includes(user._id)); 
+    
     return (
         <>
-            <SearchAndFilter onHandleDeleteSelectedItem={handleDeleteItemSelected} actionDeleteSelectedItem={true} contentSearch={contentSearch} handleContentSearch={setContentSearch} />
+            {isOpenLibCard && <PrintAccount ref={componentRef} dataUsers={checkedUsers} />}
+            <SearchAndFilter
+                onHandleDeleteSelectedItem={handleDeleteItemSelected}
+                actionDeleteSelectedItem={true}
+                contentSearch={contentSearch}
+                handleContentSearch={setContentSearch}
+                actionLibCardSelectedItem={handleOpenLibs}
+                onHandleLibCardSelectedItem={handleLibCardSelected}
+            />
             <Grid container pl={4} pr={4} xs={12} sm={12} md={12} lg={12} gap={2} sx={{ display: "flex", mb: 1, flexWrap: "wrap", mt: 1 }}>
                 <Grid item xs={12} sm={12} md={2} lg={2}>
                     <Select
@@ -420,6 +483,14 @@ function TableUserList<T extends DataType>({
             {
                 isOpenConfirmDeleteSelectedDialog && <AlertConfirmDialog title="Xác nhận xóa dữ liệu?" message="Dữ liệu đã xóa thì không khôi khục được" onHandleConfirm={handleConfirmDeleteItemSelected} openConfirm={isOpenConfirmDeleteSelectedDialog} handleOpenConfirmDialog={setIsOpenConfirmDeleteSelectedDialog} />
             }
+            {isOpenLibCard && (
+                <AlertConfirmDialog
+                    title="Xác nhận in thẻ thư viện?"
+                    onHandleConfirm={handleConfirmLibCard}
+                    openConfirm={isOpenLibCard}
+                    handleOpenConfirmDialog={setIsOpenLibCard}
+                />
+            )}
         </>
 
     )

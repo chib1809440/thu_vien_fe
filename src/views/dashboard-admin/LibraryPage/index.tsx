@@ -8,6 +8,7 @@ import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
 import { CsFlexRowBetween } from "../../../components/default/flex";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { useAddLibrary, useDeleteLibrary, useDeleteManyLibrary, useEditLibrary } from "../../../hooks/services/library/library-mutation";
 import { useFetchLibrary, useReFetchLibrary } from "../../../hooks/services/library/library-query";
 import useQueryString from "../../../hooks/services/useQueryString";
@@ -16,8 +17,9 @@ import { TLibrary, TLibraryCreate } from "../../../types/models/library.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditLibrary from "./ui-components/FormAddEditLibrary";
-import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
-import { TGroup } from "../../../types/models/group.type";
+import { Typography } from "@mui/material";
+import { useAuth } from "../../../contexts/JWTContext";
+import { Role } from "../../../interfaces/role";
 
 
 const LibraryPage = () => {
@@ -40,7 +42,14 @@ const LibraryPage = () => {
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmDeleteMultiple, setOpenConfirmDeleteMultiple] = useState(false);
+    const { user } = useAuth();
+    const userRole = useMemo(() => {
+        if (!user) return null;
 
+        const _user = { ...user } as any;
+
+        return (_user?.data?.roleId as Role)?.name;
+    }, [user]);
 
     const addLibrary = () => {
         setOpenAddEdit(true);
@@ -112,39 +121,64 @@ const LibraryPage = () => {
                 render: (row) => (capitalizeFirstLetter(row?.name)),
             },
             {
+                id: "maxStorageLimit",
+                disablePadding: "none",
+                label: "Thông tin dung lượng",
+                align: "left",
+                sxRow: { maxWidth: 200 },
+                render: (row) => {
+                    return (
+                        <Box>
+                            <Box>
+                                <Typography> Đang sử dùng: <strong>{(row?.totalStorageUsed / 1024).toFixed(2)} GB</strong></Typography>
+                            </Box >
+                            <Box>
+                                <Typography>Dung lượng bộ nhớ: <strong>{(row?.maxStorageLimit / 1024).toFixed(2)} GB</strong></Typography>
+                            </Box>
+                        </Box >
+                    )
+                },
+            },
+            {
                 id: "group",
                 disablePadding: "none",
                 label: "Nhóm",
                 align: "left",
-                sxRow: { maxWidth: 100 },
+                sxRow: { maxWidth: 150 },
                 render: (row) => {
                     return (
                         <Box>
-                            {row?.groupId !== null ? "Đã có nhóm" : "Chưa có nhóm"}
-                        </Box>
+                           {row?.groupId !== null ? "Đã có nhóm" : "Chưa có nhóm"}
+
+                        </Box >
                     )
                 },
             },
             {
                 id: "address",
                 disablePadding: "none",
-                label: "Địa chỉ",
+                label: "Thông tin",
                 align: "left",
-                sxRow: {maxWidth: 150 },
-            },
-           
-            {
-                id: "phoneNumber",
-                disablePadding: "none",
-                label: "Số điện thoại",
-                align: "left",
-            },
-            {
-                id: "email",
-                disablePadding: "none",
-                label: "Email",
-                align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 150 },
+                sxRow: { maxWidth: 150 },
+                render: (row) => {
+                    return (
+                        <Box>
+                            {
+                                row?.phoneNumber &&
+                                <Box>
+                                    <Typography> Số điện thoại: <strong>{row?.phoneNumber}</strong></Typography>
+                                </Box>
+                            }
+                            {
+                                row?.email &&
+                                <Box>
+                                    <Typography> Email: <strong>{row?.email}</strong></Typography>
+                                </Box>
+                            }
+
+                        </Box >
+                    )
+                },
             },
 
             {
@@ -240,7 +274,8 @@ const LibraryPage = () => {
                 managementAgency: selectedEdit.managementAgency,
                 phoneNumber: selectedEdit.phoneNumber,
                 email: selectedEdit.email,
-                facebook: selectedEdit.facebook
+                facebook: selectedEdit.facebook,
+                maxStorageLimit: selectedEdit.maxStorageLimit
             };
         }
 
@@ -250,7 +285,8 @@ const LibraryPage = () => {
             managementAgency: "",
             phoneNumber: "",
             email: "",
-            facebook: ""
+            facebook: "",
+            maxStorageLimit: 0,
         };
     }, [selectedEdit]);
 

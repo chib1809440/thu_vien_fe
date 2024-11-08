@@ -775,7 +775,7 @@ const PublicationsPage = () => {
                                     {
                                         hasPermission([
                                             { resource: "publications", action: "manage" },
-                                            { resource: "publications", action: "update" },
+                                            { resource: "publications", action: "create" },
                                         ]) ?
                                             <StyledButton
                                                 color="primary"

@@ -1,4 +1,4 @@
-import { CardMedia, Grid, Input, InputLabel, Typography } from "@mui/material";
+import { Box, CardMedia, Grid, LinearProgress, Typography } from "@mui/material";
 import { useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import IconEmail from "../../../assets/images/contact/email.svg";
@@ -65,6 +65,7 @@ const LibInformationPage = () => {
                 phoneNumber: libraryInfo.phoneNumber,
                 email: libraryInfo.email,
                 facebook: libraryInfo.facebook,
+                maxStorageLimit: libraryInfo.maxStorageLimit,
             };
         }
 
@@ -75,8 +76,13 @@ const LibInformationPage = () => {
             phoneNumber: "",
             email: "",
             facebook: "",
+            maxStorageLimit: 0,
         };
     }, [libraryInfo]);
+
+    const usedStoragePercentage = libraryInfo?.maxStorageLimit
+        ? (libraryInfo.totalStorageUsed / libraryInfo.maxStorageLimit) * 100
+        : 0;
 
     return (
         <>
@@ -129,31 +135,74 @@ const LibInformationPage = () => {
                     <Grid md={8} container justifyContent="flex-start" alignItems="flex-start">
                         <Grid container justifyContent="space-between">
                             <Grid md={8}>
-                                <Typography mt={2} textAlign="left" variant="h4">
-                                    Cơ quan quản lý:
-                                    <Typography component="span" textTransform={"capitalize"}>
-                                        {` ${libraryInfo?.managementAgency || ""}`}
+                                {
+                                    libraryInfo?.managementAgency &&
+                                    <Typography mt={2} textAlign="left" variant="h4">
+                                        Cơ quan quản lý:
+                                        <Typography component="span" textTransform={"capitalize"}>
+                                            {` ${libraryInfo?.managementAgency || ""}`}
+                                        </Typography>
                                     </Typography>
-                                </Typography>
+                                }
+
+
                                 <Typography mt={2} textAlign="left" variant="h4">
                                     Tên trường:
                                     <Typography component="span" textTransform={"capitalize"}>
                                         {` ${libraryInfo?.name || ""}`}
                                     </Typography>
                                 </Typography>
-                                <Typography mt={2} textAlign="left" variant="h4">
-                                    Địa chỉ:
-                                    <Typography component="span" textTransform={"capitalize"}>
-                                        {` ${libraryInfo?.address || ""}`}
-                                    </Typography>
-                                </Typography>
-                                <Typography mt={2} textAlign="left" variant="h4">
 
-                                    Điện thoại:
-                                    <Typography component="span" textTransform={"capitalize"}>
-                                        {` ${libraryInfo?.phoneNumber || ""}`}
+                                {
+                                    libraryInfo?.address &&
+                                    <Typography mt={2} textAlign="left" variant="h4">
+                                        Địa chỉ:
+                                        <Typography component="span" textTransform={"capitalize"}>
+                                            {` ${libraryInfo?.address || ""}`}
+                                        </Typography>
                                     </Typography>
-                                </Typography>
+                                }
+
+                                {
+                                    libraryInfo?.phoneNumber &&
+                                    <Typography mt={2} textAlign="left" variant="h4">
+
+                                        Điện thoại:
+                                        <Typography component="span" textTransform={"capitalize"}>
+                                            {` ${libraryInfo?.phoneNumber || ""}`}
+                                        </Typography>
+                                    </Typography>
+                                }
+
+
+                                <Box>
+                                    <Typography mt={2} textAlign="left" variant="h4">
+                                        Bộ nhớ đã dùng ({usedStoragePercentage.toFixed(2)}%)
+                                    </Typography>
+                                    <LinearProgress
+                                        variant="determinate"
+                                        value={usedStoragePercentage}
+                                        sx={{
+                                            marginTop: 2,
+                                            backgroundColor: '#e0e0e0',
+                                            '& .MuiLinearProgress-bar': {
+                                                backgroundColor: usedStoragePercentage > 80 ? '#f44336' : '#3f51b5',
+                                            },
+                                        }}
+                                    />
+                                    <Box sx={{ mt: 1 }}>
+                                        Đã sử dụng
+                                        <Typography component="span" textTransform={"capitalize"}>
+                                            {` ${(libraryInfo?.totalStorageUsed / 1024).toFixed(2) || ""}`} GB
+                                        </Typography>
+
+                                        <Typography component="span" ml={1}>
+                                            trong tổng số
+                                            {` ${(libraryInfo?.maxStorageLimit / 1024).toFixed(2) || ""}`} GB
+                                        </Typography>
+                                    </Box>
+
+                                </Box>
                             </Grid>
                             <Grid md={4} mt={3}>
                                 <Grid container alignItems="center" justifyContent="flex-end">

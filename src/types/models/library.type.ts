@@ -13,7 +13,9 @@ export type TLibrary = TEntityAbstract & {
     email?: string;
     facebook?: string;
     managementAgency: string;
+    maxStorageLimit?: number;
+    totalStorageUsed?: number;
 };
 
-export type TLibraryCreate = Partial<Pick<TLibrary,  "name" | "phoneNumber" | "address"| "managementAgency" | "email" | "facebook">>;
-export type TLibraryEdit = Partial<Pick<TLibrary,  "name" | "phoneNumber" | "address"| "managementAgency" | "email" | "facebook">> & {_id:string};
+export type TLibraryCreate = Partial<Pick<TLibrary,  "name" | "phoneNumber" | "address"| "managementAgency" | "email" | "facebook" | "maxStorageLimit" >>;
+export type TLibraryEdit = Partial<Pick<TLibrary,  "name" | "phoneNumber" | "address"| "managementAgency" | "email" | "facebook" | "maxStorageLimit" >> & {_id:string};

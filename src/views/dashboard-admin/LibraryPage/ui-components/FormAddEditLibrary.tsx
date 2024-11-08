@@ -16,7 +16,8 @@ type Props = {
 
 const schema = yup.object().shape({
     name: yup.string().required("Vui lòng nhập tên"),
-    facebook: yup.string().url("Vui lòng nhập đúng định dạng facebook"),
+    maxStorageLimit: yup.string().required("Vui lòng nhập dung lượng bộ nhớ"),
+    facebook: yup.string(),
     email: yup.string().email("Vui lòng nhập đúng định dạng email"),
     phoneNumber: yup.string().matches(/^[0-9]+$/, "Vui lòng nhập đúng định dạng số điện thoại"),
 });
@@ -32,6 +33,7 @@ const FormAddEditLibrary: FC<Props> = ({
         phoneNumber: "",
         email: "",
         facebook: "",
+        maxStorageLimit: 0,
     },
     isFetching = false,
     isEditMode = false,
@@ -50,7 +52,7 @@ const FormAddEditLibrary: FC<Props> = ({
     const { errors, touched, values, setFieldValue, handleSubmit, getFieldProps } = useMemo(
         () => formik,
         [formik]
-    );
+    );    
 
     return (
         <FormikProvider value={formik}>
@@ -79,6 +81,15 @@ const FormAddEditLibrary: FC<Props> = ({
                             error={touched.name && Boolean(errors.name)}
                             helperText={touched.name && errors.name}
                             {...getFieldProps("name")}
+                        />
+                        <InputForm
+                            type="number"
+                            label="Dung lượng bộ nhớ"
+                            placeholder="Dung lượng bộ nhớ"
+                            error={touched.maxStorageLimit && Boolean(errors.maxStorageLimit)}
+                            helperText={touched.maxStorageLimit && errors.maxStorageLimit}
+                            {...getFieldProps("maxStorageLimit")}
+                            disabled={isEditMode}
                         />
                         <InputForm
                             label="Địa chỉ"

@@ -44,7 +44,7 @@ const JoinGroup = () => {
             {
                 onSuccess: async () => {
                     revalidateJoinGroup();
-                    await refreshUser();
+                    // await refreshUser();
                     
                     toast.success('Đã duyệt thành công.');
                     setOpenConfirmDialog(false);

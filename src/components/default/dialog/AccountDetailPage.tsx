@@ -3,6 +3,8 @@ import Typography from "@mui/material/Typography";
 import {
     Alert,
     Button,
+    Card,
+    CardContent,
     Dialog,
     DialogActions,
     DialogContent,
@@ -50,6 +52,12 @@ import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { formatDate } from "../../../helpers/formatDate";
 import { User } from "../../../interfaces/user";
 import Barcode from "react-barcode";
+import Avatar from "../../../ui-component/extended/Avatar";
+import { TLibrary } from "../../../types/models/library.type";
+import { Role } from "../../../interfaces/role";
+import { useReactToPrint } from "react-to-print";
+import PrintLoanSlip from "../../../views/dashboard-admin/LoanSlipPage/ui-components/PrintLoanSlip";
+import PrintAccount from "../../../views/dashboard-admin/SystemPage/AccountPage/PrintAccount";
 
 
 interface DialogProps {
@@ -67,6 +75,21 @@ interface DialogProps {
 export default function AccountDetailDialog({ title, maxWidth, id, content, action, fullScreen, open, user, handleOpen, roleId }: DialogProps) {
 
     const { data: userDetail } = useUser(user._id);
+
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+        pageStyle: `
+        @page {
+            margin: 10mm; /* Thiết lập margin */
+            size: A6; /* Thiết lập kích thước */
+        }
+        body {
+            margin: 0; /* Đảm bảo không có margin thừa */
+        }
+    `,
+    });
+
 
     return (
         <>
@@ -94,32 +117,43 @@ export default function AccountDetailDialog({ title, maxWidth, id, content, acti
                 </IconButton>
                 <DialogContent sx={{ px: 4, py: 0 }}>
                     {userDetail && (
-                        <Box>
-                            <div style={{ textAlign: "center" }}>
-                                <Barcode
-                                    value={userDetail?.data?.result?.barcode}
-                                    width={2} // Kích thước chiều rộng
-                                    height={50} // Kích thước chiều cao
-                                    fontSize={10}
-                                />
-                            </div>
-                            <Typography sx={{ mb: 3 }}><strong>Họ và tên:</strong>  {userDetail?.data?.result?.fullname}</Typography>
-                            <Typography sx={{ mb: 3 }}><strong>Email:</strong> {userDetail?.data?.result?.email}</Typography>
-                            <Typography sx={{ mb: 3 }}><strong>Số điện thoại:</strong> {userDetail?.data?.result?.phoneNumber}</Typography>
-                            <Typography sx={{ mb: 3 }}><strong>Giới tính:</strong> {capitalizeFirstLetter(userDetail?.data?.result?.gender)}</Typography>
-                            <Typography sx={{ mb: 3 }}><strong>Ngày sinh:</strong> {formatDate(userDetail?.data?.result?.birthday)}</Typography>
-                            <Typography sx={{ mb: 3 }}><strong>Tên đăng nhập:</strong> {userDetail?.data?.result?.username}</Typography>
-                            <Typography sx={{ mb: 3 }}><strong>Mật khẩu đầu tiên:</strong> {userDetail?.data?.result?.passwordFirst}</Typography>
-                            {
-                                userDetail?.data?.result?.class && <Typography sx={{ mb: 3 }}><strong>Lớp:</strong> {userDetail?.data?.result?.class}</Typography>
-                            }
-                            {
-                                userDetail?.data?.result?.school && <Typography sx={{ mb: 3 }}><strong>Trường:</strong> {userDetail?.data?.result?.school}</Typography>
-                            }
+                        <Box sx={{ mb: 2 }}>
+                            <Box>
+                                <div style={{ textAlign: "center" }}>
+                                    <Barcode
+                                        value={userDetail?.data?.result?.barcode}
+                                        width={2} // Kích thước chiều rộng
+                                        height={50} // Kích thước chiều cao
+                                        fontSize={10}
+                                    />
+                                </div>
+                                <Typography sx={{ mb: 3 }}><strong>Họ và tên:</strong>  {userDetail?.data?.result?.fullname}</Typography>
+                                <Typography sx={{ mb: 3 }}><strong>Email:</strong> {userDetail?.data?.result?.email}</Typography>
+                                <Typography sx={{ mb: 3 }}><strong>Số điện thoại:</strong> {userDetail?.data?.result?.phoneNumber}</Typography>
+                                <Typography sx={{ mb: 3 }}><strong>Giới tính:</strong> {capitalizeFirstLetter(userDetail?.data?.result?.gender)}</Typography>
+                                <Typography sx={{ mb: 3 }}><strong>Ngày sinh:</strong> {formatDate(userDetail?.data?.result?.birthday)}</Typography>
+                                <Typography sx={{ mb: 3 }}><strong>Tên đăng nhập:</strong> {userDetail?.data?.result?.username}</Typography>
+                                <Typography sx={{ mb: 3 }}><strong>Mật khẩu đầu tiên:</strong> {userDetail?.data?.result?.passwordFirst}</Typography>
+                                {
+                                    userDetail?.data?.result?.class && <Typography sx={{ mb: 3 }}><strong>Lớp:</strong> {userDetail?.data?.result?.class}</Typography>
+                                }
+                                {
+                                    userDetail?.data?.result?.school && <Typography sx={{ mb: 3 }}><strong>Trường:</strong> {userDetail?.data?.result?.school}</Typography>
+                                }
+                            </Box>
+                            <Box sx={{ display: 'none' }}>
+                                {
+                                    userDetail && <PrintAccount ref={componentRef} dataUsers={userDetail?.data?.result} />
+                                }
+                            </Box>
                         </Box>
                     )}
                 </DialogContent>
                 <DialogActions sx={{ p: 3 }}>
+
+                    <Button sx={{ p: "12px 24px" }} onClick={() => handlePrint()} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                        In thẻ thư viện
+                    </Button>
                     <LoadingButton
                         sx={{ p: "12px 24px" }}
                         onClick={() => handleOpen(false)}

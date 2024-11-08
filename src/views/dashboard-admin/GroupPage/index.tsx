@@ -52,7 +52,10 @@ const GroupPage = () => {
 
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TGroup | null>(null);
+    const [selectedJoin, setSelectedJoin] = useState<TGroup | null>(null);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const [openConfirmJoinDialog, setOpenConfirmJoinDialog] = useState(false);
+    const [openConfirmLeaveDialog, setOpenConfirmLeaveDialog] = useState(false);
     const [groupToDelete, setGroupToDelete] = useState<TGroup | null>(null);
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
@@ -63,7 +66,7 @@ const GroupPage = () => {
     const { user, refreshUser } = useAuth();
     const { hasPermission } = usePermission();
     console.log(user);
-    
+
 
     const libId = useMemo(() => {
         if (!user) return null;
@@ -146,6 +149,12 @@ const GroupPage = () => {
     const handleCloseConfirmDialog = () => {
         setOpenConfirmDialog(false);
     };
+    const handleCloseConfirmLeaveDialog = () => {
+        setOpenConfirmLeaveDialog(false);
+    };
+    const handleCloseConfirmJoinDialog = () => {
+        setOpenConfirmJoinDialog(false);
+    };
 
     const handleViewDetails = (row: TGroup) => {
         setGroupDetails(row);
@@ -162,15 +171,25 @@ const GroupPage = () => {
         revalidate();
         revalidateLibs();
         toast.success("Rời nhóm thành công.");
-        await refreshUser();
+        setOpenConfirmLeaveDialog(false);
+        // await refreshUser();
         return response;
+        
+    }
+    const handleOpenLeaveGroup = (row: TGroup) => {
+        setOpenConfirmLeaveDialog(true);
     }
 
+    const handleOpenJoinGroup = (row: TGroup) => {
+        setSelectedJoin(row);
+        setOpenConfirmJoinDialog(true);
+    }
     const handleJoinGroup = (row: TGroup) => {
         mutationJoinGroup.mutate(row._id, {
             onSuccess: () => {
                 revalidateJoinGroup();
                 revalidateRequestGroupFromAdmin();
+                setOpenConfirmJoinDialog(false);
                 toast.success('Yêu cầu tham gia nhóm thành công.');
             },
         });
@@ -293,7 +312,7 @@ const GroupPage = () => {
                                 <StyledButton
                                     size="small"
                                     variant="contained"
-                                    onClick={() => handleJoinGroup(row)}
+                                    onClick={() => handleOpenJoinGroup(row)}
                                     sx={{ background: isGroupRequested ? "#53a828" : "#3078ec", color: "white" }}
                                     disabled={isGroupRequested}
                                 >
@@ -306,7 +325,7 @@ const GroupPage = () => {
                                     color="primary"
                                     size="small"
                                     variant="contained"
-                                    onClick={handleLeaveGroup}
+                                    onClick={() => handleOpenLeaveGroup(row)}
                                 >
                                     Rời nhóm
                                 </StyledButton>
@@ -317,7 +336,7 @@ const GroupPage = () => {
                 },
             },
         ],
-        [handleViewDetails, handleEditGroup, handleOpenConfirmDialog, handleLeaveGroup, handleJoinGroup]
+        [handleViewDetails, handleEditGroup, handleOpenConfirmDialog, handleOpenLeaveGroup, handleOpenJoinGroup]
     );
 
     const handleCheckedDelete = useCallback((row: TGroup, checked: boolean) => {
@@ -461,7 +480,7 @@ const GroupPage = () => {
                                                 position: "relative",
                                                 borderRadius: "8px",
                                                 "&:hover": {
-                                                    background: "#a36e21", 
+                                                    background: "#a36e21",
                                                 }
                                             }}
                                             size="small"
@@ -532,6 +551,23 @@ const GroupPage = () => {
                     open={openViewDetails}
                     onClose={handleCloseViewDetails}
                     group={groupDetails}
+                />
+
+                 <ConfirmDeleteDialog
+                    key={"leave"}
+                    open={openConfirmLeaveDialog}
+                    onClose={handleCloseConfirmLeaveDialog}
+                    onConfirm={handleLeaveGroup}
+                    title="Xác nhận rời nhóm"
+                    description={`Bạn có chắc chắn muốn rời nhóm ?`}
+                />
+                 <ConfirmDeleteDialog
+                    key={"join"}
+                    open={openConfirmJoinDialog}
+                    onClose={handleCloseConfirmJoinDialog}
+                    onConfirm={()=>handleJoinGroup(selectedJoin)}
+                    title="Xác nhận yêu cầu vào nhóm"
+                    description={`Bạn có chắc chắn muốn yêu cầu nhóm ?`}
                 />
             </MainCard>
         </div>

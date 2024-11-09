@@ -60,7 +60,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                     <WordDetailPage onClose={handleClose} open={showWord} publications={publications} />
                 )
             }
-            <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
+            <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
                 <DialogContent>
                     <IconButton
                         aria-label="close"

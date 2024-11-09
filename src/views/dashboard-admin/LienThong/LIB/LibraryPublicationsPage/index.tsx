@@ -184,7 +184,14 @@ const LibraryPublicationsPage = () => {
                 label: "Tên ấn phẩm",
                 align: "left",
                 sxRow: { px: 3, maxWidth: 150 },
-                render: (row) => (capitalizeFirstLetter(row?.name)),
+                render: (row) => {
+                    const hasWhitespace = /\s/.test(row?.name);
+                    return (
+                        <Typography noWrap={!hasWhitespace}>
+                            {capitalizeFirstLetter(row?.name)}
+                        </Typography>
+                    );
+                },
             },
             {
                 id: "type",

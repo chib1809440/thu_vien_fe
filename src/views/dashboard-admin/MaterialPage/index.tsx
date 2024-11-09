@@ -1,4 +1,4 @@
-import { Switch } from "@mui/material";
+import { Switch, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconTrashXFilled } from "@tabler/icons-react";
@@ -21,6 +21,7 @@ import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { parserParams } from "../../../utils/object";
 import { useAuth } from "../../../contexts/JWTContext";
 import { useFetchLibrary } from "../../../hooks/services/library/library-query";
+import usePermission from "../../../utils/hasPermission";
 
 
 const MaterialPage = () => {
@@ -52,7 +53,7 @@ const MaterialPage = () => {
     const mutationSoftDelete = useDeleteSoftMaterial();
     const mutationSoftDeleteMany = useDeleteSoftManyMaterial();
     const revalidate = useReFetchMaterial();
-
+    const { hasPermission } = usePermission();
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TMaterial | null>(null);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -157,7 +158,14 @@ const MaterialPage = () => {
                 label: "Tên dạng học liệu",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => (capitalizeFirstLetter(row?.name)),
+                render: (row) => {
+                    const hasWhitespace = /\s/.test(row?.name);
+                    return (
+                        <Typography noWrap={!hasWhitespace}>
+                            {capitalizeFirstLetter(row?.name)}
+                        </Typography>
+                    );
+                },
             },
             {
                 id: "description",
@@ -178,6 +186,10 @@ const MaterialPage = () => {
                             checked={row?.isLink}
                             value={row?.isLink}
                             onChange={(event) => handleChangeShareConnect(row, event.target.checked)}
+                            disabled={hasPermission([
+                                { resource: "materials", action: "manage" },
+                                { resource: "materials", action: "update" },
+                            ]) ? false : true}
                         />
                     );
                 },
@@ -198,16 +210,29 @@ const MaterialPage = () => {
                                 gap: 1,
                             }}
                         >
-                            <IconPencil
-                                onClick={() => handleEditMaterial(row)}
-                                size={20}
-                                stroke={1.5}
-                            />
-                            <IconTrash
-                                size={20}
-                                stroke={1.5}
-                                onClick={() => handleOpenConfirmDialog(row)}
-                            />
+                            {
+                                hasPermission([
+                                    { resource: "materials", action: "manage" },
+                                    { resource: "materials", action: "update" },
+                                ]) &&
+                                <IconPencil
+                                    onClick={() => handleEditMaterial(row)}
+                                    size={20}
+                                    stroke={1.5}
+                                />
+                            }
+                            {
+                                hasPermission([
+                                    { resource: "materials", action: "manage" },
+                                    { resource: "materials", action: "delete" },
+                                ]) &&
+                                <IconTrash
+                                    size={20}
+                                    stroke={1.5}
+                                    onClick={() => handleOpenConfirmDialog(row)}
+                                />
+                            }
+
                         </Box>
                     );
                 },
@@ -259,13 +284,16 @@ const MaterialPage = () => {
     }, [checkedDelete]);
 
     const actionMenus = useMemo((): TMenuOption[] => {
-        return [
+        return hasPermission([
+            { resource: "materials", action: "manage" },
+            { resource: "materials", action: "delete" },
+        ]) ? [
             {
                 label: "Xóa các dữ liệu đã chọn",
                 icon: <IconTrashXFilled size={20} stroke={1.5} />,
                 onClick: handleDeleteMultiple,
             },
-        ];
+        ] : [];
     }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TMaterialCreate => {
@@ -305,29 +333,43 @@ const MaterialPage = () => {
             <MainCard>
                 <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
                     <Box display="flex" flexWrap="wrap">
-                        <Box>
-                            <StyledButton
-                                color="primary"
-                                size="small"
-                                startIcon={<IconPlus stroke={2} />}
-                                variant="contained"
-                                onClick={addMaterial}
-                            >
-                                Thêm mới
-                            </StyledButton>
-                        </Box>
+                        {
+                            hasPermission([
+                                { resource: "materials", action: "manage" },
+                                { resource: "materials", action: "create" },
+                            ]) &&
+                            <Box>
+                                <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<IconPlus stroke={2} />}
+                                    variant="contained"
+                                    onClick={addMaterial}
+                                >
+                                    Thêm mới
+                                </StyledButton>
+                            </Box>
+                        }
+
 
                         <Box>
-                            <Link to="/quan-ly-danh-muc/danh-sach-xoa-dang-hoc-lieu" style={{ textDecoration: 'none' }}>
-                                <StyledButton
-                                    sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
-                                    size="small"
-                                    startIcon={<IconTrash stroke={2} />}
-                                    variant="contained"
-                                >
-                                    Thùng rác
-                                </StyledButton>
-                            </Link>
+                            {
+                                hasPermission([
+                                    { resource: "materials", action: "manage" },
+                                    { resource: "materials", action: "delete" },
+                                ]) &&
+                                <Link to="/quan-ly-danh-muc/danh-sach-xoa-dang-hoc-lieu" style={{ textDecoration: 'none' }}>
+                                    <StyledButton
+                                        sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                        size="small"
+                                        startIcon={<IconTrash stroke={2} />}
+                                        variant="contained"
+                                    >
+                                        Thùng rác
+                                    </StyledButton>
+                                </Link>
+                            }
+
                         </Box>
                     </Box>
                 </Stack>

@@ -23,6 +23,7 @@ import { getLabelFromOptions, parserParams } from "../../../utils/object";
 import { useFetchTypeVoice } from "../../../hooks/services/type-voice/type-voice-query";
 import FilterByItems from "../PublicationsPage/ui-components/FilterByItems";
 import { useAuth } from "../../../contexts/JWTContext";
+import usePermission from "../../../utils/hasPermission";
 
 
 const VoicePage = () => {
@@ -61,7 +62,7 @@ const VoicePage = () => {
     const mutationSoftDelete = useDeleteSoftVoice();
     const mutationSoftDeleteMany = useDeleteSoftManyVoice();
     const revalidate = useReFetchVoice();
-
+    const { hasPermission } = usePermission();
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [voiceToDelete, setVoiceToDelete] = useState<TVoice | null>(null);
 
@@ -190,7 +191,10 @@ const VoicePage = () => {
                                 )
                             }
                             {
-                                (row?.createBy === userId) && (
+                                hasPermission([
+                                    { resource: "voices", action: "manage" },
+                                    { resource: "voices", action: "update" },
+                                ]) && (row?.createBy === userId) && (
                                     <Box>
                                         Chia sẻ lên thư viện:
                                         <Switch
@@ -225,6 +229,10 @@ const VoicePage = () => {
                             onChange={(event) =>
                                 handleChangeShareConnect(row, event.target.checked)
                             }
+                            disabled={hasPermission([
+                                { resource: "voices", action: "manage" },
+                                { resource: "voices", action: "update" },
+                            ]) ? false : true}
                         />
                     );
                 },
@@ -244,11 +252,17 @@ const VoicePage = () => {
                                 gap: 1,
                             }}
                         >
-                            <IconTrash
-                                size={20}
-                                stroke={1.5}
-                                onClick={() => handleOpenConfirmDialog(row)}
-                            />
+                            {
+                                hasPermission([
+                                    { resource: "voices", action: "manage" },
+                                    { resource: "voices", action: "delete" },
+                                ]) &&
+                                <IconTrash
+                                    size={20}
+                                    stroke={1.5}
+                                    onClick={() => handleOpenConfirmDialog(row)}
+                                />
+                            }
 
                         </Box>
                     );
@@ -301,13 +315,16 @@ const VoicePage = () => {
     }, [checkedDelete]);
 
     const actionMenus = useMemo((): TMenuOption[] => {
-        return [
+        return hasPermission([
+            { resource: "voices", action: "manage" },
+            { resource: "voices", action: "delete" },
+        ]) ? [
             {
                 label: "Xóa các dữ liệu vào thùng rác",
                 icon: <IconTrashXFilled size={20} stroke={1.5} />,
                 onClick: handleDeleteMultiple,
             },
-        ];
+        ] : [];
     }, [handleDeleteMultiple]);
 
     return (
@@ -321,18 +338,24 @@ const VoicePage = () => {
             <MainCard>
                 <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
                     <Box display="flex" flexWrap="wrap">
-                        <Box>
-                            <Link to="/quan-ly-danh-muc/danh-sach-xoa-voice" style={{ textDecoration: 'none' }}>
-                                <StyledButton
-                                    sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
-                                    size="small"
-                                    startIcon={<IconTrash stroke={2} />}
-                                    variant="contained"
-                                >
-                                    Thùng rác
-                                </StyledButton>
-                            </Link>
-                        </Box>
+                        {
+                            hasPermission([
+                                { resource: "voices", action: "manage" },
+                                { resource: "voices", action: "delete" },
+                            ]) &&
+                            <Box>
+                                <Link to="/quan-ly-danh-muc/danh-sach-xoa-voice" style={{ textDecoration: 'none' }}>
+                                    <StyledButton
+                                        sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                        size="small"
+                                        startIcon={<IconTrash stroke={2} />}
+                                        variant="contained"
+                                    >
+                                        Thùng rác
+                                    </StyledButton>
+                                </Link>
+                            </Box>
+                        }
                     </Box>
                 </Stack>
 

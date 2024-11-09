@@ -20,6 +20,7 @@ import FormAddEditLibrary from "./ui-components/FormAddEditLibrary";
 import { Typography } from "@mui/material";
 import { useAuth } from "../../../contexts/JWTContext";
 import { Role } from "../../../interfaces/role";
+import usePermission from "../../../utils/hasPermission";
 
 
 const LibraryPage = () => {
@@ -42,6 +43,7 @@ const LibraryPage = () => {
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmDeleteMultiple, setOpenConfirmDeleteMultiple] = useState(false);
+    const { hasPermission } = usePermission();
     const { user } = useAuth();
     const userRole = useMemo(() => {
         if (!user) return null;
@@ -118,7 +120,14 @@ const LibraryPage = () => {
                 label: "Tên thư viện",
                 align: "left",
                 sxRow: { maxWidth: 200 },
-                render: (row) => (capitalizeFirstLetter(row?.name)),
+                render: (row) => {
+                    const hasWhitespace = /\s/.test(row?.name);
+                    return (
+                        <Typography noWrap={!hasWhitespace}>
+                            {capitalizeFirstLetter(row?.name)}
+                        </Typography>
+                    );
+                },
             },
             {
                 id: "maxStorageLimit",
@@ -130,7 +139,7 @@ const LibraryPage = () => {
                     return (
                         <Box>
                             <Box>
-                                <Typography> Đang sử dùng: <strong>{(row?.totalStorageUsed / 1024).toFixed(2)} GB</strong></Typography>
+                                <Typography> Đang sử dụng: <strong>{(row?.totalStorageUsed / 1024).toFixed(2)} GB</strong></Typography>
                             </Box >
                             <Box>
                                 <Typography>Dung lượng bộ nhớ: <strong>{(row?.maxStorageLimit / 1024).toFixed(2)} GB</strong></Typography>
@@ -148,7 +157,7 @@ const LibraryPage = () => {
                 render: (row) => {
                     return (
                         <Box>
-                           {row?.groupId !== null ? "Đã có nhóm" : "Chưa có nhóm"}
+                            {row?.groupId !== null ? "Đã có nhóm" : "Chưa có nhóm"}
 
                         </Box >
                     )
@@ -188,6 +197,7 @@ const LibraryPage = () => {
                 label: "Hành động",
                 render: (row) => {
                     return (
+
                         <Box
                             sx={{
                                 display: "flex",
@@ -196,16 +206,25 @@ const LibraryPage = () => {
                                 gap: 1,
                             }}
                         >
-                            <IconPencil
-                                onClick={() => handleEditLibrary(row)}
-                                size={20}
-                                stroke={1.5}
-                            />
-                            <IconTrash
-                                size={20}
-                                stroke={1.5}
-                                onClick={() => handleOpenConfirmDialog(row)}
-                            />
+                            {
+                                hasPermission([
+                                    { resource: "all", action: "manage" },
+                                    { resource: "libraries", action: "manage" },
+                                ]) &&
+                                <>
+                                    <IconPencil
+                                        onClick={() => handleEditLibrary(row)}
+                                        size={20}
+                                        stroke={1.5}
+                                    />
+                                    <IconTrash
+                                        size={20}
+                                        stroke={1.5}
+                                        onClick={() => handleOpenConfirmDialog(row)}
+                                    />
+                                </>
+                            }
+
                         </Box>
                     );
                 },
@@ -257,13 +276,17 @@ const LibraryPage = () => {
     }, [checkedDelete]);
 
     const actionMenus = useMemo((): TMenuOption[] => {
-        return [
-            {
-                label: "Xóa các dữ liệu đã chọn",
-                icon: <IconTrashXFilled size={20} stroke={1.5} />,
-                onClick: handleDeleteMultiple,
-            },
-        ];
+        return hasPermission([
+            { resource: "all", action: "manage" },
+            { resource: "libraries", action: "manage" },
+        ])
+            ? [
+                {
+                    label: "Xóa các dữ liệu đã chọn",
+                    icon: <IconTrashXFilled size={20} stroke={1.5} />,
+                    onClick: handleDeleteMultiple,
+                },
+            ] : [];
     }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TLibraryCreate => {
@@ -311,17 +334,24 @@ const LibraryPage = () => {
             <MainCard>
                 <Stack spacing={2}>
                     <CsFlexRowBetween>
-                        <Box sx={{ ml: 4, mb: 2 }}>
-                            <StyledButton
-                                color="primary"
-                                size="small"
-                                startIcon={<IconPlus stroke={2} />}
-                                variant="contained"
-                                onClick={addLibrary}
-                            >
-                                Thêm mới
-                            </StyledButton>
-                        </Box>
+                        {
+                            hasPermission([
+                                { resource: "all", action: "manage" },
+                                { resource: "libraries", action: "manage" },
+                            ]) &&
+                            <Box sx={{ ml: 4, mb: 2 }}>
+                                <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<IconPlus stroke={2} />}
+                                    variant="contained"
+                                    onClick={addLibrary}
+                                >
+                                    Thêm mới
+                                </StyledButton>
+                            </Box>
+                        }
+
                     </CsFlexRowBetween>
                 </Stack>
 

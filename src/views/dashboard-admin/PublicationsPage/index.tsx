@@ -304,7 +304,14 @@ const PublicationsPage = () => {
                 label: "Tên ấn phẩm",
                 align: "left",
                 sxRow: { px: 3, maxWidth: 150 },
-                render: (row) => (capitalizeFirstLetter(row?.name)),
+                render: (row) => {
+                    const hasWhitespace = /\s/.test(row?.name);
+                    return (
+                        <Typography noWrap={!hasWhitespace}>
+                            {capitalizeFirstLetter(row?.name)}
+                        </Typography>
+                    );
+                },
             },
             {
                 id: "type",
@@ -485,7 +492,6 @@ const PublicationsPage = () => {
                         { resource: "publications", action: "update" },
                     ]);
                     const canDeletePublications = hasPermission([
-                        { resource: "all", action: "manage" },
                         { resource: "publications", action: "manage" },
                         { resource: "publications", action: "delete" },
                     ]);
@@ -650,14 +656,6 @@ const PublicationsPage = () => {
     const actionMenus = useMemo((): TMenuOption[] => {
 
         return hasPermission([
-            { resource: "all", action: "manage" },
-        ]) ? [
-            {
-                label: "Xóa các dữ liệu đã chọn",
-                icon: <IconTrashXFilled size={20} stroke={1.5} />,
-                onClick: handleDeleteMultiple,
-            },
-        ] : hasPermission([
             { resource: "publications", action: "manage" },
             { resource: "publications", action: "create" },
             { resource: "publications", action: "delete" },
@@ -792,23 +790,30 @@ const PublicationsPage = () => {
                                 </Box>
 
                                 <Box>
-                                    <Link
-                                        to="/thu-vien/danh-sach-xoa-an-pham"
-                                        style={{ textDecoration: "none" }}
-                                    >
-                                        <StyledButton
-                                            sx={{
-                                                background: "#de524a",
-                                                color: "white",
-                                                marginLeft: "10px",
-                                            }}
-                                            size="small"
-                                            startIcon={<IconTrash stroke={2} />}
-                                            variant="contained"
-                                        >
-                                            Thùng rác
-                                        </StyledButton>
-                                    </Link>
+                                    {
+                                        hasPermission([
+                                            { resource: "publications", action: "manage" },
+                                            { resource: "publications", action: "create" },
+                                        ]) ?
+                                            <Link
+                                                to="/thu-vien/danh-sach-xoa-an-pham"
+                                                style={{ textDecoration: "none" }}
+                                            >
+                                                <StyledButton
+                                                    sx={{
+                                                        background: "#de524a",
+                                                        color: "white",
+                                                        marginLeft: "10px",
+                                                    }}
+                                                    size="small"
+                                                    startIcon={<IconTrash stroke={2} />}
+                                                    variant="contained"
+                                                >
+                                                    Thùng rác
+                                                </StyledButton>
+                                            </Link>
+                                            : <></>
+                                    }
                                 </Box>
                             </Box>
                         </Stack>

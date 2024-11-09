@@ -1,4 +1,4 @@
-import { Button, Chip } from "@mui/material";
+import { Button, Chip, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconEye, IconTrashXFilled } from "@tabler/icons-react";
@@ -203,7 +203,14 @@ const GroupPage = () => {
                 label: "Tên nhóm",
                 align: "left",
                 sxRow: { paddingRight: 4, maxWidth: 200 },
-                render: (row) => (capitalizeFirstLetter(row?.name)),
+                render: (row) => {
+                    const hasWhitespace = /\s/.test(row?.name);
+                    return (
+                        <Typography noWrap={!hasWhitespace}>
+                            {capitalizeFirstLetter(row?.name)}
+                        </Typography>
+                    );
+                },
             },
             {
                 id: "mainLibrary",

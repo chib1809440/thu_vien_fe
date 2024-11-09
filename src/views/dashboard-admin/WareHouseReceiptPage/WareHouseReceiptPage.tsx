@@ -21,6 +21,7 @@ import { User } from "../../../interfaces/user";
 import { TSupplier } from "../../../types/models/supplier.type";
 import { TLoanSlip } from "../../../types/models/loanSlip.type";
 import { useApprovalLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-mutation";
+import usePermission from "../../../utils/hasPermission";
 
 
 const WareHouseReceiptPage = () => {
@@ -41,7 +42,7 @@ const WareHouseReceiptPage = () => {
     const [selectedEdit, setSelectedEdit] = useState<TWareHouseReceipt | null>(null);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [wareHouseReceiptToDelete, setWareHouseReceiptToDelete] = useState<TWareHouseReceipt | null>(null);
-
+    const { hasPermission } = usePermission();
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
 
@@ -172,14 +173,24 @@ const WareHouseReceiptPage = () => {
                     return (
                         <>
                             {
-                                row.isAccept === true ? <>
+                                hasPermission([
+                                    { resource: "warehousereceipts", action: "manage" },
+                                    { resource: "warehousereceipts", action: "update" },
+                                ]) && row.isAccept === true ? <>
                                     <Chip
                                         style={{ color: 'white', background: '#096A5E' }}
                                         label="Đã duyệt"
                                         variant="filled"
                                     />
                                 </> : <>
-                                    <Button variant="contained" sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }} onClick={() => handleAcceptWareHouseReceipt(row)}>Chưa duyệt</Button>
+                                    {
+                                        hasPermission([
+                                            { resource: "warehousereceipts", action: "manage" },
+                                            { resource: "warehousereceipts", action: "update" },
+                                        ]) &&
+                                        <Button variant="contained" sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }} onClick={() => handleAcceptWareHouseReceipt(row)}>Chưa duyệt</Button>
+
+                                    }
                                 </>
                             }
                         </>
@@ -201,13 +212,23 @@ const WareHouseReceiptPage = () => {
                                 gap: 1,
                             }}
                         >
-                            <IconPencil
-                                onClick={() => handleEditWareHouseReceipt(row)}
-                                size={20}
-                                stroke={1.5}
-                            />
                             {
-                                !row.isAccept && <IconTrash
+                                hasPermission([
+                                    { resource: "warehousereceipts", action: "manage" },
+                                    { resource: "warehousereceipts", action: "update" },
+                                ]) &&
+                                <IconPencil
+                                    onClick={() => handleEditWareHouseReceipt(row)}
+                                    size={20}
+                                    stroke={1.5}
+                                />
+                            }
+
+                            {
+                                hasPermission([
+                                    { resource: "warehousereceipts", action: "manage" },
+                                    { resource: "warehousereceipts", action: "delete" },
+                                ]) && !row.isAccept && <IconTrash
                                     size={20}
                                     stroke={1.5}
                                     onClick={() => handleOpenConfirmDialog(row)}
@@ -265,13 +286,16 @@ const WareHouseReceiptPage = () => {
     }, [checkedDelete]);
 
     const actionMenus = useMemo((): TMenuOption[] => {
-        return [
+        return hasPermission([
+            { resource: "warehousereceipts", action: "manage" },
+            { resource: "warehousereceipts", action: "delete" },
+        ]) ? [
             {
                 label: "Xóa các dữ liệu vào thùng rác",
                 icon: <IconTrashXFilled size={20} stroke={1.5} />,
                 onClick: handleDeleteMultiple,
             },
-        ];
+        ] : [];
     }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TWareHouseReceiptCreate => {
@@ -310,29 +334,42 @@ const WareHouseReceiptPage = () => {
             <MainCard>
                 <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
                     <Box display="flex" flexWrap="wrap">
-                        <Box>
-                            <StyledButton
-                                color="primary"
-                                size="small"
-                                startIcon={<IconPlus stroke={2} />}
-                                variant="contained"
-                                onClick={addWareHouseReceipt}
-                            >
-                                Thêm mới
-                            </StyledButton>
-                        </Box>
+                        {
+                            hasPermission([
+                                { resource: "warehousereceipts", action: "manage" },
+                                { resource: "warehousereceipts", action: "create" },
+                            ]) &&
+                            <Box>
+                                <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<IconPlus stroke={2} />}
+                                    variant="contained"
+                                    onClick={addWareHouseReceipt}
+                                >
+                                    Thêm mới
+                                </StyledButton>
+                            </Box>
+                        }
+
 
                         <Box>
-                            <Link to="/quan-ly-nhap-kho/phieu-nhap-kho/danh-sach-xoa-phieu-nhap-kho" style={{ textDecoration: 'none' }}>
-                                <StyledButton
-                                    sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
-                                    size="small"
-                                    startIcon={<IconTrash stroke={2} />}
-                                    variant="contained"
-                                >
-                                    Thùng rác
-                                </StyledButton>
-                            </Link>
+                            {
+                                hasPermission([
+                                    { resource: "warehousereceipts", action: "manage" },
+                                    { resource: "warehousereceipts", action: "delete" },
+                                ]) &&
+                                <Link to="/quan-ly-nhap-kho/phieu-nhap-kho/danh-sach-xoa-phieu-nhap-kho" style={{ textDecoration: 'none' }}>
+                                    <StyledButton
+                                        sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                        size="small"
+                                        startIcon={<IconTrash stroke={2} />}
+                                        variant="contained"
+                                    >
+                                        Thùng rác
+                                    </StyledButton>
+                                </Link>
+                            }
                         </Box>
                     </Box>
                 </Stack>

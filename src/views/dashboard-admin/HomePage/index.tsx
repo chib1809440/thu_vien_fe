@@ -69,27 +69,32 @@ export default function HomePage() {
                     <TotalCard title="Tổng số phiếu quá hạn" count={statisticals?.data?.result?.totalOverdueLoans} icon={Icon3dCubeSphereOff} bgColor="#e60073" bgColorIcon="#b30059" />
                 </Grid>
             </Grid>
-            <Grid container spacing={2} sx={{ mt: 3 }}>
-                <Grid item xs={12}>
-                    <Typography variant="h3" fontWeight="bold" gutterBottom>
-                        Top sách mượn trong tháng
-                    </Typography>
-                    <Box p={4} >
-                        <BarChart
-                            xAxis={[{ scaleType: 'band', data: barChartData.map(item => item.x) }]}
-                            series={[
-                                {
-                                    label: 'Quyển',
-                                    data: barChartData.map(item => item.y), // Dữ liệu biểu đồ
-                                },
-                            ]}
-                            width={800}
-                            height={400}
-                        />
-                    </Box>
-                </Grid>
+            {
+                barChartData.length > 0 && (
+                    <Grid container spacing={2} sx={{ mt: 3 }}>
+                        <Grid item xs={12}>
+                            <Typography variant="h3" fontWeight="bold" gutterBottom>
+                                Top sách mượn trong tháng
+                            </Typography>
+                            <Box p={4} >
+                                <BarChart
+                                    xAxis={[{ scaleType: 'band', data: barChartData.map(item => item.x) }]}
+                                    series={[
+                                        {
+                                            label: 'Quyển',
+                                            data: barChartData.map(item => item.y), // Dữ liệu biểu đồ
+                                        },
+                                    ]}
+                                    width={800}
+                                    height={400}
+                                />
+                            </Box>
+                        </Grid>
 
-            </Grid>
+                    </Grid>
+                )
+            }
+
         </>
     );
 }

@@ -1,4 +1,4 @@
-import { Switch } from "@mui/material";
+import { Switch, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconArrowBack, IconArrowBackUp, IconTrash } from "@tabler/icons";
 import { IconRestore, IconTrashXFilled } from "@tabler/icons-react";
@@ -94,7 +94,14 @@ const MaterialDeleteListPage = () => {
                 label: "Tên dạng học liệu",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => (capitalizeFirstLetter(row?.name)),
+                render: (row) => {
+                    const hasWhitespace = /\s/.test(row?.name);
+                    return (
+                        <Typography noWrap={!hasWhitespace}>
+                            {capitalizeFirstLetter(row?.name)}
+                        </Typography>
+                    );
+                },
             },
             {
                 id: "description",

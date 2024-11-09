@@ -17,6 +17,7 @@ import { TSupplier, TSupplierCreate } from "../../../types/models/supplier.type"
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditSupplier from "./ui-components/FormAddEditSupplier";
+import usePermission from "../../../utils/hasPermission";
 
 
 const SupplierPage = () => {
@@ -31,7 +32,7 @@ const SupplierPage = () => {
     const mutationSoftDelete = useDeleteSoftSupplier();
     const mutationSoftDeleteMany = useDeleteSoftManySupplier();
     const revalidate = useReFetchSupplier();
-
+    const { hasPermission } = usePermission();
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TSupplier | null>(null);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -145,16 +146,31 @@ const SupplierPage = () => {
                                 gap: 1,
                             }}
                         >
-                            <IconPencil
-                                onClick={() => handleEditSupplier(row)}
-                                size={20}
-                                stroke={1.5}
-                            />
-                            <IconTrash
-                                size={20}
-                                stroke={1.5}
-                                onClick={() => handleOpenConfirmDialog(row)}
-                            />
+                            {
+                                hasPermission([
+                                    { resource: "suppliers", action: "manage" },
+                                    { resource: "suppliers", action: "update" },
+                                ]) &&
+                                <IconPencil
+                                    onClick={() => handleEditSupplier(row)}
+                                    size={20}
+                                    stroke={1.5}
+                                />
+                            }
+
+                            {
+
+                                hasPermission([
+                                    { resource: "suppliers", action: "manage" },
+                                    { resource: "suppliers", action: "delete" },
+                                ]) &&
+                                <IconTrash
+                                    size={20}
+                                    stroke={1.5}
+                                    onClick={() => handleOpenConfirmDialog(row)}
+                                />
+                            }
+
 
                         </Box>
                     );
@@ -207,13 +223,16 @@ const SupplierPage = () => {
     }, [checkedDelete]);
 
     const actionMenus = useMemo((): TMenuOption[] => {
-        return [
+        return hasPermission([
+            { resource: "suppliers", action: "manage" },
+            { resource: "suppliers", action: "delete" },
+        ]) ? [
             {
                 label: "Xóa các dữ liệu vào thùng rác",
                 icon: <IconTrashXFilled size={20} stroke={1.5} />,
                 onClick: handleDeleteMultiple,
             },
-        ];
+        ] : [];
     }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TSupplierCreate => {
@@ -259,28 +278,42 @@ const SupplierPage = () => {
                 <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
                     <Box display="flex" flexWrap="wrap">
                         <Box>
-                            <StyledButton
-                                color="primary"
-                                size="small"
-                                startIcon={<IconPlus stroke={2} />}
-                                variant="contained"
-                                onClick={addSupplier}
-                            >
-                                Thêm mới
-                            </StyledButton>
+                            {
+                                hasPermission([
+                                    { resource: "suppliers", action: "manage" },
+                                    { resource: "suppliers", action: "create" },
+                                ]) &&
+                                <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<IconPlus stroke={2} />}
+                                    variant="contained"
+                                    onClick={addSupplier}
+                                >
+                                    Thêm mới
+                                </StyledButton>
+                            }
+
                         </Box>
 
                         <Box>
-                            <Link to="/quan-ly-nhap-kho/nha-cung-cap/danh-sach-xoa-nha-cung-cap" style={{ textDecoration: 'none' }}>
-                                <StyledButton
-                                    sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
-                                    size="small"
-                                    startIcon={<IconTrash stroke={2} />}
-                                    variant="contained"
-                                >
-                                    Thùng rác
-                                </StyledButton>
-                            </Link>
+                            {
+                                hasPermission([
+                                    { resource: "suppliers", action: "manage" },
+                                    { resource: "suppliers", action: "delete" },
+                                ]) &&
+                                <Link to="/quan-ly-nhap-kho/nha-cung-cap/danh-sach-xoa-nha-cung-cap" style={{ textDecoration: 'none' }}>
+                                    <StyledButton
+                                        sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                        size="small"
+                                        startIcon={<IconTrash stroke={2} />}
+                                        variant="contained"
+                                    >
+                                        Thùng rác
+                                    </StyledButton>
+                                </Link>
+                            }
+
                         </Box>
                     </Box>
                 </Stack>

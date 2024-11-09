@@ -27,6 +27,7 @@ import { CreatePublicationWareHouseReceipt, TWareHouseReceipt, TWareHouseReceipt
 import FormAddEditPublications from "../../PublicationsPage/ui-components/FormAddEditPublications";
 import FormAddEditSupplier from './FormAddEditSupplier';
 import PrintWareHouseReceipt from "./PrintWareHouseReceipt";
+import usePermission from '../../../../utils/hasPermission';
 
 type Props = {
     open: boolean;
@@ -90,6 +91,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
     const revalidate = useReFetchPublications();
     const revalidateSupplier = useReFetchSupplier();
     const [openAdd, setOpenAdd] = useState(false);
+    const { hasPermission } = usePermission();
 
     const [publications, setPublications] = useState<CreatePublicationWareHouseReceipt[]>([
         {
@@ -418,15 +420,22 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                         <span style={{ marginRight: '8px' }}>Nhà cung cấp</span>
                                         <span className="required_text">(*)</span>
                                     </Typography>
-                                    <Tooltip title="Thêm mới" arrow placement="top" >
-                                        <IconCirclePlusFilled
-                                            style={{ cursor: 'pointer', marginLeft: '10px', marginRight: '10px' }}
-                                            onClick={handleAddSupplier}
-                                            color="green"
-                                            size={30}
-                                            stroke={1.5}
-                                        />
-                                    </Tooltip>
+                                    {
+                                        hasPermission([
+                                            { resource: "warehousereceipts", action: "manage" },
+                                            { resource: "warehousereceipts", action: "create" },
+                                        ]) &&
+
+                                        <Tooltip title="Thêm mới" arrow placement="top" >
+                                            <IconCirclePlusFilled
+                                                style={{ cursor: 'pointer', marginLeft: '10px', marginRight: '10px' }}
+                                                onClick={handleAddSupplier}
+                                                color="green"
+                                                size={30}
+                                                stroke={1.5}
+                                            />
+                                        </Tooltip>
+                                    }
                                 </Box>
                                 <FormControl fullWidth>
                                     <Select
@@ -477,16 +486,24 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                             variant="filled"
                                             sx={{ marginRight: '10px', }}
                                         />
-                                        <StyledButton
-                                            color="primary"
-                                            size="small"
-                                            type="button"
-                                            startIcon={<IconPlus stroke={2} />}
-                                            variant="contained"
-                                            onClick={addLoanSlip}
-                                        >
-                                            Thêm ấn phẩm mới
-                                        </StyledButton>
+                                        {
+                                            hasPermission([
+                                                { resource: "publications", action: "manage" },
+                                                { resource: "publications", action: "create" },
+                                            ]) &&
+
+                                            <StyledButton
+                                                color="primary"
+                                                size="small"
+                                                type="button"
+                                                startIcon={<IconPlus stroke={2} />}
+                                                variant="contained"
+                                                onClick={addLoanSlip}
+                                            >
+                                                Thêm ấn phẩm mới
+                                            </StyledButton>
+                                        }
+
                                         <IconCirclePlusFilled
                                             style={{ cursor: 'pointer', marginLeft: '10px', marginRight: '10px' }} // Khoảng cách giữa Chip và Icon
                                             onClick={() => handleAddPublication()} // Gọi hàm thêm

@@ -17,6 +17,8 @@ import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditShelf from "./ui-components/FormAddEditShelf";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
+import usePermission from "../../../utils/hasPermission";
+import { Typography } from "@mui/material";
 
 
 const ShelfPage = () => {
@@ -31,7 +33,7 @@ const ShelfPage = () => {
     const mutationSoftDelete = useDeleteSoftShelf();
     const mutationSoftDeleteMany = useDeleteSoftManyShelf();
     const revalidate = useReFetchShelf();
-
+    const { hasPermission } = usePermission();
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TShelves | null>(null);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -107,7 +109,14 @@ const ShelfPage = () => {
                 label: "Tên tủ kệ",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => (capitalizeFirstLetter(row?.name)),
+                render: (row) => {
+                    const hasWhitespace = /\s/.test(row?.name);
+                    return (
+                        <Typography noWrap={!hasWhitespace}>
+                            {capitalizeFirstLetter(row?.name)}
+                        </Typography>
+                    );
+                },
             },
             {
                 id: "description",
@@ -139,17 +148,26 @@ const ShelfPage = () => {
                                 gap: 1,
                             }}
                         >
-                            <IconPencil
-                                onClick={() => handleEditShelf(row)}
-                                size={20}
-                                stroke={1.5}
-                            />
-                            <IconTrash
-                                size={20}
-                                stroke={1.5}
-                                onClick={() => handleOpenConfirmDialog(row)}
-                            />
-
+                            {hasPermission([
+                                { resource: "shelves", action: "manage" },
+                                { resource: "shelves", action: "update" },
+                            ]) &&
+                                <IconPencil
+                                    onClick={() => handleEditShelf(row)}
+                                    size={20}
+                                    stroke={1.5}
+                                />
+                            }
+                            {hasPermission([
+                                { resource: "shelves", action: "manage" },
+                                { resource: "shelves", action: "delete" },
+                            ]) &&
+                                <IconTrash
+                                    size={20}
+                                    stroke={1.5}
+                                    onClick={() => handleOpenConfirmDialog(row)}
+                                />
+                            }
                         </Box>
                     );
                 },
@@ -201,13 +219,16 @@ const ShelfPage = () => {
     }, [checkedDelete]);
 
     const actionMenus = useMemo((): TMenuOption[] => {
-        return [
+        return hasPermission([
+            { resource: "shelves", action: "manage" },
+            { resource: "shelves", action: "delete" },
+        ]) ? [
             {
                 label: "Xóa các dữ liệu vào thùng rác",
                 icon: <IconTrashXFilled size={20} stroke={1.5} />,
                 onClick: handleDeleteMultiple,
             },
-        ];
+        ] : [];
     }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TShelvesCreate => {
@@ -247,29 +268,40 @@ const ShelfPage = () => {
             <MainCard>
                 <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
                     <Box display="flex" flexWrap="wrap">
-                        <Box>
-                            <StyledButton
-                                color="primary"
-                                size="small"
-                                startIcon={<IconPlus stroke={2} />}
-                                variant="contained"
-                                onClick={addShelf}
-                            >
-                                Thêm mới
-                            </StyledButton>
-                        </Box>
+                        {
+                            hasPermission([
+                                { resource: "shelves", action: "manage" },
+                                { resource: "shelves", action: "create" },
+                            ]) &&
+                            <Box>
+                                <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<IconPlus stroke={2} />}
+                                    variant="contained"
+                                    onClick={addShelf}
+                                >
+                                    Thêm mới
+                                </StyledButton>
+                            </Box>
+                        }
 
                         <Box>
-                            <Link to="/quan-ly-danh-muc/danh-sach-xoa-tu-ke" style={{ textDecoration: 'none' }}>
-                                <StyledButton
-                                    sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
-                                    size="small"
-                                    startIcon={<IconTrash stroke={2} />}
-                                    variant="contained"
-                                >
-                                    Thùng rác
-                                </StyledButton>
-                            </Link>
+                            {hasPermission([
+                                { resource: "shelves", action: "manage" },
+                                { resource: "shelves", action: "delete" },
+                            ]) &&
+                                <Link to="/quan-ly-danh-muc/danh-sach-xoa-tu-ke" style={{ textDecoration: 'none' }}>
+                                    <StyledButton
+                                        sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                        size="small"
+                                        startIcon={<IconTrash stroke={2} />}
+                                        variant="contained"
+                                    >
+                                        Thùng rác
+                                    </StyledButton>
+                                </Link>
+                            }
                         </Box>
                     </Box>
                 </Stack>

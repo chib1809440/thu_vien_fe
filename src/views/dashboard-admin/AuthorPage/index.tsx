@@ -1,4 +1,4 @@
-import { Switch } from "@mui/material";
+import { Switch, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconTrashXFilled } from "@tabler/icons-react";
@@ -21,6 +21,7 @@ import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { parserParams } from "../../../utils/object";
 import { useFetchLibrary } from "../../../hooks/services/library/library-query";
 import { useAuth } from "../../../contexts/JWTContext";
+import usePermission from "../../../utils/hasPermission";
 
 
 const AuthorPage = () => {
@@ -52,7 +53,7 @@ const AuthorPage = () => {
     const mutationSoftDelete = useDeleteSoftAuthor();
     const mutationSoftDeleteMany = useDeleteSoftManyAuthor();
     const revalidate = useReFetchAuthor();
-
+    const { hasPermission } = usePermission()
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TAuthor | null>(null);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -156,7 +157,14 @@ const AuthorPage = () => {
                 label: "Tên tác giả",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200, textTransform: "capitalize" },
-                render: (row) => (capitalizeFirstLetter(row?.name)),
+                render: (row) => {
+                    const hasWhitespace = /\s/.test(row?.name);
+                    return (
+                        <Typography noWrap={!hasWhitespace}>
+                            {capitalizeFirstLetter(row?.name)}
+                        </Typography>
+                    );
+                },
             },
             {
                 id: "description",
@@ -177,6 +185,10 @@ const AuthorPage = () => {
                             checked={row?.isLink}
                             value={row?.isLink}
                             onChange={(event) => handleChangeShareConnect(row, event.target.checked)}
+                            disabled={hasPermission([
+                                { resource: "authors", action: "manage" },
+                                { resource: "authors", action: "update" },
+                            ]) ? false : true}
                         />
                     );
                 },
@@ -197,16 +209,29 @@ const AuthorPage = () => {
                                 gap: 1,
                             }}
                         >
-                            <IconPencil
-                                onClick={() => handleEditAuthor(row)}
-                                size={20}
-                                stroke={1.5}
-                            />
-                            <IconTrash
-                                size={20}
-                                stroke={1.5}
-                                onClick={() => handleOpenConfirmDialog(row)}
-                            />
+                            {
+                                hasPermission([
+                                    { resource: "authors", action: "manage" },
+                                    { resource: "authors", action: "update" },
+                                ]) &&
+                                <IconPencil
+                                    onClick={() => handleEditAuthor(row)}
+                                    size={20}
+                                    stroke={1.5}
+                                />
+                            }
+                            {
+                                hasPermission([
+                                    { resource: "authors", action: "manage" },
+                                    { resource: "authors", action: "delete" },
+                                ]) &&
+                                <IconTrash
+                                    size={20}
+                                    stroke={1.5}
+                                    onClick={() => handleOpenConfirmDialog(row)}
+                                />
+                            }
+
 
                         </Box>
                     );
@@ -259,13 +284,16 @@ const AuthorPage = () => {
     }, [checkedDelete]);
 
     const actionMenus = useMemo((): TMenuOption[] => {
-        return [
+        return hasPermission([
+            { resource: "authors", action: "manage" },
+            { resource: "authors", action: "delete" },
+        ]) ? [
             {
                 label: "Xóa các dữ liệu vào thùng rác",
                 icon: <IconTrashXFilled size={20} stroke={1.5} />,
                 onClick: handleDeleteMultiple,
             },
-        ];
+        ] : [];
     }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TAuthorCreate => {
@@ -308,41 +336,54 @@ const AuthorPage = () => {
             <MainCard>
                 <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
                     <Box display="flex" flexWrap="wrap">
-                        <Box>
-                            <StyledButton
-                                color="primary"
-                                size="small"
-                                startIcon={<IconPlus stroke={2} />}
-                                variant="contained"
-                                onClick={addAuthor}
-                            >
-                                Thêm mới
-                            </StyledButton>
-                        </Box>
+                        {
+                            hasPermission([
+                                { resource: "authors", action: "manage" },
+                                { resource: "authors", action: "create" },
+                            ]) &&
+                            <Box>
+                                <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<IconPlus stroke={2} />}
+                                    variant="contained"
+                                    onClick={addAuthor}
+                                >
+                                    Thêm mới
+                                </StyledButton>
+                            </Box>
+                        }
+
 
                         <Box>
-                            <Link to="/quan-ly-danh-muc/danh-sach-xoa-tac-gia" style={{ textDecoration: 'none' }}>
-                                <StyledButton
-                                    sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
-                                    size="small"
-                                    startIcon={<IconTrash stroke={2} />}
-                                    variant="contained"
-                                >
-                                    Thùng rác
-                                </StyledButton>
-                            </Link>
+                            {
+                                hasPermission([
+                                    { resource: "authors", action: "manage" },
+                                    { resource: "authors", action: "delete" },
+                                ]) &&
+                                <Link to="/quan-ly-danh-muc/danh-sach-xoa-tac-gia" style={{ textDecoration: 'none' }}>
+                                    <StyledButton
+                                        sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                        size="small"
+                                        startIcon={<IconTrash stroke={2} />}
+                                        variant="contained"
+                                    >
+                                        Thùng rác
+                                    </StyledButton>
+                                </Link>
+                            }
                         </Box>
                     </Box>
                 </Stack>
 
                 <ActionsForm actions={actionMenus}
-                {...((userRole === "Super Admin") ? {
-                    selectedLibrary: selectedLibrary,
-                    handleLibraryFilterChange: handleLibraryFilterChange,
-                    libraryData: libraryData?.data?.result
+                    {...((userRole === "Super Admin") ? {
+                        selectedLibrary: selectedLibrary,
+                        handleLibraryFilterChange: handleLibraryFilterChange,
+                        libraryData: libraryData?.data?.result
 
-                } : {})}
-                 />
+                    } : {})}
+                />
 
                 <TableList
                     checked={checkedDelete}

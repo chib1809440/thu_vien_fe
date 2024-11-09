@@ -1,4 +1,4 @@
-import { Switch } from "@mui/material";
+import { Switch, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconTrashXFilled } from "@tabler/icons-react";
@@ -21,6 +21,7 @@ import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../utils/object";
 import FormAddEditPublisher from "./ui-components/FormAddEditPublisher";
+import usePermission from "../../../utils/hasPermission";
 
 
 const PublisherPage = () => {
@@ -52,7 +53,7 @@ const PublisherPage = () => {
     const mutationSoftDelete = useDeleteSoftPublisher();
     const mutationSoftDeleteMany = useDeleteSoftManyPublisher();
     const revalidate = useReFetchPublisher();
-
+    const { hasPermission } = usePermission();
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TPublisher | null>(null);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -153,7 +154,14 @@ const PublisherPage = () => {
                 label: "Tên nhà sản xuất",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200, textTransform: "capitalize" },
-                render: (row) => (capitalizeFirstLetter(row?.name)),
+                render: (row) => {
+                    const hasWhitespace = /\s/.test(row?.name);
+                    return (
+                        <Typography noWrap={!hasWhitespace}>
+                            {capitalizeFirstLetter(row?.name)}
+                        </Typography>
+                    );
+                },
             },
             {
                 id: "description",
@@ -174,6 +182,10 @@ const PublisherPage = () => {
                             checked={row?.isLink}
                             value={row?.isLink}
                             onChange={(event) => handleChangeShareConnect(row, event.target.checked)}
+                            disabled={hasPermission([
+                                { resource: "publishers", action: "manage" },
+                                { resource: "publishers", action: "update" },
+                            ]) ? false : true}
                         />
                     );
                 },
@@ -194,16 +206,28 @@ const PublisherPage = () => {
                                 gap: 1,
                             }}
                         >
-                            <IconPencil
-                                onClick={() => handleEditPublisher(row)}
-                                size={20}
-                                stroke={1.5}
-                            />
-                            <IconTrash
-                                size={20}
-                                stroke={1.5}
-                                onClick={() => handleOpenConfirmDialog(row)}
-                            />
+                            {
+                                hasPermission([
+                                    { resource: "publishers", action: "manage" },
+                                    { resource: "publishers", action: "update" },
+                                ]) &&
+                                <IconPencil
+                                    onClick={() => handleEditPublisher(row)}
+                                    size={20}
+                                    stroke={1.5}
+                                />
+                            }
+                            {
+                                hasPermission([
+                                    { resource: "publishers", action: "manage" },
+                                    { resource: "publishers", action: "delete" },
+                                ]) &&
+                                <IconTrash
+                                    size={20}
+                                    stroke={1.5}
+                                    onClick={() => handleOpenConfirmDialog(row)}
+                                />
+                            }
 
                         </Box>
                     );
@@ -256,13 +280,16 @@ const PublisherPage = () => {
     }, [checkedDelete]);
 
     const actionMenus = useMemo((): TMenuOption[] => {
-        return [
+        return hasPermission([
+            { resource: "publishers", action: "manage" },
+            { resource: "publishers", action: "delete" },
+        ]) ? [
             {
                 label: "Xóa các dữ liệu vào thùng rác",
                 icon: <IconTrashXFilled size={20} stroke={1.5} />,
                 onClick: handleDeleteMultiple,
             },
-        ];
+        ] : [];
     }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TPublisherCreate => {
@@ -304,30 +331,43 @@ const PublisherPage = () => {
             <MainCard>
                 <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
                     <Box display="flex" flexWrap="wrap">
-                        <Box>
-                            <StyledButton
-                                color="primary"
-                                size="small"
-                                startIcon={<IconPlus stroke={2} />}
-                                variant="contained"
-                                onClick={addPublisher}
-                            >
-                                Thêm mới
-                            </StyledButton>
-                        </Box>
-
-                        <Box>
-                            <Link to="/quan-ly-danh-muc/danh-sach-xoa-nha-san-xuat" style={{ textDecoration: 'none' }}>
+                        {
+                            hasPermission([
+                                { resource: "publishers", action: "manage" },
+                                { resource: "publishers", action: "create" },
+                            ]) &&
+                            <Box>
                                 <StyledButton
-                                    sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                    color="primary"
                                     size="small"
-                                    startIcon={<IconTrash stroke={2} />}
+                                    startIcon={<IconPlus stroke={2} />}
                                     variant="contained"
+                                    onClick={addPublisher}
                                 >
-                                    Thùng rác
+                                    Thêm mới
                                 </StyledButton>
-                            </Link>
-                        </Box>
+                            </Box>
+                        }
+
+                        {
+                            hasPermission([
+                                { resource: "publishers", action: "manage" },
+                                { resource: "publishers", action: "delete" },
+                            ]) &&
+
+                            <Box>
+                                <Link to="/quan-ly-danh-muc/danh-sach-xoa-nha-san-xuat" style={{ textDecoration: 'none' }}>
+                                    <StyledButton
+                                        sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                        size="small"
+                                        startIcon={<IconTrash stroke={2} />}
+                                        variant="contained"
+                                    >
+                                        Thùng rác
+                                    </StyledButton>
+                                </Link>
+                            </Box>
+                        }
                     </Box>
                 </Stack>
 

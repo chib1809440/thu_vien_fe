@@ -22,6 +22,8 @@ import MainCard from "../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../utils/object";
 import FormEditShelves from "./ui-components/FormEditShelves";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
+import usePermission from "../../../utils/hasPermission";
+import { Typography } from "@mui/material";
 
 const ShelvesProductPage = () => {
     const queryString = useQueryString();
@@ -51,7 +53,7 @@ const ShelvesProductPage = () => {
     });
     const { data: shelfData } = useFetchShelf();
     const revalidate = useReFetchPublications();
-
+    const { hasPermission } = usePermission();
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TPublications | null>(null);
 
@@ -70,7 +72,7 @@ const ShelvesProductPage = () => {
 
     const handleSubmit = (values: TPublicationsCreate) => {
         if (!selectedEdit) return;
-        
+
         mutationEdit.mutate(
             { ...values, _id: selectedEdit._id },
             {
@@ -104,7 +106,14 @@ const ShelvesProductPage = () => {
                 label: "Tên ấn phẩm",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => (capitalizeFirstLetter(row?.name)),
+                render: (row) => {
+                    const hasWhitespace = /\s/.test(row?.name);
+                    return (
+                        <Typography noWrap={!hasWhitespace}>
+                            {capitalizeFirstLetter(row?.name)}
+                        </Typography>
+                    );
+                },
             },
             {
                 id: "shelvesName",
@@ -142,12 +151,20 @@ const ShelvesProductPage = () => {
                                 alignItems: "center",
                                 gap: 1,
                             }}
-                        >
-                            <IconPencil
-                                onClick={() => handleEditWarehouse(row)}
-                                size={20}
-                                stroke={1.5}
-                            />
+                        >{
+
+                                hasPermission([
+                                    { resource: "publications", action: "manage" },
+                                    { resource: "publications", action: "create" },
+                                    { resource: "publications", action: "update" },
+                                    { resource: "publications", action: "delete" },
+                                ]) &&
+                                <IconPencil
+                                    onClick={() => handleEditWarehouse(row)}
+                                    size={20}
+                                    stroke={1.5}
+                                />
+                            }
                         </Box>
                     );
                 },

@@ -1,4 +1,4 @@
-import { Switch } from "@mui/material";
+import { Switch, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconTrashXFilled } from "@tabler/icons-react";
@@ -21,6 +21,7 @@ import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { parserParams } from "../../../utils/object";
 import { useFetchLibrary } from "../../../hooks/services/library/library-query";
 import { useAuth } from "../../../contexts/JWTContext";
+import usePermission from "../../../utils/hasPermission";
 
 
 const CategoryPage = () => {
@@ -52,7 +53,7 @@ const CategoryPage = () => {
     const mutationSoftDelete = useDeleteSoftCategory();
     const mutationSoftDeleteMany = useDeleteSoftManyCategory();
     const revalidate = useReFetchCategory();
-
+    const { hasPermission } = usePermission();
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TCategory | null>(null);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -154,7 +155,14 @@ const CategoryPage = () => {
                 label: "Tên lĩnh vực",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => (capitalizeFirstLetter(row?.name)),
+                render: (row) => {
+                    const hasWhitespace = /\s/.test(row?.name);
+                    return (
+                        <Typography noWrap={!hasWhitespace}>
+                            {capitalizeFirstLetter(row?.name)}
+                        </Typography>
+                    );
+                },
             },
             {
                 id: "description",
@@ -175,6 +183,10 @@ const CategoryPage = () => {
                             checked={row?.isLink}
                             value={row?.isLink}
                             onChange={(event) => handleChangeShareConnect(row, event.target.checked)}
+                            disabled={hasPermission([
+                                { resource: "categories", action: "manage" },
+                                { resource: "categories", action: "update" },
+                            ]) ? false : true}
                         />
                     );
                 },
@@ -195,16 +207,28 @@ const CategoryPage = () => {
                                 gap: 1,
                             }}
                         >
-                            <IconPencil
-                                onClick={() => handleEditCategory(row)}
-                                size={20}
-                                stroke={1.5}
-                            />
-                            <IconTrash
-                                size={20}
-                                stroke={1.5}
-                                onClick={() => handleOpenConfirmDialog(row)}
-                            />
+                            {
+                                hasPermission([
+                                    { resource: "categories", action: "manage" },
+                                    { resource: "categories", action: "update" },
+                                ]) &&
+                                <IconPencil
+                                    onClick={() => handleEditCategory(row)}
+                                    size={20}
+                                    stroke={1.5}
+                                />
+                            }
+                            {
+                                hasPermission([
+                                    { resource: "categories", action: "manage" },
+                                    { resource: "categories", action: "delete" },
+                                ]) &&
+                                <IconTrash
+                                    size={20}
+                                    stroke={1.5}
+                                    onClick={() => handleOpenConfirmDialog(row)}
+                                />
+                            }
                         </Box>
                     );
                 },
@@ -256,13 +280,16 @@ const CategoryPage = () => {
     }, [checkedDelete]);
 
     const actionMenus = useMemo((): TMenuOption[] => {
-        return [
+        return hasPermission([
+            { resource: "categories", action: "manage" },
+            { resource: "categories", action: "create" },
+        ]) ? [
             {
                 label: "Xóa các dữ liệu vào thùng rác",
                 icon: <IconTrashXFilled size={20} stroke={1.5} />,
                 onClick: handleDeleteMultiple,
             },
-        ];
+        ] : [];
     }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TCategoryCreate => {
@@ -302,29 +329,43 @@ const CategoryPage = () => {
             <MainCard>
                 <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
                     <Box display="flex" flexWrap="wrap">
-                        <Box>
-                            <StyledButton
-                                color="primary"
-                                size="small"
-                                startIcon={<IconPlus stroke={2} />}
-                                variant="contained"
-                                onClick={addCategory}
-                            >
-                                Thêm mới
-                            </StyledButton>
-                        </Box>
+                        {
+                            hasPermission([
+                                { resource: "categories", action: "manage" },
+                                { resource: "categories", action: "create" },
+                            ]) &&
+                            <Box>
+                                <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<IconPlus stroke={2} />}
+                                    variant="contained"
+                                    onClick={addCategory}
+                                >
+                                    Thêm mới
+                                </StyledButton>
+                            </Box>
+                        }
+
 
                         <Box>
-                            <Link to="/quan-ly-danh-muc/danh-sach-xoa-linh-vuc" style={{ textDecoration: 'none' }}>
-                                <StyledButton
-                                    sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
-                                    size="small"
-                                    startIcon={<IconTrash stroke={2} />}
-                                    variant="contained"
-                                >
-                                    Thùng rác
-                                </StyledButton>
-                            </Link>
+                            {
+                                hasPermission([
+                                    { resource: "categories", action: "manage" },
+                                    { resource: "categories", action: "delete" },
+                                ]) &&
+
+                                <Link to="/quan-ly-danh-muc/danh-sach-xoa-linh-vuc" style={{ textDecoration: 'none' }}>
+                                    <StyledButton
+                                        sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                        size="small"
+                                        startIcon={<IconTrash stroke={2} />}
+                                        variant="contained"
+                                    >
+                                        Thùng rác
+                                    </StyledButton>
+                                </Link>
+                            }
                         </Box>
                     </Box>
                 </Stack>

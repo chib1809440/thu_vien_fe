@@ -25,6 +25,8 @@ import MainCard from "../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../utils/object";
 import FormEditWarehouse from "./ui-components/FormEditWarehouse";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
+import usePermission from "../../../utils/hasPermission";
+import { Typography } from "@mui/material";
 
 const StockProductPage = () => {
     const queryString = useQueryString();
@@ -54,7 +56,7 @@ const StockProductPage = () => {
     });
     const { data: shelfData } = useFetchShelf();
     const revalidate = useReFetchPublications();
-
+    const { hasPermission } = usePermission();
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TPublications | null>(null);
 
@@ -168,7 +170,14 @@ const StockProductPage = () => {
                 label: "Tên ấn phẩm",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => (capitalizeFirstLetter(row?.name)),
+                render: (row) => {
+                    const hasWhitespace = /\s/.test(row?.name);
+                    return (
+                        <Typography noWrap={!hasWhitespace}>
+                            {capitalizeFirstLetter(row?.name)}
+                        </Typography>
+                    );
+                },
             },
             {
                 id: "quantity",
@@ -221,11 +230,20 @@ const StockProductPage = () => {
                                 gap: 1,
                             }}
                         >
-                            <IconPencil
-                                onClick={() => handleEditWarehouse(row)}
-                                size={20}
-                                stroke={1.5}
-                            />
+                            {
+                                hasPermission([
+                                    { resource: "publications", action: "manage" },
+                                    { resource: "publications", action: "create" },
+                                    { resource: "publications", action: "update" },
+                                    { resource: "publications", action: "delete" },
+                                ]) &&
+                                <IconPencil
+                                    onClick={() => handleEditWarehouse(row)}
+                                    size={20}
+                                    stroke={1.5}
+                                />
+                            }
+
                         </Box>
                     );
                 },

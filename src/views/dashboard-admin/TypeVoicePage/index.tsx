@@ -16,6 +16,7 @@ import { TTypeVoice, TTypeVoiceCreate } from "../../../types/models/type-voice";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import FormAddEditTypeVoice from "./ui-components/FormAddEditTypeVoice";
+import usePermission from "../../../utils/hasPermission";
 
 
 const TypeVoicePage = () => {
@@ -30,7 +31,7 @@ const TypeVoicePage = () => {
     const mutationSoftDelete = useDeleteSoftTypeVoice();
     const mutationSoftDeleteMany = useDeleteSoftManyTypeVoice();
     const revalidate = useReFetchTypeVoice();
-
+    const { hasPermission } = usePermission();
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TTypeVoice | null>(null);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -123,16 +124,28 @@ const TypeVoicePage = () => {
                                 gap: 1,
                             }}
                         >
-                            <IconPencil
-                                onClick={() => handleEditTypeVoice(row)}
-                                size={20}
-                                stroke={1.5}
-                            />
-                            <IconTrash
-                                size={20}
-                                stroke={1.5}
-                                onClick={() => handleOpenConfirmDialog(row)}
-                            />
+                            {
+                                hasPermission([
+                                    { resource: "typevoices", action: "manage" },
+                                    { resource: "typevoices", action: "update" },
+                                ]) &&
+                                <IconPencil
+                                    onClick={() => handleEditTypeVoice(row)}
+                                    size={20}
+                                    stroke={1.5}
+                                />
+                            }
+                            {
+                                hasPermission([
+                                    { resource: "typevoices", action: "manage" },
+                                    { resource: "typevoices", action: "delete" },
+                                ]) &&
+                                <IconTrash
+                                    size={20}
+                                    stroke={1.5}
+                                    onClick={() => handleOpenConfirmDialog(row)}
+                                />
+                            }
 
                         </Box>
                     );
@@ -185,17 +198,20 @@ const TypeVoicePage = () => {
     }, [checkedDelete]);
 
     const actionMenus = useMemo((): TMenuOption[] => {
-        return [
+        return hasPermission([
+            { resource: "typevoices", action: "manage" },
+            { resource: "typevoices", action: "delete" },
+        ]) ? [
             {
                 label: "Xóa các dữ liệu vào thùng rác",
                 icon: <IconTrashXFilled size={20} stroke={1.5} />,
                 onClick: handleDeleteMultiple,
             },
-        ];
+        ] : [];
     }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TTypeVoiceCreate => {
-        
+
         if (selectedEdit) {
             return {
                 name: selectedEdit.name
@@ -229,29 +245,41 @@ const TypeVoicePage = () => {
             <MainCard>
                 <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
                     <Box display="flex" flexWrap="wrap">
-                        <Box>
-                            <StyledButton
-                                color="primary"
-                                size="small"
-                                startIcon={<IconPlus stroke={2} />}
-                                variant="contained"
-                                onClick={addTypeVoice}
-                            >
-                                Thêm mới
-                            </StyledButton>
-                        </Box>
+                        {
+                            hasPermission([
+                                { resource: "typevoices", action: "manage" },
+                                { resource: "typevoices", action: "create" },
+                            ]) &&
+                            <Box>
+                                <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<IconPlus stroke={2} />}
+                                    variant="contained"
+                                    onClick={addTypeVoice}
+                                >
+                                    Thêm mới
+                                </StyledButton>
+                            </Box>
+                        }
 
                         <Box>
-                            <Link to="/quan-ly-danh-muc/danh-sach-xoa-loai-voice" style={{ textDecoration: 'none' }}>
-                                <StyledButton
-                                    sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
-                                    size="small"
-                                    startIcon={<IconTrash stroke={2} />}
-                                    variant="contained"
-                                >
-                                    Thùng rác
-                                </StyledButton>
-                            </Link>
+                            {
+                                hasPermission([
+                                    { resource: "typevoices", action: "manage" },
+                                    { resource: "typevoices", action: "delete" },
+                                ]) &&
+                                <Link to="/quan-ly-danh-muc/danh-sach-xoa-loai-voice" style={{ textDecoration: 'none' }}>
+                                    <StyledButton
+                                        sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                        size="small"
+                                        startIcon={<IconTrash stroke={2} />}
+                                        variant="contained"
+                                    >
+                                        Thùng rác
+                                    </StyledButton>
+                                </Link>
+                            }
                         </Box>
                     </Box>
                 </Stack>

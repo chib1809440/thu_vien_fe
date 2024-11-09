@@ -19,6 +19,7 @@ import MainCard from "../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../utils/object";
 import FormEditLiquidation from "./ui-components/FormEditLiquidation";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
+import usePermission from "../../../utils/hasPermission";
 
 const LiquidationProductPage = () => {
     const queryString = useQueryString();
@@ -47,7 +48,7 @@ const LiquidationProductPage = () => {
 
     const mutationUpdateLiquidation = useEditLiquidation();
     const revalidate = useReFetchLiquidation();
-
+    const { hasPermission } = usePermission();
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TLiquidation | null>(null);
 
@@ -74,7 +75,7 @@ const LiquidationProductPage = () => {
                     quantity: values.liquidationQuantity,
                     status: "thanh lý",
                     reason: values.reason,
-                    _id: selectedEdit._id 
+                    _id: selectedEdit._id
                 },
                 {
                     onSuccess: () => {
@@ -169,11 +170,20 @@ const LiquidationProductPage = () => {
                                 gap: 1,
                             }}
                         >
-                            <IconPencil
-                                onClick={() => handleEditLiquidation(row)}
-                                size={20}
-                                stroke={1.5}
-                            />
+                            {
+
+                                hasPermission([
+                                    { resource: "publications", action: "manage" },
+                                    { resource: "publications", action: "create" },
+                                    { resource: "publications", action: "update" },
+                                    { resource: "publications", action: "delete" },
+                                ]) &&
+                                <IconPencil
+                                    onClick={() => handleEditLiquidation(row)}
+                                    size={20}
+                                    stroke={1.5}
+                                />
+                            }
                         </Box>
                     );
                 },

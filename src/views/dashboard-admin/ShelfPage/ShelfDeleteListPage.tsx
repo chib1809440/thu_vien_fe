@@ -17,6 +17,7 @@ import { TShelves } from "../../../types/models/shelves";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
+import { Typography } from "@mui/material";
 
 
 const ShelfDeleteListPage = () => {
@@ -93,7 +94,14 @@ const ShelfDeleteListPage = () => {
                 label: "Tên tủ kệ",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => (capitalizeFirstLetter(row?.name)),
+                render: (row) => {
+                    const hasWhitespace = /\s/.test(row?.name);
+                    return (
+                        <Typography noWrap={!hasWhitespace}>
+                            {capitalizeFirstLetter(row?.name)}
+                        </Typography>
+                    );
+                },
             },
             {
                 id: "description",

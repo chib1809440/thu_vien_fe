@@ -1,4 +1,4 @@
-import { Box, Stack } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { IconLink } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
@@ -103,7 +103,14 @@ const LibCategoryPage = () => {
                 label: "Tên lĩnh vực",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => (capitalizeFirstLetter(row?.name)),
+                render: (row) => {
+                    const hasWhitespace = /\s/.test(row?.name);
+                    return (
+                        <Typography noWrap={!hasWhitespace}>
+                            {capitalizeFirstLetter(row?.name)}
+                        </Typography>
+                    );
+                },
             },
             {
                 id: "libraryDetails",

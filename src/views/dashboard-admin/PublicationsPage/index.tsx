@@ -654,11 +654,8 @@ const PublicationsPage = () => {
     };
 
     const actionMenus = useMemo((): TMenuOption[] => {
-
         return hasPermission([
             { resource: "publications", action: "manage" },
-            { resource: "publications", action: "create" },
-            { resource: "publications", action: "delete" },
         ]) ? [
             {
                 label: "Tải file mẫu",
@@ -674,6 +671,20 @@ const PublicationsPage = () => {
                 label: "Xóa các dữ liệu đã chọn",
                 icon: <IconTrashXFilled size={20} stroke={1.5} />,
                 onClick: handleDeleteMultiple,
+            },
+        ] : hasPermission([
+            { resource: "publications", action: "manage" },
+            { resource: "publications", action: "create" },
+        ]) ? [
+            {
+                label: "Tải file mẫu",
+                icon: <IconFileDownload size={20} stroke={1.5} />,
+                onClick: handleDownloadTemplate,
+            },
+            {
+                label: "Import file excel",
+                icon: <IconFileUpload size={20} stroke={1.5} />,
+                onClick: handleImportExcel,
             },
         ] : [];
     }, [userRole, handleDeleteMultiple, handleDownloadTemplate, handleImportExcel]);
@@ -793,7 +804,6 @@ const PublicationsPage = () => {
                                     {
                                         hasPermission([
                                             { resource: "publications", action: "manage" },
-                                            { resource: "publications", action: "create" },
                                         ]) ?
                                             <Link
                                                 to="/thu-vien/danh-sach-xoa-an-pham"

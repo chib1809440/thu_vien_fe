@@ -44,7 +44,7 @@ const icons = {
 
 const dashboardAdmin = {
     id: 'dashboard-admin',
-    title: `Version ${VERSION}`,
+    // title: `Version ${VERSION}`,
     type: 'group',
     children: [
         {
@@ -314,7 +314,7 @@ const dashboardAdmin = {
 
 export const dashboardAdminV2 = {
     id: 'dashboard-admin',
-    title: `Version ${VERSION}`,
+    // title: `Version ${VERSION}`,
     type: 'group',
     children: [
         {

@@ -1,12 +1,13 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
-import { FC, useMemo } from "react";
+import { FC, useCallback, useMemo, useRef, useState } from "react";
 import * as yup from "yup";
 import InputForm from "../../../../components/custom/form/InputForm";
 import { capitalizeFirstLetter } from '../../../../helpers/capitalizeFirstLetter';
 import { formatDate } from '../../../../helpers/formatDate';
 import { CreateUserModel } from "../../../../interfaces/user";
+import Uploadimage, { UploadAvatarRefProps } from '../../../../components/custom/form/UploadImage';
 
 type Props = {
     open: boolean;
@@ -15,15 +16,14 @@ type Props = {
     isFetching?: boolean;
     initialValues: CreateUserModel;
     isEditMode?: boolean;
+    imageUrl?: string;
 };
 
 const schema = yup.object().shape({
     fullname: yup.string().required("Vui lòng nhập tên"),
-    address: yup.string().url("Vui lòng nhập địa chỉ"),
+    address: yup.string().required("Vui lòng nhập địa chỉ"),
     email: yup.string().email("Vui lòng nhập đúng định dạng email"),
     phoneNumber: yup.string().matches(/^[0-9]+$/, "Vui lòng nhập đúng định dạng số điện thoại"),
-    roleId: yup.string().required("Vui lòng chọn vai trò"),
-    libraryId: yup.string().required("Vui lòng chọn thư viện"),
 });
 
 const FormProfile: FC<Props> = ({
@@ -37,16 +37,22 @@ const FormProfile: FC<Props> = ({
         address: "",
         birthday: "",
         gender: "",
+        class: "",
+        school: "",
         roleId: "",
         libraryId: "",
     },
+    isFetching = false,
+    isEditMode = false,
+    imageUrl,
 }) => {
     const formik = useFormik<CreateUserModel>({
         initialValues,
         validationSchema: schema,
         enableReinitialize: true,
-        onSubmit: (values, { resetForm }) => {
+        onSubmit: (values, { resetForm }) => {            
             if (onSubmit) {
+
                 onSubmit(values, resetForm);
             }
         },
@@ -56,6 +62,28 @@ const FormProfile: FC<Props> = ({
         () => formik,
         [formik]
     );
+
+    console.log("values", values);
+    
+
+    const imageRef = useRef<UploadAvatarRefProps>(null);
+    const [defaultImage, setDefaultImage] = useState<string>("");
+    const [fileName, setFileName] = useState("");
+
+    // Xét ảnh
+    const handleChangeImage = useCallback(
+        async (file: File) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                setDefaultImage(event.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+            setFileName(file.name);
+            setFieldValue("file", file);
+        },
+        [initialValues, setFieldValue, defaultImage]
+    );
+    
 
     return (
         <FormikProvider value={formik}>
@@ -83,23 +111,48 @@ const FormProfile: FC<Props> = ({
                     </IconButton>
                 </DialogTitle>
 
-                <DialogContent>
+                <DialogContent >
                     <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
-                        <InputForm
-                            label="Họ tên"
-                            error={touched.fullname && Boolean(errors.fullname)}
-                            helperText={touched.fullname && errors.fullname}
-                            {...getFieldProps("fullname")}
-                            disabled
-                        />
-                        <InputForm
-                            label="Địa chỉ"
-                            placeholder="Nhập địa chỉ"
-                            error={touched.address && Boolean(errors.address)}
-                            helperText={touched.address && errors.address}
-                            {...getFieldProps("address")}
-                            disabled
-                        />
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: { xs: "column", md: "row" },
+                                gap: 2,
+                                width: "100%",
+                                my: 2,
+                            }}
+                        >
+                            <Uploadimage
+                                ref={imageRef}
+                                defaultImage={imageUrl || defaultImage}
+                                onChange={handleChangeImage}
+                                fileName={fileName}
+                            />
+
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    width: "100%",
+                                    ml: { xs: 0, md: 2, xl: 5 },
+                                }}
+                            >
+                                <InputForm
+                                    label="Họ tên"
+                                    error={touched.fullname && Boolean(errors.fullname)}
+                                    helperText={touched.fullname && errors.fullname}
+                                    {...getFieldProps("fullname")}
+                                />
+                                <InputForm
+                                    label="Địa chỉ"
+                                    placeholder="Nhập địa chỉ"
+                                    error={touched.address && Boolean(errors.address)}
+                                    helperText={touched.address && errors.address}
+                                    {...getFieldProps("address")}
+                                />
+                            </Box>
+                        </Box>
+
                         <Box sx={{ display: "flex", gap: 2 }}>
                             <InputForm
                                 label="Email"
@@ -107,7 +160,6 @@ const FormProfile: FC<Props> = ({
                                 error={touched.email && Boolean(errors.email)}
                                 helperText={touched.email && errors.email}
                                 {...getFieldProps("email")}
-                                disabled
                             />
                             <InputForm
                                 label="Số điện thoại"
@@ -115,7 +167,6 @@ const FormProfile: FC<Props> = ({
                                 error={touched.phoneNumber && Boolean(errors.phoneNumber)}
                                 helperText={touched.phoneNumber && errors.phoneNumber}
                                 {...getFieldProps("phoneNumber")}
-                                disabled
                             />
                         </Box>
 
@@ -127,7 +178,6 @@ const FormProfile: FC<Props> = ({
                                 helperText={touched.gender && errors.gender}
                                 {...getFieldProps("gender")}
                                 value={capitalizeFirstLetter(values?.gender)}
-                                disabled
                             />
                             <InputForm
                                 label="Ngày sinh"
@@ -135,12 +185,39 @@ const FormProfile: FC<Props> = ({
                                 error={touched.birthday && Boolean(errors.birthday)}
                                 helperText={touched.birthday && errors.birthday}
                                 {...getFieldProps("birthday")}
-                                disabled
                                 value={formatDate(values?.birthday)}
+                            />
+                        </Box>
+                        <Box sx={{ display: "flex", gap: 2 }}>
+                            <InputForm
+                                label="Trường"
+                                placeholder="Nhập tên trường"
+                                error={touched.school && Boolean(errors.school)}
+                                helperText={touched.school && errors.school}
+                                {...getFieldProps("school")}
+                                value={capitalizeFirstLetter(values?.school)}
+                            />
+                            <InputForm
+                                label="Lớp"
+                                placeholder="Nhập tên lớp"
+                                error={touched.class && Boolean(errors.class)}
+                                helperText={touched.class && errors.class}
+                                {...getFieldProps("class")}
+                                value={capitalizeFirstLetter(values?.class)}
                             />
                         </Box>
                     </Form>
                 </DialogContent>
+                <DialogActions sx={{ pr: 4, pb: 2 }}>
+                    <Button
+                        disabled={isFetching}
+                        onClick={handleSubmit as () => void}
+                        variant="contained"
+                        color="primary"
+                    >
+                        {isFetching ? "Đang thực hiện..." : isEditMode ? "Cập nhật" : "Thêm mới"}
+                    </Button>
+                </DialogActions>
             </Dialog>
         </FormikProvider>
     );

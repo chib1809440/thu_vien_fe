@@ -12,27 +12,26 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { IconLogout, IconUser } from '@tabler/icons';
-import { IconCarTurbine, IconChevronDown, IconHomeBitcoin, IconShoppingCartFilled } from '@tabler/icons-react';
+import { IconChevronDown, IconHomeBitcoin, IconShoppingCartFilled } from '@tabler/icons-react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { CsFlexRowBetween } from '../../../../components/default/flex';
 import ImageComponent from '../../../../components/default/image';
-import { useRoleList } from '../../../../hooks/react-query/roleData';
-import { useUser } from '../../../../hooks/react-query/userData';
-import { useFetchLibrary } from '../../../../hooks/services/library/library-query';
-import useAuth from '../../../../hooks/useAuth';
-import { CreateUserModel } from '../../../../interfaces/user';
-import { statusRole } from '../../../../utils/constants.utils';
-import { getLabelFromOptions } from '../../../../utils/object';
-import FormProfile from './FormProfile';
-import { Role } from '../../../../interfaces/role';
-import { TLibrary } from '../../../../types/models/library.type';
-import { useDispatch, useSelector } from 'react-redux';
-import { CreatePublication } from '../../../../types/models/loanSlip.type';
-import FormAddEditLibLoanSlip from '../../../../views/dashboard-admin/LienThong/LIB/LibLoanSlipPage/ui-components/FormAddEditLibLoanSlip';
+import { useChangeInfo, useUser } from '../../../../hooks/react-query/userData';
 import { useAddLoanSlip } from '../../../../hooks/services/loanSlip/loanSlip-mutation';
 import { useReFetchLoanSlipLink } from '../../../../hooks/services/loanSlip/loanSlip-query';
-import { toast } from 'react-toastify';
+import useAuth from '../../../../hooks/useAuth';
+import { Role } from '../../../../interfaces/role';
+import { CreateUserModel, User } from '../../../../interfaces/user';
 import { clearCart } from '../../../../store/slices/cartLoanSlip';
+import { TLibrary } from '../../../../types/models/library.type';
+import { CreatePublication } from '../../../../types/models/loanSlip.type';
+import { statusRole } from '../../../../utils/constants.utils';
+import { getLabelFromOptions } from '../../../../utils/object';
+import FormAddEditLibLoanSlip from '../../../../views/dashboard-admin/LienThong/LIB/LibLoanSlipPage/ui-components/FormAddEditLibLoanSlip';
+import FormProfile from './FormProfile';
+import { LOGIN } from '../../../../store/actions';
 // ==============================|| PROFILE MENU ||============================== //
 const settings = [
     { name: "Thông tin cá nhân", icon: <IconUser /> },
@@ -48,9 +47,12 @@ const ProfileSection = () => {
     const anchorRef = useRef<any>(null);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
     const items = useSelector((state: { cartLoanSlip: { items: CreatePublication[] } }) => state.cartLoanSlip.items);
+    const [selectedEdit, setSelectedEdit] = useState<User | null>(null);
+    const mutationChangeInfo = useChangeInfo();
     const [openCart, setOpenCart] = useState(false);
     const dispatch = useDispatch();
     const location = useLocation(); // Lấy thông tin URL
+
 
     // Lấy đường dẫn từ location.pathname
     const currentPath = location.pathname; // Ví dụ: "/len-thong/"
@@ -70,6 +72,16 @@ const ProfileSection = () => {
         return _user?.data?._id;
     }, [user]);
 
+    const avatar = useMemo(() => {
+        if (!user) return null;
+
+        const _user = { ...user } as any;
+
+        return _user?.data?.avatar;
+    }, [user]);
+    console.log(avatar);
+
+
     const libraryDetail = useMemo(() => {
         if (!user) return null;
 
@@ -88,10 +100,15 @@ const ProfileSection = () => {
         setAnchorElUser(null);
     };
 
-    const handleProfileClick = () => {
+    const handleProfileClick = (userId: string) => {
         handleCloseUserMenu();
+        if (userId) {
+            const selectedUser = userData?.data?.result;
+            setSelectedEdit(selectedUser);
+        }
         setOpenDialog(true);
     };
+
 
     const handleLogoutClick = async () => {
         handleCloseUserMenu();
@@ -128,6 +145,9 @@ const ProfileSection = () => {
                 address: user.address,
                 birthday: user.birthday,
                 gender: user.gender,
+                class: user.class,
+                school: user.school,
+                avatar: user.avatar,
                 roleId: (user.roleId as Role)?._id,
                 libraryId: (user.libraryId as TLibrary)?._id,
             };
@@ -148,6 +168,56 @@ const ProfileSection = () => {
             },
         });
     };
+
+    const handleSubmitChangeInfo = async (values: CreateUserModel) => {
+        console.log(values, 'kkkjasdkjaskjdas');
+
+        if (selectedEdit) {
+            mutationChangeInfo.mutate(
+                { ...values, _id: selectedEdit._id },
+                {
+                    onSuccess: (data) => {
+                        toast.success("Chỉnh sửa thành công.");
+                        const loca = localStorage.getItem('dataUser');
+                        const user = JSON.parse(loca)
+                        const userUpdated = data.data.result
+
+                        const chageLocalStorage = {
+                            ...user,
+                            data: {
+                                ...user.data, avatar: userUpdated.avatar,
+                                address: userUpdated.address,
+                                birthday: userUpdated.birthday,
+                                class: userUpdated.class,
+                                school: userUpdated.school,
+                                email: userUpdated.email,
+                                fullname: userUpdated.fullname,
+                                gender: userUpdated.gender,
+                                phoneNumber: userUpdated.phoneNumber,
+                            }
+                        }
+                        console.log(chageLocalStorage, 'kkkkkkk')
+                        localStorage.setItem("dataUser", JSON.stringify(chageLocalStorage));
+                        dispatch({
+                            type: LOGIN,
+                            payload: {
+                                isLoggedIn: true,
+                                user: {
+                                    ...user,
+                                    data:{
+                                    ...chageLocalStorage
+                                    }
+                                },
+                            },
+                        });
+                    },
+                }
+            );
+            return;
+        }
+    }
+    console.log('dsds',user);
+    
     return (
         <Grid item>
             <Box sx={{ display: "flex", gap: 1 }}>
@@ -208,7 +278,7 @@ const ProfileSection = () => {
                         cursor: "pointer"
                     }} >
                     <IconButton sx={{ p: 0, }}>
-                        <ImageComponent width="32px" height="32px" alt="Remy Sharp" src="/images/boy.png" />
+                        <ImageComponent style={{ borderRadius: "50%" }} width="32px" height="32px" alt="Remy Sharp" src={avatar ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${avatar}` : "/image/boy.png"} />
                     </IconButton>
                     <Typography variant="body2">{getLabelFromOptions(statusRole, roleId?.name)}</Typography>
                     <IconChevronDown size={"18px"} stroke={1.5} />
@@ -232,7 +302,7 @@ const ProfileSection = () => {
                 >
                     {settings.map((setting) => (
                         <MenuItem
-                            onClick={setting.name === "Đăng xuất" ? handleLogoutClick : handleProfileClick}
+                            onClick={setting.name === "Đăng xuất" ? handleLogoutClick : () => handleProfileClick(userID)}
                             key={setting.name}
                         >
                             <ListItemIcon>
@@ -261,7 +331,9 @@ const ProfileSection = () => {
                     open={openDialog}
                     onClose={handleDialogClose}
                     initialValues={initialValues}
-                    isEditMode={true}
+                    isEditMode={selectedEdit ? true : false}
+                    onSubmit={handleSubmitChangeInfo}
+                    imageUrl={`${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.avatar}`}
                 />
             )}
         </Grid>

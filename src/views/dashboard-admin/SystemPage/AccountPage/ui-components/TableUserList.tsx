@@ -31,6 +31,8 @@ import { IconEye } from "@tabler/icons";
 import { Role } from "../../../../../interfaces/role";
 import { useReactToPrint } from "react-to-print";
 import PrintAccount from "../PrintAccount";
+import { getLabelFromOptions } from "../../../../../utils/object";
+import { statusRole } from "../../../../../utils/constants.utils";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -215,7 +217,7 @@ function TableUserList<T extends DataType>({
             toast.error(error.message);
         }
     };
-  
+
     const handleOpenLibs = () => {
         setIsOpenLibCard(true);
     };
@@ -251,8 +253,8 @@ function TableUserList<T extends DataType>({
             page-break-before: auto;
           }
         `,
-      });
-      
+    });
+
 
     const handleConfirmLibCard = async () => {
         try {
@@ -263,8 +265,8 @@ function TableUserList<T extends DataType>({
             toast.error(error.message);
         }
     };
-    const checkedUsers = users?.data?.result?.filter((user) => checked.includes(user._id)); 
-    
+    const checkedUsers = users?.data?.result?.filter((user) => checked.includes(user._id));
+
     return (
         <>
             {isOpenLibCard && <PrintAccount ref={componentRef} dataUsers={checkedUsers} />}
@@ -290,7 +292,7 @@ function TableUserList<T extends DataType>({
                         <MenuItem value={0}>Tất cả vai trò</MenuItem>
                         {roles?.data.result.map((item, index) => (
                             <MenuItem key={index} value={item._id}>
-                                {item.name}
+                                {getLabelFromOptions(statusRole, item.name)}
                             </MenuItem>
                         ))}
                     </Select>
@@ -361,7 +363,7 @@ function TableUserList<T extends DataType>({
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.barcode}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.fullname}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.phoneNumber}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{(row?.roleId as Role)?.name}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{getLabelFromOptions(statusRole, (row?.roleId as Role)?.name)}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.gender}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{formatDate(row?.birthday)}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center">

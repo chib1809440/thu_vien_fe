@@ -1,5 +1,6 @@
 import { EntityResponse, SingleRecordResponse } from '../interfaces/entityResponse';
 import { CreateUserModel, User } from '../interfaces/user';
+import { TApiOneRecord } from '../types/api/api.type';
 import axios from '../utils/axios';
 
 const USER_API = '/user';
@@ -17,7 +18,7 @@ export const createUser = async (formData: FormData): Promise<EntityResponse<Use
 // Read all
 export const getAllUsers = async (page?: number, limit?: number, search?: string, roleId?: string | number, order: string = "ASC"): Promise<EntityResponse<User[]>> => {
     let url = `${USER_API}?order=${order}`;
-    if (page !== undefined && limit !== undefined &&limit>0) {
+    if (page !== undefined && limit !== undefined && limit > 0) {
         url += `&page=${page}&limit=${limit}`;
     }
     console.log(page);
@@ -93,3 +94,84 @@ export const getAllUsersDeleted = async (page?: number, limit?: number, search?:
     const response = await axios.get<EntityResponse<User[]>>(url);
     return response.data;
 };
+
+export const changeInfo = async<DynamicPayload, DynamicResponse>(
+    payload: DynamicPayload,
+    id: string | number,
+    isWithFormData: boolean = false
+) => {
+    if (isWithFormData) {
+        const formData = new FormData();
+
+        Object.keys(payload).forEach((key) => {
+            // check is one file
+            if (payload[key] instanceof File) {
+                formData.append(key, payload[key]);
+                return;
+            }
+
+            // check is list file
+            if (Array.isArray(payload[key]) && payload[key][0] instanceof File) {
+                payload[key].forEach((file) => {
+                    formData.append(key, file);
+                });
+                return;
+            }
+
+            // check is object
+            if (typeof payload[key] === "object" && payload[key] !== null) {
+                formData.append(key, JSON.stringify(payload[key]));
+                return;
+            }
+
+            // check is string
+            if (typeof payload[key] === "string") {
+                formData.append(key, payload[key]);
+                return;
+            }
+
+            // check is number
+            if (typeof payload[key] === "number") {
+                formData.append(key, payload[key].toString());
+                return;
+            }
+
+            // check is boolean
+            if (typeof payload[key] === "boolean") {
+                formData.append(key, payload[key].toString());
+                return;
+            }
+
+            // check is null
+            if (
+                payload[key] === null ||
+                payload[key] === undefined ||
+                payload[key] === "" ||
+                typeof payload[key] === "undefined"
+            ) {
+                return;
+            }
+
+            // check is array
+            if (Array.isArray(payload[key])) {
+                payload[key].forEach((file) => {
+                    formData.append(key, file);
+                });
+                return;
+            }
+
+            formData.append(key, payload[key]);
+        });
+
+        const response = await axios.patch(`${USER_API}/change-info/${id}`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+
+        return response.data as TApiOneRecord<DynamicResponse>;
+    }
+
+    const response = await axios.patch(`${USER_API}/change-info/${id}`, payload);
+    return response.data as TApiOneRecord<DynamicResponse>;
+}

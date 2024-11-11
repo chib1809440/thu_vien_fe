@@ -1,60 +1,37 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
+import { LoadingButton } from "@mui/lab";
 import {
-    Alert,
-    Button,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    FilledInput,
     FormControl,
-    FormControlLabel,
     FormHelperText,
     Grid,
-    Icon,
     IconButton,
-    Input,
-    InputAdornment,
-    InputBase,
-    LinearProgress,
     MenuItem,
-    OutlinedInput,
-    Radio,
-    RadioGroup,
-    Rating,
     Select,
-    Snackbar,
-    Step,
-    StepLabel,
-    Stepper,
-    TextField,
+    TextField
 } from "@mui/material";
+import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
-import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { useTheme } from "@mui/material/styles";
-import { LoadingButton } from "@mui/lab";
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import Typography from "@mui/material/Typography";
+import { useEffect, useState } from "react";
 
-import { useFormik } from "formik";
-import * as yup from "yup";
-import { stringify } from "querystring";
-import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
-import { ErrorResponse } from "../../../interfaces/errorResponse";
-import { Entity } from "draft-js";
-import { EntityResponse } from "../../../interfaces/entityResponse";
-import { CreateUserModel, User } from "../../../interfaces/user";
-import { useCreateAdminAccount, useCreateUser, useUpdateAdminAccount, useUpdateUser } from "../../../hooks/react-query/userData";
 import { vi } from "date-fns/locale";
+import { useFormik } from "formik";
 import DatePicker from "react-datepicker";
-import { generateUserName } from "../../../helpers/generateUserName";
-import { IconHttpDelete, IconSquareXFilled } from "@tabler/icons-react";
-import { useRoleBySuperAdminList, useRoleList } from "../../../hooks/react-query/roleData";
-import { useFetchGroup } from "../../../hooks/services/group/group-query";
+import { toast } from "react-toastify";
+import * as yup from "yup";
+import { useRoleBySuperAdminList } from "../../../hooks/react-query/roleData";
+import { useCreateAdminAccount, useUpdateAdminAccount } from "../../../hooks/react-query/userData";
 import { useFetchLibrary } from "../../../hooks/services/library/library-query";
-import { TLibrary } from "../../../types/models/library.type";
+import { EntityResponse } from "../../../interfaces/entityResponse";
+import { ErrorResponse } from "../../../interfaces/errorResponse";
 import { Role } from "../../../interfaces/role";
+import { CreateAdminModel, User } from "../../../interfaces/user";
+import { TLibrary } from "../../../types/models/library.type";
 export const validationUtilizedObjectSchema = yup.object({
     fullname: yup.string().required("Vui lòng nhập họ và tên"),
     email: yup.string().email("Vui lòng nhập đúng định dạng email"),
@@ -169,10 +146,8 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
             setEntityError(null);
             try {
                 setLoading(true);
-                const data: CreateUserModel = {
+                const data: CreateAdminModel = {
                     fullname: values.fullname,
-                    class: values.class,
-                    school: values.school,
                     email: values.email,
                     phoneNumber: values.phoneNumber,
                     address: values.address,

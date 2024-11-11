@@ -5,11 +5,12 @@
 // import { ErrorResponse } from 'react-router-dom';
 
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createUser, deleteUser, deleteUserSelected, getAllUsers, getAllUsersDeleted, getUserById, restoreUserSelected, softDeleteUser, softDeleteUserSelected, updateUser } from "../../_apis/user.api";
+import { changeInfo, createUser, deleteUser, deleteUserSelected, getAllUsers, getAllUsersDeleted, getUserById, restoreUserSelected, softDeleteUser, softDeleteUserSelected, updateUser } from "../../_apis/user.api";
 import { RQ_USER, RQ_USERLIST, RQ_USERTRASHLIST } from "./constants_react_query";
 import { CreateAdminModel, CreateUserModel, User } from "../../interfaces/user";
 import { createAdminAcount, updateAdminAcount } from "../../_apis/auth.api";
 import { getQueryKeys } from "../../utils/object";
+import { toast } from "react-toastify";
 
 // // useUsersData Hook
 // export const useUsersData = (
@@ -299,3 +300,18 @@ export function useUpdateAdminAccount(onSuccess, onError) {
         },
     });
 }
+
+export const useChangeInfo = () => {
+    return useMutation({
+        mutationFn: async (data: CreateUserModel) => {
+            return await changeInfo<CreateUserModel, User>(
+                data,
+                data._id,
+                true
+            );
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    });
+};

@@ -10,7 +10,7 @@ export interface User extends AbstractEntity {
     phoneNumber: string;
     address: string;
     birthday: string;
-    avatar: string;
+    avatar: string | File;
     gender: string;
     barcode: string;
     roleId: Role | string;
@@ -26,7 +26,7 @@ export interface CreateUserModel {
     phoneNumber: string;
     address: string;
     birthday: string;
-    avatar?: File;
+    avatar?: File | string;
     gender: string;
     class?: string;
     school?: string;
@@ -43,4 +43,7 @@ export interface CreateAdminModel {
     avatar?: File;
     gender: string;
     roleId: string | Role;
+    libraryId: string | TLibrary;
+    class?: string;
+    school?: string;
 }

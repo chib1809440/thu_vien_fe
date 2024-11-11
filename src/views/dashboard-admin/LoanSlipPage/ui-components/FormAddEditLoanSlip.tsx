@@ -73,6 +73,7 @@ type Props = {
     loanSlip?: TLoanSlip;
     isEditMode?: boolean;
     roleName: string;
+    onHandleCancelLoanSlip?: (loanSlip: TLoanSlip) => void;
 
 };
 
@@ -97,6 +98,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
     },
     isFetching = false,
     isEditMode = false,
+    onHandleCancelLoanSlip,
     loanSlip,
     roleName
 }) => {
@@ -371,7 +373,13 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
         return _user?.data?.libraryDetail;
     }, [user]);
-
+    const handleCancelLoanSlip = (loanSlip: TLoanSlip) => {
+        if (onHandleCancelLoanSlip) {
+            onHandleCancelLoanSlip(loanSlip); // Gọi hàm
+        } else {
+            console.error("onHandleCancelLoanSlip is not a function");
+        }
+    };
     return (
         <FormikProvider value={formik}>
             <Dialog
@@ -833,6 +841,20 @@ const FormAddEditLoanSlip: FC<Props> = ({
                         roleName === "Owner" && isEditMode && !loanSlip?.isReturn && <Button onClick={handleReturnLoanSlip} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
                             Trả sách
                         </Button>
+                    }
+                    {
+                        loanSlip &&
+                        isEditMode &&
+                        loanSlip.status !== "đang mượn" && loanSlip.status !== "đã trả" && // Kiểm tra status
+                        !loanSlip.isCancel && (
+                            <Button
+                                onClick={() => handleCancelLoanSlip(loanSlip)}
+                                style={{ background: '#c62828', color: 'white' }}
+                                variant="contained"
+                            >
+                                Hủy phiếu mượn
+                            </Button>
+                        )
                     }
                     {
 

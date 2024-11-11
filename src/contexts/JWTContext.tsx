@@ -171,7 +171,16 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
 
     const resetPassword = (email: string) => console.log(email);
 
-    const updateProfile = () => { };
+    const updateProfile = (data: any) => {
+        console.log('new data', data);
+        dispatch({
+            type: LOGIN,
+            payload: {
+                isLoggedIn: true,
+                user: data,
+            },
+        });
+    };
 
     const refreshUser = async () => {
         console.log("aaaa", state.user);

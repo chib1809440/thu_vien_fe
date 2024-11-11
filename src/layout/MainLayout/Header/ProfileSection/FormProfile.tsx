@@ -50,7 +50,7 @@ const FormProfile: FC<Props> = ({
         initialValues,
         validationSchema: schema,
         enableReinitialize: true,
-        onSubmit: (values, { resetForm }) => {            
+        onSubmit: (values, { resetForm }) => {
             if (onSubmit) {
 
                 onSubmit(values, resetForm);
@@ -63,8 +63,7 @@ const FormProfile: FC<Props> = ({
         [formik]
     );
 
-    console.log("values", values);
-    
+
 
     const imageRef = useRef<UploadAvatarRefProps>(null);
     const [defaultImage, setDefaultImage] = useState<string>("");
@@ -83,7 +82,7 @@ const FormProfile: FC<Props> = ({
         },
         [initialValues, setFieldValue, defaultImage]
     );
-    
+
 
     return (
         <FormikProvider value={formik}>

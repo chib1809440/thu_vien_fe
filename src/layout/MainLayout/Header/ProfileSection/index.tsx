@@ -31,7 +31,7 @@ import { statusRole } from '../../../../utils/constants.utils';
 import { getLabelFromOptions } from '../../../../utils/object';
 import FormAddEditLibLoanSlip from '../../../../views/dashboard-admin/LienThong/LIB/LibLoanSlipPage/ui-components/FormAddEditLibLoanSlip';
 import FormProfile from './FormProfile';
-import { LOGIN } from '../../../../store/actions';
+import { LOGIN, LOGOUT } from '../../../../store/actions';
 import FormChangePassword from './FormChangePassword';
 // ==============================|| PROFILE MENU ||============================== //
 const settings = [
@@ -50,6 +50,7 @@ const ProfileSection = () => {
     const anchorRef = useRef<any>(null);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
     const items = useSelector((state: { cartLoanSlip: { items: CreatePublication[] } }) => state.cartLoanSlip.items);
+
     const [selectedEdit, setSelectedEdit] = useState<User | null>(null);
     const mutationChangeInfo = useChangeInfo();
     const [openCart, setOpenCart] = useState(false);
@@ -79,11 +80,12 @@ const ProfileSection = () => {
         if (!user) return null;
 
         const _user = { ...user } as any;
+        console.log("new user", _user);
 
         return _user?.data?.avatar;
     }, [user]);
-    console.log(avatar);
 
+    console.log("avatar", avatar);
 
     const libraryDetail = useMemo(() => {
         if (!user) return null;
@@ -190,6 +192,7 @@ const ProfileSection = () => {
             },
         });
     };
+    const { updateProfile } = useAuth();
 
     const handleSubmitChangeInfo = async (values: CreateUserModel) => {
         console.log(values, 'kkkjasdkjaskjdas');
@@ -220,18 +223,7 @@ const ProfileSection = () => {
                         }
                         console.log(chageLocalStorage, 'kkkkkkk')
                         localStorage.setItem("dataUser", JSON.stringify(chageLocalStorage));
-                        dispatch({
-                            type: LOGIN,
-                            payload: {
-                                isLoggedIn: true,
-                                user: {
-                                    ...user,
-                                    data: {
-                                        ...chageLocalStorage
-                                    }
-                                },
-                            },
-                        });
+                        updateProfile(chageLocalStorage);
                     },
                 }
             );
@@ -312,7 +304,7 @@ const ProfileSection = () => {
                         cursor: "pointer"
                     }} >
                     <IconButton sx={{ p: 0, }}>
-                        <ImageComponent style={{ borderRadius: "50%" }} width="32px" height="32px" alt="Remy Sharp" src={avatar ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${avatar}` : "/image/boy.png"} />
+                        <img style={{ borderRadius: "50%" }} width="32px" height="32px" alt="Remy Sharp" src={avatar !== '' ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${avatar}` : "/image/boy.png"} />
                     </IconButton>
                     <Typography variant="body2">{getLabelFromOptions(statusRole, roleId?.name)}</Typography>
                     <IconChevronDown size={"18px"} stroke={1.5} />

@@ -1,5 +1,5 @@
 import { EntityResponse, SingleRecordResponse } from '../interfaces/entityResponse';
-import { CreateUserModel, User } from '../interfaces/user';
+import { ChangePasswordUserModel, CreateUserModel, User } from '../interfaces/user';
 import axios from '../utils/axios';
 
 const USER_API = '/user';
@@ -17,7 +17,7 @@ export const createUser = async (formData: FormData): Promise<EntityResponse<Use
 // Read all
 export const getAllUsers = async (page?: number, limit?: number, search?: string, roleId?: string | number, order: string = "ASC"): Promise<EntityResponse<User[]>> => {
     let url = `${USER_API}?order=${order}`;
-    if (page !== undefined && limit !== undefined &&limit>0) {
+    if (page !== undefined && limit !== undefined && limit > 0) {
         url += `&page=${page}&limit=${limit}`;
     }
     console.log(page);
@@ -91,5 +91,10 @@ export const getAllUsersDeleted = async (page?: number, limit?: number, search?:
         url += `&search=${encodeURIComponent(search.trim())}`;
     }
     const response = await axios.get<EntityResponse<User[]>>(url);
+    return response.data;
+};
+// Update
+export const changePasswordUser = async (data: ChangePasswordUserModel): Promise<EntityResponse<User>> => {
+    const response = await axios.patch<EntityResponse<User>>(`${USER_API}/change-password`, data);
     return response.data;
 };

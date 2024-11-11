@@ -5,9 +5,9 @@
 // import { ErrorResponse } from 'react-router-dom';
 
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createUser, deleteUser, deleteUserSelected, getAllUsers, getAllUsersDeleted, getUserById, restoreUserSelected, softDeleteUser, softDeleteUserSelected, updateUser } from "../../_apis/user.api";
+import { changePasswordUser, createUser, deleteUser, deleteUserSelected, getAllUsers, getAllUsersDeleted, getUserById, restoreUserSelected, softDeleteUser, softDeleteUserSelected, updateUser } from "../../_apis/user.api";
 import { RQ_USER, RQ_USERLIST, RQ_USERTRASHLIST } from "./constants_react_query";
-import { CreateAdminModel, CreateUserModel, User } from "../../interfaces/user";
+import { ChangePasswordUserModel, CreateAdminModel, CreateUserModel, User } from "../../interfaces/user";
 import { createAdminAcount, updateAdminAcount } from "../../_apis/auth.api";
 import { getQueryKeys } from "../../utils/object";
 
@@ -129,6 +129,19 @@ export function useCreateUser(onSuccess, onError) {
             } else {
                 await queryClient.invalidateQueries({ queryKey: [RQ_USERLIST] });
             }
+        },
+    });
+}
+export function useChangePasswordUser() {
+
+    return useMutation({
+        mutationFn: (data: ChangePasswordUserModel) => changePasswordUser(data),
+        onMutate: () => {
+            console.log("mutate");
+        },
+        onError: (data) => {
+            console.log("error");
+
         },
     });
 }

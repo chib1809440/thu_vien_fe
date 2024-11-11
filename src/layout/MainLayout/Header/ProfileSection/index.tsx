@@ -11,16 +11,16 @@ import {
 } from '@mui/material';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { IconLogout, IconUser } from '@tabler/icons';
+import { IconBrandSamsungpass, IconLogout, IconPassword, IconUser } from '@tabler/icons';
 import { IconCarTurbine, IconChevronDown, IconHomeBitcoin, IconShoppingCartFilled } from '@tabler/icons-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CsFlexRowBetween } from '../../../../components/default/flex';
 import ImageComponent from '../../../../components/default/image';
 import { useRoleList } from '../../../../hooks/react-query/roleData';
-import { useUser } from '../../../../hooks/react-query/userData';
+import { useChangePasswordUser, useUser } from '../../../../hooks/react-query/userData';
 import { useFetchLibrary } from '../../../../hooks/services/library/library-query';
 import useAuth from '../../../../hooks/useAuth';
-import { CreateUserModel } from '../../../../interfaces/user';
+import { ChangePasswordUserModel, CreateUserModel } from '../../../../interfaces/user';
 import { statusRole } from '../../../../utils/constants.utils';
 import { getLabelFromOptions } from '../../../../utils/object';
 import FormProfile from './FormProfile';
@@ -33,9 +33,11 @@ import { useAddLoanSlip } from '../../../../hooks/services/loanSlip/loanSlip-mut
 import { useReFetchLoanSlipLink } from '../../../../hooks/services/loanSlip/loanSlip-query';
 import { toast } from 'react-toastify';
 import { clearCart } from '../../../../store/slices/cartLoanSlip';
+import FormChangePassword from './FormChangePassword';
 // ==============================|| PROFILE MENU ||============================== //
 const settings = [
     { name: "Thông tin cá nhân", icon: <IconUser /> },
+    { name: "Đổi mật khẩu", icon: <IconBrandSamsungpass /> },
     { name: "Đăng xuất", icon: <IconLogout /> },
 ];
 
@@ -44,6 +46,7 @@ const ProfileSection = () => {
     const navigate = useNavigate();
     const [open] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
+    const [openChangePasswordDialog, setOpenChangePasswordDialog] = useState(false);
     const theme = useTheme();
     const anchorRef = useRef<any>(null);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -92,6 +95,10 @@ const ProfileSection = () => {
         handleCloseUserMenu();
         setOpenDialog(true);
     };
+    const handleChangePasswordClick = () => {
+        handleCloseUserMenu();
+        setOpenChangePasswordDialog(true);
+    };
 
     const handleLogoutClick = async () => {
         handleCloseUserMenu();
@@ -115,6 +122,9 @@ const ProfileSection = () => {
     const handleDialogClose = () => {
         setOpenDialog(false);
     };
+    const handleChangePasswordDialogClose = () => {
+        setOpenChangePasswordDialog(false);
+    };
     const handleClose = () => {
         setOpenCart(false);
     };
@@ -133,7 +143,19 @@ const ProfileSection = () => {
             };
         }
     }, [userData]);
+    const initialValueChangePassword = useMemo((): ChangePasswordUserModel => {
+        if (userID) {
+            return {
+                userId: userID,
+                password: '',
+                newPassword: '',
+                confirmPassword: ''
+            };
+        }
+    }, [userData]);
     const mutationAdd = useAddLoanSlip();
+    const mutationChangePassword = useChangePasswordUser();
+
     const revalidate = useReFetchLoanSlipLink();
     const handleSetOpenCart = () => {
         setOpenCart(true);
@@ -145,6 +167,18 @@ const ProfileSection = () => {
                 toast.success('Thêm thành công.');
                 dispatch(clearCart())
                 setOpenCart(false);
+            },
+        });
+    };
+    const handleChangePasswordSubmit = (values: any) => {
+        mutationChangePassword.mutate(values, {
+            onSuccess: (data) => {
+                revalidate();
+                toast.success('Đổi mật khẩu thành công.');
+            },
+            onError: (data) => {
+                revalidate();
+                toast.error(data.message);
             },
         });
     };
@@ -232,7 +266,13 @@ const ProfileSection = () => {
                 >
                     {settings.map((setting) => (
                         <MenuItem
-                            onClick={setting.name === "Đăng xuất" ? handleLogoutClick : handleProfileClick}
+                            onClick={
+                                setting.name === "Đăng xuất"
+                                    ? handleLogoutClick
+                                    : setting.name === "Đổi mật khẩu"
+                                        ? handleChangePasswordClick
+                                        : handleProfileClick
+                            }
                             key={setting.name}
                         >
                             <ListItemIcon>
@@ -261,6 +301,15 @@ const ProfileSection = () => {
                     open={openDialog}
                     onClose={handleDialogClose}
                     initialValues={initialValues}
+                    isEditMode={true}
+                />
+            )}
+            {openChangePasswordDialog && (
+                <FormChangePassword
+                    open={openChangePasswordDialog}
+                    onClose={handleChangePasswordDialogClose}
+                    onSubmit={handleChangePasswordSubmit}
+                    initialValues={initialValueChangePassword}
                     isEditMode={true}
                 />
             )}

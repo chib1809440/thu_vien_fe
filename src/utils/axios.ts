@@ -93,8 +93,8 @@ axiosServices.interceptors.response.use((response) => {
 	}
 	// Kiểm tra xem lỗi có phải 403 không
 	if (error.response.status === 403) {
-		// Điều hướng đến trang 403
-		// window.location.href = '/403'; // Bạn có thể thay thế bằng useNavigate
+		//	Điều hướng đến trang 403
+		window.location.href = '/403'; // Bạn có thể thay thế bằng useNavigate
 	}
 	return Promise.reject(error.response.data);
 });

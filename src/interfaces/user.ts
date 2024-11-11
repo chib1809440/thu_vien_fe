@@ -44,3 +44,9 @@ export interface CreateAdminModel {
     gender: string;
     roleId: string | Role;
 }
+export interface ChangePasswordUserModel {
+    userId?: string;
+    password?: string;
+    newPassword?: string;
+    confirmPassword:string;
+}

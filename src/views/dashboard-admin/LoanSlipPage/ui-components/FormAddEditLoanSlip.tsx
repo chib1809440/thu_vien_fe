@@ -119,9 +119,14 @@ const FormAddEditLoanSlip: FC<Props> = ({
         validationSchema: schema,
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
+
             let filteredPublications = publications.filter(
                 (publication) => publication.publicationId !== ''
             );
+            if (filteredPublications?.length <= 0) {
+                toast.error('Vui lòng nhập tối thiểu một quyển sách');
+                return; // Trả về true nếu có lỗi
+            }
             // Reset mảng lỗi trước khi kiểm tra
             setArrayError([]);
             if (!isEditMode) {
@@ -874,7 +879,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             </Button>
                         ) : (
                             <>
-                                {!isEditMode && (
+                                {!isEditMode ? (
                                     <Button
                                         disabled={isFetching}
                                         onClick={handleSubmit as () => void}
@@ -883,7 +888,16 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                     >
                                         {isFetching ? "Đang thêm..." : "Thêm mới"}
                                     </Button>
-                                )}
+                                ) : !loanSlip?.isAgree ? ( // Kiểm tra nếu là chế độ chỉnh sửa và loanSlip.isAgree là false
+                                    <Button
+                                        disabled={isFetching}
+                                        onClick={handleSubmit as () => void}
+                                        variant="contained"
+                                        color="primary"
+                                    >
+                                        Cập nhật
+                                    </Button>
+                                ) : null}
                             </>
 
                         )

@@ -149,12 +149,18 @@ const LoanSlipPage = () => {
         content: () => componentRef.current,
     });
     const handleApprovalLoanSlip = (row: TLoanSlip) => {
-        mutationApproval.mutate(row._id, {
-            onSuccess: () => {
-                revalidate();
-                toast.success('Duyệt phiếu mượn thành công.');
-            },
-        });
+        row.status = "chờ nhận sách";
+
+        mutationEdit.mutate(
+            { ...row as any, _id: row._id, userId: row.userId._id },
+            {
+                onSuccess: () => {
+                    revalidate();
+                    toast.success('Giao sách thành công.');
+                    handleClose();
+                },
+            }
+        );
     };
     const handleReturnLoanSlip = (row: TLoanSlip, publications: CreatePublication[]) => {
         mutationReturn.mutate(
@@ -254,7 +260,18 @@ const LoanSlipPage = () => {
             }
         );
     };
-
+    const handleDeliveryBook = (row: TLoanSlip) => {
+        mutationApproval.mutate(
+            row._id,
+            {
+                onSuccess: () => {
+                    revalidate();
+                    toast.success('Chỉnh sửa thành công.');
+                    handleClose();
+                },
+            }
+        );
+    };
     const columns: TColumn<TLoanSlip>[] = useMemo(
         () => [
             {
@@ -345,39 +362,50 @@ const LoanSlipPage = () => {
                 sxRow: { paddingRight: 3, maxWidth: 200 },
                 render: (row) => {
                     return (
-                        <Box
-                        >
-                            {
-                                row?.status === "đã hủy" ? (
-                                    <Chip
-                                        style={{ color: 'white', background: '#de524a' }}
-                                        label="Không duyệt"
-                                        variant="filled"
-                                    />
-                                ) : row.isAgree ? (
-                                    <Chip
-                                        style={{ color: 'white', background: '#096A5E' }}
-                                        label="Đã duyệt"
-                                        variant="filled"
-                                    />
+                        <Box>
+                            {row?.status === "chờ nhận sách" ? ( // Kiểm tra nếu trạng thái là "chờ nhận sách"
+                                roleName === "Owner" ? ( // Kiểm tra nếu roleName là "Owner"
+                                    <Button
+                                        variant="contained"
+                                        sx={{ color: theme.palette.common.white, background: theme.palette.success.dark }}
+                                        onClick={() => handleDeliveryBook(row)}
+                                    >
+                                        Giao sách
+                                    </Button>
                                 ) : (
-                                    roleName === 'Owner' ? (
-                                        <Button
-                                            variant="contained"
-                                            sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }}
-                                            onClick={() => handleApprovalLoanSlip(row)}
-                                        >
-                                            Chưa duyệt
-                                        </Button>
-                                    ) : (
-                                        <Chip
-                                            style={{ color: 'white', background: theme.palette.error.dark }}
-                                            label="Chưa duyệt"
-                                            variant="filled"
-                                        />
-                                    )
+                                    <Chip
+                                        style={{ color: 'white', background: theme.palette.success.dark }}
+                                        label="Giao sách"
+                                        variant="filled"
+                                    />
                                 )
-                            }
+                            ) : row?.status === "đã hủy" ? (
+                                <Chip
+                                    style={{ color: 'white', background: '#de524a' }}
+                                    label="Không duyệt"
+                                    variant="filled"
+                                />
+                            ) : row.isAgree ? (
+                                <Chip
+                                    style={{ color: 'white', background: '#096A5E' }}
+                                    label="Đã duyệt"
+                                    variant="filled"
+                                />
+                            ) : roleName === 'Owner' ? (
+                                <Button
+                                    variant="contained"
+                                    sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }}
+                                    onClick={() => handleApprovalLoanSlip(row)}
+                                >
+                                    Chưa duyệt
+                                </Button>
+                            ) : (
+                                <Chip
+                                    style={{ color: 'white', background: theme.palette.error.dark }}
+                                    label="Chưa duyệt"
+                                    variant="filled"
+                                />
+                            )}
                         </Box>
                     );
                 },
@@ -403,15 +431,18 @@ const LoanSlipPage = () => {
                                 stroke={1.5}
                             />
                             {
-                                row.isReturn === false && <IconPencil
-                                    onClick={() => handleEditLoanSlip(row)}
-                                    size={20}
-                                    stroke={1.5}
-                                />
+                                ((row.status !== "chờ nhận sách" || roleName === "Owner") &&
+                                    (row.isAgree === false || roleName === "Owner")) && (
+                                    <IconPencil
+                                        onClick={() => handleEditLoanSlip(row)}
+                                        size={20}
+                                        stroke={1.5}
+                                    />
+                                )
                             }
 
                             {
-                                row.isAgree === false &&
+                                row.status !== "chờ nhận sách" && row.isAgree === false &&
                                 <IconTrash
                                     size={20}
                                     stroke={1.5}

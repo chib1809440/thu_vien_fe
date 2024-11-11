@@ -1,5 +1,5 @@
 import { EntityResponse, SingleRecordResponse } from '../interfaces/entityResponse';
-import { CreateUserModel, User } from '../interfaces/user';
+import { ChangePasswordUserModel, User } from '../interfaces/user';
 import { TApiOneRecord } from '../types/api/api.type';
 import axios from '../utils/axios';
 
@@ -175,3 +175,8 @@ export const changeInfo = async<DynamicPayload, DynamicResponse>(
     const response = await axios.patch(`${USER_API}/change-info/${id}`, payload);
     return response.data as TApiOneRecord<DynamicResponse>;
 }
+// Update
+export const changePasswordUser = async (data: ChangePasswordUserModel): Promise<EntityResponse<User>> => {
+    const response = await axios.patch<EntityResponse<User>>(`${USER_API}/change-password`, data);
+    return response.data;
+};

@@ -12,18 +12,18 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { IconLogout, IconUser } from '@tabler/icons';
-import { IconChevronDown, IconHomeBitcoin, IconShoppingCartFilled } from '@tabler/icons-react';
+import { IconBrandSamsungpass, IconChevronDown, IconHomeBitcoin, IconShoppingCartFilled } from '@tabler/icons-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { CsFlexRowBetween } from '../../../../components/default/flex';
 import ImageComponent from '../../../../components/default/image';
-import { useChangeInfo, useUser } from '../../../../hooks/react-query/userData';
+import { useChangeInfo, useChangePasswordUser, useUser } from '../../../../hooks/react-query/userData';
 import { useAddLoanSlip } from '../../../../hooks/services/loanSlip/loanSlip-mutation';
 import { useReFetchLoanSlipLink } from '../../../../hooks/services/loanSlip/loanSlip-query';
 import useAuth from '../../../../hooks/useAuth';
 import { Role } from '../../../../interfaces/role';
-import { CreateUserModel, User } from '../../../../interfaces/user';
+import { ChangePasswordUserModel, CreateUserModel, User } from '../../../../interfaces/user';
 import { clearCart } from '../../../../store/slices/cartLoanSlip';
 import { TLibrary } from '../../../../types/models/library.type';
 import { CreatePublication } from '../../../../types/models/loanSlip.type';
@@ -32,9 +32,11 @@ import { getLabelFromOptions } from '../../../../utils/object';
 import FormAddEditLibLoanSlip from '../../../../views/dashboard-admin/LienThong/LIB/LibLoanSlipPage/ui-components/FormAddEditLibLoanSlip';
 import FormProfile from './FormProfile';
 import { LOGIN } from '../../../../store/actions';
+import FormChangePassword from './FormChangePassword';
 // ==============================|| PROFILE MENU ||============================== //
 const settings = [
     { name: "Thông tin cá nhân", icon: <IconUser /> },
+    { name: "Đổi mật khẩu", icon: <IconBrandSamsungpass /> },
     { name: "Đăng xuất", icon: <IconLogout /> },
 ];
 
@@ -43,6 +45,7 @@ const ProfileSection = () => {
     const navigate = useNavigate();
     const [open] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
+    const [openChangePasswordDialog, setOpenChangePasswordDialog] = useState(false);
     const theme = useTheme();
     const anchorRef = useRef<any>(null);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -108,6 +111,10 @@ const ProfileSection = () => {
         }
         setOpenDialog(true);
     };
+    const handleChangePasswordClick = () => {
+        handleCloseUserMenu();
+        setOpenChangePasswordDialog(true);
+    };
 
 
     const handleLogoutClick = async () => {
@@ -132,6 +139,9 @@ const ProfileSection = () => {
     const handleDialogClose = () => {
         setOpenDialog(false);
     };
+    const handleChangePasswordDialogClose = () => {
+        setOpenChangePasswordDialog(false);
+    };
     const handleClose = () => {
         setOpenCart(false);
     };
@@ -153,7 +163,19 @@ const ProfileSection = () => {
             };
         }
     }, [userData]);
+    const initialValueChangePassword = useMemo((): ChangePasswordUserModel => {
+        if (userID) {
+            return {
+                userId: userID,
+                password: '',
+                newPassword: '',
+                confirmPassword: ''
+            };
+        }
+    }, [userData]);
     const mutationAdd = useAddLoanSlip();
+    const mutationChangePassword = useChangePasswordUser();
+
     const revalidate = useReFetchLoanSlipLink();
     const handleSetOpenCart = () => {
         setOpenCart(true);
@@ -204,8 +226,8 @@ const ProfileSection = () => {
                                 isLoggedIn: true,
                                 user: {
                                     ...user,
-                                    data:{
-                                    ...chageLocalStorage
+                                    data: {
+                                        ...chageLocalStorage
                                     }
                                 },
                             },
@@ -216,8 +238,20 @@ const ProfileSection = () => {
             return;
         }
     }
-    console.log('dsds',user);
-    
+    console.log('dsds', user);
+
+    const handleChangePasswordSubmit = (values: any) => {
+        mutationChangePassword.mutate(values, {
+            onSuccess: (data) => {
+                revalidate();
+                toast.success('Đổi mật khẩu thành công.');
+            },
+            onError: (data) => {
+                revalidate();
+                toast.error(data.message);
+            },
+        });
+    };
     return (
         <Grid item>
             <Box sx={{ display: "flex", gap: 1 }}>
@@ -302,7 +336,13 @@ const ProfileSection = () => {
                 >
                     {settings.map((setting) => (
                         <MenuItem
-                            onClick={setting.name === "Đăng xuất" ? handleLogoutClick : () => handleProfileClick(userID)}
+                            onClick={
+                                setting.name === "Đăng xuất"
+                                    ? handleLogoutClick
+                                    : setting.name === "Đổi mật khẩu"
+                                        ? handleChangePasswordClick
+                                        : () => handleProfileClick(userID)
+                            }
                             key={setting.name}
                         >
                             <ListItemIcon>
@@ -334,6 +374,15 @@ const ProfileSection = () => {
                     isEditMode={selectedEdit ? true : false}
                     onSubmit={handleSubmitChangeInfo}
                     imageUrl={`${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.avatar}`}
+                />
+            )}
+            {openChangePasswordDialog && (
+                <FormChangePassword
+                    open={openChangePasswordDialog}
+                    onClose={handleChangePasswordDialogClose}
+                    onSubmit={handleChangePasswordSubmit}
+                    initialValues={initialValueChangePassword}
+                    isEditMode={true}
                 />
             )}
         </Grid>

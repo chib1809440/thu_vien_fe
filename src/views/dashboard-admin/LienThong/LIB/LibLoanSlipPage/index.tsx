@@ -63,15 +63,15 @@ const LoanSlipPage = () => {
     const [filterStatus, setFilterStatus] = useState<string | number>(0);
     const [openViewDetail, setOpenViewDetail] = useState(false);
     const { user } = useAuth();
-    
+
     const libraryId = useMemo(() => {
         if (!user) return null;
-        
+
         const _user = { ...user } as any;
-        
+
         return _user?.data?.libraryId;
     }, [user]);
-   
+
 
     const filter = useMemo(
         () =>
@@ -344,22 +344,27 @@ const LoanSlipPage = () => {
                                         label="Không duyệt"
                                         variant="filled"
                                     />
+                                ) : row?.status === "chờ nhận sách" ? (
+                                    // Nếu status là "chờ giao sách", render chip "Giao sách"
+                                    <Chip
+                                        style={{ color: 'white', background: '#096A5E' }}
+                                        label="Giao sách"
+                                        variant="filled"
+                                    />
+                                ) : row.isAgree === true ? (
+                                    // Nếu isAgree là true, render chip "Đã duyệt"
+                                    <Chip
+                                        style={{ color: 'white', background: '#096A5E' }}
+                                        label="Đã duyệt"
+                                        variant="filled"
+                                    />
                                 ) : (
-                                    row.isAgree === true ? (
-                                        // Nếu isAgree là true, render chip "Đã duyệt"
-                                        <Chip
-                                            style={{ color: 'white', background: '#096A5E' }}
-                                            label="Đã duyệt"
-                                            variant="filled"
-                                        />
-                                    ) : (
-                                        // Nếu isAgree là false, render chip "Chưa duyệt"
-                                        <Chip
-                                            style={{ color: 'black', background: 'yellow' }}
-                                            label="Chưa duyệt"
-                                            variant="filled"
-                                        />
-                                    )
+                                    // Nếu isAgree là false, render chip "Chưa duyệt"
+                                    <Chip
+                                        style={{ color: 'black', background: 'yellow' }}
+                                        label="Chưa duyệt"
+                                        variant="filled"
+                                    />
                                 )
                             }
                         </Box>
@@ -387,23 +392,25 @@ const LoanSlipPage = () => {
                                 stroke={1.5}
                             />
                             {
-                                row.isAgree === false && libraryId !== row.libraryId &&
-                                <IconPencil
-                                    onClick={() => handleEditLoanSlip(row)}
-                                    size={20}
-                                    stroke={1.5}
-                                />
+                                row.isAgree === false &&
+                                (row.status !== "chờ nhận sách" && row.status !== "đã hủy" || libraryId === row.libraryId) && (
+                                    <IconPencil
+                                        onClick={() => handleEditLoanSlip(row)}
+                                        size={20}
+                                        stroke={1.5}
+                                    />
+                                )
                             }
-
                             {
                                 row.isAgree === false &&
-                                <IconTrash
-                                    size={20}
-                                    stroke={1.5}
-                                    onClick={() => handleOpenConfirmDialog(row)}
-                                />
+                                (row.status !== "chờ nhận sách" && row.status !== "đã hủy" || libraryId === row.libraryId) && (
+                                    <IconTrash
+                                        size={20}
+                                        stroke={1.5}
+                                        onClick={() => handleOpenConfirmDialog(row)}
+                                    />
+                                )
                             }
-
 
                         </Box>
                     );

@@ -47,3 +47,9 @@ export interface CreateAdminModel {
     class?: string;
     school?: string;
 }
+export interface ChangePasswordUserModel {
+    userId?: string;
+    password?: string;
+    newPassword?: string;
+    confirmPassword:string;
+}

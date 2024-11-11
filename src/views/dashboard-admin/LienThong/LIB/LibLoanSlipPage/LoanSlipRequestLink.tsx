@@ -123,9 +123,8 @@ const LoanSlipRequestLink = () => {
     });
     const handleApprovalLoanSlip = (row: TLoanSlip) => {
         row.status = "chờ nhận sách";
-
         mutationEdit.mutate(
-            { ...row as any, _id: row._id, userId: row.userId._id },
+            { ...row as any, _id: row._id, userId: row.userId._id, },
             {
                 onSuccess: () => {
                     revalidate();

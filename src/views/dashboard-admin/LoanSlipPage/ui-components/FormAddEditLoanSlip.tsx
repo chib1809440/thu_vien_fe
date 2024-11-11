@@ -72,6 +72,8 @@ type Props = {
     initialValues: TLoanSlipCreate;
     loanSlip?: TLoanSlip;
     isEditMode?: boolean;
+    roleName: string;
+    onHandleCancelLoanSlip?: (loanSlip: TLoanSlip) => void;
 
 };
 
@@ -96,9 +98,21 @@ const FormAddEditLoanSlip: FC<Props> = ({
     },
     isFetching = false,
     isEditMode = false,
+    onHandleCancelLoanSlip,
     loanSlip,
+    roleName
 }) => {
     const [arrayError, setArrayError] = useState<{ name: string; position: string }[]>([]);
+    const { logout, user } = useAuth();
+    console.log("dsdsdsdsds", user);
+
+    const userId = useMemo(() => {
+        if (!user) return null;
+
+        const _user = { ...user } as any;
+
+        return _user?.data?._id;
+    }, [user]);
 
     const formik = useFormik<TLoanSlipCreate>({
         initialValues,
@@ -131,17 +145,24 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     return; // Dừng thực hiện onSubmit
                 }
             }
+            // Hàm kiểm tra điều kiện người mượn
+            const validateBorrower = () => {
+                if (roleName === "Owner" && !userData?.data?.result?._id) {
+                    toast.error('Vui lòng quét barcode thông tin người mượn');
+                    return true; // Trả về true nếu có lỗi
+                }
+                return false; // Không có lỗi
+            };
 
-
-            if (!userData?.data?.result?._id) {
-                toast.error('Vui lòng quét barcode thông tin người mượn')
-                return;
+            // Kiểm tra người mượn
+            if (validateBorrower()) {
+                return; // Dừng thực hiện onSubmit nếu có lỗi
             }
             if (onSubmit) {
 
                 const createLoanSlip: TLoanSlipCreate = {
                     note: values.note,
-                    userId: userData?.data?.result._id,
+                    userId: roleName === "Owner" ? userData?.data?.result?._id : userId,
                     borrowedDay: borrowedDay.toDateString(),
                     returnDay: returnDay.toDateString(),
                     isPrint: false,
@@ -194,7 +215,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
     }, [debouncedBarCodeUserId]);
     useEffect(() => {
         if (loanSlip) {
-            setbarcodeUserId(loanSlip.userId.barcode);
+            setbarcodeUserId(loanSlip?.userId?.barcode);
             setBorrowedDay(new Date(loanSlip.borrowedDay));
             setReturnDay(new Date(loanSlip.returnDay));
             let editPublications: CreatePublication[] = [];
@@ -209,7 +230,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     quantity: publication.quantity,
                     shelvesQuantity: publication.shelvesQuantity,
                     position: publication.position,
-                    barcode: publication.barcode,
+                    barcode: publication?.barcode,
                 };
                 // Đẩy object vào mảng editPublications
                 editPublications.push(newPublication);
@@ -343,7 +364,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
             }
         `,
     });
-    const { logout, user } = useAuth();
 
 
     const libraryDetail = useMemo(() => {
@@ -353,7 +373,13 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
         return _user?.data?.libraryDetail;
     }, [user]);
-
+    const handleCancelLoanSlip = (loanSlip: TLoanSlip) => {
+        if (onHandleCancelLoanSlip) {
+            onHandleCancelLoanSlip(loanSlip); // Gọi hàm
+        } else {
+            console.error("onHandleCancelLoanSlip is not a function");
+        }
+    };
     return (
         <FormikProvider value={formik}>
             <Dialog
@@ -373,93 +399,96 @@ const FormAddEditLoanSlip: FC<Props> = ({
                 </DialogTitle>
 
                 <DialogContent sx={{ p: 8 }} >
-                    <Grid container spacing={2}>
-                        <Box sx={{ display: 'none' }}>
-                            {
-                                loanSlip && libraryDetail && <PrintLoanSlip ref={componentRef} loanSlip={loanSlip} libraryDetail={libraryDetail} />
-                            }
-                        </Box>
-                        <Grid item xs={12}>
-                            <Box >
-                                <Chip
-                                    color='primary'
-                                    label="Thông tin người dùng"
-                                    variant="filled"
-                                />
+                    {
+                        roleName === "Owner" && <Grid container spacing={2}>
+                            <Box sx={{ display: 'none' }}>
+                                {
+                                    loanSlip && libraryDetail && <PrintLoanSlip ref={componentRef} loanSlip={loanSlip} libraryDetail={libraryDetail} />
+                                }
                             </Box>
-                        </Grid>
-                        <Grid container spacing={2}>
-                            <Grid item xs={2}>
-                                <Box style={{ width: "100%" }} sx={{ mt: 2, mb: 2, ml: 2 }}>
-                                    {
-                                        isEditMode ? <>
-                                            <Typography sx={{ ml: 1, mt: 2, fontWeight: "bold" }}>
-                                                Barcode:
-                                                <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
-                                                    {userData?.data?.result?.barcode || "Không có dữ liệu"}
-                                                </span>
-                                            </Typography>
-                                        </> : <>
-                                            <TextField
-                                                variant="outlined"
-                                                fullWidth
-                                                id="barcodeUserId"
-                                                name="barcodeUserId"
-                                                placeholder="Nhập barcode người dùng"
-                                                value={barcodeUserId}
-                                                onChange={(e) => setbarcodeUserId(e.target.value)}
-                                                inputRef={barcodeUserIdRef}
-                                                autoFocus
-                                            />
-                                        </>
-                                    }
-
+                            <Grid item xs={12}>
+                                <Box >
+                                    <Chip
+                                        color='primary'
+                                        label="Thông tin người dùng"
+                                        variant="filled"
+                                    />
                                 </Box>
                             </Grid>
-                            <Grid item xs={3}>
-                                <Typography sx={{ ml: 4, mt: 2, fontWeight: "bold" }}>
-                                    Họ và tên:
-                                    <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
-                                        {userData?.data?.result?.fullname || "Không có dữ liệu"}
-                                    </span>
-                                </Typography>
-                                <Typography sx={{ ml: 4, mt: 2, fontWeight: "bold" }}>
-                                    Địa chỉ:
-                                    <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
-                                        {userData?.data?.result?.address || "Không có dữ liệu"}
-                                    </span>
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={3}>
-                                <Typography sx={{ ml: 2, mt: 2, fontWeight: "bold" }}>
-                                    Số điện thoại:
-                                    <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
-                                        {userData?.data?.result?.phoneNumber || "Không có dữ liệu"}
-                                    </span>
-                                </Typography>
-                                <Typography sx={{ ml: 2, mt: 2, fontWeight: "bold" }}>
-                                    Giới tính:
-                                    <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
-                                        {userData?.data?.result?.gender || "Không có dữ liệu"}
-                                    </span>
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={3}>
-                                <Typography sx={{ ml: 2, mt: 2, fontWeight: "bold" }}>
-                                    Email:
-                                    <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
-                                        {userData?.data?.result?.email || "Không có dữ liệu"}
-                                    </span>
-                                </Typography>
-                                <Typography sx={{ ml: 2, mt: 2, fontWeight: "bold" }}>
-                                    Vai trò:
-                                    <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
-                                        {(userData?.data?.result?.roleId as Role)?.name || "Không có dữ liệu"}
-                                    </span>
-                                </Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={2}>
+                                    <Box style={{ width: "100%" }} sx={{ mt: 2, mb: 2, ml: 2 }}>
+                                        {
+                                            isEditMode ? <>
+                                                <Typography sx={{ ml: 1, mt: 2, fontWeight: "bold" }}>
+                                                    Barcode:
+                                                    <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
+                                                        {userData?.data?.result?.barcode || "Không có dữ liệu"}
+                                                    </span>
+                                                </Typography>
+                                            </> : <>
+                                                <TextField
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    id="barcodeUserId"
+                                                    name="barcodeUserId"
+                                                    placeholder="Nhập barcode người dùng"
+                                                    value={barcodeUserId}
+                                                    onChange={(e) => setbarcodeUserId(e.target.value)}
+                                                    inputRef={barcodeUserIdRef}
+                                                    autoFocus
+                                                />
+                                            </>
+                                        }
+
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <Typography sx={{ ml: 4, mt: 2, fontWeight: "bold" }}>
+                                        Họ và tên:
+                                        <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
+                                            {userData?.data?.result?.fullname || "Không có dữ liệu"}
+                                        </span>
+                                    </Typography>
+                                    <Typography sx={{ ml: 4, mt: 2, fontWeight: "bold" }}>
+                                        Địa chỉ:
+                                        <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
+                                            {userData?.data?.result?.address || "Không có dữ liệu"}
+                                        </span>
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <Typography sx={{ ml: 2, mt: 2, fontWeight: "bold" }}>
+                                        Số điện thoại:
+                                        <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
+                                            {userData?.data?.result?.phoneNumber || "Không có dữ liệu"}
+                                        </span>
+                                    </Typography>
+                                    <Typography sx={{ ml: 2, mt: 2, fontWeight: "bold" }}>
+                                        Giới tính:
+                                        <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
+                                            {userData?.data?.result?.gender || "Không có dữ liệu"}
+                                        </span>
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <Typography sx={{ ml: 2, mt: 2, fontWeight: "bold" }}>
+                                        Email:
+                                        <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
+                                            {userData?.data?.result?.email || "Không có dữ liệu"}
+                                        </span>
+                                    </Typography>
+                                    <Typography sx={{ ml: 2, mt: 2, fontWeight: "bold" }}>
+                                        Vai trò:
+                                        <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
+                                            {(userData?.data?.result?.roleId as Role)?.name || "Không có dữ liệu"}
+                                        </span>
+                                    </Typography>
+                                </Grid>
                             </Grid>
                         </Grid>
-                    </Grid>
+                    }
+
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <Chip
@@ -571,6 +600,10 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                     <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell></>
                                             }
                                             {
+                                                loanSlip?.isAgree === false && <>  <StyledTableCell align="left" width='15%'>Số lượng trong kho</StyledTableCell>
+                                                    <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell></>
+                                            }
+                                            {
 
                                                 isEditMode ? <>  <StyledTableCell align="left" width='10%'>Số lượng mượn</StyledTableCell></> : <> </>
                                             }
@@ -597,11 +630,11 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                 <StyledTableCell align="left">
                                                     <Box style={{ width: "100%" }} >
                                                         {
-                                                            row.publicationId !== '' ? <>{row.barcode}</> : <>   <TextField
+                                                            row.publicationId !== '' ? <>{row?.barcode}</> : <>   <TextField
                                                                 variant="outlined"
                                                                 fullWidth
                                                                 placeholder="Nhập barcode sách"
-                                                                value={row.barcode}
+                                                                value={row?.barcode}
                                                                 onChange={(e) => handleBarCodeChange(index, e.target.value)}
                                                                 inputRef={index === publications.length - 1 ? lastInputRef : null} // Focus on the last input
                                                             /></>
@@ -614,6 +647,14 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                 </StyledTableCell>
                                                 {
                                                     isEditMode === false && <> <StyledTableCell align="left">
+                                                        {row.quantity}
+                                                    </StyledTableCell>
+                                                        <StyledTableCell align="left">
+                                                            {row.shelvesQuantity}
+                                                        </StyledTableCell></>
+                                                }
+                                                {
+                                                    loanSlip?.isAgree === false && <> <StyledTableCell align="left">
                                                         {row.quantity}
                                                     </StyledTableCell>
                                                         <StyledTableCell align="left">
@@ -704,7 +745,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                 </StyledTableCell>
                                                 <StyledTableCell align="center">
                                                     {
-                                                        !loanSlip && loanSlip?.isAgree === false && <IconTrash
+                                                        !loanSlip || loanSlip?.isAgree === false && <IconTrash
                                                             style={{ cursor: 'pointer', color: 'red' }}
                                                             onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
                                                             color="red"
@@ -797,27 +838,56 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     </Button>
                     {
 
-                        isEditMode && !loanSlip?.isReturn && <Button onClick={handleReturnLoanSlip} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                        roleName === "Owner" && isEditMode && !loanSlip?.isReturn && <Button onClick={handleReturnLoanSlip} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
                             Trả sách
                         </Button>
                     }
                     {
+                        loanSlip &&
+                        isEditMode &&
+                        loanSlip.status !== "đang mượn" && loanSlip.status !== "đã trả" && // Kiểm tra status
+                        !loanSlip.isCancel && (
+                            <Button
+                                onClick={() => handleCancelLoanSlip(loanSlip)}
+                                style={{ background: '#c62828', color: 'white' }}
+                                variant="contained"
+                            >
+                                Hủy phiếu mượn
+                            </Button>
+                        )
+                    }
+                    {
 
-                        isEditMode && <Button onClick={() => handlePrint()} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                        roleName === "Owner" && isEditMode && <Button onClick={() => handlePrint()} style={{ background: '#212121', color: 'white' }} variant="contained"  >
                             In
                         </Button>
                     }
                     {
-                        !loanSlip?.isReturn && <Button
-                            disabled={isFetching}
-                            onClick={handleSubmit as () => void}
-                            variant="contained"
-                            color="primary"
-                        >
-                            {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
-                        </Button>
-                    }
+                        roleName === "Owner" && !loanSlip?.isReturn ? (
+                            <Button
+                                disabled={isFetching}
+                                onClick={handleSubmit as () => void}
+                                variant="contained"
+                                color="primary"
+                            >
+                                {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
+                            </Button>
+                        ) : (
+                            <>
+                                {!isEditMode && (
+                                    <Button
+                                        disabled={isFetching}
+                                        onClick={handleSubmit as () => void}
+                                        variant="contained"
+                                        color="primary"
+                                    >
+                                        {isFetching ? "Đang thêm..." : "Thêm mới"}
+                                    </Button>
+                                )}
+                            </>
 
+                        )
+                    }
                 </DialogActions>
             </Dialog>
         </FormikProvider >

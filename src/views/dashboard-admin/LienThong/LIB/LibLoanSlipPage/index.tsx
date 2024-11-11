@@ -63,13 +63,16 @@ const LoanSlipPage = () => {
     const [filterStatus, setFilterStatus] = useState<string | number>(0);
     const [openViewDetail, setOpenViewDetail] = useState(false);
     const { user } = useAuth();
+    
     const libraryId = useMemo(() => {
         if (!user) return null;
-
+        
         const _user = { ...user } as any;
-
+        
         return _user?.data?.libraryId;
     }, [user]);
+   
+
     const filter = useMemo(
         () =>
             parserParams([

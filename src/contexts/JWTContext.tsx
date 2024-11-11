@@ -78,7 +78,12 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
                 // const dataUser = window.localStorage.getItem('dataUser');
                 const userString: any = localStorage.getItem("dataUser");
                 const userObject = JSON.parse(userString);
-
+                if (!userObject) {
+                    dispatch({
+                        type: LOGOUT,
+                    });
+                    return;
+                }
                 if (serviceToken && verifyToken(serviceToken)) {
                     setSession(serviceToken, refreshToken);
                     dispatch({

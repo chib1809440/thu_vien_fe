@@ -475,6 +475,9 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
         return _user?.data?.libraryDetail;
     }, [user]);
+    // console.log("sss", loanSlip.libraryId);
+    // console.log("sss", user);
+
     return (
         <FormikProvider value={formik}>
             <Dialog
@@ -961,18 +964,16 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     }
                     {
                         loanSlip &&
-                        isEditMode && (
-                            !loanSlip.isCancel ? (
-                                <Button
-                                    onClick={() => handleCancelLoanSlip(loanSlip)}
-                                    style={{ background: '#c62828', color: 'white' }}
-                                    variant="contained"
-                                >
-                                    Hủy phiếu mượn
-                                </Button>
-                            ) : (
-                                <></>
-                            )
+                        isEditMode &&
+                        loanSlip.status !== "đang mượn" && loanSlip.status !== "đã trả" && // Kiểm tra status
+                        !loanSlip.isCancel && (
+                            <Button
+                                onClick={() => handleCancelLoanSlip(loanSlip)}
+                                style={{ background: '#c62828', color: 'white' }}
+                                variant="contained"
+                            >
+                                Hủy phiếu mượn
+                            </Button>
                         )
                     }
                     {

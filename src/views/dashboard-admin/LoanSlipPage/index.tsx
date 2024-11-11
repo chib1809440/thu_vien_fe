@@ -9,7 +9,7 @@ import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
-import { useAddLoanSlip, useApprovalLoanSlip, useDeleteSoftLoanSlip, useDeleteSoftManyLoanSlip, useEditLoanSlip, useReturnLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-mutation";
+import { useAddLoanSlip, useApprovalLoanSlip, useCancelLoanSlip, useDeleteSoftLoanSlip, useDeleteSoftManyLoanSlip, useEditLoanSlip, useReturnLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-mutation";
 import { useFetchLoanSlip, useReFetchLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
@@ -28,6 +28,7 @@ import { useFetchPublications } from "../../../hooks/services/publications/publi
 import DatePicker from "react-datepicker";
 import ExcelJS from 'exceljs';
 import ViewDetailLoanSlip from "./ui-components/ViewDetailLoanSlip";
+import { useAuth } from "../../../contexts/JWTContext";
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -114,8 +115,23 @@ const LoanSlipPage = () => {
     const addLoanSlip = () => {
         setOpenAddEdit(true);
     };
+    const { user } = useAuth();
 
+    const roleName = useMemo(() => {
+        if (!user) return null;
 
+        const _user = { ...user } as any;
+
+        return _user?.data?.roleId.name;
+    }, [user]);
+
+    const userId = useMemo(() => {
+        if (!user) return null;
+
+        const _user = { ...user } as any;
+
+        return _user?.data?._id;
+    }, [user]);
 
     const handleEditLoanSlip = (row: TLoanSlip) => {
         setSelectedEdit(row);
@@ -222,6 +238,23 @@ const LoanSlipPage = () => {
                 return { color: 'black', background: '#E0E0E0' }; // Màu mặc định nếu không có trạng thái phù hợp
         }
     };
+    const mutationCancel = useCancelLoanSlip();
+    const handleCancelLoanSlip = (row: TLoanSlip) => {
+        mutationCancel.mutate(
+            row._id,  // Chuyển đổi tham số thành đối tượng
+            {
+                onSuccess: (data) => {
+                    revalidate(); // Hàm này cần phải được định nghĩa trong component
+                    if (data?.data?.result) {
+                        console.log("kk", data.data.result);
+                        setSelectedEdit(data.data.result);
+                    }
+                    toast.success('Hủy phiếu mượn thành công.');
+                },
+            }
+        );
+    };
+
     const columns: TColumn<TLoanSlip>[] = useMemo(
         () => [
             {
@@ -315,15 +348,35 @@ const LoanSlipPage = () => {
                         <Box
                         >
                             {
-                                row.isAgree === true ? <>
+                                row?.status === "đã hủy" ? (
+                                    <Chip
+                                        style={{ color: 'white', background: '#de524a' }}
+                                        label="Không duyệt"
+                                        variant="filled"
+                                    />
+                                ) : row.isAgree ? (
                                     <Chip
                                         style={{ color: 'white', background: '#096A5E' }}
                                         label="Đã duyệt"
                                         variant="filled"
                                     />
-                                </> : <>
-                                    <Button variant="contained" sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }} onClick={() => handleApprovalLoanSlip(row)}>Chưa duyệt</Button>
-                                </>
+                                ) : (
+                                    roleName === 'Owner' ? (
+                                        <Button
+                                            variant="contained"
+                                            sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }}
+                                            onClick={() => handleApprovalLoanSlip(row)}
+                                        >
+                                            Chưa duyệt
+                                        </Button>
+                                    ) : (
+                                        <Chip
+                                            style={{ color: 'white', background: theme.palette.error.dark }}
+                                            label="Chưa duyệt"
+                                            variant="filled"
+                                        />
+                                    )
+                                )
                             }
                         </Box>
                     );
@@ -349,11 +402,14 @@ const LoanSlipPage = () => {
                                 size={20}
                                 stroke={1.5}
                             />
-                            <IconPencil
-                                onClick={() => handleEditLoanSlip(row)}
-                                size={20}
-                                stroke={1.5}
-                            />
+                            {
+                                row.isReturn === false && <IconPencil
+                                    onClick={() => handleEditLoanSlip(row)}
+                                    size={20}
+                                    stroke={1.5}
+                                />
+                            }
+
                             {
                                 row.isAgree === false &&
                                 <IconTrash
@@ -585,11 +641,13 @@ const LoanSlipPage = () => {
             {openAddEdit && (
                 <FormAddEditLoanSlip
                     open={openAddEdit}
+                    roleName={roleName}
                     onClose={handleClose}
                     initialValues={initialValues}
                     loanSlip={selectedEdit}
                     onSubmit={handleSubmit}
                     onHandleReturnLoanSlip={handleReturnLoanSlip}
+                    onHandleCancelLoanSlip={handleCancelLoanSlip}
                     isEditMode={selectedEdit ? true : false}
                 />
             )}
@@ -612,7 +670,7 @@ const LoanSlipPage = () => {
                                 variant="contained"
                                 onClick={addLoanSlip}
                             >
-                                Thêm mới
+                                {roleName === "Owner" ? "Thêm mới" : "Đăng ký mượn sách"}
                             </StyledButton>
                         </Box>
 

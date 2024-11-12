@@ -31,6 +31,8 @@ import { Role } from "../../../../interfaces/role";
 import { useAuth } from "../../../../contexts/JWTContext";
 import { formatDate } from "../../../../helpers/formatDate";
 import StyledButton from "../../../../components/default/button/StyledButton";
+import { useDispatch, useSelector } from "react-redux";
+import { removeInternalItem } from "../../../../store/slices/cartInternalLoanSlip";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -67,14 +69,15 @@ function createData(
 type Props = {
     open: boolean;
     onClose: () => void;
-    onHandleReturnLoanSlip: (loanSlip: TLoanSlip, publications: CreatePublication[]) => void;
+    onHandleReturnLoanSlip?: (loanSlip: TLoanSlip, publications: CreatePublication[]) => void;
     onSubmit?: (values: TLoanSlipCreate, resetForm: () => void) => void;
     isFetching?: boolean;
-    initialValues: TLoanSlipCreate;
+    initialValues?: TLoanSlipCreate;
     loanSlip?: TLoanSlip;
     isEditMode?: boolean;
     roleName: string;
     onHandleCancelLoanSlip?: (loanSlip: TLoanSlip) => void;
+    isCart?: boolean;
 
 };
 
@@ -101,11 +104,19 @@ const FormAddEditLoanSlip: FC<Props> = ({
     isEditMode = false,
     onHandleCancelLoanSlip,
     loanSlip,
-    roleName
+    roleName,
+    isCart
 }) => {
     const [arrayError, setArrayError] = useState<{ name: string; position: string }[]>([]);
+    const internalitems = useSelector((state: { cartInternalLoanSlip: { items: CreatePublication[] } }) => state.cartInternalLoanSlip.items);
+
     const { logout, user } = useAuth();
-    console.log("dsdsdsdsds", user);
+    useEffect(() => {
+        if (internalitems?.length > 0 && !loanSlip) {
+            setPublications(internalitems);
+        }
+
+    }, [internalitems])
 
     const userId = useMemo(() => {
         if (!user) return null;
@@ -190,7 +201,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
     const [returnDay, setReturnDay] = useState(new Date());
     const [barcodeUserId, setbarcodeUserId] = useState<string>('');
     const [searchBarCode, setSearchBarCode] = useState<string>('');
-
+    const dispatch = useDispatch();
     const [userData, setUserData] = useState<EntityResponse<User>>(null);
     const [publications, setPublications] = useState<CreatePublication[]>([
         {
@@ -341,8 +352,15 @@ const FormAddEditLoanSlip: FC<Props> = ({
     }, [publications.length]);
     const handleRemovePublication = (index: number) => {
         const updatedPublications = [...publications];
+        const removedPublication = updatedPublications[index];
         updatedPublications.splice(index, 1); // Xóa phần tử tại vị trí index
         setPublications(updatedPublications); // Cập nhật lại state
+        if (internalitems?.length > 0) {
+            const itemToRemove = internalitems.find(item => item.publicationId === removedPublication.publicationId);
+            if (itemToRemove) {
+                dispatch(removeInternalItem(itemToRemove.publicationId)); // Gọi dispatch với ID của item cần xóa
+            }
+        }
     };
     // Hàm để thêm một phần tử mới vào danh sách publications
     const handleAddPublication = () => {

@@ -103,9 +103,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
     const [arrayError, setArrayError] = useState<{ name: string; position: string }[]>([]);
     const items = useSelector((state: { cartLoanSlip: { items: CreatePublication[] } }) => state.cartLoanSlip.items);
     const dispatch = useDispatch();
-    useEffect(() => {
-        console.log("Loan Slip nhận được:", loanSlip);
-    }, [loanSlip]);
     const { logout, user } = useAuth();
     const userID = useMemo(() => {
         if (!user) return null;
@@ -651,7 +648,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
                                 <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
-                                <StyledButton
+                                    <StyledButton
                                         color="primary"
                                         size="small"
                                         variant="contained"

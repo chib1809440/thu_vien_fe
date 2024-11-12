@@ -42,6 +42,9 @@ import DialogImportFile from "./ui-components/DialogImportFile ";
 import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
+import { useDispatch, useSelector } from "react-redux";
+import { CreatePublication } from "../../../types/models/loanSlip.type";
+import { addInternalItem } from "../../../store/slices/cartInternalLoanSlip";
 
 const PublicationsPage = () => {
     const queryString = useQueryString();
@@ -295,7 +298,59 @@ const PublicationsPage = () => {
     const handleLibraryFilterChange = (event) => {
         setSelectedLibrary(event.target.value);
     };
+    const dispatch = useDispatch();
+    const items = useSelector((state: { cartLoanSlip: { items: CreatePublication[] } }) => state.cartLoanSlip.items);
+    const handleAddItem = (item: TPublications & { libraryDetails?: TLibrary }) => {
+        if (item.type === "ấn phẩm mềm") {
+            toast.warning(`Không thể mượn ấn phẩm mềm`, {
+                toastId: '2',
+                position: "bottom-right", // Đặt vị trí ở góc dưới bên phải
+                autoClose: 3000, // Thời gian tự động đóng (ms)
+                hideProgressBar: false, // Hiện thanh tiến trình
+                closeOnClick: true, // Cho phép đóng thông báo bằng cách nhấp
+                pauseOnHover: true, // Tạm dừng khi di chuột
+                draggable: true, // Cho phép kéo thả để đóng thông báo
+            });
+            return;
+        }
+        const createPublication: CreatePublication = {
+            publicationId: item._id, // Giả định item có publicationId
+            name: item.name, // Giả định item có name
+            quantityLoan: 1, // Giả định item có quantityLoan
+            quantity: item.quantity, // Giả định item có quantity
+            shelvesQuantity: item.shelvesQuantity, // Giả định item có shelvesQuantity
+            position: "trên kệ", // Giả định item có position
+            quantityModify: 1, // Có thể có hoặc không
+            barcode: item.barcode, // Giả định item có barcode
+            libraryId: (item?.libraryDetails as TLibrary)?._id,
+            libraryName: (item?.libraryDetails as TLibrary)?.name,
+        };
+        const duplicateItem = items.find(cartItem => cartItem.libraryId === createPublication.libraryId);
+        if (!duplicateItem && items.length > 0) {
+            const item = items[0];
+            toast.warning(`Chi thêm sách của một thư viện là ${item.libraryName}`, {
+                toastId: '1',
+                position: "bottom-right", // Đặt vị trí ở góc dưới bên phải
+                autoClose: 3000, // Thời gian tự động đóng (ms)
+                hideProgressBar: false, // Hiện thanh tiến trình
+                closeOnClick: true, // Cho phép đóng thông báo bằng cách nhấp
+                pauseOnHover: true, // Tạm dừng khi di chuột
+                draggable: true, // Cho phép kéo thả để đóng thông báo
 
+            });
+            return;
+        }
+        // Dispatch action để thêm item vào giỏ hàng
+        dispatch(addInternalItem(createPublication));
+        toast.success("Thêm sản phẩm vào phiếu mượn thành công", {
+            position: "bottom-right", // Đặt vị trí ở góc dưới bên phải
+            autoClose: 3000, // Thời gian tự động đóng (ms)
+            hideProgressBar: false, // Hiện thanh tiến trình
+            closeOnClick: true, // Cho phép đóng thông báo bằng cách nhấp
+            pauseOnHover: true, // Tạm dừng khi di chuột
+            draggable: true, // Cho phép kéo thả để đóng thông báo
+        })
+    };
     const columns: TColumn<TPublications & { libraryId: TLibrary }>[] = useMemo(
         () => [
             {
@@ -506,6 +561,15 @@ const PublicationsPage = () => {
                                 gap: 1,
                             }}
                         >
+                            {
+                                row?.type === "ấn phẩm cứng" && (
+                                    <IconPlus
+                                        size={25}
+                                        stroke={1.5}
+                                        onClick={() => handleAddItem(row)}
+                                    />
+                                )
+                            }
                             <IconEye
                                 size={20}
                                 stroke={1.5}

@@ -40,6 +40,7 @@ import getApiLTReducer from './slices/apiLT'
 import getUserLTReducer from './slices/userLT'
 import isLoginReducer from './slices/isLoginLT'
 import cartLoanSlipReducer from './slices/cartLoanSlip'
+import cartInternalLoanSlipReducer from './slices/cartInternalLoanSlip'
 
 // ==============================|| COMBINE REDUCER ||============================== //
 
@@ -70,6 +71,14 @@ const reducer = combineReducers({
             keyPrefix: 'berry-'
         },
         cartLoanSlipReducer
+    ),
+    cartInternalLoanSlip: persistReducer(
+        {
+            key: 'cartInternalLoanSlip',
+            storage,
+            keyPrefix: 'berry-'
+        },
+        cartInternalLoanSlipReducer
     ),
     getlistprojectwaiting: getListWaitingReducer,
     getAllAccount: getAllAccountReducer,

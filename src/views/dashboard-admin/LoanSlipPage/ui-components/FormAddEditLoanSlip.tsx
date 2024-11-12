@@ -757,8 +757,20 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                                     value={row.quantityLoan}
                                                                     onChange={(e) => {
                                                                         const updatedPublications = [...publications];
-                                                                        updatedPublications[index].quantityLoan = Number(e.target.value);
-                                                                        setPublications(updatedPublications);
+                                                                        const updatedItem = { ...updatedPublications[index] }; // Tạo bản sao sâu của đối tượng
+
+                                                                        if (isEditMode && loanSlip.isAgree === true) {
+                                                                            if (Number(e.target.value) > updatedItem.quantityLoan - updatedItem.quantityReturn) {
+                                                                                toast.error("Số lượng trả không lớn hơn số lượng mượn");
+                                                                                return;
+                                                                            }
+                                                                            updatedItem.quantityModify = Number(e.target.value);
+                                                                        } else {
+                                                                            updatedItem.quantityLoan = Number(e.target.value);
+                                                                        }
+
+                                                                        updatedPublications[index] = updatedItem; // Gán bản sao đã chỉnh sửa vào mảng
+                                                                        setPublications(updatedPublications); // Cập nhật state
                                                                     }}
                                                                 />
                                                             </Box>

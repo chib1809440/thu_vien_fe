@@ -33,6 +33,7 @@ import PrintLoanSlip from "../../../../LoanSlipPage/ui-components/PrintLoanSlip"
 import { formatDate } from "../../../../../../helpers/formatDate";
 import { useDispatch, useSelector } from "react-redux";
 import { removeItem } from "../../../../../../store/slices/cartLoanSlip";
+import StyledButton from "../../../../../../components/default/button/StyledButton";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -504,11 +505,16 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     </Box>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
-                            <Chip
-                                color='primary'
-                                label="Thông tin mượn - trả"
-                                variant="filled"
-                            />
+                            <StyledButton
+                                color="primary"
+                                size="small"
+                                variant="contained"
+                                disableHoverEffect
+                                sx={{ paddingTop: 1.1, paddingBottom: 1.1 }}
+
+                            >
+                                Thông tin mượn - trả
+                            </StyledButton>
 
                             <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
 
@@ -643,11 +649,16 @@ const FormAddEditLoanSlip: FC<Props> = ({
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
                                 <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
-                                    <Chip
-                                        color='primary'
-                                        label="Thông tin sách"
-                                        variant="filled"
-                                    />
+                                <StyledButton
+                                        color="primary"
+                                        size="small"
+                                        variant="contained"
+                                        disableHoverEffect
+                                        sx={{ paddingTop: 1.1, paddingBottom: 1.1 }}
+
+                                    >
+                                        Thông tin ấn phẩm
+                                    </StyledButton>
                                     <IconCirclePlusFilled
                                         style={{ cursor: 'pointer', marginLeft: '10px' }} // Khoảng cách giữa Chip và Icon
                                         onClick={() => handleAddPublication()} // Gọi hàm thêm

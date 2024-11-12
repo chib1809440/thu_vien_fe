@@ -30,6 +30,7 @@ import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter
 import { Role } from "../../../../interfaces/role";
 import { useAuth } from "../../../../contexts/JWTContext";
 import { formatDate } from "../../../../helpers/formatDate";
+import StyledButton from "../../../../components/default/button/StyledButton";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -413,11 +414,16 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             </Box>
                             <Grid item xs={12}>
                                 <Box >
-                                    <Chip
-                                        color='primary'
-                                        label="Thông tin người dùng"
-                                        variant="filled"
-                                    />
+                                    <StyledButton
+                                        color="primary"
+                                        size="small"
+                                        variant="contained"
+                                        disableHoverEffect
+                                        sx={{ paddingTop: 1.1, paddingBottom: 1.1 }}
+
+                                    >
+                                        Thông tin người mượn
+                                    </StyledButton>
                                 </Box>
                             </Grid>
                             <Grid container spacing={2}>
@@ -494,13 +500,18 @@ const FormAddEditLoanSlip: FC<Props> = ({
                         </Grid>
                     }
 
-                    <Grid container spacing={2}>
+                    <Grid container spacing={2} pt={3}>
                         <Grid item xs={12}>
-                            <Chip
-                                color='primary'
-                                label="Thông tin mượn - trả"
-                                variant="filled"
-                            />
+                            <StyledButton
+                                color="primary"
+                                size="small"
+                                variant="contained"
+                                disableHoverEffect
+                                sx={{ paddingTop: 1.1, paddingBottom: 1.1 }}
+
+                            >
+                                Thông tin mượn - trả
+                            </StyledButton>
 
                             <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
 
@@ -566,14 +577,19 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             </Form>
                         </Grid>
                     </Grid>
-                    <Grid container spacing={2}>
+                    <Grid container spacing={2} pt={1}>
                         <Grid item xs={12}>
                             <Box sx={{ mt: 4, display: 'flex', alignItems: 'center' }}>
-                                <Chip
-                                    color='primary'
-                                    label="Thông tin sách"
-                                    variant="filled"
-                                />
+                                <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    variant="contained"
+                                    disableHoverEffect
+                                    sx={{ paddingTop: 1.1, paddingBottom: 1.1 }}
+
+                                >
+                                    Thông tin ấn phẩm
+                                </StyledButton>
                                 <IconCirclePlusFilled
                                     style={{ cursor: 'pointer', marginLeft: '10px' }} // Khoảng cách giữa Chip và Icon
                                     onClick={() => handleAddPublication()} // Gọi hàm thêm

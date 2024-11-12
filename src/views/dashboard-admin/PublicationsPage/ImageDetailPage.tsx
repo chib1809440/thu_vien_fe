@@ -2,12 +2,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Box, Dialog, DialogContent, Grid, IconButton, Paper, useTheme } from "@mui/material";
 import { IconVolume } from "@tabler/icons-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import ImageCard from "../../../components/custom/card/ImageCard";
 import StyledIconButton from "../../../components/default/button/StyledIconButton";
 import { useFetchVoice } from "../../../hooks/services/voice/voice-query";
 import { TPublications } from "../../../types/models/publications.type";
-import MenuAddVoice from "./ui-components/MenuAddVoice";
+import MenuAddVoice, { MenuAddVoiceRef } from "./ui-components/MenuAddVoice";
 import { useFetchTypeVoice } from "../../../hooks/services/type-voice/type-voice-query";
 import { useAuth } from "../../../contexts/JWTContext";
 
@@ -25,12 +25,13 @@ const ImageDetailPage = ({
     const { data: voiceData } = useFetchVoice();
     const { data: typeVoiceData } = useFetchTypeVoice();
     const { user } = useAuth();
+    const menuAddVoiceRef = useRef<MenuAddVoiceRef | null>(null);
 
     const userId = useMemo(() => {
         if (!user) return null;
         const _user = { ...user } as any;
         return _user?.data?._id;
-    }, [user]);    
+    }, [user]);
 
     const handleClickChangeMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -40,19 +41,18 @@ const ImageDetailPage = ({
         setAnchorEl(null);
     };
 
+    const handleCloseDialog = (event, reason) => {
+        if (reason === "backdropClick") {
+            return;
+        }
+        menuAddVoiceRef.current?.muteAudio();
+        onClose();
+        
+    };
+
     return (
         <>
-            <Dialog
-                open={open}
-                onClose={(event, reason) => {
-                    if (reason === "backdropClick") {
-                        return;
-                    }
-                    onClose();
-                }}
-                maxWidth="xl"
-                fullWidth
-            >
+            <Dialog open={open} onClose={handleCloseDialog} maxWidth="xl" fullWidth>
                 <IconButton
                     aria-label="close"
                     onClick={onClose}
@@ -141,6 +141,7 @@ const ImageDetailPage = ({
                                 </StyledIconButton>
                                 {anchorEl && (
                                     <MenuAddVoice
+                                        ref={menuAddVoiceRef}
                                         anchorEl={anchorEl}
                                         onClose={handleClose}
                                         voiceData={

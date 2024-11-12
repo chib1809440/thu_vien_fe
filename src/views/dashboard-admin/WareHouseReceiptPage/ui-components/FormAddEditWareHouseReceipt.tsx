@@ -480,12 +480,16 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
                                     <Box sx={{ mt: 4, display: 'flex', alignItems: 'center' }}>
-                                        <Chip
-                                            color='primary'
-                                            label="Thông tin sách"
-                                            variant="filled"
-                                            sx={{ marginRight: '10px', }}
-                                        />
+                                        <StyledButton
+                                            color="primary"
+                                            size="small"
+                                            variant="contained"
+                                            disableHoverEffect
+                                            sx={{ paddingTop: 1.3, paddingBottom: 1.3, marginRight: 2 }}
+
+                                        >
+                                            Thông tin ấn phẩm
+                                        </StyledButton>
                                         {
                                             hasPermission([
                                                 { resource: "publications", action: "manage" },

@@ -7,7 +7,7 @@ export type TEntityAbstract = TTimestamp & {
     _id: string;
 };
 
-export type TOrder = 'ASC' | 'DESC';
+export type TOrder = 'DESC' | 'ASC';
 
 export type TFilter = {
     order?: TOrder;

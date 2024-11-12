@@ -22,6 +22,7 @@ import { TSupplier } from "../../../types/models/supplier.type";
 import { TLoanSlip } from "../../../types/models/loanSlip.type";
 import { useApprovalLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-mutation";
 import usePermission from "../../../utils/hasPermission";
+import { formatDate } from "../../../helpers/formatDate";
 
 
 const WareHouseReceiptPage = () => {
@@ -141,6 +142,13 @@ const WareHouseReceiptPage = () => {
                 label: "Ngày tạo",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => {
+                    return (
+                        <>
+                            {formatDate(row.createdAt)}
+                        </>
+                    );
+                },
             },
             {
                 id: "updatedAt",
@@ -148,6 +156,13 @@ const WareHouseReceiptPage = () => {
                 label: "Ngày cập nhật",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => {
+                    return (
+                        <>
+                            {formatDate(row.updatedAt)}
+                        </>
+                    );
+                },
             },
             {
                 id: "createBy",

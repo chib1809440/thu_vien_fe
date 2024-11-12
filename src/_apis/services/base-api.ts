@@ -17,8 +17,12 @@ class BaseApi {
     }
     // Methods
     public async getAll<DynamicType>(params?: TFilter) {
+        const adjustedParams = {
+            ...params,
+            order: params?.order ?? 'DESC',  // Default to 'DESC' if order is not defined
+        };
         const response = await this.httpClient.get(this.endpoint, {
-            params,
+            params: adjustedParams,
         });
         return response.data as TApiMultipleRecords<DynamicType>;
     }

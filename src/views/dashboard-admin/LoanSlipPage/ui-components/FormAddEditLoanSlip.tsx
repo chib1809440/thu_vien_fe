@@ -752,13 +752,15 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                 </StyledTableCell>
                                                 <StyledTableCell align="center">
                                                     {
-                                                        !loanSlip || loanSlip?.isAgree === false && <IconTrash
-                                                            style={{ cursor: 'pointer', color: 'red' }}
-                                                            onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
-                                                            color="red"
-                                                            size={20}
-                                                            stroke={1.5}
-                                                        />
+                                                        (!loanSlip || loanSlip?.isAgree === false) && (
+                                                            <IconTrash
+                                                                style={{ cursor: 'pointer', color: 'red' }}
+                                                                onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
+                                                                color="red"
+                                                                size={20}
+                                                                stroke={1.5}
+                                                            />
+                                                        )
                                                     }
 
                                                 </StyledTableCell>

@@ -53,16 +53,12 @@ const dashboardAdmin = {
             type: 'item',
             url: '/trang-chu',
             icon: icons.IconHome2,
-            breadcrumbs: false
+            breadcrumbs: false,
+            permissions: [{
+                "resource": "statisticals",
+                "action": "manage"
+            }],
         },
-        // {
-        //     id: 'vi-du',
-        //     title: "Ví dụ",
-        //     type: 'item',
-        //     url: '/vi-du',
-        //     icon: icons.IconCategory,
-        //     breadcrumbs: false
-        // },
         {
             id: 'thu-vien',
             title: "Hệ thống",
@@ -70,6 +66,16 @@ const dashboardAdmin = {
             // url: '/he-thong',
             icon: icons.IconBrowser,
             breadcrumbs: false,
+            permissions: [{
+                "resource": "groups",
+                "action": "manage"
+            }, {
+                "resource": "groups",
+                "action": "read"
+            }, {
+                "resource": "all",
+                "action": "manage"
+            }],
             children: [
                 {
                     id: 'quan-ly-nhom',
@@ -77,7 +83,17 @@ const dashboardAdmin = {
                     type: 'item',
                     url: '/he-thong/quan-ly-nhom',
                     icon: icons.IconDeviceAnalytics,
-                    breadcrumbs: false
+                    breadcrumbs: false,
+                    permissions: [{
+                        "resource": "groups",
+                        "action": "manage"
+                    }, {
+                        "resource": "groups",
+                        "action": "read"
+                    }, {
+                        "resource": "all",
+                        "action": "manage"
+                    }],
                 },
                 {
                     id: 'quan-ly-thu-vien',
@@ -85,7 +101,11 @@ const dashboardAdmin = {
                     type: 'item',
                     url: '/he-thong/quan-ly-thu-vien',
                     icon: icons.IconDeviceAnalytics,
-                    breadcrumbs: false
+                    breadcrumbs: false,
+                    permissions: [{
+                        "resource": "all",
+                        "action": "manage"
+                    }],
                 },
                 {
                     id: 'quan-ly-tai-khoan-admin',
@@ -93,7 +113,11 @@ const dashboardAdmin = {
                     type: 'item',
                     url: '/he-thong/quan-ly-tai-khoan-admin',
                     icon: icons.IconDeviceAnalytics,
-                    breadcrumbs: false
+                    breadcrumbs: false,
+                    permissions: [{
+                        "resource": "all",
+                        "action": "manage"
+                    }],
                 },
                 {
                     id: 'quan-ly-tai-khoan',
@@ -101,7 +125,14 @@ const dashboardAdmin = {
                     type: 'item',
                     url: '/quan-ly-tai-khoan',
                     icon: icons.IconDeviceAnalytics,
-                    breadcrumbs: false
+                    breadcrumbs: false,
+                    permissions: [{
+                        "resource": "users",
+                        "action": "manage"
+                    }, {
+                        "resource": "all",
+                        "action": "manage"
+                    }],
                 },
                 {
                     id: 'vai-tro',
@@ -109,18 +140,14 @@ const dashboardAdmin = {
                     type: 'item',
                     url: '/vai-tro',
                     icon: icons.IconBrowserPlus,
-                    breadcrumbs: false
+                    breadcrumbs: false,
+                    permissions: [{
+                        "resource": "all",
+                        "action": "manage"
+                    }],
                 },
             ]
         },
-        // {
-        //     id: 'quan-ly-thanh-vien',
-        //     title: "Thành viên",
-        //     type: 'item',
-        //     url: '/quan-ly-thanh-vien',
-        //     icon: icons.IconDeviceAnalytics,
-        //     breadcrumbs: false
-        // },
         {
             id: 'an-pham',
             title: "Ấn phẩm",
@@ -136,6 +163,10 @@ const dashboardAdmin = {
             url: '/quan-ly-kho',
             icon: icons.IconBrowser,
             breadcrumbs: false,
+            permissions: [{
+                "resource": "publications",
+                "action": "manage"
+            }],
             children: [
                 {
                     id: 'tu-ke',
@@ -213,14 +244,39 @@ const dashboardAdmin = {
             type: 'item',
             url: '/quan-ly-muon-tra/phieu-muon',
             icon: icons.IconReceipt,
-            breadcrumbs: false
+            breadcrumbs: false,
+            permissions: [{
+                "resource": "loanslips",
+                "action": "manage"
+            }],
         },
-
         {
             id: 'quan-ly-danh-muc',
             title: "Quản lý danh mục",
             type: 'collapse',
             icon: icons.IconBrowser,
+            permissions: [{
+                "resource": "materials",
+                "action": "manage"
+            }, {
+                "resource": "voices",
+                "action": "manage"
+            }, {
+                "resource": "categories",
+                "action": "manage"
+            }, {
+                "resource": "typevoices",
+                "action": "manage"
+            }, {
+                "resource": "authors",
+                "action": "manage"
+            }, {
+                "resource": "publishers",
+                "action": "manage"
+            }, {
+                "resource": "all",
+                "action": "manage"
+            }],
             children: [
                 {
                     id: 'dang-hoc-lieu',
@@ -229,6 +285,13 @@ const dashboardAdmin = {
                     url: 'quan-ly-danh-muc/dang-hoc-lieu',
                     icon: icons.IconFileText,
                     breadcrumbs: false,
+                    permissions: [{
+                        "resource": "materials",
+                        "action": "manage"
+                    }, {
+                        "resource": "all",
+                        "action": "manage"
+                    }],
                 },
                 {
                     id: 'linh-vuc',
@@ -237,6 +300,13 @@ const dashboardAdmin = {
                     url: '/quan-ly-danh-muc/linh-vuc',
                     icon: icons.IconBrowser,
                     breadcrumbs: false,
+                    permissions: [{
+                        "resource": "all",
+                        "action": "manage"
+                    }, {
+                        "resource": "categories",
+                        "action": "manage"
+                    }],
                 },
                 {
                     id: 'tu-ke',
@@ -244,7 +314,14 @@ const dashboardAdmin = {
                     type: 'item',
                     url: '/quan-ly-danh-muc/tu-ke',
                     icon: icons.IconHomeSearch,
-                    breadcrumbs: false
+                    breadcrumbs: false,
+                    permissions: [{
+                        "resource": "all",
+                        "action": "manage"
+                    }, {
+                        "resource": "shelves",
+                        "action": "manage"
+                    }],
                 },
                 {
                     id: 'tac-gia',
@@ -252,7 +329,14 @@ const dashboardAdmin = {
                     type: 'item',
                     url: '/quan-ly-danh-muc/tac-gia',
                     icon: icons.IconUserPlus,
-                    breadcrumbs: false
+                    breadcrumbs: false,
+                    permissions: [{
+                        "resource": "authors",
+                        "action": "manage"
+                    }, {
+                        "resource": "all",
+                        "action": "manage"
+                    }],
                 },
                 {
                     id: 'nha-san-xuat',
@@ -260,7 +344,14 @@ const dashboardAdmin = {
                     type: 'item',
                     url: '/quan-ly-danh-muc/nha-san-xuat',
                     icon: icons.IconUsers,
-                    breadcrumbs: false
+                    breadcrumbs: false,
+                    permissions: [{
+                        "resource": "all",
+                        "action": "manage"
+                    }, {
+                        "resource": "publishers",
+                        "action": "manage"
+                    }],
                 },
                 {
                     id: 'loai-voice',
@@ -268,7 +359,14 @@ const dashboardAdmin = {
                     type: 'item',
                     url: '/quan-ly-danh-muc/loai-voice',
                     icon: icons.IconMicrophone,
-                    breadcrumbs: false
+                    breadcrumbs: false,
+                    permissions: [{
+                        "resource": "all",
+                        "action": "manage"
+                    }, {
+                        "resource": "typevoices",
+                        "action": "manage"
+                    }],
                 },
                 {
                     id: 'voice',
@@ -276,7 +374,14 @@ const dashboardAdmin = {
                     type: 'item',
                     url: '/quan-ly-danh-muc/voice',
                     icon: icons.IconMicrophone,
-                    breadcrumbs: false
+                    breadcrumbs: false,
+                    permissions: [{
+                        "resource": "all",
+                        "action": "manage"
+                    }, {
+                        "resource": "voices",
+                        "action": "manage"
+                    }],
                 }
             ]
         },
@@ -286,7 +391,11 @@ const dashboardAdmin = {
             type: 'item',
             url: '/thong-tin',
             icon: icons.IconLocation,
-            breadcrumbs: false
+            breadcrumbs: false,
+            permissions: [{
+                "resource": "publications",
+                "action": "manage"
+            }],
         },
         {
             id: 'tai-san-thu-vien',
@@ -294,23 +403,43 @@ const dashboardAdmin = {
             type: 'item',
             url: '/tai-san-thu-vien',
             icon: icons.IconBuildingCastle,
-            breadcrumbs: false
+            breadcrumbs: false,
+            permissions: [{
+                "resource": "assets",
+                "action": "manage"
+            }],
         },
-        {
-            id: 'ho-tro-ai',
-            title: "Hỗ trợ AI",
-            type: 'item',
-            url: '/ho-tro-ai',
-            icon: icons.IconBrandWechat,
-            breadcrumbs: false
-        },
+        // {
+        //     id: 'ho-tro-ai',
+        //     title: "Hỗ trợ AI",
+        //     type: 'item',
+        //     url: '/ho-tro-ai',
+        //     icon: icons.IconBrandWechat,
+        //     breadcrumbs: false
+        // },
         {
             id: 'lien-thong',
             title: "Liên thông thư viện",
             type: 'item',
             url: '/lien-thong',
             icon: icons.IconBuildingCastle,
-            breadcrumbs: false
+            breadcrumbs: false,
+            permissions: [{
+                "resource": "categories",
+                "action": "manage"
+            }, {
+                "resource": "materials",
+                "action": "manage"
+            }, {
+                "resource": "authors",
+                "action": "manage"
+            }, {
+                "resource": "publishers",
+                "action": "manage"
+            }, {
+                "resource": "loanslips",
+                "action": "manage"
+            }],
         },
     ]
 };
@@ -342,6 +471,19 @@ export const dashboardAdminV2 = {
             breadcrumbs: false,
             type: 'collapse',
             icon: icons.IconBrowser,
+            permissions: [{
+                "resource": "categories",
+                "action": "manage"
+            }, {
+                "resource": "materials",
+                "action": "manage"
+            }, {
+                "resource": "authors",
+                "action": "manage"
+            }, {
+                "resource": "publishers",
+                "action": "manage"
+            }],
             children: [
                 {
                     id: 'dang-hoc-lieu',
@@ -385,31 +527,42 @@ export const dashboardAdminV2 = {
             icon: icons.IconBrowser,
             children: [
                 {
+                    // mượn trường khác
                     id: 'phieu-muon-lien-thong',
                     title: "Danh sách mượn",
                     type: 'item',
                     url: '/lien-thong/chia-se-danh-muc/phieu-muon-lien-thong',
                     icon: icons.IconBrowserPlus,
                     breadcrumbs: false,
+                    permissions: [{
+                        "resource": "loanslips",
+                        "action": "manage"
+                    }],
                 },
                 {
+                    // trường khác yêu cầu mượn
                     id: 'phieu-muon-yeu-cau-lien-thong',
                     title: "Danh sách yêu cầu mượn",
                     type: 'item',
                     url: '/lien-thong/chia-se-danh-muc/phieu-muon-yeu-cau-lien-thong',
                     icon: icons.IconBrowserPlus,
                     breadcrumbs: false,
+                    permissions: [{
+                        "resource": "categories",
+                        "action": "manage"
+                    }, {
+                        "resource": "materials",
+                        "action": "manage"
+                    }, {
+                        "resource": "authors",
+                        "action": "manage"
+                    }, {
+                        "resource": "publishers",
+                        "action": "manage"
+                    }]
                 },
             ]
-        },
-        {
-            id: 'tai-khoan-lien-thong',
-            title: "Quản lý tài khoản",
-            type: 'item',
-            url: '/tai-khoan-lien-thong',
-            icon: icons.IconHome2,
-            breadcrumbs: false
-        },
+        }
     ]
 };
 

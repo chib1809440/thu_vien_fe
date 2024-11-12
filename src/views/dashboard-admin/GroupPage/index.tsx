@@ -63,10 +63,8 @@ const GroupPage = () => {
     const [openViewDetails, setOpenViewDetails] = useState(false);
     const [groupDetails, setGroupDetails] = useState<TGroup | null>(null);
 
-    const { user, refreshUser } = useAuth();
+    const { user, updateProfile } = useAuth();
     const { hasPermission } = usePermission();
-    console.log(user);
-
 
     const libId = useMemo(() => {
         if (!user) return null;
@@ -171,11 +169,26 @@ const GroupPage = () => {
         revalidate();
         revalidateLibs();
         toast.success("Rời nhóm thành công.");
+        // const loca = localStorage.getItem('dataUser');
+        // const user = JSON.parse(loca);
+        // const userUpdated = user.data;
+        // const chageLocalStorage = {
+        //     ...user,
+        //     data: {
+        //         ...user.data, 
+        //         libraryDetail: {
+        //             ...userUpdated.libraryDetail,
+        //             groupId: null,
+        //         }
+
+        //     }
+        // }
+        // localStorage.setItem("dataUser", JSON.stringify(chageLocalStorage));
+        // updateProfile(chageLocalStorage);
         setOpenConfirmLeaveDialog(false);
-        // await refreshUser();
         return response;
-        
     }
+
     const handleOpenLeaveGroup = (row: TGroup) => {
         setOpenConfirmLeaveDialog(true);
     }
@@ -477,23 +490,21 @@ const GroupPage = () => {
                                 userRole === "Owner" && (
 
                                     <Link to="/he-thong/quan-ly-tham-gia-nhom" style={{ textDecoration: 'none' }}>
-                                        <Button
+                                        
+                                        <Box
                                             sx={{
                                                 background: "#a36e21",
                                                 color: "white",
-                                                marginLeft: "10px",
-                                                paddingTop: 1,
+                                                padding: 1.2,
                                                 paddingBottom: 1,
                                                 position: "relative",
                                                 borderRadius: "8px",
                                                 "&:hover": {
                                                     background: "#a36e21",
-                                                }
+                                                },
                                             }}
-                                            size="small"
-                                            variant="contained"
                                         >
-                                            Danh sách yêu cầu vào nhóm
+                                            <Typography> Danh sách yêu cầu vào nhóm</Typography>
                                             {requestGroupData?.data?.meta?.itemCount > 0 && (
                                                 <span
                                                     style={{
@@ -515,7 +526,7 @@ const GroupPage = () => {
                                                     {requestGroupData?.data?.meta?.itemCount}
                                                 </span>
                                             )}
-                                        </Button>
+                                        </Box>
                                     </Link>
                                 )
                             }
@@ -560,7 +571,7 @@ const GroupPage = () => {
                     group={groupDetails}
                 />
 
-                 <ConfirmDeleteDialog
+                <ConfirmDeleteDialog
                     key={"leave"}
                     open={openConfirmLeaveDialog}
                     onClose={handleCloseConfirmLeaveDialog}
@@ -568,11 +579,11 @@ const GroupPage = () => {
                     title="Xác nhận rời nhóm"
                     description={`Bạn có chắc chắn muốn rời nhóm ?`}
                 />
-                 <ConfirmDeleteDialog
+                <ConfirmDeleteDialog
                     key={"join"}
                     open={openConfirmJoinDialog}
                     onClose={handleCloseConfirmJoinDialog}
-                    onConfirm={()=>handleJoinGroup(selectedJoin)}
+                    onConfirm={() => handleJoinGroup(selectedJoin)}
                     title="Xác nhận yêu cầu vào nhóm"
                     description={`Bạn có chắc chắn muốn yêu cầu nhóm ?`}
                 />

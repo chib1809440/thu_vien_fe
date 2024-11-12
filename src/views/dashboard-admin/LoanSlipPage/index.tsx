@@ -626,11 +626,11 @@ const LoanSlipPage = () => {
 
     const actionMenus = useMemo((): TMenuOption[] => {
         return [
-            {
-                label: "Xóa các dữ liệu vào thùng rác",
-                icon: <IconTrashXFilled size={20} stroke={1.5} />,
-                onClick: handleDeleteMultiple,
-            },
+            // {
+            //     label: "Xóa các dữ liệu vào thùng rác",
+            //     icon: <IconTrashXFilled size={20} stroke={1.5} />,
+            //     onClick: handleDeleteMultiple,
+            // },
             {
                 label: "Xuất excel",
                 icon: <IconFileExport size={20} stroke={1.5} />,

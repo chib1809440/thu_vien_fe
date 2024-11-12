@@ -17,7 +17,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { CsFlexRowBetween } from '../../../../components/default/flex';
-import ImageComponent from '../../../../components/default/image';
 import { useChangeInfo, useChangePasswordUser, useUser } from '../../../../hooks/react-query/userData';
 import { useAddLoanSlip } from '../../../../hooks/services/loanSlip/loanSlip-mutation';
 import { useReFetchLoanSlipLink } from '../../../../hooks/services/loanSlip/loanSlip-query';
@@ -30,9 +29,8 @@ import { CreatePublication } from '../../../../types/models/loanSlip.type';
 import { statusRole } from '../../../../utils/constants.utils';
 import { getLabelFromOptions } from '../../../../utils/object';
 import FormAddEditLibLoanSlip from '../../../../views/dashboard-admin/LienThong/LIB/LibLoanSlipPage/ui-components/FormAddEditLibLoanSlip';
-import FormProfile from './FormProfile';
-import { LOGIN, LOGOUT } from '../../../../store/actions';
 import FormChangePassword from './FormChangePassword';
+import FormProfile from './FormProfile';
 // ==============================|| PROFILE MENU ||============================== //
 const settings = [
     { name: "Thông tin cá nhân", icon: <IconUser /> },
@@ -41,7 +39,7 @@ const settings = [
 ];
 
 const ProfileSection = () => {
-    const { logout, user } = useAuth();
+    const { logout, user, updateProfile } = useAuth();
     const navigate = useNavigate();
     const [open] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
@@ -55,47 +53,37 @@ const ProfileSection = () => {
     const mutationChangeInfo = useChangeInfo();
     const [openCart, setOpenCart] = useState(false);
     const dispatch = useDispatch();
-    const location = useLocation(); // Lấy thông tin URL
-
+    const location = useLocation();
+    const mutationAdd = useAddLoanSlip();
+    const mutationChangePassword = useChangePasswordUser();
+    const revalidate = useReFetchLoanSlipLink();
 
     // Lấy đường dẫn từ location.pathname
     const currentPath = location.pathname; // Ví dụ: "/len-thong/"
     const roleId = useMemo(() => {
         if (!user) return null;
-
         const _user = { ...user } as any;
-
         return _user?.data?.roleId;
     }, [user]);
 
     const userID = useMemo(() => {
         if (!user) return null;
-
         const _user = { ...user } as any;
-
         return _user?.data?._id;
     }, [user]);
 
     const avatar = useMemo(() => {
         if (!user) return null;
-
         const _user = { ...user } as any;
-        console.log("new user", _user);
-
         return _user?.data?.avatar;
     }, [user]);
 
-    console.log("avatar", avatar);
-
     const libraryDetail = useMemo(() => {
         if (!user) return null;
-
         const _user = { ...user } as any;
-
         return _user?.data?.libraryDetail;
     }, [user]);
     const { data: userData } = useUser(userID);
-
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
@@ -117,7 +105,6 @@ const ProfileSection = () => {
         handleCloseUserMenu();
         setOpenChangePasswordDialog(true);
     };
-
 
     const handleLogoutClick = async () => {
         handleCloseUserMenu();
@@ -165,6 +152,7 @@ const ProfileSection = () => {
             };
         }
     }, [userData]);
+
     const initialValueChangePassword = useMemo((): ChangePasswordUserModel => {
         if (userID) {
             return {
@@ -175,10 +163,7 @@ const ProfileSection = () => {
             };
         }
     }, [userData]);
-    const mutationAdd = useAddLoanSlip();
-    const mutationChangePassword = useChangePasswordUser();
 
-    const revalidate = useReFetchLoanSlipLink();
     const handleSetOpenCart = () => {
         setOpenCart(true);
     };
@@ -192,10 +177,8 @@ const ProfileSection = () => {
             },
         });
     };
-    const { updateProfile } = useAuth();
 
     const handleSubmitChangeInfo = async (values: CreateUserModel) => {
-        console.log(values, 'kkkjasdkjaskjdas');
 
         if (selectedEdit) {
             mutationChangeInfo.mutate(
@@ -221,7 +204,6 @@ const ProfileSection = () => {
                                 phoneNumber: userUpdated.phoneNumber,
                             }
                         }
-                        console.log(chageLocalStorage, 'kkkkkkk')
                         localStorage.setItem("dataUser", JSON.stringify(chageLocalStorage));
                         updateProfile(chageLocalStorage);
                     },
@@ -230,12 +212,12 @@ const ProfileSection = () => {
             return;
         }
     }
-    console.log('dsds', user);
 
     const handleChangePasswordSubmit = (values: any) => {
         mutationChangePassword.mutate(values, {
             onSuccess: (data) => {
                 revalidate();
+                handleChangePasswordDialogClose();
                 toast.success('Đổi mật khẩu thành công.');
             },
             onError: (data) => {

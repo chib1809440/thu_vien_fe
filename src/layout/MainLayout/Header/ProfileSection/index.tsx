@@ -139,7 +139,7 @@ const ProfileSection = () => {
         setOpenDialog(false);
     };
     const handleChangePasswordDialogClose = () => {
-        setOpenChangePasswordDialog(false);
+        setOpenChangePasswordDialog(false); 
     };
     const handleClose = () => {
         setOpenCart(false);

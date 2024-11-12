@@ -23,7 +23,7 @@ const PermissionGuard = ({ children, requiredPermissions }) => {
     );
 
     console.log("hasPermission", requiredPermissions);
-    console.log("permissions",  dataUser.data.roleId.permissions);
+    console.log("permissions", dataUser.data.roleId.permissions);
 
     
 

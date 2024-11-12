@@ -170,6 +170,16 @@ const dashboardAdmin = {
             url: '/quan-ly-nhap-kho',
             icon: icons.IconBrowser,
             breadcrumbs: false,
+            permissions: [{
+                "resource": "suppliers",
+                "action": "manage"
+            },
+            {
+                "resource": "warehousereceipts",
+                "action": "manage"
+            },
+            ],
+
             children: [
                 {
                     id: 'nha-cung-cap',
@@ -177,7 +187,11 @@ const dashboardAdmin = {
                     type: 'item',
                     url: '/quan-ly-nhap-kho/nha-cung-cap',
                     icon: icons.IconEyeTable,
-                    breadcrumbs: false
+                    breadcrumbs: false,
+                    permissions: [{
+                        "resource": "suppliers",
+                        "action": "manage"
+                    }],
                 },
                 {
                     id: 'phieu-nhap-kho',
@@ -185,7 +199,11 @@ const dashboardAdmin = {
                     type: 'item',
                     url: '/quan-ly-nhap-kho/phieu-nhap-kho',
                     icon: icons.IconEyeTable,
-                    breadcrumbs: false
+                    breadcrumbs: false,
+                    permissions: [{
+                        "resource": "warehousereceipts",
+                        "action": "manage"
+                    }],
                 },
             ]
         },

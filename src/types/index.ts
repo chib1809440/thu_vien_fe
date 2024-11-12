@@ -119,6 +119,10 @@ export type NavItemType = {
     breadcrumbs?: boolean;
     disabled?: boolean;
     chip?: ChipProps;
+    permissions?: Array<{
+        resource: string;
+        action: string;
+    }>;
 };
 
 export type AuthSliderProps = {

@@ -33,6 +33,8 @@ import FormAddEditLibLoanSlip from '../../../../views/dashboard-admin/LienThong/
 import FormProfile from './FormProfile';
 import { LOGIN, LOGOUT } from '../../../../store/actions';
 import FormChangePassword from './FormChangePassword';
+import FormAddEditLoanSlip from '../../../../views/dashboard-admin/LoanSlipPage/ui-components/FormAddEditLoanSlip';
+import { clearInternalCart } from '../../../../store/slices/cartInternalLoanSlip';
 // ==============================|| PROFILE MENU ||============================== //
 const settings = [
     { name: "Thông tin cá nhân", icon: <IconUser /> },
@@ -50,10 +52,12 @@ const ProfileSection = () => {
     const anchorRef = useRef<any>(null);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
     const items = useSelector((state: { cartLoanSlip: { items: CreatePublication[] } }) => state.cartLoanSlip.items);
+    const internalItems = useSelector((state: { cartInternalLoanSlip: { items: CreatePublication[] } }) => state.cartInternalLoanSlip.items);
 
     const [selectedEdit, setSelectedEdit] = useState<User | null>(null);
     const mutationChangeInfo = useChangeInfo();
     const [openCart, setOpenCart] = useState(false);
+    const [openInternalCart, setOpenInternalCart] = useState(false);
     const dispatch = useDispatch();
     const location = useLocation(); // Lấy thông tin URL
 
@@ -67,7 +71,13 @@ const ProfileSection = () => {
 
         return _user?.data?.roleId;
     }, [user]);
+    const roleName = useMemo(() => {
+        if (!user) return null;
 
+        const _user = { ...user } as any;
+
+        return _user?.data?.roleId.name;
+    }, [user]);
     const userID = useMemo(() => {
         if (!user) return null;
 
@@ -147,6 +157,9 @@ const ProfileSection = () => {
     const handleClose = () => {
         setOpenCart(false);
     };
+    const handleInternalClose = () => {
+        setOpenInternalCart(false);
+    };
     const initialValues = useMemo((): CreateUserModel => {
         if (userData) {
             const user = userData?.data?.result;
@@ -182,6 +195,9 @@ const ProfileSection = () => {
     const handleSetOpenCart = () => {
         setOpenCart(true);
     };
+    const handleSetOpenInternalCart = () => {
+        setOpenInternalCart(true);
+    };
     const handleSubmit = (values: any) => {
         mutationAdd.mutate(values, {
             onSuccess: (data) => {
@@ -189,6 +205,16 @@ const ProfileSection = () => {
                 toast.success('Thêm thành công.');
                 dispatch(clearCart())
                 setOpenCart(false);
+            },
+        });
+    };
+    const handleInternalSubmit = (values: any) => {
+        mutationAdd.mutate(values, {
+            onSuccess: (data) => {
+                revalidate();
+                toast.success('Thêm thành công.');
+                dispatch(clearInternalCart())
+                setOpenInternalCart(false);
             },
         });
     };
@@ -256,7 +282,17 @@ const ProfileSection = () => {
                         isCart={true}
                     />
                 )}
-                {location.pathname.includes("/lien-thong") && (
+                {openInternalCart && (
+                    <FormAddEditLoanSlip
+                        roleName={roleName}
+                        open={openInternalCart}
+                        onClose={handleInternalClose}
+                        onSubmit={handleInternalSubmit}
+                        isEditMode={false}
+                        isCart={true}
+                    />
+                )}
+                {location.pathname.includes("/lien-thong") ? (
                     <Box
                         sx={{
                             mt: 1,
@@ -268,27 +304,63 @@ const ProfileSection = () => {
                         onClick={handleSetOpenCart}
                     >
                         <IconShoppingCartFilled size={32} />
-                        {items?.length > 0 && ( // Chỉ hiển thị badge nếu số lượng lớn hơn 0
+                        {items?.length > 0 && ( // Show badge only if item count is greater than 0
                             <Box
                                 sx={{
                                     position: 'absolute',
                                     top: -8,
                                     right: -12,
-                                    bgcolor: 'black', // Màu nền của badge
-                                    color: 'white', // Màu chữ
+                                    bgcolor: 'black', // Badge background color
+                                    color: 'white', // Badge text color
                                     borderRadius: '50%',
-                                    width: '20px', // Đường kính badge
-                                    height: '20px', // Đường kính badge
+                                    width: '20px', // Badge diameter
+                                    height: '20px', // Badge diameter
                                     display: 'flex',
                                     padding: 1,
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    fontSize: '20px', // Kích thước chữ
+                                    fontSize: '20px', // Font size
                                 }}
                             >
                                 <Typography variant="h5" sx={{ color: "white" }}>
                                     {items.length}
-                                </Typography> {/* Hiển thị số lượng */}
+                                </Typography> {/* Display item count */}
+                            </Box>
+                        )}
+                    </Box>
+                ) : (
+                    <Box
+                        sx={{
+                            mt: 1,
+                            position: 'relative',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            mr: 2
+                        }}
+                        onClick={handleSetOpenInternalCart}
+                    >
+                        <IconShoppingCartFilled size={32} />
+                        {internalItems?.length > 0 && ( // Show badge only if item count is greater than 0
+                            <Box
+                                sx={{
+                                    position: 'absolute',
+                                    top: -8,
+                                    right: -12,
+                                    bgcolor: 'black', // Badge background color
+                                    color: 'white', // Badge text color
+                                    borderRadius: '50%',
+                                    width: '20px', // Badge diameter
+                                    height: '20px', // Badge diameter
+                                    display: 'flex',
+                                    padding: 1,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '20px', // Font size
+                                }}
+                            >
+                                <Typography variant="h5" sx={{ color: "white" }}>
+                                    {internalItems.length}
+                                </Typography> {/* Display item count */}
                             </Box>
                         )}
                     </Box>

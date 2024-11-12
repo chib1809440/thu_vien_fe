@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 
 // material-ui
 import { useTheme } from "@mui/material/styles";
@@ -8,6 +8,9 @@ import { List, Typography } from "@mui/material";
 import NavItem from "../NavItem";
 import NavCollapse from "../NavCollapse";
 import { GenericCardProps } from "../../../../../types";
+import { Permission } from "../../../../../interfaces/role";
+import { hasPermission } from "../../../../../helpers/hasPermission";
+import { useAuth } from "../../../../../contexts/JWTContext";
 
 // ==============================|| SIDEBAR MENU LIST GROUP ||============================== //
 
@@ -20,27 +23,40 @@ export interface NavGroupProps {
     title?: ReactNode | string;
     caption?: ReactNode | string;
     color?: "primary" | "secondary" | "default" | undefined;
+    permissions?: Permission[]
   };
 }
 
 const NavGroup = ({ item }: NavGroupProps) => {
   const theme = useTheme();
+  const { user } = useAuth();
+  const userPermissions = useMemo(() => {
+    if (!user) return null;
+
+    const _user = { ...user } as any;
+
+    return _user.data.roleId.permissions;
+  }, [user]);
+
 
   // menu list collapse & items
-  const items = item.children?.map((menu) => {
-    switch (menu.type) {
-      case "collapse":
-        return <NavCollapse key={menu.id} menu={menu} level={1} />;
-      case "item":
-        return <NavItem key={menu.id} item={menu} level={1} />;
-      default:
-        return (
-          <Typography key={menu.id} variant="h6" color="error" align="center">
-            Menu Items Error
-          </Typography>
-        );
-    }
-  });
+  const items = item.children
+    ?.filter((menu) => !menu.permissions || hasPermission(menu.permissions, userPermissions)) // Filter items by permissions
+    .map((menu) => {
+      switch (menu.type) {
+        case "collapse":
+          return <NavCollapse key={menu.id} menu={menu} level={1} />;
+        case "item":
+          return <NavItem key={menu.id} item={menu} level={1} />;
+        default:
+          return (
+            <Typography key={menu.id} variant="h6" color="error" align="center">
+              Menu Items Error
+            </Typography>
+          );
+      }
+    });
+
 
   return (
     <>

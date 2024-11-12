@@ -13,6 +13,7 @@ import { drawerWidth } from "../../../store/constant";
 import { openDrawer } from "../../../store/slices/menu";
 import LogoSection from "../LogoSection";
 import MenuList, { MenuListV2 } from "./MenuList";
+import { useAuth } from "../../../contexts/JWTContext";
 
 // ==============================|| SIDEBAR DRAWER ||============================== //
 
@@ -23,6 +24,8 @@ interface SidebarProps {
 const Sidebar = ({ window }: SidebarProps) => {
   const theme = useTheme();
   const matchUpMd = useMediaQuery(theme.breakpoints.up("md"));
+  const { user } = useAuth();
+
 
   const dispatch = useDispatch();
   const { drawerOpen } = useSelector((state) => state.menu);
@@ -48,7 +51,7 @@ const Sidebar = ({ window }: SidebarProps) => {
           paddingRight: "16px",
           paddingTop: "16px",
           // background: "#F7F9FA",
-          
+
         }}
       >
         <MenuList />
@@ -72,30 +75,30 @@ const Sidebar = ({ window }: SidebarProps) => {
     window !== undefined ? () => window.document.body : undefined;
   return (
     <Box component="nav" sx={{ flexShrink: { md: 0 }, width: matchUpMd ? drawerWidth : 'auto' }} aria-label="mailbox folders">
-    <Drawer
+      <Drawer
         container={container}
         variant={matchUpMd ? 'persistent' : 'temporary'}
         anchor="left"
         open={drawerOpen}
         onClose={() => dispatch(openDrawer(!drawerOpen))}
         sx={{
-            '& .MuiDrawer-paper': {
-                width: drawerWidth,
-                background: theme.palette.background.default,
-                color: theme.palette.text.primary,
-                borderRight: 'none',
-                [theme.breakpoints.up('md')]: {
-                    top: '88px'
-                }
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            background: theme.palette.background.default,
+            color: theme.palette.text.primary,
+            borderRight: 'none',
+            [theme.breakpoints.up('md')]: {
+              top: '88px'
             }
+          }
         }}
         ModalProps={{ keepMounted: true }}
         color="inherit"
-    >
+      >
         {drawerOpen && logo}
         {drawerOpen && drawer}
-    </Drawer>
-</Box>
+      </Drawer>
+    </Box>
   );
 };
 
@@ -105,7 +108,14 @@ export const SidebarV2 = ({ window }: SidebarProps) => {
 
   const dispatch = useDispatch();
   const { drawerOpen } = useSelector((state) => state.menu);
+  const { user } = useAuth();
+  const userPermissions = useMemo(() => {
+    if (!user) return null;
 
+    const _user = { ...user } as any;
+
+    return _user.data.roleId.permissions;
+  }, [user]);
   const logo = useMemo(
     () => (
       <Box sx={{ display: { xs: "block", md: "none" } }}>
@@ -127,7 +137,7 @@ export const SidebarV2 = ({ window }: SidebarProps) => {
           paddingRight: "16px",
           paddingTop: "16px",
           // background: "#F7F9FA",
-          
+
         }}
       >
         <MenuListV2 />
@@ -151,30 +161,30 @@ export const SidebarV2 = ({ window }: SidebarProps) => {
     window !== undefined ? () => window.document.body : undefined;
   return (
     <Box component="nav" sx={{ flexShrink: { md: 0 }, width: matchUpMd ? drawerWidth : 'auto' }} aria-label="mailbox folders">
-    <Drawer
+      <Drawer
         container={container}
         variant={matchUpMd ? 'persistent' : 'temporary'}
         anchor="left"
         open={drawerOpen}
         onClose={() => dispatch(openDrawer(!drawerOpen))}
         sx={{
-            '& .MuiDrawer-paper': {
-                width: drawerWidth,
-                background: theme.palette.background.default,
-                color: theme.palette.text.primary,
-                borderRight: 'none',
-                [theme.breakpoints.up('md')]: {
-                    top: '88px'
-                }
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            background: theme.palette.background.default,
+            color: theme.palette.text.primary,
+            borderRight: 'none',
+            [theme.breakpoints.up('md')]: {
+              top: '88px'
             }
+          }
         }}
         ModalProps={{ keepMounted: true }}
         color="inherit"
-    >
+      >
         {drawerOpen && logo}
         {drawerOpen && drawer}
-    </Drawer>
-</Box>
+      </Drawer>
+    </Box>
   );
 };
 

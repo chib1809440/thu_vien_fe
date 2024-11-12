@@ -537,6 +537,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                 dropdownMode="select"
                                                 showYearDropdown // Hiển thị dropdown chọn năm
                                                 popperPlacement="top-end"
+                                                minDate={new Date()}
                                             />
                                         </Box>
                                     </Grid>
@@ -563,6 +564,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                 showMonthDropdown // Hiển thị dropdown chọn tháng
                                                 dropdownMode="select"
                                                 showYearDropdown // Hiển thị dropdown chọn năm
+                                                minDate={new Date()}
                                             />
                                         </Box>
                                     </Grid>
@@ -952,7 +954,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     </Button>
                     {
 
-                        loanSlip && ((libraryId as string) === loanSlip.libraryId) && isEditMode && !loanSlip?.isReturn && <Button onClick={handleReturnLoanSlip} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                        loanSlip && ((libraryId as string) === loanSlip.libraryId) && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={handleReturnLoanSlip} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
                             Trả sách
                         </Button>
                     }

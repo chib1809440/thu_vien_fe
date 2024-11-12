@@ -1,7 +1,9 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Dialog, DialogContent, DialogTitle, IconButton, TextField, FormHelperText, Typography, Button } from "@mui/material";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { Box, Dialog, DialogContent, DialogTitle, IconButton, TextField, FormHelperText, Typography, Button, InputAdornment } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
-import { FC, useMemo } from "react";
+import { FC, useMemo, useState } from "react";
 import * as yup from "yup";
 import { ChangePasswordUserModel } from '../../../../interfaces/user';
 
@@ -33,12 +35,20 @@ const FormChangePassword: FC<Props> = ({
         confirmPassword: "",
     },
 }) => {
+    const [showPassword, setShowPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const toggleShowPassword = () => setShowPassword(!showPassword);
+    const toggleShowNewPassword = () => setShowNewPassword(!showNewPassword);
+    const toggleShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
+
     const formik = useFormik({
         initialValues,
         validationSchema: schema,
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
-            if (onSubmit) {                     
+            if (onSubmit) {
                 onSubmit(values, resetForm);
             }
         },
@@ -80,9 +90,18 @@ const FormChangePassword: FC<Props> = ({
                             <TextField
                                 variant="outlined"
                                 fullWidth
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 {...getFieldProps('password')}
                                 error={Boolean(touched.password && errors.password)}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton onClick={toggleShowPassword} edge="end">
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
                             />
                             {touched.password && errors.password && (
                                 <FormHelperText className="required_text">
@@ -99,9 +118,18 @@ const FormChangePassword: FC<Props> = ({
                             <TextField
                                 variant="outlined"
                                 fullWidth
-                                type="password"
+                                type={showNewPassword ? "text" : "password"}
                                 {...getFieldProps('newPassword')}
                                 error={Boolean(touched.newPassword && errors.newPassword)}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton onClick={toggleShowNewPassword} edge="end">
+                                                {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
                             />
                             {touched.newPassword && errors.newPassword && (
                                 <FormHelperText className="required_text">
@@ -118,9 +146,18 @@ const FormChangePassword: FC<Props> = ({
                             <TextField
                                 variant="outlined"
                                 fullWidth
-                                type="password"
+                                type={showConfirmPassword ? "text" : "password"}
                                 {...getFieldProps('confirmPassword')}
                                 error={Boolean(touched.confirmPassword && errors.confirmPassword)}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton onClick={toggleShowConfirmPassword} edge="end">
+                                                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
                             />
                             {touched.confirmPassword && errors.confirmPassword && (
                                 <FormHelperText className="required_text">

@@ -38,6 +38,7 @@ const ImageDetailPage = ({
     };
 
     const handleClose = () => {
+
         setAnchorEl(null);
     };
 
@@ -45,17 +46,24 @@ const ImageDetailPage = ({
         if (reason === "backdropClick") {
             return;
         }
+
         menuAddVoiceRef.current?.muteAudio();
         onClose();
         
     };
+
+    const handleCloseDialogIcon = () => {
+    
+        menuAddVoiceRef.current?.muteAudio();
+        onClose();
+    }
 
     return (
         <>
             <Dialog open={open} onClose={handleCloseDialog} maxWidth="xl" fullWidth>
                 <IconButton
                     aria-label="close"
-                    onClick={onClose}
+                    onClick={handleCloseDialogIcon}
                     color="error"
                     sx={{ position: "absolute", right: 8, top: 2 }}
                 >
@@ -139,7 +147,8 @@ const ImageDetailPage = ({
                                     />
                                     <MoreVertIcon sx={{ color: theme.palette.text.primary }} />
                                 </StyledIconButton>
-                                {anchorEl && (
+                                {/* Because anchorEl -> false -> hidden MenuAddVoice -> ref is null -> so not mute audio */}
+                                
                                     <MenuAddVoice
                                         ref={menuAddVoiceRef}
                                         anchorEl={anchorEl}
@@ -155,7 +164,7 @@ const ImageDetailPage = ({
                                         typeVoiceData={typeVoiceData?.data?.result}
                                         currentUserId={userId}
                                     />
-                                )}
+                                
                             </Box>
                         </Paper>
                     </Grid>

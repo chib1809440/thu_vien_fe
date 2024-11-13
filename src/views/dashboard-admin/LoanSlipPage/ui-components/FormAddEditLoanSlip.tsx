@@ -1073,12 +1073,12 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     }
                     {
 
-                        roleName === "Owner" && isEditMode && <Button onClick={() => handleOpenDialog('print')} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                        (roleName === "Owner" || roleName === "Admin") && isEditMode && <Button onClick={() => handleOpenDialog('print')} style={{ background: '#212121', color: 'white' }} variant="contained"  >
                             In
                         </Button>
                     }
                     {
-                        roleName === "Owner" && !loanSlip?.isReturn ? (
+                        (roleName === "Owner" || roleName === "Admin") && !loanSlip?.isReturn ? (
                             <Button
                                 disabled={isFetching}
                                 onClick={() => handleOpenDialog('submit')}

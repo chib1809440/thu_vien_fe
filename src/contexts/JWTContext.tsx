@@ -17,6 +17,9 @@ import { InitialLoginContextProps, JWTContextType } from "../types/auth";
 import { AUTH_API } from "../_apis/api-endpoint";
 import { getAllExamples } from "../_apis/example.api";
 import { getUserById } from "../_apis/user.api";
+import { useDispatch } from "react-redux";
+import { clearCart } from "../store/slices/cartLoanSlip";
+import { clearInternalCart } from "../store/slices/cartInternalLoanSlip";
 
 // constant
 const initialState: InitialLoginContextProps = {
@@ -69,7 +72,7 @@ export const useAuth = () => {
 
 export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
     const [state, dispatch] = useReducer(accountReducer, initialState);
-
+    const dispatchRedux = useDispatch();
     useEffect(() => {
         const init = async () => {
             try {
@@ -82,6 +85,8 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
                     dispatch({
                         type: LOGOUT,
                     });
+                    dispatchRedux(clearCart())
+                    dispatchRedux(clearInternalCart())
                     return;
                 }
                 if (serviceToken && verifyToken(serviceToken)) {
@@ -110,9 +115,10 @@ export const JWTProvider = ({ children }: { children: React.ReactElement }) => {
                 dispatch({
                     type: LOGOUT,
                 });
+                dispatchRedux(clearCart())
+                dispatchRedux(clearInternalCart())
             }
         };
-
         init();
     }, []);
 

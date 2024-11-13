@@ -228,8 +228,9 @@ const WareHouseReceiptPage = () => {
                                 gap: 1,
                             }}
                         >
+                             {/* row.isAccept !== true && */}
                             {
-                                row.isAccept !== true && hasPermission([
+                                hasPermission([
                                     { resource: "warehousereceipts", action: "manage" },
                                     { resource: "warehousereceipts", action: "update" },
                                 ]) &&

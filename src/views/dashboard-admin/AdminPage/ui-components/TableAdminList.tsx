@@ -32,6 +32,8 @@ import AdminDetailDialog from "./AdminDetailDialog";
 import AccountDetailDialog from "../../../../components/default/dialog/AccountDetailPage";
 import { Role } from "../../../../interfaces/role";
 import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
+import { getLabelFromOptions } from "../../../../utils/object";
+import { statusRole } from "../../../../utils/constants.utils";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -150,10 +152,10 @@ function TableAdminList<T extends DataType>({
         refetch();
     };
     useEffect(() => {
-        if (debouncedSearch) {
+        if (debouncedSearch || filterRoleId) {
             setPage(1);
         }
-    }, [debouncedSearch])
+    }, [debouncedSearch, filterRoleId]);
     const handleChangeRowsPerPage = (event: SelectChangeEvent) => {
         setRowsPerPage(Number(event.target.value));
         setPage(1)
@@ -227,6 +229,27 @@ function TableAdminList<T extends DataType>({
         <>
             <SearchAndFilter onHandleDeleteSelectedItem={handleDeleteItemSelected} actionDeleteSelectedItem={true} contentSearch={contentSearch} handleContentSearch={setContentSearch} />
             {/* Table */}
+            <Grid container pl={4} pr={4} xs={12} sm={12} md={12} lg={12} gap={2} sx={{ display: "flex", mb: 1, flexWrap: "wrap", mt: 1 }}>
+                <Grid item xs={12} sm={12} md={2} lg={2}>
+                    <Select
+                        labelId="roles-select"
+                        label="Vai trof"
+                        value={filterRoleId}
+                        onChange={(event) => {
+                            setFilterRoleId(event.target.value)
+                        }}
+                        input={<CustomInput size="small" label="Vai trò" />}
+                    >
+                        {roles?.data.result
+                            .filter((item) => item.name.toLowerCase() === "admin" || item.name.toLowerCase() === "owner")
+                            .map((item, index) => (
+                                <MenuItem key={index} value={item._id}>
+                                    {getLabelFromOptions(statusRole, item.name)}
+                                </MenuItem>
+                            ))}
+                    </Select>
+                </Grid>
+            </Grid>
             <Box p={4} pt={0}>
                 {
                     checked && checked.length > 0 && (
@@ -290,7 +313,7 @@ function TableAdminList<T extends DataType>({
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.barcode}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.fullname}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.phoneNumber}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{(row?.roleId as Role)?.name}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>  {getLabelFromOptions(statusRole, (row?.roleId as Role)?.name)}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{capitalizeFirstLetter((row?.libraryId as TLibrary)?.name)}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center">
                                                             <Box sx={{

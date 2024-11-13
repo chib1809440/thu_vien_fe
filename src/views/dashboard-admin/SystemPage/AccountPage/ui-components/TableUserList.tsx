@@ -297,7 +297,6 @@ function TableUserList<T extends DataType>({
                         ))}
                     </Select>
                 </Grid>
-
             </Grid>
             {/* Table */}
             <Box p={4} pt={0}>

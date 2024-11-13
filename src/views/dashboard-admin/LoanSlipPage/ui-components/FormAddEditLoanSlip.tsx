@@ -1,4 +1,4 @@
-import { Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, Table, TableBody, TableContainer, TableHead, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, Table, TableBody, TableContainer, TableHead, TextField, Typography } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import * as yup from "yup";
@@ -109,6 +109,9 @@ const FormAddEditLoanSlip: FC<Props> = ({
 }) => {
     const [arrayError, setArrayError] = useState<{ name: string; position: string }[]>([]);
     const internalitems = useSelector((state: { cartInternalLoanSlip: { items: CreatePublication[] } }) => state.cartInternalLoanSlip.items);
+    const [dropdownOptions, setDropdownOptions] = useState<CreatePublication[]>([]);
+    const [searchPublicationName, setSearchPublicationName] = useState<string>('');
+    const debouncedPublicationName = useDebounce(searchPublicationName, 500);
 
     const { logout, user } = useAuth();
     useEffect(() => {
@@ -201,6 +204,16 @@ const FormAddEditLoanSlip: FC<Props> = ({
     const [returnDay, setReturnDay] = useState(new Date());
     const [barcodeUserId, setbarcodeUserId] = useState<string>('');
     const [searchBarCode, setSearchBarCode] = useState<string>('');
+
+    const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
+
+    const handleNameChange = (index: number, publicationName: string) => {
+        //  const updatedPublications = [...publications];
+        //   updatedPublications[index].barcode = newBarCode;
+        setSearchPublicationName(publicationName + ' ' + index);
+        // setPublications(updatedPublications);
+
+    };
     const dispatch = useDispatch();
     const [userData, setUserData] = useState<EntityResponse<User>>(null);
     const [publications, setPublications] = useState<CreatePublication[]>([
@@ -256,7 +269,37 @@ const FormAddEditLoanSlip: FC<Props> = ({
         }
     }, [loanSlip])
     console.log('dsdsds', loanSlip);
+    useEffect(() => {
+        if (debouncedPublicationName && debouncedPublicationName.length >= 5) {
+            const fetchPublicationByName = async () => {
+                try {
+                    const parts = debouncedPublicationName.split(' '); // Tách chuỗi theo dấu cách
+                    const name = parts.slice(0, parts.length - 1).join(' '); // Lấy tất cả các phần ngoại trừ phần cuối cùng và ghép lại
+                    const index = Number(parts[parts.length - 1]); // Lấy phần cuối cùng và chuyển đổi thành số
+                    console.log('dsds', name);
 
+                    setLoadingSearch(true)
+                    const result = await publicationsService.getByName<TPublications>({ search: name, libraryId: libraryDetail._id });
+                    // Chuyển đổi kết quả thành mảng CreatePublication[]
+                    const convertedPublications: CreatePublication[] = result.data.result.map((pub: TPublications) => ({
+                        name: pub.name || '',  // Cung cấp giá trị mặc định nếu không có
+                        publicationId: pub._id || '',
+                        position: 'trên kệ', // Giá trị mặc định
+                        quantityLoan: pub.quantityLoan || 1, // Giá trị mặc định
+                        quantity: pub.quantity || 0, // Giá trị mặc định
+                        shelvesQuantity: pub.shelvesQuantity || 0, // Giá trị mặc định
+                        barcode: pub.barcode || '', // Cung cấp giá trị mặc định nếu không có
+                    }));
+                    setDropdownOptions(convertedPublications);
+                    setLoadingSearch(false)
+                    setSearchPublicationName('');
+                } catch (error) {
+                    console.error('Error fetching publication data:', error);
+                }
+            };
+            fetchPublicationByName();
+        }
+    }, [debouncedPublicationName]);
 
     const handleBarCodeChange = (index: number, newBarCode: string) => {
         const updatedPublications = [...publications];
@@ -323,7 +366,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             }
                         });
                     }
-                    setSearchBarCode('');
+                    setSearchPublicationName('');
                 } catch (error) {
                     console.error('Error fetching publication data:', error);
                 }
@@ -402,6 +445,50 @@ const FormAddEditLoanSlip: FC<Props> = ({
             onHandleCancelLoanSlip(loanSlip); // Gọi hàm
         } else {
             console.error("onHandleCancelLoanSlip is not a function");
+        }
+    };
+    const handlePublicationChange = (
+        event: any,
+        value: CreatePublication | null,
+        index: number,
+    ) => {
+        // Kiểm tra xem giá trị có hợp lệ không
+        if (value) {
+            const updatedPublications = [...publications]; // Tạo bản sao của publications
+
+            // Tìm xem publicationId đã tồn tại hay chưa
+            const existingIndex = updatedPublications.findIndex(pub => pub.publicationId === value.publicationId);
+
+            if (existingIndex !== -1) {
+                // Nếu publicationId đã tồn tại, tăng quantityLoan lên 1
+                updatedPublications[existingIndex].quantityLoan += 1;
+            } else {
+                // Nếu không, thêm mới vào publications
+                updatedPublications[index] = {
+                    name: value.name, // Cập nhật tên
+                    publicationId: value.publicationId || '', // Cập nhật ID
+                    position: 'trên kệ', // Hoặc giá trị mặc định khác
+                    quantityLoan: 1, // Đặt quantityLoan là 1
+                    quantity: value.quantity, // Giá trị mặc định
+                    shelvesQuantity: value.shelvesQuantity, // Giá trị mặc định
+                    barcode: value.barcode || '', // Cập nhật barcode
+                };
+                // Chỉ thêm một mục mới trống nếu không có mục nào khác đang chờ
+                if (index === updatedPublications.length - 1) {
+                    updatedPublications.push({
+                        name: '',
+                        publicationId: '',
+                        position: '',
+                        quantityLoan: 1,
+                        quantity: 0,
+                        shelvesQuantity: 0,
+                        barcode: '',
+                    });
+                }
+            }
+
+            setPublications(updatedPublications); // Cập nhật state publications
+            setDropdownOptions([]); // Xóa dropdown options nếu cần
         }
     };
     return (
@@ -684,7 +771,34 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                     </Box>
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left">
-                                                    {row.name || "Không có dữ liệu"}
+                                                    <Box style={{ width: "100%" }} >
+                                                        {
+                                                            row.publicationId !== '' ? <>{row.name}</> : <>
+                                                                <Autocomplete
+                                                                    getOptionLabel={(option) => (option?.name)}
+                                                                    loading={loadingSearch}
+                                                                    options={dropdownOptions}
+                                                                    onChange={(event, value) =>
+                                                                        handlePublicationChange(event, value, index)
+                                                                    }
+                                                                    disablePortal
+                                                                    value={publications[index] || null}
+                                                                    onInputChange={(event, newInputValue, reason) => {
+                                                                        if (reason === 'reset') {
+                                                                            setDropdownOptions([])
+                                                                            return
+                                                                        }
+                                                                    }}
+                                                                    renderInput={(params) => <TextField
+                                                                        inputRef={index === publications.length - 1 ? lastInputRef : null}
+                                                                        onChange={(event) =>
+                                                                            handleNameChange(index, event.target.value)
+                                                                        }  {...params} />}
+                                                                />
+                                                            </>
+                                                        }
+
+                                                    </Box>
                                                 </StyledTableCell>
                                                 {
                                                     isEditMode === false && <> <StyledTableCell align="left">

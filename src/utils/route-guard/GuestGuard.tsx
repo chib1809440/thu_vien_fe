@@ -24,7 +24,7 @@ const GuestGuard = ({ children }: GuardProps) => {
     useEffect(() => {
         if (isLoggedIn) {
             if (userRole === 'Teacher') {
-                navigate('/publications', { replace: true })
+                navigate('thu-vien/an-pham', { replace: true })
                 return;
             }
             navigate(DEFAULT_PAGE_PATH, { replace: true });

@@ -68,19 +68,22 @@ const FormProfile: FC<Props> = ({
     const imageRef = useRef<UploadAvatarRefProps>(null);
     const [defaultImage, setDefaultImage] = useState<string>("");
     const [fileName, setFileName] = useState("");
-
+    const [avatarBoolean, setAvatarBoolean] = useState(true);
     // Xét ảnh
     const handleChangeImage = useCallback(
         async (file: File) => {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                setDefaultImage(event.target?.result as string);
-            };
-            reader.readAsDataURL(file);
-            setFileName(file.name);
+            if (!avatarBoolean) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    setDefaultImage(event.target?.result as string);
+                };
+                reader.readAsDataURL(file);
+                setFileName(file.name);
+            }
+
             setFieldValue("file", file);
         },
-        [initialValues, setFieldValue, defaultImage]
+        [initialValues, setFieldValue, defaultImage, avatarBoolean]
     );
 
 
@@ -122,6 +125,7 @@ const FormProfile: FC<Props> = ({
                             }}
                         >
                             <Uploadimage
+                                avatar={avatarBoolean}
                                 ref={imageRef}
                                 defaultImage={imageUrl || defaultImage}
                                 onChange={handleChangeImage}

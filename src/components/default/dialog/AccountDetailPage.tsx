@@ -1,64 +1,23 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import { LoadingButton } from "@mui/lab";
 import {
-    Alert,
-    Button,
-    Card,
-    CardContent,
+    Box,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    FilledInput,
-    FormControl,
-    FormControlLabel,
-    FormHelperText,
-    Grid,
-    Icon,
-    IconButton,
-    Input,
-    InputAdornment,
-    InputBase,
-    LinearProgress,
-    MenuItem,
-    OutlinedInput,
-    Radio,
-    RadioGroup,
-    Rating,
-    Select,
-    Snackbar,
-    Step,
-    StepLabel,
-    Stepper,
-    TextField,
+    IconButton
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { useTheme } from "@mui/material/styles";
-import { LoadingButton } from "@mui/lab";
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import Typography from "@mui/material/Typography";
+import { useRef } from "react";
 
-import { useFormik } from "formik";
-import * as yup from "yup";
-import { stringify } from "querystring";
-import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
-import { Entity } from "draft-js";
-import { vi } from "date-fns/locale";
-import DatePicker from "react-datepicker";
-import { IconHttpDelete, IconSquareXFilled } from "@tabler/icons-react";
-import { useUser } from "../../../hooks/react-query/userData";
+import Barcode from "react-barcode";
+import { useReactToPrint } from "react-to-print";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { formatDate } from "../../../helpers/formatDate";
+import { useUser } from "../../../hooks/react-query/userData";
 import { User } from "../../../interfaces/user";
-import Barcode from "react-barcode";
-import Avatar from "../../../ui-component/extended/Avatar";
-import { TLibrary } from "../../../types/models/library.type";
-import { Role } from "../../../interfaces/role";
-import { useReactToPrint } from "react-to-print";
-import PrintLoanSlip from "../../../views/dashboard-admin/LoanSlipPage/ui-components/PrintLoanSlip";
 import PrintAccount from "../../../views/dashboard-admin/SystemPage/AccountPage/PrintAccount";
-
 
 interface DialogProps {
     id?: string,
@@ -75,7 +34,6 @@ interface DialogProps {
 export default function AccountDetailDialog({ title, maxWidth, id, content, action, fullScreen, open, user, handleOpen, roleId }: DialogProps) {
 
     const { data: userDetail } = useUser(user._id);
-
     const componentRef = useRef();
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
@@ -150,10 +108,9 @@ export default function AccountDetailDialog({ title, maxWidth, id, content, acti
                     )}
                 </DialogContent>
                 <DialogActions sx={{ p: 3 }}>
-
-                    <Button sx={{ p: "12px 24px" }} onClick={() => handlePrint()} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                    <Box onClick={() => handlePrint()} sx={{ background: '#212121', color: 'white', borderRadius: "6px", p: 2, cursor: "pointer" }}  >
                         In thẻ thư viện
-                    </Button>
+                    </Box>
                     <LoadingButton
                         sx={{ p: "12px 24px" }}
                         onClick={() => handleOpen(false)}
@@ -165,6 +122,7 @@ export default function AccountDetailDialog({ title, maxWidth, id, content, acti
                     </LoadingButton>
                 </DialogActions>
             </Dialog>
+           
         </>
     );
 }

@@ -33,6 +33,9 @@ import { useReactToPrint } from "react-to-print";
 import PrintAccount from "../PrintAccount";
 import { getLabelFromOptions } from "../../../../../utils/object";
 import { statusRole } from "../../../../../utils/constants.utils";
+import { Lock, LockOpen } from "@mui/icons-material";
+import { activeUser, blockUser } from "../../../../../_apis/user.api";
+import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -62,9 +65,13 @@ function TableUserList<T extends DataType>({
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isOpenUpdateDilog, setIsOpenUpdateDialog] = useState<boolean>(false);
     const [isOpenConfirmDialog, setIsOpenConfirmDialog] = useState(false);
+    const [isOpenBlock, setIsOpenBlock] = useState(false);
     const [isOpenLibCard, setIsOpenLibCard] = useState(false);
     const [isOpenConfirmDeleteSelectedDialog, setIsOpenConfirmDeleteSelectedDialog] = useState(false);
     const [selectedDeleteID, setSelectedDeleteID] = useState<string>()
+    const [selectedActiveUserID, setSelectedActiveUserID] = useState<string>()
+    const [isBlock, setIsBlock] = useState(false);
+    const [selectedBlockUserID, setSelectedBlockUserID] = useState<string>()
     const [filterRoleId, setFilterRoleId] = useState<string | number>(0)
     const debouncedSearch = useDebounce<string>(contentSearch, searchDelay);
     const [isOpenDetailDialog, setIsOpenDetailDialog] = useState<boolean>(false);
@@ -267,6 +274,43 @@ function TableUserList<T extends DataType>({
     };
     const checkedUsers = users?.data?.result?.filter((user) => checked.includes(user._id));
 
+    const handleClickOpenBlock = (id: string) => {
+        setIsOpenBlock(true);
+        setSelectedActiveUserID(id);
+    }
+    const handleClickBlock = (id: string) => {
+        setIsBlock(true);
+        setSelectedBlockUserID(id);
+    }
+
+    const handleOpenBlock = async () => {
+        if (selectedActiveUserID) {
+            try {
+                await activeUser(selectedActiveUserID);
+                setIsOpenBlock(false);
+                setSelectedActiveUserID(selectedActiveUserID);
+                toast.success("Mở khóa tài khoản thành công.");
+                refetch();
+            } catch (error) {
+                toast.error("Lỗi không thể mở khóa")
+            }
+        }
+    }
+
+    const handleBlockUser = async () => {
+        if (selectedBlockUserID) {
+            try {
+                await blockUser(selectedBlockUserID);
+                setIsBlock(false);
+                setSelectedBlockUserID(selectedBlockUserID);
+                toast.success("Khóa tài khoản thành công");
+                refetch();
+            } catch (error) {
+                toast.error("Lỗi không thể khóa")
+            }
+        }
+    }
+
     return (
         <>
             {isOpenLibCard && <PrintAccount ref={componentRef} dataUsers={checkedUsers} />}
@@ -361,23 +405,54 @@ function TableUserList<T extends DataType>({
                                                             {(page - 1) * rowsPerPage + index + 1}
                                                         </StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.barcode}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.fullname}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.phoneNumber}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{getLabelFromOptions(statusRole, (row?.roleId as Role)?.name)}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.gender}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{formatDate(row?.birthday)}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="center">
-                                                            <Box sx={{
-                                                                display: "flex",
-                                                                justifyContent: "center",
-                                                                alignItems: "center",
-                                                                gap: 1
-                                                            }}>
-                                                                <IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} />
-                                                                <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
-                                                                <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
+                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4, p: 2 }}>
+                                                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                                                Họ tên: <Typography ml={1} fontWeight={600}>{row?.fullname}</Typography>
                                                             </Box>
+                                                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                                                Số điện thoại: <Typography ml={1} fontWeight={600}>{row?.phoneNumber}</Typography>
+                                                            </Box>
+                                                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                                                Giới tính: <Typography ml={1} fontWeight={600}>{capitalizeFirstLetter(row?.gender)}</Typography>
+                                                            </Box>
+                                                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                                                Ngày sinh: <Typography ml={1} fontWeight={600}>{formatDate(row?.birthday)}</Typography>
+                                                            </Box>
+
                                                         </StyledTableCell>
+                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{getLabelFromOptions(statusRole, (row?.roleId as Role)?.name)}</StyledTableCell>
+                                                        {
+                                                            row?.isActive ?
+                                                                (
+                                                                    <StyledTableCell padding="none" align="center">
+                                                                        <Box sx={{
+                                                                            display: "flex",
+                                                                            justifyContent: "center",
+                                                                            alignItems: "center",
+                                                                            gap: 1
+                                                                        }}>
+                                                                            <IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} />
+                                                                            <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
+                                                                            <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
+                                                                            <LockOpen onClick={() => handleClickBlock(row?._id)} />
+                                                                        </Box>
+                                                                    </StyledTableCell>
+                                                                ) :
+                                                                (
+                                                                    <StyledTableCell padding="none" align="center">
+                                                                        <Box sx={{
+                                                                            display: "flex",
+                                                                            justifyContent: "center",
+                                                                            alignItems: "center",
+                                                                            gap: 1
+                                                                        }}
+                                                                        >
+                                                                            <Lock onClick={() => handleClickOpenBlock(row?._id)} />
+                                                                        </Box>
+                                                                    </StyledTableCell>
+                                                                )
+                                                        }
+
                                                     </StyledTableRow>
                                                 );
                                             })}
@@ -485,6 +560,12 @@ function TableUserList<T extends DataType>({
             }
             {
                 isOpenConfirmDialog && <AlertConfirmDialog title="Xác nhận xóa dữ liệu?" message="Dữ liệu đã xóa thì không khôi khục được" onHandleConfirm={handleConfirmDeleteItem} openConfirm={isOpenConfirmDialog} handleOpenConfirmDialog={setIsOpenConfirmDialog} />
+            }
+             {
+                isBlock && <AlertConfirmDialog title="Xác nhận khóa tài khoản?" onHandleConfirm={handleBlockUser} openConfirm={isBlock} handleOpenConfirmDialog={setIsBlock} />
+            }
+            {
+                isOpenBlock && <AlertConfirmDialog title="Xác nhận mở khóa tài khoản?" onHandleConfirm={handleOpenBlock} openConfirm={isOpenBlock} handleOpenConfirmDialog={setIsOpenBlock} />
             }
             {
                 isOpenConfirmDeleteSelectedDialog && <AlertConfirmDialog title="Xác nhận xóa dữ liệu?" message="Dữ liệu đã xóa thì không khôi khục được" onHandleConfirm={handleConfirmDeleteItemSelected} openConfirm={isOpenConfirmDeleteSelectedDialog} handleOpenConfirmDialog={setIsOpenConfirmDeleteSelectedDialog} />

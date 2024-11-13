@@ -18,6 +18,7 @@ export interface User extends AbstractEntity {
     class?: string;
     school?: string;
     libraryId: string | TLibrary;
+    isActive?: number;
 }
 export interface CreateUserModel {
     _id?: string;

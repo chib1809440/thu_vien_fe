@@ -1,8 +1,6 @@
-import { useTheme } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { IconPlus } from '@tabler/icons';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { HeadCell } from '../../../../components/custom/table/type';
 import StyledButton from '../../../../components/default/button/StyledButton';
 import { CsFlexRowBetween } from '../../../../components/default/flex';
@@ -19,35 +17,18 @@ const headCells: HeadCell[] = [
         label: 'BarCode',
     },
     {
-        id: 'user_name',
+        id: 'user_info',
         numeric: false,
         disablePadding: true,
-        label: 'Tên tài khoản',
-    },
-    {
-        id: 'user_phoneNumber',
-        numeric: false,
-        disablePadding: true,
-        label: 'Số điện thoại',
-    },
+        label: 'Thông tin cá nhân',
+    }, 
     {
         id: 'user_role',
         numeric: false,
         disablePadding: true,
         label: 'Vai trò',
     },
-    {
-        id: 'user_gender',
-        numeric: false,
-        disablePadding: true,
-        label: 'Giới tính',
-    },
-    {
-        id: 'user_birthday',
-        numeric: false,
-        disablePadding: true,
-        label: 'Ngày sinh',
-    },
+   
     {
         id: 'action',
         numeric: false,

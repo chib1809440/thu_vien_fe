@@ -180,3 +180,14 @@ export const changePasswordUser = async (data: ChangePasswordUserModel): Promise
     const response = await axios.patch<EntityResponse<User>>(`${USER_API}/change-password`, data);
     return response.data;
 };
+
+//  block
+export const blockUser = async (id: string): Promise<EntityResponse<User>> => {
+    const response = await axios.patch<EntityResponse<User>>(`${USER_API}/block-account/${id}`);
+    return response.data;
+};
+//  active
+export const activeUser = async (id: string): Promise<EntityResponse<User>> => {
+    const response = await axios.patch<EntityResponse<User>>(`${USER_API}/active-account/${id}`);
+    return response.data;
+};

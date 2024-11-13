@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 
 // material-ui
 import { Typography } from '@mui/material';
@@ -6,6 +6,7 @@ import { Typography } from '@mui/material';
 // project imports
 import NavGroup from './NavGroup';
 import menuItem, { menuItemsV2 } from '../../../../menu-items';
+import { useAuth } from '../../../../contexts/JWTContext';
 
 // ==============================|| SIDEBAR MENU LIST ||============================== //
 

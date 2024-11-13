@@ -21,9 +21,10 @@ const GuestGuard = ({ children }: GuardProps) => {
         const _user = { ...user } as any;
         return _user?.data?.roleId?.name;
     }, [user]);
+    
     useEffect(() => {
         if (isLoggedIn) {
-            if (userRole === 'Teacher') {
+            if (userRole === 'Teacher' || userRole === "Student") {
                 navigate('thu-vien/an-pham', { replace: true })
                 return;
             }

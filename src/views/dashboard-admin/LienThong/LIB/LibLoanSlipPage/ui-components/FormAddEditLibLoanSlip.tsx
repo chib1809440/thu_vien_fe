@@ -155,7 +155,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
             if (onSubmit) {
                 const createLoanSlip: TLoanSlipCreate = {
                     note: values.note,
-                    userId: userID,
+                    ...(isEditMode ? {} : { userId: userID }),
                     borrowedDay: borrowedDay.toDateString(),
                     returnDay: returnDay.toDateString(),
                     libraryId: values.libraryId,
@@ -842,9 +842,11 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                             <Select
                                                                 value={row.position || 'trên kệ'} // Default value is "trên kệ"
                                                                 onChange={(e) => {
-                                                                    const updatedPublications = [...publications];
-                                                                    updatedPublications[index].position = e.target.value; // Update the position field
-                                                                    setPublications(updatedPublications);
+                                                                    const updatedPublications = [...publications]; // Shallow copy of publications array
+                                                                    const updatedRow = { ...updatedPublications[index] }; // Deep copy of the specific row object
+                                                                    updatedRow.position = e.target.value; // Update the position field on the copied object
+                                                                    updatedPublications[index] = updatedRow; // Replace the original item with the updated copy
+                                                                    setPublications(updatedPublications); // Update state
                                                                 }}
                                                             >
                                                                 <MenuItem value="trong kho">Trong kho</MenuItem>

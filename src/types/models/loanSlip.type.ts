@@ -44,7 +44,7 @@ export type CreatePublication = {
 };
 export type TLoanSlipCreate = {
     note: string | null;
-    userId: string;
+    userId?: string;
     libraryId?: string;
     borrowedDay: string;
     barcodeUserId?: string;

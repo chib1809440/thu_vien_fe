@@ -183,7 +183,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
                 const createLoanSlip: TLoanSlipCreate = {
                     note: values.note,
-                    userId: roleName === "Owner" ? userData?.data?.result?._id : userId,
+                    ...(isEditMode ? {} : { userId: roleName === "Owner" ? userData?.data?.result?._id : userId }), // Conditionally include userId
                     borrowedDay: borrowedDay.toDateString(),
                     returnDay: returnDay.toDateString(),
                     isPrint: false,
@@ -536,6 +536,14 @@ const FormAddEditLoanSlip: FC<Props> = ({
             setPublications(updatedPublications); // Cập nhật state publications
             setDropdownOptions([]); // Xóa dropdown options nếu cần
         }
+    };
+    const handleChangePosition = (index, value) => {
+        // Create a new array with updated items, avoiding direct mutation
+        const updatedPublications = publications.map((item, i) =>
+            i === index ? { ...item, position: value } : item
+        );
+
+        setPublications(updatedPublications);
     };
     return (
         <FormikProvider value={formik}>
@@ -943,11 +951,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                     {(!isEditMode || (isEditMode && loanSlip?.isAgree === false)) ? (
                                                         <Select
                                                             value={row.position || 'trên kệ'} // Default value is "trên kệ"
-                                                            onChange={(e) => {
-                                                                const updatedPublications = [...publications];
-                                                                updatedPublications[index].position = e.target.value; // Update the position field
-                                                                setPublications(updatedPublications);
-                                                            }}
+                                                            onChange={(e) => handleChangePosition(index, e.target.value)}
                                                         >
                                                             <MenuItem value="trong kho">Trong kho</MenuItem>
                                                             <MenuItem value="trên kệ">Trên kệ</MenuItem>

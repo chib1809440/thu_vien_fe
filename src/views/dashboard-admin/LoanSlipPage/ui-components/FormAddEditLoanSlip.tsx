@@ -33,6 +33,7 @@ import { formatDate } from "../../../../helpers/formatDate";
 import StyledButton from "../../../../components/default/button/StyledButton";
 import { useDispatch, useSelector } from "react-redux";
 import { removeInternalItem } from "../../../../store/slices/cartInternalLoanSlip";
+import AlertConfirmDialog from "../../../../components/default/alert/confirmAlertDialog";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -206,7 +207,52 @@ const FormAddEditLoanSlip: FC<Props> = ({
     const [searchBarCode, setSearchBarCode] = useState<string>('');
 
     const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [actionType, setActionType] = useState(null);
+    const handleOpenDialog = (type) => {
+        setActionType(type);
+        setOpenDialog(true);
+    };
 
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
+
+    const handleConfirmAction = () => {
+        handleCloseDialog();
+        switch (actionType) {
+            case 'return':
+                handleReturnLoanSlip();
+                break;
+            case 'cancel':
+                handleCancelLoanSlip(loanSlip);
+                break;
+            case 'print':
+                handlePrint();
+                break;
+            case 'submit':
+                handleSubmit();
+                break;
+            default:
+                break;
+        }
+    };
+
+    // Hàm xác định thông điệp xác nhận dựa trên hành động
+    const getConfirmationMessage = () => {
+        switch (actionType) {
+            case 'return':
+                return "Bạn có chắc chắn muốn trả sách không?";
+            case 'cancel':
+                return "Bạn có chắc chắn muốn hủy phiếu mượn không?";
+            case 'print':
+                return "Bạn có chắc chắn muốn in tài liệu này không?";
+            case 'submit':
+                return isEditMode ? "Bạn có chắc chắn muốn cập nhật không?" : "Bạn có chắc chắn muốn thêm mới không?";
+            default:
+                return "Bạn có chắc chắn muốn thực hiện hành động này không?";
+        }
+    };
     const handleNameChange = (index: number, publicationName: string) => {
         //  const updatedPublications = [...publications];
         //   updatedPublications[index].barcode = newBarCode;
@@ -1007,7 +1053,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     </Button>
                     {
 
-                        roleName === "Owner" && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={handleReturnLoanSlip} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                        roleName === "Owner" && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
                             Trả sách
                         </Button>
                     }
@@ -1017,7 +1063,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                         loanSlip.status !== "đang mượn" && loanSlip.status !== "đã trả" && // Kiểm tra status
                         !loanSlip.isCancel && (
                             <Button
-                                onClick={() => handleCancelLoanSlip(loanSlip)}
+                                onClick={() => handleOpenDialog('cancel')}
                                 style={{ background: '#c62828', color: 'white' }}
                                 variant="contained"
                             >
@@ -1027,7 +1073,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     }
                     {
 
-                        roleName === "Owner" && isEditMode && <Button onClick={() => handlePrint()} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                        roleName === "Owner" && isEditMode && <Button onClick={() => handleOpenDialog('print')} style={{ background: '#212121', color: 'white' }} variant="contained"  >
                             In
                         </Button>
                     }
@@ -1035,7 +1081,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                         roleName === "Owner" && !loanSlip?.isReturn ? (
                             <Button
                                 disabled={isFetching}
-                                onClick={handleSubmit as () => void}
+                                onClick={() => handleOpenDialog('submit')}
                                 variant="contained"
                                 color="primary"
                             >
@@ -1046,7 +1092,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                 {!isEditMode ? (
                                     <Button
                                         disabled={isFetching}
-                                        onClick={handleSubmit as () => void}
+                                        onClick={() => handleOpenDialog('submit')}
                                         variant="contained"
                                         color="primary"
                                     >
@@ -1055,7 +1101,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                 ) : !loanSlip?.isAgree ? ( // Kiểm tra nếu là chế độ chỉnh sửa và loanSlip.isAgree là false
                                     <Button
                                         disabled={isFetching}
-                                        onClick={handleSubmit as () => void}
+                                        onClick={() => handleOpenDialog('submit')}
                                         variant="contained"
                                         color="primary"
                                     >
@@ -1066,6 +1112,13 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
                         )
                     }
+                    <AlertConfirmDialog
+                        openConfirm={openDialog}
+                        handleOpenConfirmDialog={handleCloseDialog}
+                        onHandleConfirm={handleConfirmAction}
+                        title="Vui lòng xác nhận"
+                        message={getConfirmationMessage()} // Truyền thông điệp động vào AlertDialog
+                    />
                 </DialogActions>
             </Dialog>
         </FormikProvider >

@@ -40,7 +40,7 @@ export default function AlertConfirmDialog({ title, message, openConfirm, onHand
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button color="error"  onClick={handleClickConfirm}>Xác nhận</Button>
+                    <Button color="error" onClick={handleClickConfirm}>Xác nhận</Button>
                     <Button onClick={handleClose} sx={{ color: 'black' }}>
                         Đóng
                     </Button>

@@ -139,7 +139,7 @@ const ProfileSection = () => {
         setOpenDialog(false);
     };
     const handleChangePasswordDialogClose = () => {
-        setOpenChangePasswordDialog(false); 
+        setOpenChangePasswordDialog(false);
     };
     const handleClose = () => {
         setOpenCart(false);
@@ -152,16 +152,16 @@ const ProfileSection = () => {
             const user = userData?.data?.result;
             return {
                 email: user?.email,
-                fullname: user.fullname,
-                phoneNumber: user.phoneNumber,
-                address: user.address,
-                birthday: user.birthday,
-                gender: user.gender,
-                class: user.class,
-                school: user.school,
-                avatar: user.avatar,
-                roleId: (user.roleId as Role)?._id,
-                libraryId: (user.libraryId as TLibrary)?._id,
+                fullname: user?.fullname,
+                phoneNumber: user?.phoneNumber,
+                address: user?.address,
+                birthday: user?.birthday,
+                gender: user?.gender,
+                class: user?.class,
+                school: user?.school,
+                avatar: user?.avatar,
+                roleId: (user?.roleId as Role)?._id,
+                libraryId: (user?.libraryId as TLibrary)?._id,
             };
         }
     }, [userData]);

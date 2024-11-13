@@ -272,6 +272,7 @@ const LoanSlipPage = () => {
             }
         );
     };
+
     const columns: TColumn<TLoanSlip>[] = useMemo(
         () => [
             {
@@ -364,7 +365,7 @@ const LoanSlipPage = () => {
                     return (
                         <Box>
                             {row?.status === "chờ nhận sách" ? ( // Kiểm tra nếu trạng thái là "chờ nhận sách"
-                                roleName === "Owner" ? ( // Kiểm tra nếu roleName là "Owner"
+                                (roleName === "Owner" || roleName === 'Admin') ? ( // Kiểm tra nếu roleName là "Owner"
                                     <Button
                                         variant="contained"
                                         sx={{ color: theme.palette.common.white, background: theme.palette.success.dark }}
@@ -391,7 +392,7 @@ const LoanSlipPage = () => {
                                     label="Đã duyệt"
                                     variant="filled"
                                 />
-                            ) : roleName === 'Owner' ? (
+                            ) : (roleName === 'Owner' || roleName === "Admin") ? (
                                 <Button
                                     variant="contained"
                                     sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }}
@@ -431,8 +432,8 @@ const LoanSlipPage = () => {
                                 stroke={1.5}
                             />
                             {
-                                ((row.status !== "chờ nhận sách" || roleName === "Owner") &&
-                                    (row.isAgree === false || roleName === "Owner")) && (
+                                ((row.status !== "chờ nhận sách" || roleName === "Owner" || roleName === "Admin") &&
+                                    (row.isAgree === false || roleName === "Owner" || roleName === "Admin")) && (
                                     <IconPencil
                                         onClick={() => handleEditLoanSlip(row)}
                                         size={20}
@@ -701,7 +702,7 @@ const LoanSlipPage = () => {
                                 variant="contained"
                                 onClick={addLoanSlip}
                             >
-                                {roleName === "Owner" ? "Thêm mới" : "Đăng ký mượn sách"}
+                                {(roleName === "Owner" || roleName === "Admin") ? "Thêm mới" : "Đăng ký mượn sách"}
                             </StyledButton>
                         </Box>
 

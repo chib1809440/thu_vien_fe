@@ -557,7 +557,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
                 <DialogContent sx={{ p: 8 }} >
                     {
-                        roleName === "Owner" && <Grid container spacing={2}>
+                        (roleName === "Owner" || roleName === "Admin") && <Grid container spacing={2}>
                             <Box sx={{ display: 'none' }}>
                                 {
                                     loanSlip && libraryDetail && <PrintLoanSlip ref={componentRef} loanSlip={loanSlip} libraryDetail={libraryDetail} />

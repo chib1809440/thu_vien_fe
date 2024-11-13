@@ -1053,7 +1053,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     </Button>
                     {
 
-                        roleName === "Owner" && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                        (roleName === "Owner" || roleName === "Admin") && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
                             Trả sách
                         </Button>
                     }

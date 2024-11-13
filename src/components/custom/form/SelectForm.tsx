@@ -43,7 +43,7 @@ const SelectForm: FC<Props> = ({
 }) => {
     return (
         <FormControl sx={{ my: 1, ...sx }} error={error} fullWidth>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 1.5 }}>
                 <Typography sx={{ fontWeight: "bold" }}>
                     {label} {required && <span className="required_text">(*)</span>}
                 </Typography>

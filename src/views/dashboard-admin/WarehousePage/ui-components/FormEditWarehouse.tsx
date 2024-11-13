@@ -182,7 +182,7 @@ const FormEditWarehouse: FC<Props> = ({
     };
 
     const handleLiqidation = (e) => {
-        const value = Number(e.target.value);        
+        const value = Number(e.target.value);
         setLiquidationQuantity(value);
         setLiquidationTouched({ liquidationQuantity: true });
         let error = null;
@@ -229,7 +229,7 @@ const FormEditWarehouse: FC<Props> = ({
     }, []);
 
     console.log(initialValues);
-    
+
 
     return (
         <>

@@ -23,6 +23,7 @@ import { TLoanSlip } from "../../../types/models/loanSlip.type";
 import { useApprovalLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-mutation";
 import usePermission from "../../../utils/hasPermission";
 import { formatDate } from "../../../helpers/formatDate";
+import { TPublications } from "../../../types/models/publications.type";
 
 
 const WareHouseReceiptPage = () => {
@@ -228,7 +229,7 @@ const WareHouseReceiptPage = () => {
                             }}
                         >
                             {
-                                hasPermission([
+                                row.isAccept !== true && hasPermission([
                                     { resource: "warehousereceipts", action: "manage" },
                                     { resource: "warehousereceipts", action: "update" },
                                 ]) &&

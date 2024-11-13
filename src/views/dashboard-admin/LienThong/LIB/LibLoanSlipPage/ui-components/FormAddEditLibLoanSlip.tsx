@@ -196,7 +196,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
     ]);
     useEffect(() => {
         if (items?.length > 0 && !loanSlip) {
-            setPublications(items);
+            setPublications([...items]);
             if (isCart === true) {
                 const firstItem = items[0];
                 formik.setFieldValue('libraryId', firstItem.libraryId)
@@ -795,16 +795,20 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                                             value={isEditMode && loanSlip.isAgree == true ? row.quantityModify : row.quantityLoan}
                                                                             onChange={(e) => {
                                                                                 const updatedPublications = [...publications];
-                                                                                if (isEditMode && loanSlip.isAgree == true) {
-                                                                                    if (Number(e.target.value) > updatedPublications[index].quantityLoan - updatedPublications[index].quantityReturn) {
-                                                                                        toast.error("Số lượng trả không lớn hơn số lượng mượn")
+                                                                                const updatedItem = { ...updatedPublications[index] }; // Tạo bản sao sâu của đối tượng
+
+                                                                                if (isEditMode && loanSlip.isAgree === true) {
+                                                                                    if (Number(e.target.value) > updatedItem.quantityLoan - updatedItem.quantityReturn) {
+                                                                                        toast.error("Số lượng trả không lớn hơn số lượng mượn");
                                                                                         return;
                                                                                     }
-                                                                                    updatedPublications[index].quantityModify = Number(e.target.value);
+                                                                                    updatedItem.quantityModify = Number(e.target.value);
                                                                                 } else {
-                                                                                    updatedPublications[index].quantityLoan = Number(e.target.value);
+                                                                                    updatedItem.quantityLoan = Number(e.target.value);
                                                                                 }
-                                                                                setPublications(updatedPublications);
+
+                                                                                updatedPublications[index] = updatedItem; // Gán bản sao đã chỉnh sửa vào mảng
+                                                                                setPublications(updatedPublications); // Cập nhật state
                                                                             }}
                                                                             sx={{ flexShrink: 1, width: '40%', mr: 1 }} // Điều chỉnh width và margingjgvhjghghghghghgutytyt phải
                                                                         />
@@ -861,22 +865,15 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                             />
                                                         }
                                                         {
-                                                            isCart === true && <IconTrash
-                                                                style={{ cursor: 'pointer', color: 'red' }}
-                                                                onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
-                                                                color="red"
-                                                                size={20}
-                                                                stroke={1.5}
-                                                            />
-                                                        }
-                                                        {
-                                                            !loanSlip && <IconTrash
-                                                                style={{ cursor: 'pointer', color: 'red' }}
-                                                                onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
-                                                                color="red"
-                                                                size={20}
-                                                                stroke={1.5}
-                                                            />
+                                                            (isCart || !loanSlip) && (
+                                                                <IconTrash
+                                                                    style={{ cursor: 'pointer', color: 'red' }}
+                                                                    onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
+                                                                    color="red"
+                                                                    size={20}
+                                                                    stroke={1.5}
+                                                                />
+                                                            )
                                                         }
                                                     </StyledTableCell>
                                                 </StyledTableRow>

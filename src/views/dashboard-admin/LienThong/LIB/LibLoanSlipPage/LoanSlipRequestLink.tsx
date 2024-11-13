@@ -64,7 +64,7 @@ const LoanSlipRequestLink = () => {
     const filter = useMemo(
         () =>
             parserParams([
-                { compare: "", target: { search } },
+                { compare: "", target: { barcodeUser: search } },
                 { compare: "", target: { barcode: barcodeSearch } },
                 { compare: 0, target: { type: filterDateType } },
                 { compare: 0, target: { status: filterStatus } },

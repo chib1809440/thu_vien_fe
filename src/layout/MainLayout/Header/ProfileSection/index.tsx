@@ -19,7 +19,7 @@ import { toast } from 'react-toastify';
 import { CsFlexRowBetween } from '../../../../components/default/flex';
 import { useChangeInfo, useChangePasswordUser, useUser } from '../../../../hooks/react-query/userData';
 import { useAddLoanSlip } from '../../../../hooks/services/loanSlip/loanSlip-mutation';
-import { useReFetchLoanSlipLink } from '../../../../hooks/services/loanSlip/loanSlip-query';
+import { useReFetchLoanSlip, useReFetchLoanSlipLink } from '../../../../hooks/services/loanSlip/loanSlip-query';
 import useAuth from '../../../../hooks/useAuth';
 import { Role } from '../../../../interfaces/role';
 import { ChangePasswordUserModel, CreateUserModel, User } from '../../../../interfaces/user';
@@ -183,6 +183,8 @@ const ProfileSection = () => {
     const handleSetOpenInternalCart = () => {
         setOpenInternalCart(true);
     };
+    const revalidateInternalLoanSlip = useReFetchLoanSlip();
+
     const handleSubmit = (values: any) => {
         mutationAdd.mutate(values, {
             onSuccess: (data) => {
@@ -193,10 +195,11 @@ const ProfileSection = () => {
             },
         });
     };
+
     const handleInternalSubmit = (values: any) => {
         mutationAdd.mutate(values, {
             onSuccess: (data) => {
-                revalidate();
+                revalidateInternalLoanSlip();
                 toast.success('Thêm thành công.');
                 dispatch(clearInternalCart())
                 setOpenInternalCart(false);

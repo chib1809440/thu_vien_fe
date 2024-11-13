@@ -18,12 +18,14 @@ type Props = {
     handleValuePublication?: (e: any) => void;
     barcode?: boolean;
     placeholder?: string;
+    placeholderSearch?: string;
     selectedLibrary?: number;
     handleLibraryFilterChange?: (event: any) => void;
     libraryData?: TLibrary[];
 };
 
 const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSearch, barcode = false, placeholder = 'Tìm kiếm theo mã ấn phẩm', selectedValuePublication, handleValuePublication, selectedLibrary,
+    placeholderSearch="Tìm kiếm theo tên",
     handleLibraryFilterChange,
     libraryData }) => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -68,6 +70,7 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
                     fullwidth
                     contentSearch={contentSearch}
                     handleContentSearch={handleContentSearch}
+                    placeholder={placeholderSearch}
                 />
                 {
                     barcode ?

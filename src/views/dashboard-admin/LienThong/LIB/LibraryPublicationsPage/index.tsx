@@ -78,11 +78,31 @@ const LibraryPublicationsPage = () => {
         page,
         ...filter,
     });
+    const filterByLibId = useMemo(
+        () =>
+            parserParams([
+                { compare: 0, target: { libraryId: selectedLibrary } },
+            ]),
+        [selectedLibrary]
+    );
+
     const { data: libraryData } = useFetchLibrariesFromGroup();
-    const { data: categoryData } = useFetchCategoryLink();
-    const { data: materialData } = useFetchMaterialLink();
-    const { data: authorData } = useFetchAuthorLink();
-    const { data: publisherData } = useFetchPublisherLink();
+    const { data: categoryData } = useFetchCategoryLink({
+        limit,
+        page, ...filterByLibId
+    });
+    const { data: materialData } = useFetchMaterialLink({
+        limit,
+        page, ...filterByLibId
+    });
+    const { data: authorData } = useFetchAuthorLink({
+        limit,
+        page, ...filterByLibId
+    });
+    const { data: publisherData } = useFetchPublisherLink({
+        limit,
+        page, ...filterByLibId
+    });
     const [openViewDetails, setOpenViewDetails] = useState(false);
     const [publicationsDetails, setPublicationsDetails] = useState<TPublications | null>(null);
     const dispatch = useDispatch();
@@ -354,6 +374,9 @@ const LibraryPublicationsPage = () => {
         return [];
     }, []);
 
+    console.log(selectedLibrary);
+    
+
     return (
         <div>
             <IBreadcrumsCustom
@@ -387,18 +410,20 @@ const LibraryPublicationsPage = () => {
                     selectedPublications={selectedPublications}
                     handlePublicationsFilterChange={handlePublicationsFilterChange}
                     typeOptions={typeOptions}
-                    selectedMaterial={selectedMaterial}
-                    handleMaterialFilterChange={handleMaterialFilterChange}
-                    materialData={materialData}
-                    selectedCategory={selectedCategory}
-                    handleCategoryFilterChange={handleCategoryFilterChange}
-                    categoryData={categoryData}
-                    selectedAuthor={selectedAuthor}
-                    handleAuthorFilterChange={handleAuthorFilterChange}
-                    authorData={authorData}
-                    selectedPublisher={selectedPublisher}
-                    handlePublisherFilterChange={handlePublisherFilterChange}
-                    publisherData={publisherData}
+                    {...(selectedLibrary !== 0 && {
+                        selectedMaterial,
+                        handleMaterialFilterChange,
+                        materialData,
+                        selectedCategory,
+                        handleCategoryFilterChange,
+                        categoryData,
+                        selectedAuthor,
+                        handleAuthorFilterChange,
+                        authorData,
+                        selectedPublisher,
+                        handlePublisherFilterChange,
+                        publisherData,
+                    })}
                 />
                 <TableList
                     columns={columns}

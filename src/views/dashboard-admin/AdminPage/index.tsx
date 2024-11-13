@@ -23,7 +23,7 @@ const headCells: HeadCell[] = [
         id: 'user_name',
         numeric: false,
         disablePadding: true,
-        label: 'Tên tài khoản',
+        label: 'Họ tên',
     },
     {
         id: 'user_phoneNumber',

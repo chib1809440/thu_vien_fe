@@ -18,6 +18,7 @@ import { formatDate } from "../../../helpers/formatDate";
 import { useUser } from "../../../hooks/react-query/userData";
 import { User } from "../../../interfaces/user";
 import PrintAccount from "../../../views/dashboard-admin/SystemPage/AccountPage/PrintAccount";
+import ca from "date-fns/esm/locale/ca/index.js";
 
 interface DialogProps {
     id?: string,
@@ -40,7 +41,7 @@ export default function AccountDetailDialog({ title, maxWidth, id, content, acti
         pageStyle: `
         @page {
             margin: 10mm; /* Thiết lập margin */
-            size: A6; /* Thiết lập kích thước */
+            size: A4; /* Thiết lập kích thước */
         }
         body {
             margin: 0; /* Đảm bảo không có margin thừa */
@@ -85,7 +86,7 @@ export default function AccountDetailDialog({ title, maxWidth, id, content, acti
                                         fontSize={10}
                                     />
                                 </div>
-                                <Typography sx={{ mb: 3 }}><strong>Họ và tên:</strong>  {userDetail?.data?.result?.fullname}</Typography>
+                                <Typography sx={{ mb: 3 }}><strong>Họ và tên:</strong>  {capitalizeFirstLetter(userDetail?.data?.result?.fullname)}</Typography>
                                 <Typography sx={{ mb: 3 }}><strong>Email:</strong> {userDetail?.data?.result?.email}</Typography>
                                 <Typography sx={{ mb: 3 }}><strong>Số điện thoại:</strong> {userDetail?.data?.result?.phoneNumber}</Typography>
                                 <Typography sx={{ mb: 3 }}><strong>Giới tính:</strong> {capitalizeFirstLetter(userDetail?.data?.result?.gender)}</Typography>

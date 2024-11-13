@@ -84,7 +84,7 @@ const FormAddEditLibrary: FC<Props> = ({
                         />
                         <InputForm
                             type="number"
-                            label="Dung lượng bộ nhớ"
+                            label="Dung lượng bộ nhớ (GB)"
                             placeholder="Dung lượng bộ nhớ"
                             error={touched.maxStorageLimit && Boolean(errors.maxStorageLimit)}
                             helperText={touched.maxStorageLimit && errors.maxStorageLimit}

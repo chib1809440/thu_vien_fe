@@ -149,21 +149,6 @@ const LibraryPage = () => {
                 },
             },
             {
-                id: "group",
-                disablePadding: "none",
-                label: "Nhóm",
-                align: "left",
-                sxRow: { maxWidth: 150 },
-                render: (row) => {
-                    return (
-                        <Box>
-                            {row?.groupId !== null ? "Đã có nhóm" : "Chưa có nhóm"}
-
-                        </Box >
-                    )
-                },
-            },
-            {
                 id: "address",
                 disablePadding: "none",
                 label: "Thông tin",
@@ -174,17 +159,19 @@ const LibraryPage = () => {
                         <Box>
                             {
                                 row?.phoneNumber &&
-                                <Box>
+                                <Box sx={{ display: "flex", alignItems: "center", pt: 0.5 }}>
                                     <Typography> Số điện thoại: <strong>{row?.phoneNumber}</strong></Typography>
                                 </Box>
                             }
                             {
                                 row?.email &&
-                                <Box>
+                                <Box sx={{ display: "flex", alignItems: "center", pt: 0.5 }}>
                                     <Typography> Email: <strong>{row?.email}</strong></Typography>
                                 </Box>
                             }
-
+                            <Box sx={{ display: "flex", alignItems: "center", pt: 0.5 }}>
+                                <Typography> Nhóm: <strong>{row?.groupId !== null ? "Đã có nhóm" : "Chưa có nhóm"}</strong></Typography>
+                            </Box>
                         </Box >
                     )
                 },

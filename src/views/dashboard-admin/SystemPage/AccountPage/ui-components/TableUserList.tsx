@@ -36,6 +36,7 @@ import { statusRole } from "../../../../../utils/constants.utils";
 import { Lock, LockOpen } from "@mui/icons-material";
 import { activeUser, blockUser } from "../../../../../_apis/user.api";
 import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
+import { useAuth } from "../../../../../contexts/JWTContext";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -406,7 +407,7 @@ function TableUserList<T extends DataType>({
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.barcode}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4, p: 2 }}>
                                                             <Box sx={{ display: "flex", alignItems: "center" }}>
-                                                                Họ tên: <Typography ml={1} fontWeight={600}>{row?.fullname}</Typography>
+                                                                Họ tên: <Typography ml={1} fontWeight={600}>{capitalizeFirstLetter(row?.fullname)}</Typography>
                                                             </Box>
                                                             <Box sx={{ display: "flex", alignItems: "center" }}>
                                                                 Số điện thoại: <Typography ml={1} fontWeight={600}>{row?.phoneNumber}</Typography>
@@ -433,7 +434,11 @@ function TableUserList<T extends DataType>({
                                                                             <IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} />
                                                                             <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
                                                                             <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
-                                                                            <LockOpen onClick={() => handleClickBlock(row?._id)} />
+                                                                                {
+                                                                                    (user?.roleId as Role)?.name !== "Super Admin" &&
+                                                                                    <LockOpen onClick={() => handleClickBlock(row?._id)} />
+                                                                                }
+                                                                            
                                                                         </Box>
                                                                     </StyledTableCell>
                                                                 ) :

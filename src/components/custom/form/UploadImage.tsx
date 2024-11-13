@@ -16,6 +16,7 @@ type UploadAvatarProps = {
     defaultImage?: string;
     onChange?: (file: File) => void;
     typeHardPublications?: boolean;
+    avatar?: boolean;
     fileName?: string;
     error?: ReactNode;
 };

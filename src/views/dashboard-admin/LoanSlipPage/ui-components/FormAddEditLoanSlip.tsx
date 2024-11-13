@@ -183,7 +183,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
                 const createLoanSlip: TLoanSlipCreate = {
                     note: values.note,
-                    ...(isEditMode ? {} : { userId: roleName === "Owner" ? userData?.data?.result?._id : userId }), // Conditionally include userId
+                    ...(isEditMode ? {} : { userId: (roleName === "Owner" || roleName === "Admin") ? userData?.data?.result?._id : userId }), // Conditionally include userId
                     borrowedDay: borrowedDay.toDateString(),
                     returnDay: returnDay.toDateString(),
                     isPrint: false,

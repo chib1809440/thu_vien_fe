@@ -51,10 +51,12 @@ export default function HomePage() {
             </Typography>
             <Grid container spacing={2} sx={{ mt: 1 }}>
                 <Grid item xs={3}>
-                    <TotalCard title={getLabelFromOptions(typeOptions, statisticals?.data?.result?.totalPublication[0]?.type)} count={statisticals?.data?.result?.totalPublication[0]?.count} icon={IconBook} bgColor="#1e88e5" bgColorIcon="#014ea6" />
+                    <TotalCard title={getLabelFromOptions(typeOptions, statisticals?.data?.result?.totalPublication[0]?.type) || "Ấn phẩm truyền thống"}
+                        count={statisticals?.data?.result?.totalPublication[0]?.count ?? 0} icon={IconBook} bgColor="#1e88e5" bgColorIcon="#014ea6" />
                 </Grid>
                 <Grid item xs={3}>
-                    <TotalCard title={getLabelFromOptions(typeOptions, statisticals?.data?.result?.totalPublication[1]?.type)} count={statisticals?.data?.result?.totalPublication[1]?.count} icon={IconBook} bgColor="#ff4d4d" bgColorIcon="#cc0000" />
+                    <TotalCard title={getLabelFromOptions(typeOptions, statisticals?.data?.result?.totalPublication[1]?.type) || "Ấn phẩm mềm"}
+                        count={statisticals?.data?.result?.totalPublication[1]?.count ?? 0} icon={IconBook} bgColor="#ff4d4d" bgColorIcon="#cc0000" />
                 </Grid>
                 <Grid item xs={3}>
                     <TotalCard title="Số lượng sách có sẵn" count={statisticals?.data?.result?.totalBorrowable} icon={IconBook} bgColor="#ffb84d" bgColorIcon="#cc7a00" />

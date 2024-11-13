@@ -37,6 +37,7 @@ import { Lock, LockOpen } from "@mui/icons-material";
 import { activeUser, blockUser } from "../../../../../_apis/user.api";
 import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
 import { useAuth } from "../../../../../contexts/JWTContext";
+import usePermission from "../../../../../utils/hasPermission";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -82,7 +83,8 @@ function TableUserList<T extends DataType>({
         useUserList(page, rowsPerPage, debouncedSearch, filterRoleId);
     useEffect(() => {
         refetch()
-    }, [filterRoleId])
+    }, [filterRoleId]);
+    const { hasPermission } = usePermission()
 
     const { mutate: softDeleteUser, isPending: isPendingUpdate } = useSoftDeleteUser();
     const { mutate: softDeleteUserSelected } = useDeleteUserSelected();
@@ -435,7 +437,10 @@ function TableUserList<T extends DataType>({
                                                                             <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
                                                                             <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
                                                                                 {
-                                                                                    (user?.roleId as Role)?.name !== "Super Admin" &&
+                                                                                     hasPermission([
+                                                                                        { resource: "all", action: "manage" },
+                                                                                        { resource: "activeaccounts", action: "update" },
+                                                                                    ]) && (user?.roleId as Role)?.name !== "Super Admin" &&
                                                                                     <LockOpen onClick={() => handleClickBlock(row?._id)} />
                                                                                 }
                                                                             

@@ -675,7 +675,7 @@ const LoanSlipRequestLink = () => {
                         </Box>
                     </Box>
                 </Stack> */}
-                <ActionsForm actions={actionMenus} barcode={true}
+                <ActionsForm placeholderSearch="Tìm kiếm theo barcode người mượn" actions={actionMenus} barcode={true}
                     barcodeSearch={barcodeSearch}
                     handleBarcodeSearch={handleBarcodeSearch} placeholder="Tìm kiếm theo barcode" />
                 <Grid container pl={4} pr={4} xs={12} sm={12} md={12} lg={12} gap={2} sx={{ display: "flex", mb: 3, flexWrap: "wrap" }}>

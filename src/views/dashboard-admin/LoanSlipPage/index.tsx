@@ -432,7 +432,7 @@ const LoanSlipPage = () => {
                                 stroke={1.5}
                             />
                             {
-                                ((row.status !== "chờ nhận sách" || roleName === "Owner" || roleName === "Admin") &&
+                                ((row.status !== "chờ nhận sách" || roleName === "Owner" || roleName === "Admin") && row.status !== "đã hủy" &&
                                     (row.isAgree === false || roleName === "Owner" || roleName === "Admin")) && (
                                     <IconPencil
                                         onClick={() => handleEditLoanSlip(row)}
@@ -443,7 +443,7 @@ const LoanSlipPage = () => {
                             }
 
                             {
-                                row.status !== "chờ nhận sách" && row.isAgree === false &&
+                                row.status !== "chờ nhận sách" && row.isAgree === false && row.status !== "đã hủy" &&
                                 <IconTrash
                                     size={20}
                                     stroke={1.5}

@@ -166,7 +166,7 @@ const ViewDetailLoanSlip: FC<Props> = ({
                                                     {row?.quantityLoan || "Không có dữ liệu"}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left">
-                                                    {(row?.quantityReturn) || "Không có dữ liệu"}
+                                                    {(row?.quantityReturn) || "0"}
                                                 </StyledTableCell>
                                             </StyledTableRow>
                                         ))}

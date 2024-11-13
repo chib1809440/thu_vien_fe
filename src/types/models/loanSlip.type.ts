@@ -20,7 +20,7 @@ export type TLoanSlip = TEntityAbstract & {
     historys: {
         barcode: string;
         historyDate: string;
-        name: string;
+        name: string;   
         position: string;
         publicationId: string;
         quantityLoan: number;

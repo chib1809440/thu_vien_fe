@@ -558,6 +558,11 @@ const FormAddEditPublications: FC<Props> = ({
                                 values.type === "ấn phẩm cứng" ? true : values?.isPublic ?? false
                             }
                             onChange={(checked) => {
+                                if (values.isLink) {
+                                    toast.warn("Không thể thay đổi trạng thái chia sẻ lên thư viện khi liên thông đã được bật.");
+                                    return;
+                                }
+
                                 if (values.type === "ấn phẩm cứng") {
                                     setFieldValue("isPublic", true);
                                 } else {
@@ -565,7 +570,7 @@ const FormAddEditPublications: FC<Props> = ({
                                 }
                             }}
                             label="Chia sẻ lên thư viện"
-                            disable={values.type === "ấn phẩm cứng"}
+                            disable={values.type === "ấn phẩm cứng" || values.isLink}
                         />
 
                         <SwitchForm

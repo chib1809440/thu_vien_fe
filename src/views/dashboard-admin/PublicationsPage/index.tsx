@@ -1,4 +1,4 @@
-import { Chip, Switch, Typography } from "@mui/material";
+import { Chip, Switch, Tooltip, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconBook, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconEye, IconFileDownload, IconFileUpload, IconFileWord, IconPdf, IconPhoto, IconPresentation, IconTrashXFilled, IconVideo } from "@tabler/icons-react";
@@ -563,11 +563,13 @@ const PublicationsPage = () => {
                         >
                             {
                                 row?.type === "ấn phẩm cứng" && (
-                                    <IconPlus
-                                        size={25}
-                                        stroke={1.5}
-                                        onClick={() => handleAddItem(row)}
-                                    />
+                                    <Tooltip title="Mượn ấn phẩm" arrow placement="top">
+                                        <IconPlus
+                                            size={25}
+                                            stroke={1.5}
+                                            onClick={() => handleAddItem(row)}
+                                        />
+                                    </Tooltip>
                                 )
                             }
                             <IconEye

@@ -439,7 +439,11 @@ const dashboardAdmin = {
             }, {
                 "resource": "loanslips",
                 "action": "manage"
-            }],
+            },{
+                "resource": "publications",
+                "action": "read"
+            }
+        ],
         },
     ]
 };
@@ -525,6 +529,13 @@ export const dashboardAdminV2 = {
             breadcrumbs: false,
             type: 'collapse',
             icon: icons.IconBrowser,
+            permissions: [{
+                "resource": "publications",
+                "action": "manage"
+            },{
+                "resource": "publications",
+                "action": "create"
+            }],
             children: [
                 {
                     // mượn trường khác

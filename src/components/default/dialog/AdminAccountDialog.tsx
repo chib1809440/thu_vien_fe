@@ -128,16 +128,6 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
 
         }
     };
-    const { logout, user: userAuth } = useAuth();
-    useEffect(() => {
-        if (!userAuth) return null;
-
-        const _userAuth = { ...userAuth } as any;
-        if (!user) {
-            let school = _userAuth?.data?.libraryDetail.name;
-            formik.setFieldValue("school", school)
-        }
-    }, [userAuth]);
     const { mutate: createAdminAccount, isPending: isPendingInsert, isSuccess } = useCreateAdminAccount(onSuccess, OnError);
     const { mutate: updateAdminAccount, isPending: isPendingUpdate } = useUpdateAdminAccount(onSuccess, OnError);
     const formik = useFormik({
@@ -200,7 +190,15 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
             });
         }
     }, [user]);
-
+    useEffect(() => {
+        // Kiểm tra xem defaulValue có tồn tại hay không trước khi cập nhật giá trị mặc định của formik
+        if (formik?.values?.libraryId) {
+            const library = libraries?.data?.result?.find((x: TLibrary) => x._id === formik?.values?.libraryId);
+            if (library) {
+                formik.setFieldValue("school", library.name)
+            }
+        }
+    }, [formik?.values?.libraryId]);
     const onHandleClose = () => {
         handleOpen(false);
         if (id) {

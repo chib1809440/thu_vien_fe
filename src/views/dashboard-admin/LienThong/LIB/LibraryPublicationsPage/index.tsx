@@ -353,7 +353,7 @@ const LibraryPublicationsPage = () => {
                                 onClick={() => handleViewDetails(row)}
                             />
                             {
-                                row?.libraryDetails && row.libraryDetails._id !== libraryId && (
+                                row.type === "ấn phẩm cứng" && row?.libraryDetails && row.libraryDetails._id !== libraryId && (
                                     <IconPlus
                                         size={25}
                                         stroke={1.5}
@@ -375,7 +375,7 @@ const LibraryPublicationsPage = () => {
     }, []);
 
     console.log(selectedLibrary);
-    
+
 
     return (
         <div>

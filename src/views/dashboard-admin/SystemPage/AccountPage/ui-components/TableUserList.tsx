@@ -313,7 +313,7 @@ function TableUserList<T extends DataType>({
             }
         }
     }
-
+   
     return (
         <>
             {isOpenLibCard && <PrintAccount ref={componentRef} dataUsers={checkedUsers} />}
@@ -436,14 +436,14 @@ function TableUserList<T extends DataType>({
                                                                             <IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} />
                                                                             <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
                                                                             <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
-                                                                                {
-                                                                                     hasPermission([
-                                                                                        { resource: "all", action: "manage" },
-                                                                                        { resource: "activeaccounts", action: "update" },
-                                                                                    ]) && (user?.roleId as Role)?.name !== "Super Admin" &&
-                                                                                    <LockOpen onClick={() => handleClickBlock(row?._id)} />
-                                                                                }
-                                                                            
+                                                                            {
+                                                                                hasPermission([
+                                                                                    { resource: "all", action: "manage" },
+                                                                                    { resource: "activeaccounts", action: "update" },
+                                                                                ]) && (user?.roleId as Role)?.name !== "Super Admin" &&
+                                                                                <LockOpen onClick={() => handleClickBlock(row?._id)} />
+                                                                            }
+
                                                                         </Box>
                                                                     </StyledTableCell>
                                                                 ) :
@@ -570,7 +570,7 @@ function TableUserList<T extends DataType>({
             {
                 isOpenConfirmDialog && <AlertConfirmDialog title="Xác nhận xóa dữ liệu?" message="Dữ liệu đã xóa thì không khôi khục được" onHandleConfirm={handleConfirmDeleteItem} openConfirm={isOpenConfirmDialog} handleOpenConfirmDialog={setIsOpenConfirmDialog} />
             }
-             {
+            {
                 isBlock && <AlertConfirmDialog title="Xác nhận khóa tài khoản?" onHandleConfirm={handleBlockUser} openConfirm={isBlock} handleOpenConfirmDialog={setIsBlock} />
             }
             {

@@ -168,7 +168,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
             }
             // Hàm kiểm tra điều kiện người mượn
             const validateBorrower = () => {
-                if (roleName === "Owner" && !userData?.data?.result?._id) {
+                if ((roleName === "Owner" || roleName === "Admin") && !userData?.data?.result?._id) {
                     toast.error('Vui lòng quét barcode thông tin người mượn');
                     return true; // Trả về true nếu có lỗi
                 }
@@ -782,10 +782,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                     <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell></>
                                             }
                                             {
-                                                loanSlip?.isAgree === false && <>  <StyledTableCell align="left" width='15%'>Số lượng trong kho</StyledTableCell>
-                                                    <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell></>
-                                            }
-                                            {
 
                                                 isEditMode ? <>  <StyledTableCell align="left" width='10%'>Số lượng mượn</StyledTableCell></> : <> </>
                                             }
@@ -862,14 +858,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                             {row.shelvesQuantity}
                                                         </StyledTableCell></>
                                                 }
-                                                {
-                                                    loanSlip?.isAgree === false && <> <StyledTableCell align="left">
-                                                        {row.quantity}
-                                                    </StyledTableCell>
-                                                        <StyledTableCell align="left">
-                                                            {row.shelvesQuantity}
-                                                        </StyledTableCell></>
-                                                }
+
                                                 {
                                                     isEditMode && loanSlip?.isAgree === true && <>
                                                         <StyledTableCell align="left">

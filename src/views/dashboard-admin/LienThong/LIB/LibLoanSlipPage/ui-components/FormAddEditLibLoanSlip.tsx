@@ -170,7 +170,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
             }
         },
     });
-    console.log('user', user);
 
     const { errors, touched, values, setFieldValue, handleSubmit, getFieldProps } = useMemo(
         () => formik,
@@ -420,6 +419,8 @@ const FormAddEditLoanSlip: FC<Props> = ({
         ]);
 
     };
+    console.log('dsds', publications);
+
     const handlePublicationChange = (
         event: any,
         value: CreatePublication | null,
@@ -690,10 +691,10 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                     isEditMode === false && <>  <StyledTableCell align="left" width='15%'>Số lượng trong kho</StyledTableCell>
                                                         <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell></>
                                                 }
-                                                {
+                                                {/* {
                                                     loanSlip?.isAgree === false && <>  <StyledTableCell align="left" width='15%'>Số lượng trong kho</StyledTableCell>
                                                         <StyledTableCell align="left" width='15%'>Số lượng trên kệ</StyledTableCell></>
-                                                }
+                                                } */}
                                                 {
 
                                                     isEditMode ? <>  <StyledTableCell align="left" width='10%'>Số lượng mượn</StyledTableCell></> : <> </>
@@ -760,14 +761,14 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                                 {row.shelvesQuantity}
                                                             </StyledTableCell></>
                                                     }
-                                                    {
+                                                    {/* {
                                                         loanSlip?.isAgree === false && <>   <StyledTableCell align="left">
                                                             {row.quantity}
                                                         </StyledTableCell>
                                                             <StyledTableCell align="left">
                                                                 {row.shelvesQuantity}
                                                             </StyledTableCell></>
-                                                    }
+                                                    } */}
                                                     {
                                                         isEditMode && loanSlip?.isAgree === true && <>
                                                             <StyledTableCell align="left">
@@ -826,9 +827,10 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                                         placeholder="Số lượng"
                                                                         value={row.quantityLoan}
                                                                         onChange={(e) => {
-                                                                            const updatedPublications = [...publications];
-                                                                            updatedPublications[index].quantityLoan = Number(e.target.value);
-                                                                            setPublications(updatedPublications);
+                                                                            let updatedPublications = [...publications];
+                                                                            updatedPublications[index] = { ...updatedPublications[index] }; // Create a copy of the specific item
+                                                                            updatedPublications[index].quantityLoan = Number(e.target.value); // Modify the copy
+                                                                            setPublications(updatedPublications); // Update the state
                                                                         }}
                                                                     />
                                                                 </Box>

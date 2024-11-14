@@ -32,7 +32,7 @@ export type TLoanSlip = TEntityAbstract & {
 export type CreatePublication = {
     publicationId: string;
     name: string;
-    quantityLoan: number;
+    quantityLoan?: number;
     quantity: number,
     shelvesQuantity: number,
     position: string;

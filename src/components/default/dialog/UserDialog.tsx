@@ -54,6 +54,7 @@ import { useRoleList } from "../../../hooks/react-query/roleData";
 import { Role } from "../../../interfaces/role";
 import { getLabelFromOptions } from "../../../utils/object";
 import { statusRole } from "../../../utils/constants.utils";
+import useAuth from "../../../hooks/useAuth";
 export const validationUtilizedObjectSchema = yup.object({
     fullname: yup.string().required("Vui lòng nhập họ và tên"),
     email: yup.string().email("Vui lòng nhập đúng định dạng email"),
@@ -106,6 +107,8 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
         }
         event.target.value = null;
     };
+
+
     const handleRemoveAvatar = () => {
         setAvatarPreview(null); // Reset hình ảnh xem trước
         setAvatarFile(null); // Reset hình ảnh xem trước
@@ -205,7 +208,16 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
             });
         }
     }, [user]);
+    const { logout, user: userAuth } = useAuth();
+    useEffect(() => {
+        if (!userAuth) return null;
 
+        const _userAuth = { ...userAuth } as any;
+        if (!user) {
+            let school = _userAuth?.data?.libraryDetail.name;
+            formik.setFieldValue("school", school)
+        }
+    }, [userAuth]);
     const onHandleClose = () => {
         handleOpen(false);
         if (id) {
@@ -495,6 +507,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                                         formik.touched.school &&
                                                         Boolean(formik.errors.school)
                                                     }
+                                                    disabled
                                                 />
                                                 {formik.touched.school &&
                                                     Boolean(formik.errors.school) && (

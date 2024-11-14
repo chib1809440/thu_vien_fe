@@ -1,6 +1,6 @@
 import { Button, Chip, Switch, useTheme } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
+import { IconEye, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconTrashXFilled } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
@@ -24,6 +24,7 @@ import { useApprovalLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-m
 import usePermission from "../../../utils/hasPermission";
 import { formatDate } from "../../../helpers/formatDate";
 import { TPublications } from "../../../types/models/publications.type";
+import ViewDetailWareHouseReceipt from "./ui-components/ViewDetailWareHouse";
 
 
 const WareHouseReceiptPage = () => {
@@ -47,6 +48,8 @@ const WareHouseReceiptPage = () => {
     const { hasPermission } = usePermission();
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
+    const [wareHouseReceiptsDetails, setWareHouseReceiptDetails] = useState<TWareHouseReceipt | null>(null);
+    const [openViewDetail, setOpenViewDetail] = useState(false);
 
     const addWareHouseReceipt = () => {
         setOpenAddEdit(true);
@@ -68,7 +71,10 @@ const WareHouseReceiptPage = () => {
         setOpenAddEdit(false);
         setSelectedEdit(null);
     };
-
+    const handleCloseViewDetail = () => {
+        setOpenViewDetail(false);
+        setWareHouseReceiptToDelete(null);
+    };
     const handleSubmit = (values: TWareHouseReceiptCreate) => {
         if (selectedEdit) {
             mutationEdit.mutate(
@@ -113,7 +119,10 @@ const WareHouseReceiptPage = () => {
     const handleCloseConfirmDialog = () => {
         setOpenConfirmDialog(false);
     };
-
+    const handleViewDetails = (row: TWareHouseReceipt) => {
+        setWareHouseReceiptDetails(row);
+        setOpenViewDetail(true);
+    };
     const columns: TColumn<TWareHouseReceipt>[] = useMemo(
         () => [
             {
@@ -228,12 +237,18 @@ const WareHouseReceiptPage = () => {
                                 gap: 1,
                             }}
                         >
-                             {/* row.isAccept !== true && */}
+                            {/* row.isAccept !== true && */}
+                            <IconEye
+                                size={20}
+                                stroke={1.5}
+                                onClick={() => handleViewDetails(row)}
+                            />
                             {
                                 hasPermission([
                                     { resource: "warehousereceipts", action: "manage" },
                                     { resource: "warehousereceipts", action: "update" },
-                                ]) &&
+                                ]) && !row.isAccept &&
+
                                 <IconPencil
                                     onClick={() => handleEditWareHouseReceipt(row)}
                                     size={20}
@@ -421,6 +436,14 @@ const WareHouseReceiptPage = () => {
                     title="Xác nhận xóa các mục đã chọn?"
                     description={`Bạn có chắc chắn muốn xóa?`}
                 />
+
+                {openViewDetail && (
+                    <ViewDetailWareHouseReceipt
+                        open={openViewDetail}
+                        onClose={handleCloseViewDetail}
+                        wareHouseReceipt={wareHouseReceiptsDetails}
+                    />
+                )}
             </MainCard>
         </div>
     );

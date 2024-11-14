@@ -34,6 +34,7 @@ import { CreateAdminModel, User } from "../../../interfaces/user";
 import { TLibrary } from "../../../types/models/library.type";
 import { getLabelFromOptions } from '../../../utils/object';
 import { statusRole } from '../../../utils/constants.utils';
+import { useAuth } from '../../../contexts/JWTContext';
 export const validationUtilizedObjectSchema = yup.object({
     fullname: yup.string().required("Vui lòng nhập họ và tên"),
     email: yup.string().email("Vui lòng nhập đúng định dạng email"),
@@ -127,6 +128,16 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
 
         }
     };
+    const { logout, user: userAuth } = useAuth();
+    useEffect(() => {
+        if (!userAuth) return null;
+
+        const _userAuth = { ...userAuth } as any;
+        if (!user) {
+            let school = _userAuth?.data?.libraryDetail.name;
+            formik.setFieldValue("school", school)
+        }
+    }, [userAuth]);
     const { mutate: createAdminAccount, isPending: isPendingInsert, isSuccess } = useCreateAdminAccount(onSuccess, OnError);
     const { mutate: updateAdminAccount, isPending: isPendingUpdate } = useUpdateAdminAccount(onSuccess, OnError);
     const formik = useFormik({

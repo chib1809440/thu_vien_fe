@@ -4,6 +4,7 @@ import { FC, useMemo } from "react";
 import * as yup from "yup";
 import InputForm from "../../../../components/custom/form/InputForm";
 import { TLibraryCreate } from "../../../../types/models/library.type";
+import StyledButton from "../../../../components/default/button/StyledButton";
 
 type Props = {
     open: boolean;
@@ -16,7 +17,7 @@ type Props = {
 
 const schema = yup.object().shape({
     name: yup.string().required("Vui lòng nhập tên"),
-    maxStorageLimit: yup.string().required("Vui lòng nhập dung lượng bộ nhớ"),
+    maxStorageLimit: yup.number().required("Vui lòng nhập dung lượng bộ nhớ"),
     facebook: yup.string(),
     email: yup.string().email("Vui lòng nhập đúng định dạng email"),
     phoneNumber: yup.string().matches(/^[0-9]+$/, "Vui lòng nhập đúng định dạng số điện thoại"),
@@ -84,6 +85,7 @@ const FormAddEditLibrary: FC<Props> = ({
                         />
                         <InputForm
                             type="number"
+                            required
                             label="Dung lượng bộ nhớ (GB)"
                             placeholder="Dung lượng bộ nhớ"
                             error={touched.maxStorageLimit && Boolean(errors.maxStorageLimit)}
@@ -130,17 +132,18 @@ const FormAddEditLibrary: FC<Props> = ({
                 </DialogContent>
 
                 <DialogActions>
-                    <Button disabled={isFetching} onClick={onClose} color="error">
+                <Button disabled={isFetching} onClick={onClose} color="error" style={{ fontSize: 14 }}>
                         Huỷ
                     </Button>
-                    <Button
-                        disabled={isFetching}
-                        onClick={handleSubmit as () => void}
-                        variant="contained"
+                    <StyledButton
                         color="primary"
+                        size="small"
+                        variant="contained"
+                        onClick={handleSubmit as () => void}
+                        sx={{ paddingTop: 1.3, paddingBottom: 1.3 }}
                     >
-                        {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
-                    </Button>
+                        {isFetching ? "Đang thực hiện..." : isEditMode ? "Cập nhật" : "Thêm mới"}
+                    </StyledButton>
                 </DialogActions>
             </Dialog>
         </FormikProvider>

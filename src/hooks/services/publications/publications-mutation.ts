@@ -117,3 +117,25 @@ export const useUpdateStockQuantity = () => {
         },
     });
 };
+
+// updatelink
+export const useUpdateIsLink = () => {
+    return useMutation({
+        mutationFn: async (id: string) => {
+            return await publicationsService.patchLink(id);
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    });
+};
+export const useUpdateIsUnLink = () => {
+    return useMutation({
+        mutationFn: async (id: string) => {
+            return await publicationsService.patchUnLink(id);
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    });
+};

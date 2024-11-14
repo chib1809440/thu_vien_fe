@@ -1,15 +1,12 @@
-import React, { useState } from 'react';
 import { Box, Stack } from '@mui/system';
-import { IconPlus, IconTrash } from '@tabler/icons';
-import TableUserList from './ui-components/TableAdminList';
-import { useNavigate } from 'react-router-dom';
-import { useTheme } from '@mui/material';
+import { IconPlus } from '@tabler/icons';
+import { useState } from 'react';
 import { HeadCell } from '../../../components/custom/table/type';
+import StyledButton from '../../../components/default/button/StyledButton';
+import { CsFlexRowBetween } from '../../../components/default/flex';
+import { User } from '../../../interfaces/user';
 import IBreadcrumsCustom from '../../../ui-component/breadcrums';
 import MainCard from '../../../ui-component/cards/MainCard';
-import { CsFlexRowBetween } from '../../../components/default/flex';
-import StyledButton from '../../../components/default/button/StyledButton';
-import { User } from '../../../interfaces/user';
 import TableAdminList from './ui-components/TableAdminList';
 
 const headCells: HeadCell[] = [
@@ -20,28 +17,16 @@ const headCells: HeadCell[] = [
         label: 'Barcode',
     },
     {
-        id: 'user_name',
+        id: 'user_info',
         numeric: false,
         disablePadding: true,
-        label: 'Họ tên',
-    },
-    {
-        id: 'user_phoneNumber',
-        numeric: false,
-        disablePadding: true,
-        label: 'Số điện thoại',
+        label: 'Thông tin cá nhân',
     },
     {
         id: 'user_role',
         numeric: false,
         disablePadding: true,
         label: 'Vai trò',
-    },
-    {
-        id: 'user_libraryId',
-        numeric: false,
-        disablePadding: true,
-        label: 'Tên thư viện',
     },
     {
         id: 'action',
@@ -55,16 +40,11 @@ export default function AdminAccountPage() {
 
     const [isOpenAddDilog, setIsOpenAddDialog] = useState<boolean>(false);
     const [selected, setSelected] = useState<number[]>([]);
-    const theme = useTheme()
-    const navigate = useNavigate();
-    const handleClickNavigateTrash = () => {
-        navigate('/quan-ly-tai-khoan/thung-rac');
-    };
     return (
         <>
             <IBreadcrumsCustom
-                profile="Quản lý tài khoản admin"
-                mainProfile="Danh sách tài khoản admin"
+                profile="Quản lý tài khoản thủ thư"
+                mainProfile="Danh sách tài khoản thủ thư"
                 link="/he-thong/quan-ly-tai-khoan-admin"
             />
             <MainCard>
@@ -78,17 +58,8 @@ export default function AdminAccountPage() {
                                 variant="contained"
                                 onClick={() => setIsOpenAddDialog(true)}
                             >
-                                Thêm tài khoản Admin
+                                Thêm tài khoản thủ thư
                             </StyledButton>
-                            {/* <StyledButton
-                                sx={{ marginLeft: 2, backgroundColor: theme.palette.error.dark, color: theme.palette.common.white }}
-                                size="small"
-                                startIcon={<IconTrash stroke={2} />}
-                                variant="contained"
-                                onClick={() => handleClickNavigateTrash()}
-                            >
-                                Thùng rác
-                            </StyledButton> */}
                         </Box>
 
                     </CsFlexRowBetween>

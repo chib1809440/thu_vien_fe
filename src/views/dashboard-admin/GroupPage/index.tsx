@@ -36,7 +36,7 @@ const GroupPage = () => {
     const groupId = "";
 
     const { data, isLoading, isFetching } = useFetchGroup({ limit, page, search });
-    const { data: libsGroup } = useFetchLibrary({ groupId });
+    const { data: libsGroup } = useFetchLibrary({ groupId });    
     const { data: listRequestGroupFromAdmin } = useFetchRequestGroupFromAdmin();
     const [combinedLibraries, setCombinedLibraries] = useState<TLibrary[]>([]);
 
@@ -318,7 +318,9 @@ const GroupPage = () => {
 
                     const renderActions = () => (
                         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 1 }}>
-                            <IconEye size={20} stroke={1.5} onClick={() => handleViewDetails(row)} />
+                            {canManageGroups && (
+                                <IconEye size={20} stroke={1.5} onClick={() => handleViewDetails(row)} />
+                            )}
 
                             {canManageGroups && (
                                 <IconPencil size={20} stroke={1.5} onClick={() => handleEditGroup(row)} />
@@ -439,13 +441,13 @@ const GroupPage = () => {
 
     useEffect(() => {
         const libraries = [
-            ...(libsGroup?.data?.result || []),
+            ...(userRole === 'Owner' ? [] : libsGroup?.data?.result || []),
             ...(initialValues?.libraries || [])
         ].filter((item): item is TLibrary => typeof item !== 'string' && item !== null);
-
+    
         setCombinedLibraries(libraries);
-    }, [libsGroup, initialValues]);
-
+    }, [libsGroup, initialValues, userRole]);
+    
     return (
         <div>
             <IBreadcrumsCustom
@@ -490,7 +492,7 @@ const GroupPage = () => {
                                 userRole === "Owner" && (
 
                                     <Link to="/he-thong/quan-ly-tham-gia-nhom" style={{ textDecoration: 'none' }}>
-                                        
+
                                         <Box
                                             sx={{
                                                 background: "#a36e21",

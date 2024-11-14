@@ -24,6 +24,7 @@ import { TPublisher } from "../../../../types/models/publisher";
 import { statusOptions, typeOptions } from "../../../../utils/constants.utils";
 import FormAddCommonDialog from "./FormAddCommonDialog";
 import usePermission from "../../../../utils/hasPermission";
+import StyledButton from "../../../../components/default/button/StyledButton";
 
 type Props = {
     open: boolean;
@@ -590,17 +591,18 @@ const FormAddEditPublications: FC<Props> = ({
                 </DialogContent>
 
                 <DialogActions sx={{ pr: 6, pb: 2 }}>
-                    <Button disabled={isFetching} onClick={onClose} color="error">
+                    <Button disabled={isFetching} onClick={onClose} color="error" style={{ fontSize: 14 }}>
                         Huỷ
                     </Button>
-                    <Button
-                        disabled={isFetching}
-                        onClick={handleSubmit as () => void}
-                        variant="contained"
+                    <StyledButton
                         color="primary"
+                        size="small"
+                        variant="contained"
+                        onClick={handleSubmit as () => void}
+                        sx={{ paddingTop: 1.3, paddingBottom: 1.3 }}
                     >
                         {isFetching ? "Đang thực hiện..." : isEditMode ? "Cập nhật" : "Thêm mới"}
-                    </Button>
+                    </StyledButton>
                 </DialogActions>
             </Dialog>
 

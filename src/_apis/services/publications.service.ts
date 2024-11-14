@@ -48,6 +48,15 @@ class PublicationsService extends BaseApi {
             params,
         });
         return response.data as TApiMultipleRecords<DynamicType>;
+    };
+
+    public async patchLink(id: string) {
+        const response = await this.httpClient.patch(`${this.endpoint}/link/${id}`);
+        return response.data;
+    }
+    public async patchUnLink(id: string) {
+        const response = await this.httpClient.patch(`${this.endpoint}/unlink/${id}`);
+        return response.data;
     }
 }
 

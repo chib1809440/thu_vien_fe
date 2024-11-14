@@ -16,6 +16,7 @@ import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { ReactNode } from "react";
 import { IconCirclePlusFilled, IconPlus } from "@tabler/icons-react";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
+import StyledButton from "../../default/button/StyledButton";
 
 const LIMIT_TAGS = 3;
 const LIMIT_TEXT = 40;
@@ -32,6 +33,8 @@ type Props<Type> = {
     helperText?: ReactNode | string;
     onChange?: (value: Type[]) => void;
     handleAdd?: () => void;
+    handleAddLibAndAccount?: () => void;
+    handleAddAccount?: () => void;
     limitTags?: number;
     limitText?: number;
     noOptionsText?: string;
@@ -53,6 +56,8 @@ const AutocompleteForm = <Type extends Record<string, any>>({
     required,
     onChange,
     handleAdd,
+    handleAddLibAndAccount,
+    handleAddAccount,
     limitTags = LIMIT_TAGS,
     limitText = LIMIT_TEXT,
     noOptionsText = "Không có dữ liệu",
@@ -81,6 +86,33 @@ const AutocompleteForm = <Type extends Record<string, any>>({
                             stroke={1.5}
                         />
                     </Tooltip>
+                )}
+                {handleAddLibAndAccount && (
+                    <Box sx={{ gap: 2, mb: 0.5 }}>
+                        <StyledButton
+                            color="primary"
+                            size="small"
+                            variant="contained"
+                            startIcon={<IconPlus stroke={2} size={20} />}
+                            onClick={handleAddLibAndAccount}
+                            sx={{ marginRight: 2, marginLeft: 2 }}
+                        >
+                            Thêm thư viện
+                        </StyledButton>
+                        {
+                            handleAddAccount &&
+                            <StyledButton
+                                color="primary"
+                                size="small"
+                                variant="contained"
+                                startIcon={<IconPlus stroke={2} size={20} />}
+                                onClick={handleAddAccount}
+                            >
+                                Thêm tài khoản thủ thư
+                            </StyledButton>
+                        }
+
+                    </Box>
                 )}
             </Box>
 

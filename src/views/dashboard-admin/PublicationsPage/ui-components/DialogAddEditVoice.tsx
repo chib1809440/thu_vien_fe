@@ -70,7 +70,6 @@ const DialogAddEditVoice: FC<Props> = ({
     initialValues = {
         note: "",
         isPublic: true,
-        isLink: false,
         file: null,
         typeVoiceId: null,
         isPrivate: "false" as unknown as boolean,

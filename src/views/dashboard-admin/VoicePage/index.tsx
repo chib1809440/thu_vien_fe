@@ -1,4 +1,4 @@
-import { Switch, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconTrash } from "@tabler/icons";
 import { IconTrashXFilled } from "@tabler/icons-react";
@@ -9,8 +9,9 @@ import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
+import { useFetchTypeVoice } from "../../../hooks/services/type-voice/type-voice-query";
 import useQueryString from "../../../hooks/services/useQueryString";
-import { useDeleteSoftManyVoice, useDeleteSoftVoice, useEditVoice } from "../../../hooks/services/voice/voice-mutation";
+import { useDeleteSoftManyVoice, useDeleteSoftVoice } from "../../../hooks/services/voice/voice-mutation";
 import { useFetchVoice, useReFetchVoice } from "../../../hooks/services/voice/voice-query";
 import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TPublications } from "../../../types/models/publications.type";
@@ -19,11 +20,9 @@ import { TVoice } from "../../../types/models/voice";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { statusVoiceImage } from "../../../utils/constants.utils";
-import { getLabelFromOptions, parserParams } from "../../../utils/object";
-import { useFetchTypeVoice } from "../../../hooks/services/type-voice/type-voice-query";
-import FilterByItems from "../PublicationsPage/ui-components/FilterByItems";
-import { useAuth } from "../../../contexts/JWTContext";
 import usePermission from "../../../utils/hasPermission";
+import { getLabelFromOptions, parserParams } from "../../../utils/object";
+import FilterByItems from "../PublicationsPage/ui-components/FilterByItems";
 
 
 const VoicePage = () => {
@@ -34,14 +33,6 @@ const VoicePage = () => {
 
     const [barcodeSearch, setBarcodeSearch] = useState("");
     const [selectedTypeVoice, setSelectedTypeVoice] = useState(0);
-
-    const { user } = useAuth();
-
-    const userId = useMemo(() => {
-        if (!user) return null;
-        const _user = { ...user } as any;
-        return _user?.data?._id;
-    }, [user]);
 
     const filter = useMemo(
         () =>
@@ -58,7 +49,6 @@ const VoicePage = () => {
         ...filter,
     });
     const { data: typeVoiceData } = useFetchTypeVoice();
-    const mutationEdit = useEditVoice();
     const mutationSoftDelete = useDeleteSoftVoice();
     const mutationSoftDeleteMany = useDeleteSoftManyVoice();
     const revalidate = useReFetchVoice();
@@ -93,39 +83,7 @@ const VoicePage = () => {
     const handleBarcodeSearch = (value) => {
         setBarcodeSearch(value);
     };
-
-    const handleChangeShareConnect = (row: TVoice, checked: boolean) => {
-        if (!row.isPublic) {
-            toast.warn("Không thể thay đổi trạng thái liên thông vì chưa chia sẻ lên thư viện.");
-            return;
-        }
-
-        // TODO: update
-        mutationEdit.mutate(
-            { isLink: checked, _id: row._id },
-            {
-                onSuccess: (data) => {
-                    revalidate();
-                    toast.success("Cập nhật trạng thái thành công.");
-                },
-            }
-        );
-        return;
-    };
-
-    const handleChangePublic = (row: TVoice, checked: boolean) => {
-        // TODO: update
-        mutationEdit.mutate(
-            { isPublic: checked, _id: row._id },
-            {
-                onSuccess: (data) => {
-                    revalidate();
-                    toast.success("Cập nhật trạng thái thành công.");
-                },
-            }
-        );
-        return;
-    };
+    
     // loc
     const handleTypeVoiceFilterChange = (event) => {
         setSelectedTypeVoice(event.target.value);
@@ -190,7 +148,7 @@ const VoicePage = () => {
                                     </Box>
                                 )
                             }
-                            {
+                            {/* {
                                 hasPermission([
                                     { resource: "voices", action: "manage" },
                                     { resource: "voices", action: "update" },
@@ -205,38 +163,38 @@ const VoicePage = () => {
                                         />
                                     </Box>
                                 )
-                            }
+                            } */}
 
 
                         </>
                     );
                 },
             },
-            {
-                id: "isLink",
-                disablePadding: "none",
-                label: "Liên thông",
-                align: "center",
-                sxRow: {
-                    px: 3,
-                    maxWidth: 100,
-                },
-                render: (row) => {
-                    return (
-                        <Switch
-                            checked={row?.isLink}
-                            value={row?.isLink}
-                            onChange={(event) =>
-                                handleChangeShareConnect(row, event.target.checked)
-                            }
-                            disabled={hasPermission([
-                                { resource: "voices", action: "manage" },
-                                { resource: "voices", action: "update" },
-                            ]) ? false : true}
-                        />
-                    );
-                },
-            },
+            // {
+            //     id: "isLink",
+            //     disablePadding: "none",
+            //     label: "Liên thông",
+            //     align: "center",
+            //     sxRow: {
+            //         px: 3,
+            //         maxWidth: 100,
+            //     },
+            //     render: (row) => {
+            //         return (
+            //             <Switch
+            //                 checked={row?.isLink}
+            //                 value={row?.isLink}
+            //                 onChange={(event) =>
+            //                     handleChangeShareConnect(row, event.target.checked)
+            //                 }
+            //                 disabled={hasPermission([
+            //                     { resource: "voices", action: "manage" },
+            //                     { resource: "voices", action: "update" },
+            //                 ]) ? false : true}
+            //             />
+            //         );
+            //     },
+            // },
             {
                 id: "action",
                 disablePadding: "none",
@@ -269,7 +227,7 @@ const VoicePage = () => {
                 },
             },
         ],
-        [handleOpenConfirmDialog, handleChangePublic, handleChangeShareConnect]
+        [handleOpenConfirmDialog]
     );
 
     const handleCheckedDelete = useCallback((row: TVoice, checked: boolean) => {

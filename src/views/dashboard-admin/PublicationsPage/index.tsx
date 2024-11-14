@@ -22,6 +22,8 @@ import {
     useDeleteSoftManyPublications,
     useDeleteSoftPublications,
     useEditPublications,
+    useUpdateIsLink,
+    useUpdateIsUnLink,
 } from "../../../hooks/services/publications/publications-mutation";
 import {
     useFetchPublications,
@@ -139,12 +141,16 @@ const PublicationsPage = () => {
 
     const mutationAdd = useAddPublications();
     const mutationEdit = useEditPublications();
+    const mutationEditIsLink = useUpdateIsLink();
+    const mutationEditIsUnLink = useUpdateIsUnLink();
     const mutationSoftDelete = useDeleteSoftPublications();
     const mutationSoftDeleteMany = useDeleteSoftManyPublications();
     const revalidate = useReFetchPublications();
 
     const [openAddEdit, setOpenAddEdit] = useState(false);
+    const [openLink, setOpenLink] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TPublications | null>(null);
+    const [selectedEditIsLink, setSelectedIsLink] = useState<TPublications | null>(null);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [publicationsToDelete, setPublicationsToDelete] = useState<TPublications | null>(null);
 
@@ -232,22 +238,46 @@ const PublicationsPage = () => {
         setOpenConfirmDialog(false);
     };
 
-    const handleChangeShareConnect = (row: TPublications, checked: boolean) => {
-        if (!row.isPublic) {
+    const handleOpenConfirmLink = (row: TPublications) => {
+        setSelectedIsLink(row);
+        setOpenLink(true);
+    };
+    const handleCloseLink = () => {
+        setOpenLink(false);
+        setSelectedIsLink(null);
+    };
+
+    const handleChangeShareConnect = async () => {
+        console.log(selectedEditIsLink);
+
+        if (!selectedEditIsLink.isPublic) {
             toast.warn("Không thể thay đổi trạng thái liên thông vì chưa chia sẻ lên thư viện.");
             return;
         }
+        if (selectedEditIsLink?.isLink === false) {
 
-        // TODO: update
-        mutationEdit.mutate(
-            { isLink: checked, _id: row._id },
-            {
-                onSuccess: (data) => {
-                    revalidate();
-                    toast.success("Cập nhật trạng thái thành công.");
-                },
-            }
-        );
+            mutationEditIsLink.mutate(
+                selectedEditIsLink._id,
+                {
+                    onSuccess: () => {
+                        revalidate();
+                        toast.success("Chia sẽ liên thông thành công.");
+                        handleCloseLink();
+                    },
+                }
+            );
+        } else {
+            mutationEditIsUnLink.mutate(
+                selectedEditIsLink._id,
+                {
+                    onSuccess: () => {
+                        revalidate();
+                        toast.success("Hủy chia sẽ liên thông.");
+                        handleCloseLink();
+                    },
+                }
+            );
+        }
         return;
     };
 
@@ -518,18 +548,13 @@ const PublicationsPage = () => {
                     maxWidth: 100,
                 },
                 render: (row) => {
-                    if (userRole === "Student") {
-                        return null;
-                    }
 
                     return (
                         <Switch
                             checked={row?.isLink}
+                            onChange={() => handleOpenConfirmLink(row)}
                             value={row?.isLink}
-                            disabled={userRole === "Super Admin" ? true : false}
-                            onChange={(event) =>
-                                handleChangeShareConnect(row, event.target.checked)
-                            }
+                            disabled={(userRole === "Super Admin" || userRole === "Student") ? true : false}
                         />
                     );
                 },
@@ -955,6 +980,30 @@ const PublicationsPage = () => {
                     title="Xác nhận xóa các mục đã chọn?"
                     description={`Bạn có chắc chắn muốn xóa?`}
                 />
+                {
+                    selectedEditIsLink?.isLink === true ?
+                        (
+                            <ConfirmDeleteDialog
+                                key={"isUnLink"}
+                                open={openLink}
+                                onClose={() => setOpenLink(false)}
+                                onConfirm={handleChangeShareConnect}
+                                title="Xác nhận hủy chia sẽ?"
+                                description={`Bạn có chắc chắn muốn hủy?`}
+                            />
+                        )
+                        : (
+                            <ConfirmDeleteDialog
+                                key={"isLink"}
+                                open={openLink}
+                                onClose={() => setOpenLink(false)}
+                                onConfirm={handleChangeShareConnect}
+                                title="Xác nhận liên thông?"
+                                description={`Bạn có chắc chắn muốn chia sẽ?`}
+                            />
+                        )
+                }
+
 
                 <PublicationsDetailsDialog
                     open={openViewDetails}

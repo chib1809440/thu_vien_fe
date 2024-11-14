@@ -616,14 +616,15 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                 In
                             </Button>
                         }
-                        <Button
-                            disabled={isFetching}
-                            onClick={handleSubmit as () => void}
-                            variant="contained"
+                        <StyledButton
                             color="primary"
+                            size="small"
+                            variant="contained"
+                            onClick={handleSubmit as () => void}
+                            sx={{ paddingTop: 1.3, paddingBottom: 1.3 }}
                         >
-                            {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
-                        </Button>
+                            {isFetching ? "Đang thực hiện..." : isEditMode ? "Cập nhật" : "Thêm mới"}
+                        </StyledButton>
                     </DialogActions>
                 </Dialog>
             </FormikProvider>

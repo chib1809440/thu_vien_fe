@@ -32,6 +32,8 @@ import { ErrorResponse } from "../../../interfaces/errorResponse";
 import { Role } from "../../../interfaces/role";
 import { CreateAdminModel, User } from "../../../interfaces/user";
 import { TLibrary } from "../../../types/models/library.type";
+import { getLabelFromOptions } from '../../../utils/object';
+import { statusRole } from '../../../utils/constants.utils';
 export const validationUtilizedObjectSchema = yup.object({
     fullname: yup.string().required("Vui lòng nhập họ và tên"),
     email: yup.string().email("Vui lòng nhập đúng định dạng email"),
@@ -254,7 +256,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={12}>
+                                        <Grid item md={6}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Họ và tên <span className="required_text">(*)</span>{""}
@@ -283,9 +285,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                                                     )}
                                             </Box>
                                         </Grid>
-                                    </Grid>
-                                    <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={12}>
+                                        <Grid item md={6}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Số điện thoại <span className="required_text">(*)</span>{""}
@@ -316,7 +316,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                                         </Grid>
                                     </Grid>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={12}>
+                                        <Grid item md={6}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Email <span className="required_text">(*)</span>{""}
@@ -345,9 +345,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                                                     )}
                                             </Box>
                                         </Grid>
-                                    </Grid>
-                                    <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={12}>
+                                        <Grid item md={6}>
                                             <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                 Giới tính  <span className="required_text">(*)</span>{" "}
                                             </Typography>
@@ -436,7 +434,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                                         </Grid>
                                     </Grid>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={12}>
+                                        <Grid item md={6}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Lớp
@@ -465,9 +463,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                                                     )}
                                             </Box>
                                         </Grid>
-                                    </Grid>
-                                    <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={12}>
+                                        <Grid item md={6}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Trường
@@ -484,6 +480,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                                                         formik.touched.school &&
                                                         Boolean(formik.errors.school)
                                                     }
+                                                    disabled={true}
                                                 />
                                                 {formik.touched.school &&
                                                     Boolean(formik.errors.school) && (
@@ -498,32 +495,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                                         </Grid>
                                     </Grid>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={12}>
-                                            <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                                Địa chỉ    <span className="required_text">(*)</span>
-                                            </Typography>
-                                            <TextareaAutosize
-                                                id="address"
-                                                name="address"
-                                                value={formik.values.address}
-                                                onChange={formik.handleChange}
-                                                onBlur={formik.handleBlur}
-                                                minRows={4}
-                                            />
-                                            {formik.touched.address &&
-                                                Boolean(formik.errors.address) && (
-                                                    <FormHelperText className="required_text">
-                                                        {" "}
-                                                        {formik.errors.address
-                                                            ? formik.errors.address.toString()
-                                                            : ""}
-                                                    </FormHelperText>
-                                                )}
-                                        </Grid>
-                                    </Grid>
-
-                                    <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={12}>
+                                        <Grid item md={6}>
                                             <Box style={{ width: "100%" }} sx={{ mb: 1.5 }}>
                                                 <Typography sx={{ display: 'flex', alignItems: 'center', mb: 1.5, fontWeight: "bold" }}>
                                                     <span style={{ marginRight: '8px' }}>Vai trò</span>
@@ -550,7 +522,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                                                         {roles?.data?.result?.length > 0 ? (
                                                             roles.data.result.map((item, index) => (
                                                                 <MenuItem key={index} value={item._id}>
-                                                                    {item.name}
+                                                                    {getLabelFromOptions(statusRole, item.name)}
                                                                 </MenuItem>
                                                             ))
                                                         ) : (
@@ -572,7 +544,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                                                     )}
                                             </Box>
                                         </Grid>
-                                        <Grid item md={12}>
+                                        <Grid item md={6}>
                                             <Box style={{ width: "100%" }} sx={{ mb: 1.5 }}>
                                                 <Typography sx={{ display: 'flex', alignItems: 'center', mb: 1.5, fontWeight: "bold" }}>
                                                     <span style={{ marginRight: '8px' }}>Chọn thư viện</span>
@@ -614,6 +586,30 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                                                         </FormHelperText>
                                                     )}
                                             </Box>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container spacing={3} sx={{ mb: 1.5 }}>
+                                        <Grid item md={12}>
+                                            <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
+                                                Địa chỉ    <span className="required_text">(*)</span>
+                                            </Typography>
+                                            <TextareaAutosize
+                                                id="address"
+                                                name="address"
+                                                value={formik.values.address}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                minRows={4}
+                                            />
+                                            {formik.touched.address &&
+                                                Boolean(formik.errors.address) && (
+                                                    <FormHelperText className="required_text">
+                                                        {" "}
+                                                        {formik.errors.address
+                                                            ? formik.errors.address.toString()
+                                                            : ""}
+                                                    </FormHelperText>
+                                                )}
                                         </Grid>
                                     </Grid>
                                     {/* {

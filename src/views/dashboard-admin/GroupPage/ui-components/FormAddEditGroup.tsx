@@ -1,6 +1,6 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import * as yup from "yup";
 import AutocompleteForm from "../../../../components/custom/form/AutoCompleteForm";
 import InputForm from "../../../../components/custom/form/InputForm";
@@ -13,6 +13,9 @@ import { toast } from "react-toastify";
 import FormAddEditLibrary from "../../LibraryPage/ui-components/FormAddEditLibrary";
 import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 import usePermission from "../../../../utils/hasPermission";
+import StyledButton from "../../../../components/default/button/StyledButton";
+import AdminAccountDialog from "../../../../components/default/dialog/AdminAccountDialog";
+import { useRoleBySuperAdminList } from "../../../../hooks/react-query/roleData";
 
 type Props = {
     open: boolean;
@@ -50,9 +53,22 @@ const FormAddEditGroup: FC<Props> = ({
     isEditMode = false,
 }) => {
     const [openAdd, setOpenAdd] = useState(false);
+    const [openAddAccount, setOpenAddAccount] = useState<boolean>(false);
     const mutationAdd = useAddLibrary();
     const revalidate = useReFetchLibrary();
     const { hasPermission } = usePermission();
+    const { data: roles } = useRoleBySuperAdminList();
+    const [filterRoleId, setFilterRoleId] = useState<string | number>(null)
+    useEffect(() => {
+        if (roles?.data?.result.length > 0) {
+            // Tìm đối tượng có item.name là "Admin"
+            const adminRole = roles.data.result.find(item => item.name.trim() === "Admin");
+            if (adminRole) {
+                setFilterRoleId(adminRole._id)
+            } else {
+            }
+        }
+    }, [roles])
 
     const formik = useFormik<TGroupCreate>({
         initialValues,
@@ -105,6 +121,14 @@ const FormAddEditGroup: FC<Props> = ({
 
     return (
         <>
+            {
+                openAddAccount === true && <AdminAccountDialog
+                    title={"Thêm tài khoản Admin"}
+                    open={openAddAccount}
+                    roleId={filterRoleId as string}
+                    handleOpen={setOpenAddAccount}
+                />
+            }
             {openAdd && (
                 <FormAddEditLibrary
                     open={openAdd}
@@ -151,11 +175,12 @@ const FormAddEditGroup: FC<Props> = ({
                                 onChange={handleChangedLibs}
                                 error={touched.libraries && Boolean(errors.libraries)}
                                 helperText={touched.libraries && errors.libraries}
-                                handleAdd={ hasPermission([
+                                handleAddLibAndAccount={hasPermission([
                                     { resource: "all", action: "manage" },
-                                    { resource: "groups", action: "manage" },
-                                    { resource: "groups", action: "create" },
                                 ]) ? handleAddLibrary : null}
+                                handleAddAccount={hasPermission([
+                                    { resource: "all", action: "manage" },
+                                ]) ? () => setOpenAddAccount(true) : null}
                                 noOptionsText="Vui lòng thêm thư viện mới"
                             />
 
@@ -176,17 +201,18 @@ const FormAddEditGroup: FC<Props> = ({
                     </DialogContent>
 
                     <DialogActions>
-                        <Button disabled={isFetching} onClick={onClose} color="error">
+                        <Button disabled={isFetching} onClick={onClose} color="error" style={{ fontSize: 14 }}>
                             Huỷ
                         </Button>
-                        <Button
-                            disabled={isFetching}
-                            onClick={handleSubmit as () => void}
-                            variant="contained"
+                        <StyledButton
                             color="primary"
+                            size="small"
+                            variant="contained"
+                            onClick={handleSubmit as () => void}
+                            sx={{ paddingTop: 1.3, paddingBottom: 1.3 }}
                         >
-                            {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
-                        </Button>
+                            {isFetching ? "Đang thực hiện..." : isEditMode ? "Cập nhật" : "Thêm mới"}
+                        </StyledButton>
                     </DialogActions>
                 </Dialog>
             </FormikProvider>

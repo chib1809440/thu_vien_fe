@@ -34,3 +34,11 @@ export const statusRole = [
     { value: "Owner", label: 'Trưởng nhóm' },
     { value: "Super Admin", label: 'Super Admin' },
 ]
+
+export const typeMaterial = [
+    { value: "Video", label: 'Video' },
+    { value: "pdf", label: 'Sách tham khảo' },
+    { value: "img", label: 'Tranh ảnh' },
+    { value: "word", label: 'Kế hoạch bài dạy' },
+    { value: "ppt", label: 'Kế hoạch bài giảng' },
+]

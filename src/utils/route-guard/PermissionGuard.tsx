@@ -6,12 +6,10 @@ const PermissionGuard = ({ children, requiredPermissions }) => {
     const { user } = useAuth();
     const dataUser = useMemo(() => {
         if (!user) return null;
-
         const _user = { ...user } as any;
-
         return _user;
     }, [user]);
-    console.log('dsds', dataUser);
+    // console.log('dsds', dataUser);
 
     // Kiểm tra quyền truy cập
     const hasPermission = requiredPermissions.some(permission =>
@@ -22,10 +20,8 @@ const PermissionGuard = ({ children, requiredPermissions }) => {
         )
     );
 
-    console.log("hasPermission", requiredPermissions);
-    console.log("permissions", dataUser.data.roleId.permissions);
-
-    
+    // console.log("hasPermission", requiredPermissions);
+    // console.log("permissions", dataUser.data.roleId.permissions);
 
     if (!hasPermission) {
         return <Navigate to="/403" />;

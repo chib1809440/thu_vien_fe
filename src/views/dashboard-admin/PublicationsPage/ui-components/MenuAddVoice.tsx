@@ -155,12 +155,12 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
         };
 
         const playVoicesSequentially = (voices) => {
-            if (voices.length === 0) return;
+            if (voices?.length === 0) return;
 
             let currentVoiceIndex = 0;
 
             const playNextVoice = () => {
-                if (currentVoiceIndex < voices.length) {
+                if (currentVoiceIndex < voices?.length) {
                     const voice = voices[currentVoiceIndex];
                     const newAudio = new Audio(
                         `${process.env.REACT_APP_BASE_API_FILE_URL}/${voice.path}`
@@ -232,6 +232,9 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                 voices: sortedVoices,
             };
         });
+
+        console.log(voiceLinkData);
+        
         const canAddVoice = publicationsData?.createBy === currentUserId;
         const currentPath = window.location.pathname;
 
@@ -264,7 +267,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                     {canAddVoice && <Divider sx={{ margin: 0 }} />}
 
                     {currentPath === "/lien-thong" ? (
-                        filterByTypeVoiceIdPullLink.length > 0 ? (
+                        filterByTypeVoiceIdPullLink?.length > 0 ? (
                             filterByTypeVoiceIdPullLink.map((type) => (
                                 <li
                                     key={type._id}

@@ -69,13 +69,13 @@ const ProfileSection = () => {
         const _user = { ...user } as any;
         return _user?.data?.roleId;
     }, [user]);
+
     const roleName = useMemo(() => {
         if (!user) return null;
-
         const _user = { ...user } as any;
-
         return _user?.data?.roleId.name;
     }, [user]);
+
     const userID = useMemo(() => {
         if (!user) return null;
         const _user = { ...user } as any;
@@ -255,6 +255,7 @@ const ProfileSection = () => {
             },
         });
     };
+
     return (
         <Grid item>
             <Box sx={{ display: "flex", gap: 1 }}>
@@ -277,79 +278,82 @@ const ProfileSection = () => {
                         isCart={true}
                     />
                 )}
-                {location.pathname.includes("/lien-thong") ? (
-                    <Box
-                        sx={{
-                            mt: 1,
-                            position: 'relative',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            mr: 2
-                        }}
-                        onClick={handleSetOpenCart}
-                    >
-                        <IconShoppingCartFilled size={32} />
-                        {items?.length > 0 && ( // Show badge only if item count is greater than 0
-                            <Box
-                                sx={{
-                                    position: 'absolute',
-                                    top: -8,
-                                    right: -12,
-                                    bgcolor: 'black', // Badge background color
-                                    color: 'white', // Badge text color
-                                    borderRadius: '50%',
-                                    width: '20px', // Badge diameter
-                                    height: '20px', // Badge diameter
-                                    display: 'flex',
-                                    padding: 1,
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '20px', // Font size
-                                }}
-                            >
-                                <Typography variant="h5" sx={{ color: "white" }}>
-                                    {items.length}
-                                </Typography> {/* Display item count */}
-                            </Box>
-                        )}
-                    </Box>
-                ) : (
-                    <Box
-                        sx={{
-                            mt: 1,
-                            position: 'relative',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            mr: 2
-                        }}
-                        onClick={handleSetOpenInternalCart}
-                    >
-                        <IconShoppingCartFilled size={32} />
-                        {internalItems?.length > 0 && ( // Show badge only if item count is greater than 0
-                            <Box
-                                sx={{
-                                    position: 'absolute',
-                                    top: -8,
-                                    right: -12,
-                                    bgcolor: 'black', // Badge background color
-                                    color: 'white', // Badge text color
-                                    borderRadius: '50%',
-                                    width: '20px', // Badge diameter
-                                    height: '20px', // Badge diameter
-                                    display: 'flex',
-                                    padding: 1,
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '20px', // Font size
-                                }}
-                            >
-                                <Typography variant="h5" sx={{ color: "white" }}>
-                                    {internalItems.length}
-                                </Typography> {/* Display item count */}
-                            </Box>
-                        )}
-                    </Box>
+                {!(roleName === "Student" && location.pathname.includes("/lien-thong")) && (
+                    location.pathname.includes("/lien-thong") ? (
+                        <Box
+                            sx={{
+                                mt: 1,
+                                position: 'relative',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                mr: 2
+                            }}
+                            onClick={handleSetOpenCart}
+                        >
+                            <IconShoppingCartFilled size={32} />
+                            {items?.length > 0 && ( // Show badge only if item count is greater than 0
+                                <Box
+                                    sx={{
+                                        position: 'absolute',
+                                        top: -8,
+                                        right: -12,
+                                        bgcolor: 'black', // Badge background color
+                                        color: 'white', // Badge text color
+                                        borderRadius: '50%',
+                                        width: '20px', // Badge diameter
+                                        height: '20px', // Badge diameter
+                                        display: 'flex',
+                                        padding: 1,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '20px', // Font size
+                                    }}
+                                >
+                                    <Typography variant="h5" sx={{ color: "white" }}>
+                                        {items.length}
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Box>
+                    ) : (
+                        <Box
+                            sx={{
+                                mt: 1,
+                                position: 'relative',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                mr: 2
+                            }}
+                            onClick={handleSetOpenInternalCart}
+                        >
+                            <IconShoppingCartFilled size={32} />
+                            {internalItems?.length > 0 && ( // Show badge only if item count is greater than 0
+                                <Box
+                                    sx={{
+                                        position: 'absolute',
+                                        top: -8,
+                                        right: -12,
+                                        bgcolor: 'black', // Badge background color
+                                        color: 'white', // Badge text color
+                                        borderRadius: '50%',
+                                        width: '20px', // Badge diameter
+                                        height: '20px', // Badge diameter
+                                        display: 'flex',
+                                        padding: 1,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '20px', // Font size
+                                    }}
+                                >
+                                    <Typography variant="h5" sx={{ color: "white" }}>
+                                        {internalItems.length}
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Box>
+                    )
                 )}
+
                 <CsFlexRowBetween onClick={handleOpenUserMenu} gap={1}
                     sx={{
                         bgcolor: theme.palette.background.paper,

@@ -1,17 +1,26 @@
 import { Chip, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { IconBook } from "@tabler/icons";
-import { IconEye, IconFileWord, IconPdf, IconPhoto, IconPlus, IconPlusMinus, IconPresentation, IconVideo } from "@tabler/icons-react";
+import { IconEye, IconFileWord, IconPdf, IconPhoto, IconPlus, IconPresentation, IconVideo } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import ActionsForm from "../../../../../components/custom/form/ActionForm";
 import TableList from "../../../../../components/custom/table-list/TableList";
+import { useAuth } from "../../../../../contexts/JWTContext";
+import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
 import { useFetchAuthorLink } from "../../../../../hooks/services/author/author-query";
 import { useFetchCategoryLink } from "../../../../../hooks/services/category/category-query";
+import { useFetchLibrariesFromGroup } from "../../../../../hooks/services/group/group-query";
 import { useFetchMaterialLink } from "../../../../../hooks/services/material/material-query";
 import { useFetchPublicationsLink } from "../../../../../hooks/services/publications/publications-query";
 import { useFetchPublisherLink } from "../../../../../hooks/services/publisher/publisher-query";
 import useQueryString from "../../../../../hooks/services/useQueryString";
+import { Role } from "../../../../../interfaces/role";
+import { addItem } from "../../../../../store/slices/cartLoanSlip";
 import { TColumn, TMenuOption } from "../../../../../types/common/table";
+import { TLibrary } from "../../../../../types/models/library.type";
+import { CreatePublication } from "../../../../../types/models/loanSlip.type";
 import { TPublications } from "../../../../../types/models/publications.type";
 import IBreadcrumsCustom from "../../../../../ui-component/breadcrums";
 import MainCard from "../../../../../ui-component/cards/MainCard";
@@ -19,14 +28,6 @@ import { statusOptions, typeOptions } from "../../../../../utils/constants.utils
 import { getLabelFromOptions, parserParams } from "../../../../../utils/object";
 import FilterByItems from "../../../PublicationsPage/ui-components/FilterByItems";
 import PublicationsDetailsDialog from "../../../PublicationsPage/ui-components/PublicationsDetailsDialog";
-import { TLibrary } from "../../../../../types/models/library.type";
-import { useFetchLibrariesFromGroup } from "../../../../../hooks/services/group/group-query";
-import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
-import { useDispatch, useSelector } from "react-redux";
-import { CreatePublication } from "../../../../../types/models/loanSlip.type";
-import { addItem } from "../../../../../store/slices/cartLoanSlip";
-import { toast } from "react-toastify";
-import { useAuth } from "../../../../../contexts/JWTContext";
 
 const LibraryPublicationsPage = () => {
     const queryString = useQueryString();
@@ -48,6 +49,12 @@ const LibraryPublicationsPage = () => {
         if (!user) return null;
         const _user = { ...user } as any;
         return _user?.data?.libraryId;
+    }, [user]);
+
+    const userRole = useMemo(() => {
+        if (!user) return null;
+        const _user = { ...user } as any;
+        return (_user?.data?.roleId as Role)?.name;
     }, [user]);
 
     const filter = useMemo(
@@ -353,7 +360,7 @@ const LibraryPublicationsPage = () => {
                                 onClick={() => handleViewDetails(row)}
                             />
                             {
-                                row.type === "ấn phẩm cứng" && row?.libraryDetails && row.libraryDetails._id !== libraryId && (
+                                userRole!== "Student" && row.type === "ấn phẩm cứng" && row?.libraryDetails && row.libraryDetails._id !== libraryId && (
                                     <IconPlus
                                         size={25}
                                         stroke={1.5}
@@ -373,9 +380,6 @@ const LibraryPublicationsPage = () => {
     const actionMenus = useMemo((): TMenuOption[] => {
         return [];
     }, []);
-
-    console.log(selectedLibrary);
-
 
     return (
         <div>

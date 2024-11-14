@@ -57,7 +57,6 @@ const PrintAccount = forwardRef<HTMLDivElement, PrintAccountProps>(({ dataUsers 
                                     textTransform: "uppercase",
                                 }}
                             >
-                                <strong style={{ marginRight: "4px" }}>Trường:</strong>
                                 {user?.school}
                             </div>
                         )}
@@ -83,17 +82,6 @@ const PrintAccount = forwardRef<HTMLDivElement, PrintAccountProps>(({ dataUsers 
                                 />
                             </div>
                             <div style={{ textAlign: "left" }}>
-                                <h5
-                                    style={{
-                                        textAlign: "center",
-                                        fontWeight: "bold",
-                                        textTransform: "uppercase",
-                                        margin: "0 0 2px 0",
-                                        fontSize: "12px",
-                                    }}
-                                >
-                                    {(user?.libraryId as TLibrary)?.name}
-                                </h5>
                                 <h4
                                     style={{
                                         textAlign: "center",

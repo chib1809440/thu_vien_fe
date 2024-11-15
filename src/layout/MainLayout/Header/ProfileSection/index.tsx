@@ -152,6 +152,7 @@ const ProfileSection = () => {
             const user = userData?.data?.result;
             return {
                 email: user?.email,
+                username: user?.username,
                 fullname: user?.fullname,
                 phoneNumber: user?.phoneNumber,
                 address: user?.address,

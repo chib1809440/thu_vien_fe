@@ -24,6 +24,7 @@ const schema = yup.object().shape({
     fullname: yup.string().required("Vui lòng nhập tên"),
     address: yup.string().required("Vui lòng nhập địa chỉ"),
     email: yup.string().email("Vui lòng nhập đúng định dạng email"),
+    username: yup.string().required("Vui lòng nhập tên đăng nhâp"),
     phoneNumber: yup.string().matches(/^[0-9]+$/, "Vui lòng nhập đúng định dạng số điện thoại"),
 });
 
@@ -33,6 +34,7 @@ const FormProfile: FC<Props> = ({
     onSubmit,
     initialValues = {
         email: "",
+        username: "",
         fullname: "",
         phoneNumber: "",
         address: "",
@@ -142,21 +144,27 @@ const FormProfile: FC<Props> = ({
                                 }}
                             >
                                 <InputForm
+                                    label="Tên đăng nhập"
+                                    error={touched.username && Boolean(errors.username)}
+                                    helperText={touched.username && errors.username}
+                                    {...getFieldProps("username")}
+                                />
+                                <InputForm
                                     label="Họ tên"
                                     error={touched.fullname && Boolean(errors.fullname)}
                                     helperText={touched.fullname && errors.fullname}
                                     {...getFieldProps("fullname")}
                                 />
-                                <InputForm
-                                    label="Địa chỉ"
-                                    placeholder="Nhập địa chỉ"
-                                    error={touched.address && Boolean(errors.address)}
-                                    helperText={touched.address && errors.address}
-                                    {...getFieldProps("address")}
-                                />
+
                             </Box>
                         </Box>
-
+                        <InputForm
+                            label="Địa chỉ"
+                            placeholder="Nhập địa chỉ"
+                            error={touched.address && Boolean(errors.address)}
+                            helperText={touched.address && errors.address}
+                            {...getFieldProps("address")}
+                        />
                         <Box sx={{ display: "flex", gap: 2 }}>
                             <InputForm
                                 label="Email"
@@ -196,6 +204,7 @@ const FormProfile: FC<Props> = ({
                             <InputForm
                                 label="Trường"
                                 placeholder="Nhập tên trường"
+                                disabled
                                 error={touched.school && Boolean(errors.school)}
                                 helperText={touched.school && errors.school}
                                 {...getFieldProps("school")}

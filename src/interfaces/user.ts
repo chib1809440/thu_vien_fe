@@ -24,6 +24,7 @@ export interface CreateUserModel {
     _id?: string;
     email: string;
     fullname: string;
+    username?: string;
     phoneNumber: string;
     address: string;
     birthday: string;
@@ -52,5 +53,5 @@ export interface ChangePasswordUserModel {
     userId?: string;
     password?: string;
     newPassword?: string;
-    confirmPassword:string;
+    confirmPassword: string;
 }

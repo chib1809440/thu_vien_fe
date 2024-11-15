@@ -376,18 +376,22 @@ const LoanSlipRequestLink = () => {
                                 size={20}
                                 stroke={1.5}
                             />
-                            <IconPencil
-                                onClick={() => handleEditLoanSlip(row)}
-                                size={20}
-                                stroke={1.5}
-                            />
                             {
-                                row.isAgree === false &&
-                                <IconTrash
+                                row.status !== 'đã hủy' && <IconPencil
+                                    onClick={() => handleEditLoanSlip(row)}
                                     size={20}
                                     stroke={1.5}
-                                    onClick={() => handleOpenConfirmDialog(row)}
                                 />
+                            }
+
+                            {
+                                row.isAgree === false && row.status !== "đã hủy" && (
+                                    <IconTrash
+                                        size={20}
+                                        stroke={1.5}
+                                        onClick={() => handleOpenConfirmDialog(row)}
+                                    />
+                                )
                             }
 
 

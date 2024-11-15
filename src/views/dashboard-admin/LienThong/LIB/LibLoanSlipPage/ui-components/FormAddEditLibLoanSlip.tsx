@@ -281,7 +281,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     const barcode = parts.slice(0, parts.length - 1).join(' '); // Lấy tất cả các phần ngoại trừ phần cuối cùng và ghép lại
                     const index = Number(parts[parts.length - 1]); // Lấy phần cuối cùng và chuyển đổi thành số
                     setLoadingSearch(true)
-                    const result = await publicationsService.getByName<TPublications>({ search: barcode, libraryId: formik?.values?.libraryId });
+                    const result = await publicationsService.getByNameLink<TPublications>({ search: barcode, libraryId: formik?.values?.libraryId });
                     // Chuyển đổi kết quả thành mảng CreatePublication[]
                     const convertedPublications: CreatePublication[] = result.data.result.map((pub: TPublications) => ({
                         name: pub.name || '',  // Cung cấp giá trị mặc định nếu không có

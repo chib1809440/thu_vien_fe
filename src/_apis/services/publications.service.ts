@@ -13,6 +13,11 @@ class PublicationsService extends BaseApi {
         const response = await httpClientInstance.get(`${this.endpoint}/name`, { params });
         return response.data as TApiMultipleRecords<DynamicType>;
     }
+    public async getByNameLink<DynamicType>(params?: TFilter) {
+        const httpClientInstance = this.getHttpClient();
+        const response = await httpClientInstance.get(`${this.endpoint}/link-name`, { params });
+        return response.data as TApiMultipleRecords<DynamicType>;
+    }
     public async importExcel(file: File) {
         const formData = new FormData();
         formData.append("file", file);
@@ -20,7 +25,7 @@ class PublicationsService extends BaseApi {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
-        });        
+        });
         return response.data as TApiModifyRecord<{ publications: any; errors?: any }>;
     }
 

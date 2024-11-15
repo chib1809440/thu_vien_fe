@@ -648,7 +648,7 @@ const LoanSlipPage = () => {
                                 variant="contained"
                                 onClick={addLoanSlip}
                             >
-                                Thêm mới
+                                Đăng ký mượn sách
                             </StyledButton>
                         </Box>
                         {/* <Box>

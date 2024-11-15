@@ -611,12 +611,22 @@ const PublicationsPage = () => {
                                 />
                             }
                             {
-                                canDeletePublications &&
+                                userRole === "Teacher" && row?.createBy === userId && canDeletePublications &&
                                 <IconTrash
                                     size={20}
                                     stroke={1.5}
                                     onClick={() => handleOpenConfirmDialog(row)}
                                 />
+
+                            }
+                            {
+                                userRole !== "Teacher" && canDeletePublications &&
+                                <IconTrash
+                                    size={20}
+                                    stroke={1.5}
+                                    onClick={() => handleOpenConfirmDialog(row)}
+                                />
+
                             }
 
                         </Box>
@@ -674,27 +684,6 @@ const PublicationsPage = () => {
         });
     }, [checkedDelete]);
 
-    const handleDownloadTemplate = async () => {
-        const filePath = "http://localhost:28040/assets/template/template-publication.xlsx";
-        const fileName = "file mẫu.xlsx";
-        try {
-            const response = await axios.get(filePath, {
-                responseType: "blob",
-            });
-
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", fileName);
-            link.style.display = "none";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (error) {
-            console.error("Error downloading file:", error);
-        }
-    };
-
     const handleImportExcel = () => {
         setOpenImportFile(true);
     };
@@ -751,7 +740,15 @@ const PublicationsPage = () => {
             {
                 label: "Tải file mẫu",
                 icon: <IconFileDownload size={20} stroke={1.5} />,
-                onClick: handleDownloadTemplate,
+                component: (
+                    <a
+                        href={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/template-publication.xlsx`}
+                        style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", color: "#616161" }}
+                    >
+                        <IconFileDownload size={20} stroke={1.5} style={{ marginRight: 8 }} />
+                        Tải file mẫu
+                    </a>
+                ),
             },
             {
                 label: "Import file excel",
@@ -770,7 +767,15 @@ const PublicationsPage = () => {
             {
                 label: "Tải file mẫu",
                 icon: <IconFileDownload size={20} stroke={1.5} />,
-                onClick: handleDownloadTemplate,
+                component: (
+                    <a
+                        href={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/template-publication.xlsx`}
+                        style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", color: "#616161" }}
+                    >
+                        <IconFileDownload size={20} stroke={1.5} style={{ marginRight: 8 }} />
+                        Tải file mẫu
+                    </a>
+                ),
             },
             {
                 label: "Import file excel",
@@ -778,7 +783,7 @@ const PublicationsPage = () => {
                 onClick: handleImportExcel,
             },
         ] : [];
-    }, [userRole, handleDeleteMultiple, handleDownloadTemplate, handleImportExcel]);
+    }, [userRole, handleDeleteMultiple, handleImportExcel]);
 
     const initialValues = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {

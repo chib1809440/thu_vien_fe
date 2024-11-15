@@ -25,7 +25,7 @@ type Props = {
 };
 
 const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSearch, barcode = false, placeholder = 'Tìm kiếm theo mã ấn phẩm', selectedValuePublication, handleValuePublication, selectedLibrary,
-    placeholderSearch="Tìm kiếm theo tên",
+    placeholderSearch = "Tìm kiếm theo tên",
     handleLibraryFilterChange,
     libraryData }) => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -146,17 +146,24 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
                                 "aria-labelledby": "basic-button",
                             }}
                         >
+
                             {actions.map((action, idx) => (
-                                <MenuItem
-                                    key={idx}
-                                    sx={{ fontSize: "0.875rem" }}
-                                    onClick={action.onClick}
-                                >
-                                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                                        {action.icon}
-                                        <Box sx={{ ml: 1 }}>{action.label}</Box>
+                                action.component ? (
+                                    <Box key={idx} sx={{ ml: 2 }}>
+                                        {action.component}
                                     </Box>
-                                </MenuItem>
+                                ) : (
+                                    <MenuItem
+                                        key={idx}
+                                        sx={{ fontSize: "0.875rem" }}
+                                        onClick={action.onClick}
+                                    >
+                                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                                            {action.icon}
+                                            <Box sx={{ ml: 1 }}>{action.label}</Box>
+                                        </Box>
+                                    </MenuItem>
+                                )
                             ))}
                         </Menu>
                     </Box>

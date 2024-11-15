@@ -34,6 +34,8 @@ import StyledButton from "../../../../components/default/button/StyledButton";
 import { useDispatch, useSelector } from "react-redux";
 import { removeInternalItem } from "../../../../store/slices/cartInternalLoanSlip";
 import AlertConfirmDialog from "../../../../components/default/alert/confirmAlertDialog";
+import { getLabelFromOptions } from "../../../../utils/object";
+import { statusRole } from "../../../../utils/constants.utils";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -651,7 +653,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                     <Typography sx={{ ml: 2, mt: 2, fontWeight: "bold" }}>
                                         Vai trò:
                                         <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
-                                            {(userData?.data?.result?.roleId as Role)?.name || "Không có dữ liệu"}
+                                            {(getLabelFromOptions(statusRole,(userData?.data?.result?.roleId as Role)?.name)) || "Không có dữ liệu"}
                                         </span>
                                     </Typography>
                                 </Grid>

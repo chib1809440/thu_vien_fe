@@ -137,6 +137,7 @@ const GroupPage = () => {
             mutationDelete.mutate(groupToDelete._id, {
                 onSuccess: () => {
                     revalidate();
+                    revalidateLibs();
                     toast.success('Xóa nhóm thành công.');
                     setOpenConfirmDialog(false);
                 },

@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
 import { FC, useMemo } from "react";
 import * as yup from "yup";
@@ -17,7 +17,7 @@ type Props = {
 
 const schema = yup.object().shape({
     name: yup.string().required("Vui lòng nhập tên"),
-    maxStorageLimit: yup.number().required("Vui lòng nhập dung lượng bộ nhớ"),
+    maxStorageLimit: yup.number().min(1, "Dung lượng bộ nhớ phải lớn hơn hoặc bằng 1").required("Vui lòng nhập dung lượng bộ nhớ"),
     facebook: yup.string(),
     email: yup.string().email("Vui lòng nhập đúng định dạng email"),
     phoneNumber: yup.string().matches(/^[0-9]+$/, "Vui lòng nhập đúng định dạng số điện thoại"),
@@ -53,7 +53,7 @@ const FormAddEditLibrary: FC<Props> = ({
     const { errors, touched, values, setFieldValue, handleSubmit, getFieldProps } = useMemo(
         () => formik,
         [formik]
-    );    
+    );
 
     return (
         <FormikProvider value={formik}>
@@ -75,24 +75,48 @@ const FormAddEditLibrary: FC<Props> = ({
 
                 <DialogContent>
                     <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
-                        <InputForm
-                            label="Tên thư viện"
-                            placeholder="Nhập tên thư viện"
-                            required
-                            error={touched.name && Boolean(errors.name)}
-                            helperText={touched.name && errors.name}
-                            {...getFieldProps("name")}
-                        />
-                        <InputForm
-                            type="number"
-                            required
-                            label="Dung lượng bộ nhớ (GB)"
-                            placeholder="Dung lượng bộ nhớ"
-                            error={touched.maxStorageLimit && Boolean(errors.maxStorageLimit)}
-                            helperText={touched.maxStorageLimit && errors.maxStorageLimit}
-                            {...getFieldProps("maxStorageLimit")}
-                            disabled={isEditMode}
-                        />
+                        <Box sx={{ display: "flex", gap: 2 }}>
+                            <InputForm
+                                label="Tên thư viện"
+                                placeholder="Nhập tên thư viện"
+                                required
+                                error={touched.name && Boolean(errors.name)}
+                                helperText={touched.name && errors.name}
+                                {...getFieldProps("name")}
+                            />
+                            <InputForm
+                                label="Đơn vị quản lý"
+                                placeholder="Nhập đơn vị quản lý"
+                                error={touched.managementAgency && Boolean(errors.managementAgency)}
+                                helperText={touched.managementAgency && errors.managementAgency}
+                                {...getFieldProps("managementAgency")}
+                            />
+                        </Box>
+                        <Box sx={{ display: "flex", gap: 2 }}>
+                            <InputForm
+                                type="number"
+                                required
+                                label="Dung lượng bộ nhớ (GB)"
+                                placeholder="Dung lượng bộ nhớ"
+                                value={values.maxStorageLimit || ''}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    setFieldValue("maxStorageLimit", value);
+                                }}
+                                error={touched.maxStorageLimit && Boolean(errors.maxStorageLimit)}
+                                helperText={touched.maxStorageLimit && errors.maxStorageLimit}
+                                {...getFieldProps("maxStorageLimit")}
+                                disabled={isEditMode}
+                            />
+                            <InputForm
+                                label="Số điện thoại"
+                                placeholder="Nhập số điện thoại"
+                                error={touched.phoneNumber && Boolean(errors.phoneNumber)}
+                                helperText={touched.phoneNumber && errors.phoneNumber}
+                                {...getFieldProps("phoneNumber")}
+                            />
+                        </Box>
+                        
                         <InputForm
                             label="Địa chỉ"
                             placeholder="Nhập địa chỉ"
@@ -100,20 +124,8 @@ const FormAddEditLibrary: FC<Props> = ({
                             helperText={touched.address && errors.address}
                             {...getFieldProps("address")}
                         />
-                        <InputForm
-                            label="Đơn vị quản lý"
-                            placeholder="Nhập đơn vị quản lý"
-                            error={touched.managementAgency && Boolean(errors.managementAgency)}
-                            helperText={touched.managementAgency && errors.managementAgency}
-                            {...getFieldProps("managementAgency")}
-                        />
-                        <InputForm
-                            label="Số điện thoại"
-                            placeholder="Nhập số điện thoại"
-                            error={touched.phoneNumber && Boolean(errors.phoneNumber)}
-                            helperText={touched.phoneNumber && errors.phoneNumber}
-                            {...getFieldProps("phoneNumber")}
-                        />
+
+
                         <InputForm
                             label="Email"
                             placeholder="Nhập Email"
@@ -132,7 +144,7 @@ const FormAddEditLibrary: FC<Props> = ({
                 </DialogContent>
 
                 <DialogActions>
-                <Button disabled={isFetching} onClick={onClose} color="error" style={{ fontSize: 14 }}>
+                    <Button disabled={isFetching} onClick={onClose} color="error" style={{ fontSize: 14 }}>
                         Huỷ
                     </Button>
                     <StyledButton

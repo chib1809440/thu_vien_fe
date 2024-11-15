@@ -20,6 +20,7 @@ import { parserParams } from "../../../utils/object";
 import FormEditLiquidation from "./ui-components/FormEditLiquidation";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import usePermission from "../../../utils/hasPermission";
+import { Typography } from "@mui/material";
 
 const LiquidationProductPage = () => {
     const queryString = useQueryString();
@@ -106,34 +107,34 @@ const LiquidationProductPage = () => {
             {
                 id: "name",
                 disablePadding: "none",
-                label: "Tên ấn phẩm",
+                label: "Thông tin ấn phẩm",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => capitalizeFirstLetter((row.publicationId as TPublications)?.name),
+                render: (row) => {
+                    return (
+                        <Box>
+                            <Box sx={{ pt: 1 }}>
+                                <Typography>Tên: <strong>{capitalizeFirstLetter((row.publicationId as TPublications)?.name)}</strong></Typography>
+                            </Box>
+                            <Box sx={{ pt: 1 }}>
+                                <Typography>Vị trí: <strong>{row?.position}</strong></Typography>
+                            </Box>
+                            <Box sx={{ pt: 1 }}>
+                                <Typography>Lý do thanh lý: <strong>{row?.reason}</strong></Typography>
+                            </Box>
+                        </Box>
+                    )
+                },
             },
             {
                 id: "quantity",
                 disablePadding: "none",
                 label: "SL sách hư hỏng",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
+                sxRow: { paddingRight: 3, maxWidth: 120 },
                 render: (row) => {
                     return row.status === 'thanh lý' ? 0 : row.quantity || 0;
                 },
-            },
-            {
-                id: "position",
-                disablePadding: "none",
-                label: "Vị trí hư hỏng",
-                align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
-            },
-            {
-                id: "reason",
-                disablePadding: "none",
-                label: "Lý do",
-                align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
                 id: "quantity",
@@ -149,7 +150,7 @@ const LiquidationProductPage = () => {
                 disablePadding: "none",
                 label: "SL tổng",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
+                sxRow: { paddingRight: 3, maxWidth: 120 },
             },
             {
                 id: "action",

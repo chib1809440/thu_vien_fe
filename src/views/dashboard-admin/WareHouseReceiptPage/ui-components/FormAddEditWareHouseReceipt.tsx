@@ -243,7 +243,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
             shelvesQuantity: 0,
             status: "không có sẵn",
             type: "ấn phẩm cứng",
-            isPublic: false,
+            isPublic: true,
             isLink: false,
             file: "",
             categoryIds: [],
@@ -278,24 +278,36 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
             return;
         }
 
-        mutationAdd.mutate(payload, {
-            onSuccess: (data) => {
-                revalidate();
-                if (data.statusCode === 201) {
-                    let newPublications = [...publications]
-                    // alert(21)
-                    newPublications.push({
-                        name: data.data.name,
-                        publicationId: data.data._id,
-                        quantityWareHouse: 1,
-                        barcode: data.data.barcode,
-                    },)
-                    setPublications(newPublications);
-                }
-                toast.success("Thêm thành công.");
-                setOpenAddEdit(false);
-            },
-        });
+        console.log(payload);
+        mutationAdd.mutate(
+            payload,
+            {
+                onSuccess: () => {
+                    revalidate();
+                    toast.success("Thêm thành công.");
+                    handleClose();
+                },
+            }
+        );
+
+        // mutationAdd.mutate(payload, {
+        //     onSuccess: (data) => {
+        //         revalidate();
+        //         if (data.statusCode === 201) {
+        //             let newPublications = [...publications]
+        //             // alert(21)
+        //             newPublications.push({
+        //                 name: data.data.name,
+        //                 publicationId: data.data._id,
+        //                 quantityWareHouse: 1,
+        //                 barcode: data.data.barcode,
+        //             },)
+        //             setPublications(newPublications);
+        //         }
+        //         toast.success("Thêm thành công.");
+        //         setOpenAddEdit(false);
+        //     },
+        // });
     };
     useEffect(() => {
         if (wareHouseReceipt) {
@@ -404,6 +416,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                         ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
                                         : ""
                             }
+                            wareHouseReceipt={true}
                         />
                     )}
                     <DialogContent sx={{ p: 8 }}>

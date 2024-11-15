@@ -119,7 +119,7 @@ const LibraryPage = () => {
                 disablePadding: "none",
                 label: "Tên thư viện",
                 align: "left",
-                sxRow: { maxWidth: 200 },
+                sxRow: { maxWidth: 120 },
                 render: (row) => {
                     const hasWhitespace = /\s/.test(row?.name);
                     return (
@@ -139,7 +139,7 @@ const LibraryPage = () => {
                     return (
                         <Box>
                             <Box>
-                                <Typography> Đang sử dụng: <strong>{(row?.totalStorageUsed / 1024).toFixed(2)} GB</strong></Typography>
+                                <Typography> Đã sử dụng: <strong>{(row?.totalStorageUsed / 1024).toFixed(2)} GB</strong></Typography>
                             </Box >
                             <Box>
                                 <Typography>Dung lượng bộ nhớ: <strong>{(row?.maxStorageLimit / 1024).toFixed(2)} GB</strong></Typography>

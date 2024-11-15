@@ -38,6 +38,7 @@ type Props = {
     authorOptions?: TAuthor[];
     publisherOptions?: TPublisher[];
     imageUrl?: string;
+    wareHouseReceipt?: boolean;
 };
 
 const schema = (isEditMode: boolean) =>
@@ -121,6 +122,7 @@ const FormAddEditPublications: FC<Props> = ({
     },
     isFetching = false,
     isEditMode = false,
+    wareHouseReceipt = false,
 }) => {
     const formik = useFormik<TPublicationsCreate>({
         initialValues,
@@ -441,7 +443,7 @@ const FormAddEditPublications: FC<Props> = ({
                                         onChange={handleTypeChange}
                                         error={touched.type && Boolean(errors.type)}
                                         helperText={touched.type && errors.type}
-                                        disabled={isEditMode}
+                                        disabled={isEditMode || wareHouseReceipt}
                                     />
 
                                     <SelectForm

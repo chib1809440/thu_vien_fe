@@ -29,7 +29,7 @@ export default function ButtonGD(props: Props) {
         const _user = { ...user } as any;
 
         return _user?.data;
-    }, [user]);
+    }, [user]);    
 
     return (
         <>
@@ -40,7 +40,7 @@ export default function ButtonGD(props: Props) {
                             width: props.width !== undefined ? props.width : "100px",
                             height: "40px",
                         }}
-                        disabled={props.disabled || currentUser?.roleId?.name !== "Admin"}
+                        disabled={props.disabled || currentUser?.roleId?.name === "Student" || currentUser?.roleId?.name === "Teacher" || currentUser?.roleId?.name === "Super Admin"}
                         onClick={props.onClick}
                     >
                         {props.title} {props.endIcon} {props.children}
@@ -54,7 +54,7 @@ export default function ButtonGD(props: Props) {
                             width: props.width !== undefined ? props.width : "100px",
                             height: "40px",
                         }}
-                        disabled={props.disabled || currentUser?.roleId?.name !== "Admin"}
+                        disabled={props.disabled || currentUser?.roleId?.name === "Student" || currentUser?.roleId?.name === "Teacher" || currentUser?.roleId?.name === "Super Admin"}
                         onClick={props.onClick}
                     >
                         {props.title} {props.endIcon} {props.children}

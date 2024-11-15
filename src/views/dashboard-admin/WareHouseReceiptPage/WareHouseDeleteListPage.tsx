@@ -19,6 +19,7 @@ import { useDeleteManyWareHouseReceipt, useDeleteWareHouseReceipt, useRestoreMan
 import { TWareHouseReceipt } from "../../../types/models/warehouse-receipt";
 import { User } from "../../../interfaces/user";
 import { TSupplier } from "../../../types/models/supplier.type";
+import { formatDate } from "../../../helpers/formatDate";
 
 
 const WareHouseReceiptDeleteListPage = () => {
@@ -116,6 +117,13 @@ const WareHouseReceiptDeleteListPage = () => {
                 label: "Ngày tạo",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => {
+                    return (
+                        <>
+                            {formatDate(row.updatedAt)}
+                        </>
+                    );
+                },
             },
             {
                 id: "updatedAt",
@@ -123,6 +131,13 @@ const WareHouseReceiptDeleteListPage = () => {
                 label: "Ngày cập nhật",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => {
+                    return (
+                        <>
+                            {formatDate(row.updatedAt)}
+                        </>
+                    );
+                },
             },
             {
                 id: "createBy",

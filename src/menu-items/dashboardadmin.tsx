@@ -157,44 +157,6 @@ const dashboardAdmin = {
             breadcrumbs: false
         },
         {
-            id: 'quan-ly-kho',
-            title: "Quản lý kho",
-            type: 'collapse',
-            url: '/quan-ly-kho',
-            icon: icons.IconBrowser,
-            breadcrumbs: false,
-            permissions: [{
-                "resource": "publications",
-                "action": "manage"
-            }],
-            children: [
-                {
-                    id: 'tu-ke',
-                    title: "Tủ - Kệ",
-                    type: 'item',
-                    url: '/quan-ly-kho/tu-ke',
-                    icon: icons.IconEyeTable,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'kho',
-                    title: "Kho",
-                    type: 'item',
-                    url: '/quan-ly-kho/kho',
-                    icon: icons.IconDevices,
-                    breadcrumbs: false
-                },
-                {
-                    id: 'thanh-ly-hu-hong',
-                    title: "Thanh lý - Hư hỏng",
-                    type: 'item',
-                    url: '/quan-ly-kho/thanh-ly-hu-hong',
-                    icon: icons.IconDevices,
-                    breadcrumbs: false
-                },
-            ]
-        },
-        {
             id: 'quan-ly-nhap-kho',
             title: "Quản lý nhập kho",
             type: 'collapse',
@@ -238,6 +200,50 @@ const dashboardAdmin = {
                 },
             ]
         },
+        {
+            id: 'quan-ly-kho',
+            title: "Quản lý kho",
+            type: 'collapse',
+            url: '/quan-ly-kho',
+            icon: icons.IconBrowser,
+            breadcrumbs: false,
+            permissions: [
+            {
+                "resource": "suppliers",
+                "action": "manage"
+            },
+            {
+                "resource": "warehousereceipts",
+                "action": "manage"
+            },],
+            children: [
+                {
+                    id: 'tu-ke',
+                    title: "Tủ - Kệ",
+                    type: 'item',
+                    url: '/quan-ly-kho/tu-ke',
+                    icon: icons.IconEyeTable,
+                    breadcrumbs: false
+                },
+                {
+                    id: 'kho',
+                    title: "Kho",
+                    type: 'item',
+                    url: '/quan-ly-kho/kho',
+                    icon: icons.IconDevices,
+                    breadcrumbs: false
+                },
+                {
+                    id: 'thanh-ly-hu-hong',
+                    title: "Thanh lý - Hư hỏng",
+                    type: 'item',
+                    url: '/quan-ly-kho/thanh-ly-hu-hong',
+                    icon: icons.IconDevices,
+                    breadcrumbs: false
+                },
+            ]
+        },
+
         {
             id: 'phieu-muon',
             title: "Thông tin phiếu mượn",
@@ -393,7 +399,7 @@ const dashboardAdmin = {
             icon: icons.IconLocation,
             breadcrumbs: false,
             permissions: [{
-                "resource": "publications",
+                "resource": "statisticals",
                 "action": "manage"
             }],
         },
@@ -439,11 +445,12 @@ const dashboardAdmin = {
             }, {
                 "resource": "loanslips",
                 "action": "manage"
-            },{
+            }, {
                 "resource": "publications",
                 "action": "read"
             }
-        ],
+            ],
+            // disabled
         },
     ]
 };
@@ -532,7 +539,7 @@ export const dashboardAdminV2 = {
             permissions: [{
                 "resource": "publications",
                 "action": "manage"
-            },{
+            }, {
                 "resource": "publications",
                 "action": "create"
             }],

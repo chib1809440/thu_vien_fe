@@ -1,49 +1,26 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import { LoadingButton } from "@mui/lab";
 import {
-    Alert,
-    Button,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    FilledInput,
-    FormControl,
-    FormControlLabel,
     FormHelperText,
     Grid,
     IconButton,
-    Input,
-    InputAdornment,
-    InputBase,
-    LinearProgress,
-    MenuItem,
-    OutlinedInput,
-    Radio,
-    RadioGroup,
-    Rating,
-    Select,
-    Snackbar,
-    Step,
-    StepLabel,
-    Stepper,
-    TextField,
-    TextareaAutosize,
+    TextField
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import { LoadingButton } from "@mui/lab";
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import { useEffect, useState } from "react";
 
-import { useFormik } from "formik";
-import * as yup from "yup";
-import { stringify } from "querystring";
-import { toast } from "react-toastify";
-import { CreateAssetModel, Asset } from "../../../interfaces/asset";
 import CloseIcon from "@mui/icons-material/Close";
-import { ErrorResponse } from "../../../interfaces/errorResponse";
-import { useCreateAsset, useAssetList, useUpdateAsset } from "../../../hooks/react-query/assetData";
-import { Entity } from "draft-js";
+import { useFormik } from "formik";
+import { toast } from "react-toastify";
+import * as yup from "yup";
+import { useCreateAsset, useUpdateAsset } from "../../../hooks/react-query/assetData";
+import { Asset, CreateAssetModel } from "../../../interfaces/asset";
 import { EntityResponse } from "../../../interfaces/entityResponse";
+import { ErrorResponse } from "../../../interfaces/errorResponse";
 export const validationUtilizedObjectSchema = yup.object({
     name: yup.string().required("Vui lòng nhập tên tài sản"),
     note: yup.string(), // Không yêu cầu nhập
@@ -69,7 +46,7 @@ export const validationUtilizedObjectSchema = yup.object({
         .number()
         .typeError("Vui lòng nhập số hợp lệ cho số lượng")
         .integer("Số lượng phải là một số nguyên"),
-    description: yup.string().required("Vui lòng nhập miêu tả"),
+    description: yup.string(),
 });
 interface DialogProps {
     id?: string,
@@ -250,7 +227,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={12}>
+                                        <Grid item md={6}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Tên tài sản <span className="required_text">(*)</span>{" "}
@@ -279,9 +256,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                                     )}
                                             </Box>
                                         </Grid>
-                                    </Grid>
-                                    <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={12}>
+                                        <Grid item md={6}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Số lượng tổng <span className="required_text">(*)</span>{" "}
@@ -314,10 +289,10 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                     {
                                         id ? <>
                                             <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                                <Grid item md={12}>
+                                                <Grid item md={6}>
                                                     <Box style={{ width: "100%" }}>
                                                         <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                                            Số lượng sử dụng <span className="required_text">(*)</span>{" "}
+                                                            Số lượng sử dụng
                                                         </Typography>
                                                         <TextField
                                                             variant="outlined"
@@ -343,12 +318,10 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                                             )}
                                                     </Box>
                                                 </Grid>
-                                            </Grid>
-                                            <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                                <Grid item md={12}>
+                                                <Grid item md={6}>
                                                     <Box style={{ width: "100%" }}>
                                                         <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                                            Số lượng trong kho <span className="required_text">(*)</span>{" "}
+                                                            Số lượng trong kho
                                                         </Typography>
                                                         <TextField
                                                             variant="outlined"
@@ -376,10 +349,10 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                                 </Grid>
                                             </Grid>
                                             <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                                <Grid item md={12}>
+                                                <Grid item md={6}>
                                                     <Box style={{ width: "100%" }}>
                                                         <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                                            Số lượng thanh lý <span className="required_text">(*)</span>{" "}
+                                                            Số lượng thanh lý
                                                         </Typography>
                                                         <TextField
                                                             variant="outlined"
@@ -405,12 +378,10 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                                             )}
                                                     </Box>
                                                 </Grid>
-                                            </Grid>
-                                            <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                                <Grid item md={12}>
+                                                <Grid item md={6}>
                                                     <Box style={{ width: "100%" }}>
                                                         <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                                            Số lượng hư hỏng <span className="required_text">(*)</span>{" "}
+                                                            Số lượng hư hỏng
                                                         </Typography>
                                                         <TextField
                                                             variant="outlined"
@@ -444,7 +415,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                         <Grid item md={12}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                                    Mô tả <span className="required_text">(*)</span>{""}
+                                                    Mô tả
                                                 </Typography>
                                                 <TextField
                                                     variant="outlined"
@@ -475,7 +446,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                         <Grid item md={12}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                                    Ghi chú <span className="required_text">(*)</span>{""}
+                                                    Ghi chú
                                                 </Typography>
                                                 <TextField
                                                     variant="outlined"

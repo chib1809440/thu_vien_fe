@@ -320,7 +320,7 @@ const FormEditWarehouse: FC<Props> = ({
                                             type="number"
                                             placeholder="Nhập số lượng lên kệ"
                                             {...getFieldProps("shelvesQuantity")}
-                                            sxBox={{ mt: 2 }}
+                                            sxBox={{ mt: 2.3 }}
                                             error={
                                                 touched.shelvesQuantity &&
                                                 Boolean(errors.shelvesQuantity)
@@ -356,7 +356,7 @@ const FormEditWarehouse: FC<Props> = ({
                                                     });
                                                 }}
                                             />
-                                            Thêm
+                                            Thêm lên kệ
                                         </Typography>
                                         <Typography ml={2}>
                                             <input
@@ -381,7 +381,7 @@ const FormEditWarehouse: FC<Props> = ({
                                                     });
                                                 }}
                                             />
-                                            Giảm
+                                            Giảm từ kệ xuống kho
                                         </Typography>
                                     </Box>
                                     <InputForm

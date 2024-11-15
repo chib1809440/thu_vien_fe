@@ -12,7 +12,8 @@ export type TColumn<Data> = {
 };
 
 export type TMenuOption = {
-    label: string;
-    icon: React.ReactNode | React.JSX.Element;
-    onClick: () => void;
+    label?: string;
+    icon?: React.ReactNode | React.JSX.Element;
+    onClick?: () => void;
+    component?: React.ReactNode;
 };

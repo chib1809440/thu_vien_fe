@@ -85,7 +85,7 @@ export default function AssetPage() {
                                 Thêm tài sản
                             </StyledButton>
                             <StyledButton
-                                sx={{ marginLeft: 2, backgroundColor: theme.palette.error.dark, color: theme.palette.common.white }}
+                               sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
                                 size="small"
                                 startIcon={<IconTrash stroke={2} />}
                                 variant="contained"

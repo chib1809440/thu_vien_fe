@@ -129,9 +129,6 @@ const dashboardAdmin = {
                     permissions: [{
                         "resource": "users",
                         "action": "manage"
-                    }, {
-                        "resource": "all",
-                        "action": "manage"
                     }],
                 },
                 {

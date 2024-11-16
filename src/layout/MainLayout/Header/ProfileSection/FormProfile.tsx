@@ -201,7 +201,7 @@ const FormProfile: FC<Props> = ({
                             />
                         </Box>
                         <Box sx={{ display: "flex", gap: 2 }}>
-                            <InputForm
+                            {/* <InputForm
                                 label="Trường"
                                 placeholder="Nhập tên trường"
                                 disabled
@@ -209,7 +209,7 @@ const FormProfile: FC<Props> = ({
                                 helperText={touched.school && errors.school}
                                 {...getFieldProps("school")}
                                 value={capitalizeFirstLetter(values?.school)}
-                            />
+                            /> */}
                             <InputForm
                                 label="Lớp"
                                 placeholder="Nhập tên lớp"

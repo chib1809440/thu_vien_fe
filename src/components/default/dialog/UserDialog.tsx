@@ -208,6 +208,8 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
             });
         }
     }, [user]);
+    console.log("dsadsd", user);
+
     const { logout, user: userAuth } = useAuth();
     useEffect(() => {
         if (!userAuth) return null;

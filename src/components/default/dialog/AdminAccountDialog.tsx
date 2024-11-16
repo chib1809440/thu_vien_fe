@@ -158,6 +158,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                     birthday: values.birthday,
                     roleId: values.roleId,
                     libraryId: values.libraryId,
+                    school: values.school,
                 };
 
                 if (!user) {
@@ -199,6 +200,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
             }
         }
     }, [formik?.values?.libraryId]);
+
     const onHandleClose = () => {
         handleOpen(false);
         if (id) {

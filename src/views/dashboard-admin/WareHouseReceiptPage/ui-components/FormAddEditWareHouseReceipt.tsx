@@ -551,7 +551,13 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                                                         fullWidth
                                                                         placeholder="Nhập barcode sách"
                                                                         value={row.barcode}
+                                                                        type='input'
                                                                         onChange={(e) => handleBarCodeChange(index, e.target.value)}
+                                                                        onKeyDown={(e) => {
+                                                                            if (e.key === 'Enter') {
+                                                                                e.preventDefault(); // Ngăn hành động mặc định khi nhấn Enter
+                                                                            }
+                                                                        }}
                                                                         inputRef={index === publications.length - 1 ? lastInputRef : null} // Focus on the last input
                                                                     /></>
                                                                 }
@@ -573,6 +579,11 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                                                         const updatedPublications = [...publications];
                                                                         updatedPublications[index].quantityWareHouse = Number(e.target.value);
                                                                         setPublications(updatedPublications);
+                                                                    }}
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter') {
+                                                                            e.preventDefault(); // Ngăn hành động mặc định khi nhấn Enter
+                                                                        }
                                                                     }}
                                                                 />
                                                             </Box>

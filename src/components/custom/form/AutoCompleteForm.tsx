@@ -79,7 +79,8 @@ const AutocompleteForm = <Type extends Record<string, any>>({
                 {handleAdd && (
                     <Tooltip title="Thêm mới" arrow placement="top">
                         <IconCirclePlusFilled
-                            style={{ cursor: 'pointer', marginLeft: '10px', marginRight: '10px' }}
+                            type="button"
+                            style={{ cursor: "pointer", marginLeft: "10px", marginRight: "10px" }}
                             onClick={handleAdd}
                             color="green"
                             size={30}
@@ -93,25 +94,25 @@ const AutocompleteForm = <Type extends Record<string, any>>({
                             color="primary"
                             size="small"
                             variant="contained"
+                            type="button"
                             startIcon={<IconPlus stroke={2} size={20} />}
                             onClick={handleAddLibAndAccount}
                             sx={{ marginRight: 2, marginLeft: 2 }}
                         >
                             Thêm thư viện
                         </StyledButton>
-                        {
-                            handleAddAccount &&
+                        {handleAddAccount && (
                             <StyledButton
                                 color="primary"
                                 size="small"
+                                type="button"
                                 variant="contained"
                                 startIcon={<IconPlus stroke={2} size={20} />}
                                 onClick={handleAddAccount}
                             >
                                 Thêm tài khoản thủ thư
                             </StyledButton>
-                        }
-
+                        )}
                     </Box>
                 )}
             </Box>
@@ -133,23 +134,26 @@ const AutocompleteForm = <Type extends Record<string, any>>({
                     const numTags = value.length;
 
                     return (
-                        <Typography variant="body2" textTransform={isCapitalize ? "capitalize" : "none"}>
-                            {
-                                value
-                                    .slice(0, limitTags)
-                                    .map((option, _) =>
-                                        option?.[keyLabel]?.length > limitText
-                                            ? capitalizeFirstLetter(option?.[keyLabel]).slice(0, limitText) + "..."
-                                            : capitalizeFirstLetter(option?.[keyLabel])
-                                    )
-                                    .join(", ")
-                            }
+                        <Typography
+                            variant="body2"
+                            textTransform={isCapitalize ? "capitalize" : "none"}
+                        >
+                            {value
+                                .slice(0, limitTags)
+                                .map((option, _) =>
+                                    option?.[keyLabel]?.length > limitText
+                                        ? capitalizeFirstLetter(option?.[keyLabel]).slice(
+                                              0,
+                                              limitText
+                                          ) + "..."
+                                        : capitalizeFirstLetter(option?.[keyLabel])
+                                )
+                                .join(", ")}
 
                             <Typography
                                 variant="body2"
                                 sx={{ display: "inline" }}
                                 fontWeight="bold"
-
                             >
                                 {numTags > limitTags && ` +${numTags - limitTags} đã chọn`}
                             </Typography>
@@ -168,7 +172,9 @@ const AutocompleteForm = <Type extends Record<string, any>>({
                                 checked={selected}
                             />
 
-                            <Typography textTransform={isCapitalize ? "capitalize" : "none"}>{capitalizeFirstLetter(option?.[keyLabel])}</Typography>
+                            <Typography textTransform={isCapitalize ? "capitalize" : "none"}>
+                                {capitalizeFirstLetter(option?.[keyLabel])}
+                            </Typography>
                         </Box>
                     );
                 }}

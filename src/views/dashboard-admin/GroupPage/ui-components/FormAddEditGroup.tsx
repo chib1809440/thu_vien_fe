@@ -58,17 +58,18 @@ const FormAddEditGroup: FC<Props> = ({
     const revalidate = useReFetchLibrary();
     const { hasPermission } = usePermission();
     const { data: roles } = useRoleBySuperAdminList();
-    const [filterRoleId, setFilterRoleId] = useState<string | number>(null)
+    const [filterRoleId, setFilterRoleId] = useState<string | number>(null);
+
     useEffect(() => {
         if (roles?.data?.result.length > 0) {
             // Tìm đối tượng có item.name là "Admin"
-            const adminRole = roles.data.result.find(item => item.name.trim() === "Admin");
+            const adminRole = roles.data.result.find((item) => item.name.trim() === "Admin");
             if (adminRole) {
-                setFilterRoleId(adminRole._id)
+                setFilterRoleId(adminRole._id);
             } else {
             }
         }
-    }, [roles])
+    }, [roles]);
 
     const formik = useFormik<TGroupCreate>({
         initialValues,
@@ -95,9 +96,11 @@ const FormAddEditGroup: FC<Props> = ({
     const handleAddLibrary = () => {
         setOpenAdd(true);
     };
+
     const handleClose = () => {
         setOpenAdd(false);
     };
+
     const handleSubmitLibrary = (values: TLibraryCreate) => {
         mutationAdd.mutate(values, {
             onSuccess: (data) => {
@@ -108,6 +111,7 @@ const FormAddEditGroup: FC<Props> = ({
         });
         return;
     };
+
     const initialValuesLibrary = useMemo((): TLibraryCreate => {
         return {
             name: "",
@@ -121,14 +125,15 @@ const FormAddEditGroup: FC<Props> = ({
 
     return (
         <>
-            {
-                openAddAccount === true && <AdminAccountDialog
+            {openAddAccount === true && (
+                <AdminAccountDialog
                     title={"Thêm tài khoản Admin"}
                     open={openAddAccount}
                     roleId={filterRoleId as string}
                     handleOpen={setOpenAddAccount}
                 />
-            }
+            )}
+
             {openAdd && (
                 <FormAddEditLibrary
                     open={openAdd}
@@ -138,6 +143,7 @@ const FormAddEditGroup: FC<Props> = ({
                     isEditMode={false}
                 />
             )}
+
             <FormikProvider value={formik}>
                 <Dialog
                     maxWidth="sm"
@@ -175,13 +181,13 @@ const FormAddEditGroup: FC<Props> = ({
                                 onChange={handleChangedLibs}
                                 error={touched.libraries && Boolean(errors.libraries)}
                                 helperText={touched.libraries && errors.libraries}
-                                handleAddLibAndAccount={hasPermission([
-                                    { resource: "all", action: "manage" },
-                                ]) ? handleAddLibrary : null}
-                                handleAddAccount={hasPermission([
-                                    { resource: "all", action: "manage" },
-                                ]) ? () => setOpenAddAccount(true) : null}
                                 noOptionsText="Vui lòng thêm thư viện mới"
+                                {...(hasPermission([{ resource: "all", action: "manage" }])
+                                    ? {
+                                          handleAddAccount: () => setOpenAddAccount(true),
+                                          handleAddLibAndAccount: handleAddLibrary,
+                                      }
+                                    : {})}
                             />
 
                             <SelectForm
@@ -201,7 +207,12 @@ const FormAddEditGroup: FC<Props> = ({
                     </DialogContent>
 
                     <DialogActions>
-                        <Button disabled={isFetching} onClick={onClose} color="error" style={{ fontSize: 14 }}>
+                        <Button
+                            disabled={isFetching}
+                            onClick={onClose}
+                            color="error"
+                            style={{ fontSize: 14 }}
+                        >
                             Huỷ
                         </Button>
                         <StyledButton
@@ -211,7 +222,11 @@ const FormAddEditGroup: FC<Props> = ({
                             onClick={handleSubmit as () => void}
                             sx={{ paddingTop: 1.3, paddingBottom: 1.3 }}
                         >
-                            {isFetching ? "Đang thực hiện..." : isEditMode ? "Cập nhật" : "Thêm mới"}
+                            {isFetching
+                                ? "Đang thực hiện..."
+                                : isEditMode
+                                ? "Cập nhật"
+                                : "Thêm mới"}
                         </StyledButton>
                     </DialogActions>
                 </Dialog>

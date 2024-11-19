@@ -84,7 +84,13 @@ function TableUserList<T extends DataType>({
     useEffect(() => {
         refetch()
     }, [filterRoleId]);
-    const { hasPermission } = usePermission()
+    const { hasPermission } = usePermission();
+    const {user: currenUser} = useAuth();
+    const userRole = useMemo(() => {
+        if (!currenUser) return null;
+        const _user = { ...currenUser } as any;
+        return _user?.data?.roleId?.name;
+    }, [currenUser]);
 
     const { mutate: softDeleteUser, isPending: isPendingUpdate } = useSoftDeleteUser();
     const { mutate: softDeleteUserSelected } = useDeleteUserSelected();
@@ -424,42 +430,44 @@ function TableUserList<T extends DataType>({
                                                         </StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{getLabelFromOptions(statusRole, (row?.roleId as Role)?.name)}</StyledTableCell>
                                                         {
-                                                            row?.isActive ?
-                                                                (
-                                                                    <StyledTableCell padding="none" align="center">
-                                                                        <Box sx={{
-                                                                            display: "flex",
-                                                                            justifyContent: "center",
-                                                                            alignItems: "center",
-                                                                            gap: 1
-                                                                        }}>
-                                                                            <IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} />
-                                                                            <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
-                                                                            <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
-                                                                            {
-                                                                                hasPermission([
-                                                                                    { resource: "all", action: "manage" },
-                                                                                    { resource: "activeaccounts", action: "update" },
-                                                                                ]) && (user?.roleId as Role)?.name !== "Super Admin" &&
-                                                                                <LockOpen onClick={() => handleClickBlock(row?._id)} />
-                                                                            }
+                                                            (row?.roleId as Role)?.name === userRole ?
+                                                            <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}></StyledTableCell>
+                                                            : row?.isActive ?
+                                                            (
+                                                                <StyledTableCell padding="none" align="center">
+                                                                    <Box sx={{
+                                                                        display: "flex",
+                                                                        justifyContent: "center",
+                                                                        alignItems: "center",
+                                                                        gap: 1
+                                                                    }}>
+                                                                        <IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} />
+                                                                        <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
+                                                                        <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
+                                                                        {
+                                                                            hasPermission([
+                                                                                { resource: "all", action: "manage" },
+                                                                                { resource: "activeaccounts", action: "update" },
+                                                                            ]) && (user?.roleId as Role)?.name !== "Super Admin" &&
+                                                                            <LockOpen onClick={() => handleClickBlock(row?._id)} />
+                                                                        }
 
-                                                                        </Box>
-                                                                    </StyledTableCell>
-                                                                ) :
-                                                                (
-                                                                    <StyledTableCell padding="none" align="center">
-                                                                        <Box sx={{
-                                                                            display: "flex",
-                                                                            justifyContent: "center",
-                                                                            alignItems: "center",
-                                                                            gap: 1
-                                                                        }}
-                                                                        >
-                                                                            <Lock onClick={() => handleClickOpenBlock(row?._id)} />
-                                                                        </Box>
-                                                                    </StyledTableCell>
-                                                                )
+                                                                    </Box>
+                                                                </StyledTableCell>
+                                                            ) :
+                                                            (
+                                                                <StyledTableCell padding="none" align="center">
+                                                                    <Box sx={{
+                                                                        display: "flex",
+                                                                        justifyContent: "center",
+                                                                        alignItems: "center",
+                                                                        gap: 1
+                                                                    }}
+                                                                    >
+                                                                        <Lock onClick={() => handleClickOpenBlock(row?._id)} />
+                                                                    </Box>
+                                                                </StyledTableCell>
+                                                            )
                                                         }
 
                                                     </StyledTableRow>

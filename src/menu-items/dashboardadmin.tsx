@@ -405,7 +405,7 @@ const dashboardAdmin = {
             title: "Quản lý tài sản",
             type: 'item',
             url: '/tai-san-thu-vien',
-            icon: icons.IconBuildingCastle,
+            icon: icons.IconBrowser,
             breadcrumbs: false,
             permissions: [{
                 "resource": "assets",

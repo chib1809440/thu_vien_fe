@@ -17,6 +17,7 @@ type Props = {
     publicationsData?: TPublications;
     typeVoiceData?: TTypeVoice[];
     currentUserId?: string;
+    userRole?: string;
 };
 
 export type MenuAddVoiceRef = {
@@ -24,7 +25,7 @@ export type MenuAddVoiceRef = {
 };
 
 const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
-    ({ anchorEl, onClose, voiceData, publicationsData, typeVoiceData, currentUserId }, ref) => {
+    ({ anchorEl, onClose, voiceData, publicationsData, typeVoiceData, currentUserId, userRole }, ref) => {
         const [selectedEdit, setSelectedEdit] = useState<TVoice | null>(null);
         const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
         const [openAddEdit, setOpenAddEdit] = useState(false);
@@ -39,7 +40,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
         const { data: voiceLinkData } = useFetchVoiceLink();
         const currentAudioRef = useRef<HTMLAudioElement | null>(null);
         console.log(currentAudioRef.current);
-        
+
 
         useImperativeHandle(
             ref,
@@ -207,7 +208,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                 publicationsData?.createBy === userId
                     ? (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id
                     : (voice.typeVoiceId as TTypeVoice)?._id === (typeVoice as TTypeVoice)?._id &&
-                      voice.isPublic === true
+                    voice.isPublic === true
             );
             const sortedVoices = voices?.sort((a, b) => a.order - b.order);
 
@@ -222,8 +223,8 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                 publicationsData?.createBy === userId
                     ? voice.typeVoiceId === (typeVoice as TTypeVoice)?._id
                     : voice.typeVoiceId === (typeVoice as TTypeVoice)?._id &&
-                      voice.isPublic === true &&
-                      voice.isLink === true
+                    voice.isPublic === true &&
+                    voice.isLink === true
             );
             const sortedVoices = voices?.sort((a, b) => a.order - b.order);
 
@@ -233,9 +234,9 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
             };
         });
 
-        console.log(voiceLinkData);
-        
-        const canAddVoice = publicationsData?.createBy === currentUserId;
+        const canAddVoice = (
+            publicationsData?.createBy === currentUserId || userRole === "Admin" || userRole === "Owner"
+        );
         const currentPath = window.location.pathname;
 
         return (
@@ -271,8 +272,8 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                             filterByTypeVoiceIdPullLink.map((type) => (
                                 <li
                                     key={type._id}
-                                    // onMouseEnter={() => setHoveredTypeId(type._id)}
-                                    // onMouseLeave={() => setHoveredTypeId(null)}
+                                // onMouseEnter={() => setHoveredTypeId(type._id)}
+                                // onMouseLeave={() => setHoveredTypeId(null)}
                                 >
                                     <Box
                                         sx={{
@@ -323,8 +324,8 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                                             {type?.voices?.map((child) => (
                                                 <Box
                                                     key={child._id}
-                                                    // onMouseEnter={() => setHoveredTypeId(type._id)}
-                                                    // onMouseLeave={() => setHoveredTypeId(null)}
+                                                // onMouseEnter={() => setHoveredTypeId(type._id)}
+                                                // onMouseLeave={() => setHoveredTypeId(null)}
                                                 >
                                                     <Box
                                                         sx={{

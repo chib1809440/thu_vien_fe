@@ -32,6 +32,11 @@ const ImageDetailPage = ({
         const _user = { ...user } as any;
         return _user?.data?._id;
     }, [user]);
+    const userRole = useMemo(() => {
+        if (!user) return null;
+        const _user = { ...user } as any;
+        return _user?.data?.roleId?.name;
+    }, [user]);
 
     const handleClickChangeMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -53,7 +58,6 @@ const ImageDetailPage = ({
     };
 
     const handleCloseDialogIcon = () => {
-    
         menuAddVoiceRef.current?.muteAudio();
         onClose();
     }
@@ -147,7 +151,6 @@ const ImageDetailPage = ({
                                     />
                                     <MoreVertIcon sx={{ color: theme.palette.text.primary }} />
                                 </StyledIconButton>
-                                {/* Because anchorEl -> false -> hidden MenuAddVoice -> ref is null -> so not mute audio */}
                                 
                                     <MenuAddVoice
                                         ref={menuAddVoiceRef}
@@ -163,6 +166,7 @@ const ImageDetailPage = ({
                                         publicationsData={publications}
                                         typeVoiceData={typeVoiceData?.data?.result}
                                         currentUserId={userId}
+                                        userRole={userRole}
                                     />
                                 
                             </Box>

@@ -360,7 +360,7 @@ const LibraryPublicationsPage = () => {
                                 onClick={() => handleViewDetails(row)}
                             />
                             {
-                                userRole!== "Student" && row.type === "ấn phẩm cứng" && row?.libraryDetails && row.libraryDetails._id !== libraryId && (
+                                userRole!== "Student" && row?.type === "ấn phẩm cứng" && row?.libraryDetails && row?.libraryDetails?._id !== libraryId && (
                                     <IconPlus
                                         size={25}
                                         stroke={1.5}

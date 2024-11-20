@@ -1,15 +1,19 @@
-import { Chip, Switch, Tooltip, Typography } from "@mui/material";
+import BackspaceIcon from "@mui/icons-material/Backspace";
+import { Chip, Grid, IconButton, Paper, Switch, Tooltip, Typography, useTheme } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconBook, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
-import { IconEye, IconFileDownload, IconFileUpload, IconFileWord, IconPdf, IconPhoto, IconPresentation, IconTrashXFilled, IconVideo } from "@tabler/icons-react";
-import axios from "axios";
+import { IconEye, IconFileDownload, IconFileUpload, IconFileWord, IconHomeLink, IconHomeOff, IconPdf, IconPhoto, IconPresentation, IconShareOff, IconVideo, IconWorldShare } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import publicationsService from "../../../_apis/services/publications.service";
+import ImageCard from "../../../components/custom/card/ImageCard";
 import ActionsForm from "../../../components/custom/form/ActionForm";
-import TableList from "../../../components/custom/table-list/TableList";
+import PaginationForm from "../../../components/custom/form/PaginationForm";
+import { StyledTableCell, StyledTableRow } from "../../../components/custom/table-list/style";
 import StyledButton from "../../../components/default/button/StyledButton";
+import StyledIconButton from "../../../components/default/button/StyledIconButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
 import { useAuth } from "../../../contexts/JWTContext";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
@@ -31,12 +35,15 @@ import {
 } from "../../../hooks/services/publications/publications-query";
 import { useFetchPublisher } from "../../../hooks/services/publisher/publisher-query";
 import useQueryString from "../../../hooks/services/useQueryString";
+import { addInternalItem } from "../../../store/slices/cartInternalLoanSlip";
 import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TLibrary } from "../../../types/models/library.type";
+import { CreatePublication } from "../../../types/models/loanSlip.type";
 import { TPublications, TPublicationsCreate } from "../../../types/models/publications.type";
 import { TShelves } from "../../../types/models/shelves";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
+import { colorType } from "../../../utils/colorSwitchCase";
 import { statusOptions, typeOptions } from "../../../utils/constants.utils";
 import usePermission from "../../../utils/hasPermission";
 import { getLabelFromOptions, parserParams } from "../../../utils/object";
@@ -44,15 +51,13 @@ import DialogImportFile from "./ui-components/DialogImportFile ";
 import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
-import { useDispatch, useSelector } from "react-redux";
-import { CreatePublication } from "../../../types/models/loanSlip.type";
-import { addInternalItem } from "../../../store/slices/cartInternalLoanSlip";
 
 const PublicationsPage = () => {
     const queryString = useQueryString();
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
+    const theme = useTheme();
 
     const [selectedMaterial, setSelectedMaterial] = useState(0);
     const [selectedPublications, setSelectedPublications] = useState(0);
@@ -736,32 +741,6 @@ const PublicationsPage = () => {
     const actionMenus = useMemo((): TMenuOption[] => {
         return hasPermission([
             { resource: "publications", action: "manage" },
-        ]) ? [
-            {
-                label: "Tải file mẫu",
-                icon: <IconFileDownload size={20} stroke={1.5} />,
-                component: (
-                    <a
-                        href={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/template-publication.xlsx`}
-                        style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", color: "#616161" }}
-                    >
-                        <IconFileDownload size={20} stroke={1.5} style={{ marginRight: 8 }} />
-                        Tải file mẫu
-                    </a>
-                ),
-            },
-            {
-                label: "Import file excel",
-                icon: <IconFileUpload size={20} stroke={1.5} />,
-                onClick: handleImportExcel,
-            },
-            {
-                label: "Xóa các dữ liệu đã chọn",
-                icon: <IconTrashXFilled size={20} stroke={1.5} />,
-                onClick: handleDeleteMultiple,
-            },
-        ] : hasPermission([
-            { resource: "publications", action: "manage" },
             { resource: "publications", action: "create" },
         ]) ? [
             {
@@ -957,7 +936,7 @@ const PublicationsPage = () => {
                     handlePublisherFilterChange={handlePublisherFilterChange}
                     publisherData={publisherData}
                 />
-                <TableList
+                {/* <TableList
                     checked={checkedDelete}
                     columns={columns}
                     rows={data?.data?.result || []}
@@ -967,7 +946,326 @@ const PublicationsPage = () => {
                     isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
-                />
+                /> */}
+
+                <Grid container spacing={2} p={4} pt={3}>
+                    {
+                        isLoading === false && isFetching === false ? (
+                            data?.data?.result.map((item, index) => (
+                                <Grid item xs={12} sm={6} md={3} lg={4} xl={3} >
+                                    <Paper sx={{ p: 2, height: "100%", border: `1px solid ${theme.palette.grey[300]}`, }} elevation={0}>
+                                        <Box sx={{ display: "flex", height: "100%", flexDirection: "column", alignItems: "center", justifyContent: "space-between" }}>
+                                            <Paper sx={{ width: "100%", position: "relative" }}>
+                                                <Box onClick={() => handleViewDetails(item)}>
+                                                    <ImageCard id={item._id} photo={item?.priviewImage
+                                                        ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
+                                                        : item?.path
+                                                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
+                                                            : ""} aspectRatio={"16/9"} objectFit="contain" />
+                                                </Box>
+                                                {/* <Box
+
+                                                    sx={{
+                                                        position: "absolute",
+                                                        top: 0,
+                                                        right: -15,
+                                                        margin: "15px",
+                                                        color: "white",
+                                                        p: 0.5,
+                                                        display: "flex",
+                                                        alignItems: "center", justifyContent: "center",
+                                                        borderRadius: 2,
+                                                        backgroundColor: colorType(item?.mimetype),
+                                                        [theme.breakpoints.down("sm")]: {
+                                                            width: "7%",
+                                                        },
+                                                        [theme.breakpoints.down("md")]: {
+                                                            width: "10%",
+                                                        },
+                                                    }}>
+                                                    {
+                                                        (!item?.mimetype || (item?.mimetype === "image/jpeg" ||
+                                                            item?.mimetype === "image/png" ||
+                                                            item?.mimetype === "image/gif" ||
+                                                            item?.mimetype === "image/bmp" ||
+                                                            item?.mimetype === "image/webp") && item?.type === "ấn phẩm cứng") && (
+                                                            <IconBook
+                                                                size={25}
+                                                                stroke={1.2}
+                                                                color="white"
+
+                                                            />
+                                                        )
+                                                    }
+                                                    {
+                                                        (item?.mimetype === "application/pdf") && (
+                                                            <IconPdf
+                                                                size={25}
+                                                                stroke={1.2}
+                                                                color="white"
+                                                            />
+                                                        )
+                                                    }
+                                                    {
+                                                        (item?.mimetype === "application/msword" || item?.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && (
+                                                            <IconFileWord
+                                                                size={25}
+                                                                stroke={1.2}
+                                                                color="white"
+                                                            />
+                                                        )
+                                                    }
+                                                    {
+                                                        (item?.mimetype === "video/mp4" || item?.mimetype === "video/x-msvideo" || item?.mimetype === "video/x-matroska" || item?.mimetype === "video/webm") && (
+                                                            <IconVideo
+                                                                size={25}
+                                                                stroke={1.2}
+                                                                color="white"
+                                                            />
+                                                        )
+                                                    }
+                                                    {
+                                                        (item?.mimetype === "application/vnd.ms-powerpoint" ||
+                                                            item?.mimetype === "application/vnd.openxmlformats-officedocument.presentationml.presentation") && (
+                                                            <IconPresentation
+                                                                size={25}
+                                                                stroke={1.2}
+                                                                color="white"
+                                                            />
+                                                        )
+                                                    }
+                                                    {
+                                                        (item?.mimetype === "image/jpeg" ||
+                                                            item?.mimetype === "image/png" ||
+                                                            item?.mimetype === "image/gif" ||
+                                                            item?.mimetype === "image/bmp" ||
+                                                            item?.mimetype === "image/webp") && item?.type === "ấn phẩm mềm" && (
+                                                            <IconPhoto
+                                                                size={25}
+                                                                stroke={1.2}
+                                                                color="white"
+                                                            />
+                                                        )
+                                                    }
+                                                </Box> */}
+
+                                                {
+                                                    userRole === "Teacher" && item?.createBy === userId &&
+                                                    hasPermission([
+                                                        { resource: "publications", action: "manage" },
+                                                        { resource: "publications", action: "delete" },
+                                                    ]) &&
+                                                    <StyledIconButton
+                                                        disableHoverEffect
+                                                        sx={{
+                                                            position: "absolute",
+                                                            zIndex: 999,
+                                                            top: -30,
+                                                            right: -30,
+                                                            margin: "8px",
+                                                            background: "none",
+                                                            [theme.breakpoints.down("md")]: {
+                                                                width: "10%",
+                                                            },
+                                                            [theme.breakpoints.down("sm")]: {
+                                                                width: "10%",
+                                                            },
+                                                        }}
+                                                    >
+                                                        <BackspaceIcon
+                                                            sx={{
+                                                                color: theme.palette.error.dark,
+                                                            }}
+                                                            onClick={() => handleOpenConfirmDialog(item)}
+                                                        />
+                                                    </StyledIconButton>
+                                                }
+                                                {
+                                                    userRole !== "Teacher" &&
+                                                    hasPermission([
+                                                        { resource: "publications", action: "manage" },
+                                                        { resource: "publications", action: "delete" },
+                                                    ]) &&
+                                                    <StyledIconButton
+                                                        disableHoverEffect
+                                                        sx={{
+                                                            position: "absolute",
+                                                            zIndex: 999,
+                                                            top: -30,
+                                                            right: -30,
+                                                            margin: "8px",
+                                                            background: "none",
+                                                            [theme.breakpoints.down("md")]: {
+                                                                width: "10%",
+                                                            },
+                                                            [theme.breakpoints.down("sm")]: {
+                                                                width: "10%",
+                                                            },
+                                                        }}
+                                                    >
+                                                        <BackspaceIcon
+                                                            sx={{
+                                                                color: theme.palette.error.dark,
+                                                            }}
+                                                            onClick={() => handleOpenConfirmDialog(item)}
+                                                        />
+                                                    </StyledIconButton>
+                                                }
+
+                                                <Box>
+                                                    <StyledIconButton
+                                                        disableHoverEffect
+                                                        sx={{
+                                                            position: "absolute",
+                                                            zIndex: 999,
+                                                            bottom: -90,
+                                                            left: -15,
+                                                            background: "none",
+                                                            display: "flex",
+                                                            alignItems: "center", justifyContent: "center",
+                                                            [theme.breakpoints.down("sm")]: {
+                                                                width: "7%",
+                                                            },
+                                                            [theme.breakpoints.down("md")]: {
+                                                                width: "10%",
+                                                            },
+
+                                                        }}
+                                                    >
+                                                        {
+                                                            !(item?.type === "ấn phẩm cứng") && (userRole !== "Student") && (item?.createBy === userId) && (
+                                                                <Tooltip title="Chia sẻ lên thư viện" arrow placement="top">
+                                                                    <IconButton
+                                                                        onClick={() => handleChangePublic(item, !item?.isPublic)}
+                                                                        disabled={item?.isLink === true}
+                                                                    >
+                                                                        {item?.isPublic ? (
+                                                                            <IconHomeOff stroke={2} color="green" size={24} />
+                                                                        ) : (
+                                                                            <IconHomeLink stroke={2} color="gray" size={24} />
+                                                                        )}
+                                                                    </IconButton>
+                                                                </Tooltip>
+                                                            )
+                                                        }
+
+                                                        <Tooltip title="Chia sẻ liên thông" arrow placement="top">
+                                                            <IconButton
+                                                                onClick={() => handleOpenConfirmLink(item)}
+                                                                disabled={userRole === "Super Admin" || userRole === "Student"}
+                                                            >
+                                                                {item?.isLink ? (
+                                                                    <IconShareOff stroke={2} color="blue" size={24} />
+                                                                ) : (
+                                                                    <IconWorldShare stroke={2} color="gray" size={24} />
+                                                                )}
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    </StyledIconButton>
+
+                                                    {
+                                                        hasPermission([
+                                                            { resource: "publications", action: "manage" },
+                                                            { resource: "publications", action: "update" },
+                                                        ]) &&
+                                                        <StyledIconButton
+                                                            disableHoverEffect
+                                                            sx={{
+                                                                position: "absolute",
+                                                                zIndex: 999,
+                                                                bottom: -90,
+                                                                right: 15,
+                                                                margin: "8px",
+                                                                background: "none",
+                                                                [theme.breakpoints.down("sm")]: {
+                                                                    width: "7%",
+                                                                },
+                                                                [theme.breakpoints.down("md")]: {
+                                                                    width: "10%",
+                                                                },
+                                                            }}
+                                                        >
+                                                            {
+                                                                item?.type === "ấn phẩm cứng" && (
+                                                                    <Tooltip title="Mượn ấn phẩm" arrow placement="top">
+                                                                        <Box bgcolor={'red'} sx={{
+                                                                            background: "gray", color: "white", borderRadius: 2, display: "flex",
+                                                                            alignItems: "center", justifyContent: "center", p: 0.5
+                                                                        }}>
+                                                                            <IconPlus
+                                                                                size={20}
+                                                                                stroke={2}
+                                                                                onClick={() => handleAddItem(item)}
+                                                                            />
+                                                                        </Box>
+                                                                    </Tooltip>
+                                                                )
+                                                            }
+                                                        </StyledIconButton>
+                                                    }
+
+                                                    <StyledIconButton
+                                                        disableHoverEffect
+                                                        sx={{
+                                                            position: "absolute",
+                                                            zIndex: 999,
+                                                            bottom: -90,
+                                                            right: -15,
+                                                            margin: "8px",
+                                                            background: "none",
+                                                            [theme.breakpoints.down("sm")]: {
+                                                                width: "7%",
+                                                            },
+                                                            [theme.breakpoints.down("md")]: {
+                                                                width: "10%",
+                                                            },
+
+                                                        }}
+                                                    >
+                                                        <Box bgcolor={'red'} sx={{
+                                                            background: "#3078ec", color: "white", borderRadius: 2, display: "flex",
+                                                            alignItems: "center", justifyContent: "center", p: 0.5
+                                                        }}>
+                                                            <IconPencil
+                                                                onClick={() => handleEditPublications(item)}
+                                                                size={20}
+                                                                stroke={2}
+                                                            />
+                                                        </Box>
+
+                                                    </StyledIconButton>
+                                                </Box>
+                                            </Paper>
+                                            <Box sx={{ display: "flex", alignItems: "flex-start", height: "100%", minHeight: "75px", width: "200px" }}>
+                                                <Typography pt={2} color={theme.palette.info.dark} textAlign={"center"} variant="h6" fontSize={"16px !important"}
+                                                    sx={{
+                                                        whiteSpace: "nowrap",
+                                                        overflow: "hidden",
+                                                        textOverflow: "ellipsis",
+                                                        width: "100%"
+                                                    }}
+                                                >{capitalizeFirstLetter(item.name)}</Typography>
+                                            </Box>
+
+                                        </Box>
+                                    </Paper>
+                                </Grid>
+
+                            ))) : (
+                            <StyledTableRow hover role="checkbox" tabIndex={-1} sx={{ cursor: 'pointer' }}>
+                                <StyledTableCell colSpan={8} sx={{ p: "12px" }} padding="checkbox" align="center">
+                                    Không có dữ liệu
+                                </StyledTableCell>
+                            </StyledTableRow>
+                        )
+
+                    }
+                    < Grid item xs={12}>
+                        {data?.data?.meta && Object.keys(data?.data?.meta).length > 0 && (
+                            <PaginationForm pagination={data?.data?.meta} />
+                        )}
+                    </Grid>
+                </Grid>
 
                 <ConfirmDeleteDialog
                     key={"delete"}

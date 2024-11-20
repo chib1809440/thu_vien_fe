@@ -1132,35 +1132,35 @@ const PublicationsPage = () => {
 
                                                         }}
                                                     >
-                                                        {
-                                                            !(item?.type === "ấn phẩm cứng") && (userRole !== "Student") && (item?.createBy === userId) && (
-                                                                <Tooltip title="Chia sẻ lên thư viện" arrow placement="top">
-                                                                    <IconButton
-                                                                        onClick={() => handleChangePublic(item, !item?.isPublic)}
-                                                                        disabled={item?.isLink === true}
-                                                                    >
-                                                                        {item?.isPublic ? (
-                                                                            <IconHomeOff stroke={2} color="green" size={24} />
-                                                                        ) : (
-                                                                            <IconHomeLink stroke={2} color="gray" size={24} />
-                                                                        )}
-                                                                    </IconButton>
-                                                                </Tooltip>
-                                                            )
-                                                        }
+                                                        {!(item?.type === "ấn phẩm cứng") && (userRole !== "Student") && (item?.createBy === userId) && (
+                                                            <Tooltip title="Chia sẻ lên thư viện" arrow placement="top">
+                                                                <IconButton
+                                                                    onClick={() => handleChangePublic(item, !item?.isPublic)}
+                                                                    disabled={item?.isLink === true}
+                                                                >
+                                                                    {item?.isPublic ? (
+                                                                        <IconHomeOff stroke={2} color="green" size={24} />
+                                                                    ) : (
+                                                                        <IconHomeLink stroke={2} color="gray" size={24} />
+                                                                    )}
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        )}
 
-                                                        <Tooltip title="Chia sẻ liên thông" arrow placement="top">
-                                                            <IconButton
-                                                                onClick={() => handleOpenConfirmLink(item)}
-                                                                disabled={userRole === "Super Admin" || userRole === "Student"}
-                                                            >
-                                                                {item?.isLink ? (
-                                                                    <IconShareOff stroke={2} color="blue" size={24} />
-                                                                ) : (
-                                                                    <IconWorldShare stroke={2} color="gray" size={24} />
-                                                                )}
-                                                            </IconButton>
-                                                        </Tooltip>
+                                                        {item?.isPublic && ( // Chỉ hiển thị khi isPublic là true
+                                                            <Tooltip title="Chia sẻ liên thông" arrow placement="top">
+                                                                <IconButton
+                                                                    onClick={() => handleOpenConfirmLink(item)}
+                                                                    disabled={userRole === "Super Admin" || userRole === "Student"}
+                                                                >
+                                                                    {item?.isLink ? (
+                                                                        <IconShareOff stroke={2} color="blue" size={24} />
+                                                                    ) : (
+                                                                        <IconWorldShare stroke={2} color="gray" size={24} />
+                                                                    )}
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        )}
                                                     </StyledIconButton>
 
                                                     {

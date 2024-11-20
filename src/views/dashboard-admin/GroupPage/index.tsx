@@ -243,7 +243,7 @@ const GroupPage = () => {
                                 overflow: "hidden",
                             }}
                         >
-                            {row.mainLibrary ? capitalizeFirstLetter(row.mainLibrary.name) : "Chưa có trưởng có trưởng nhóm"}
+                            {row?.mainLibrary ? capitalizeFirstLetter(row?.mainLibrary?.name) : "Chưa có trưởng có trưởng nhóm"}
                         </Box>
                     );
                 },
@@ -266,20 +266,20 @@ const GroupPage = () => {
                             }}
                         >
                             {
-                                row.libraries && row.libraries.length > 0
+                                row?.libraries && row?.libraries?.length > 0
                                     ? (
                                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                            {row.libraries.slice(0, 2).map((lib) => (
+                                            {row?.libraries.slice(0, 2).map((lib) => (
                                                 <Chip
-                                                    key={lib._id}
-                                                    label={capitalizeFirstLetter(lib.name)}
+                                                    key={lib?._id}
+                                                    label={capitalizeFirstLetter(lib?.name)}
                                                     variant="outlined"
                                                     color="primary"
                                                 />
                                             ))}
-                                            {row.libraries.length > 2 && (
+                                            {row?.libraries?.length > 2 && (
                                                 <Chip
-                                                    label={`+${row.libraries.length - 2} thư viện khác`}
+                                                    label={`+${row?.libraries?.length - 2} thư viện khác`}
                                                     variant="outlined"
                                                     color="primary"
                                                 />

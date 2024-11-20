@@ -117,7 +117,7 @@ const LibCategoryPage = () => {
                 disablePadding: "none",
                 label: "Thư viện",
                 sxRow: { paddingRight: 4 },
-                render: (row) => (capitalizeFirstLetter((row.libraryDetails as TLibrary)?.name)),
+                render: (row) => (capitalizeFirstLetter((row?.libraryDetails as TLibrary)?.name)),
             },
             {
                 id: "action",
@@ -197,13 +197,13 @@ const LibCategoryPage = () => {
                 setOpenConfirmPullLinkMultiple(false);
                 setCheckedDelete([]);
 
-                const successfulNames = data.data.results.map(result => result.name);
-                const errorNames = data.data.errors.map(error => error.resource.name);
+                const successfulNames = data?.data?.results.map(result => result?.name);
+                const errorNames = data?.data?.errors.map(error => error.resource?.name);
 
 
-                if (data.data.results.length === 0 && data.data.errors.length > 0) {
+                if (data?.data?.results?.length === 0 && data?.data?.errors?.length > 0) {
                     toast.error(<span>Các mục: <strong style={{ color: 'red' }}>[ {errorNames.join(', ')} ]</strong> đã liên thông.</span>);
-                } else if (successfulNames.length > 0 && errorNames.length > 0) {
+                } else if (successfulNames?.length > 0 && errorNames?.length > 0) {
                     toast.success(<span>Liên thông các mục: <strong style={{ color: 'green' }}>[ {successfulNames.join(', ')} ]</strong> thành công.</span>, { autoClose: 5000 });
                     toast.error(<span>Các mục: <strong style={{ color: 'red' }}>[ {errorNames.join(', ')} ]</strong> đã liên thông.</span>, { autoClose: 5000 });
                 } else {

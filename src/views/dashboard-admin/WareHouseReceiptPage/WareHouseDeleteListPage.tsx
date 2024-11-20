@@ -106,7 +106,7 @@ const WareHouseReceiptDeleteListPage = () => {
                 render: (row) => {
                     return (
                         <>
-                            {(row.supplierId as TSupplier).name}
+                            {(row?.supplierId as TSupplier)?.name}
                         </>
                     );
                 },
@@ -148,7 +148,7 @@ const WareHouseReceiptDeleteListPage = () => {
                 render: (row) => {
                     return (
                         <>
-                            {(row.createBy as User).fullname}
+                            {(row.createBy as User)?.fullname}
                         </>
                     );
                 },

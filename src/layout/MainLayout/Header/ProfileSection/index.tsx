@@ -12,7 +12,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { IconLogout, IconUser } from '@tabler/icons';
-import { IconBrandSamsungpass, IconChevronDown, IconHomeBitcoin, IconShoppingCartFilled } from '@tabler/icons-react';
+import { IconBrandSamsungpass, IconBuildingStore, IconChevronDown, IconHomeBitcoin, IconShoppingCartFilled } from '@tabler/icons-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -23,16 +23,16 @@ import { useReFetchLoanSlip, useReFetchLoanSlipLink } from '../../../../hooks/se
 import useAuth from '../../../../hooks/useAuth';
 import { Role } from '../../../../interfaces/role';
 import { ChangePasswordUserModel, CreateUserModel, User } from '../../../../interfaces/user';
+import { clearInternalCart } from '../../../../store/slices/cartInternalLoanSlip';
 import { clearCart } from '../../../../store/slices/cartLoanSlip';
 import { TLibrary } from '../../../../types/models/library.type';
 import { CreatePublication } from '../../../../types/models/loanSlip.type';
 import { statusRole } from '../../../../utils/constants.utils';
 import { getLabelFromOptions } from '../../../../utils/object';
 import FormAddEditLibLoanSlip from '../../../../views/dashboard-admin/LienThong/LIB/LibLoanSlipPage/ui-components/FormAddEditLibLoanSlip';
+import FormAddEditLoanSlip from '../../../../views/dashboard-admin/LoanSlipPage/ui-components/FormAddEditLoanSlip';
 import FormChangePassword from './FormChangePassword';
 import FormProfile from './FormProfile';
-import { clearInternalCart } from '../../../../store/slices/cartInternalLoanSlip';
-import FormAddEditLoanSlip from '../../../../views/dashboard-admin/LoanSlipPage/ui-components/FormAddEditLoanSlip';
 // ==============================|| PROFILE MENU ||============================== //
 const settings = [
     { name: "Thông tin cá nhân", icon: <IconUser /> },
@@ -287,11 +287,12 @@ const ProfileSection = () => {
                                 position: 'relative',
                                 display: 'inline-flex',
                                 alignItems: 'center',
-                                mr: 2
+                                mr: 2,
+                                cursor:"pointer"
                             }}
                             onClick={handleSetOpenCart}
                         >
-                            <IconShoppingCartFilled size={32} />
+                            <IconBuildingStore color='#3078ec' size={32} />
                             {items?.length > 0 && ( // Show badge only if item count is greater than 0
                                 <Box
                                     sx={{
@@ -327,7 +328,7 @@ const ProfileSection = () => {
                             }}
                             onClick={handleSetOpenInternalCart}
                         >
-                            <IconShoppingCartFilled size={32} />
+                             <IconBuildingStore color='#3078ec' size={32} />
                             {internalItems?.length > 0 && ( // Show badge only if item count is greater than 0
                                 <Box
                                     sx={{

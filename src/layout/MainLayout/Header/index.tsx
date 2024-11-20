@@ -6,7 +6,6 @@ import { useTheme } from "@mui/material/styles";
 import { IconMenu2 } from "@tabler/icons";
 import { useDispatch, useSelector } from "../../../store";
 import { openDrawer } from "../../../store/slices/menu";
-import LogoSection from "../LogoSection";
 import ProfileSection from "./ProfileSection";
 
 
@@ -24,15 +23,13 @@ const Header = () => {
         sx={{
           width: 228,
           display: "flex",
+          alignItems:"center",
           [theme.breakpoints.down("md")]: {
             width: "auto",
           },
-          backgroundColor: 'red'
+          backgroundColor: '#c1eafe'
         }}
       >
-        <Box component="span" sx={{ display: { xs: 'none', md: 'block' }, flexGrow: 1 }}>
-          <LogoSection />
-        </Box>
 
         <Avatar
           variant="rounded"

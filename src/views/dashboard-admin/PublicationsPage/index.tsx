@@ -2,7 +2,7 @@ import BackspaceIcon from "@mui/icons-material/Backspace";
 import { Chip, Grid, IconButton, Paper, Switch, Tooltip, Typography, useTheme } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconBook, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
-import { IconEye, IconFileDownload, IconFileUpload, IconFileWord, IconHomeLink, IconHomeOff, IconPdf, IconPhoto, IconPresentation, IconShareOff, IconVideo, IconWorldShare } from "@tabler/icons-react";
+import { IconEye, IconFileDownload, IconFileUpload, IconFileWord, IconHomeLink, IconHomeOff, IconPdf, IconPhoto, IconPresentation, IconShareOff, IconShoppingBag, IconVideo, IconWorldShare } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -43,7 +43,6 @@ import { TPublications, TPublicationsCreate } from "../../../types/models/public
 import { TShelves } from "../../../types/models/shelves";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
-import { colorType } from "../../../utils/colorSwitchCase";
 import { statusOptions, typeOptions } from "../../../utils/constants.utils";
 import usePermission from "../../../utils/hasPermission";
 import { getLabelFromOptions, parserParams } from "../../../utils/object";
@@ -950,7 +949,7 @@ const PublicationsPage = () => {
 
                 <Grid container spacing={2} p={4} pt={3}>
                     {
-                        isLoading === false && isFetching === false ? (
+                        isLoading === false && isFetching === false && data?.data?.result.length > 0 ? (
                             data?.data?.result.map((item, index) => (
                                 <Grid item xs={12} sm={6} md={3} lg={4} xl={3} >
                                     <Paper sx={{ p: 2, height: "100%", border: `1px solid ${theme.palette.grey[300]}`, }} elevation={0}>
@@ -963,92 +962,6 @@ const PublicationsPage = () => {
                                                             ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
                                                             : ""} aspectRatio={"16/9"} objectFit="contain" />
                                                 </Box>
-                                                {/* <Box
-
-                                                    sx={{
-                                                        position: "absolute",
-                                                        top: 0,
-                                                        right: -15,
-                                                        margin: "15px",
-                                                        color: "white",
-                                                        p: 0.5,
-                                                        display: "flex",
-                                                        alignItems: "center", justifyContent: "center",
-                                                        borderRadius: 2,
-                                                        backgroundColor: colorType(item?.mimetype),
-                                                        [theme.breakpoints.down("sm")]: {
-                                                            width: "7%",
-                                                        },
-                                                        [theme.breakpoints.down("md")]: {
-                                                            width: "10%",
-                                                        },
-                                                    }}>
-                                                    {
-                                                        (!item?.mimetype || (item?.mimetype === "image/jpeg" ||
-                                                            item?.mimetype === "image/png" ||
-                                                            item?.mimetype === "image/gif" ||
-                                                            item?.mimetype === "image/bmp" ||
-                                                            item?.mimetype === "image/webp") && item?.type === "ấn phẩm cứng") && (
-                                                            <IconBook
-                                                                size={25}
-                                                                stroke={1.2}
-                                                                color="white"
-
-                                                            />
-                                                        )
-                                                    }
-                                                    {
-                                                        (item?.mimetype === "application/pdf") && (
-                                                            <IconPdf
-                                                                size={25}
-                                                                stroke={1.2}
-                                                                color="white"
-                                                            />
-                                                        )
-                                                    }
-                                                    {
-                                                        (item?.mimetype === "application/msword" || item?.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && (
-                                                            <IconFileWord
-                                                                size={25}
-                                                                stroke={1.2}
-                                                                color="white"
-                                                            />
-                                                        )
-                                                    }
-                                                    {
-                                                        (item?.mimetype === "video/mp4" || item?.mimetype === "video/x-msvideo" || item?.mimetype === "video/x-matroska" || item?.mimetype === "video/webm") && (
-                                                            <IconVideo
-                                                                size={25}
-                                                                stroke={1.2}
-                                                                color="white"
-                                                            />
-                                                        )
-                                                    }
-                                                    {
-                                                        (item?.mimetype === "application/vnd.ms-powerpoint" ||
-                                                            item?.mimetype === "application/vnd.openxmlformats-officedocument.presentationml.presentation") && (
-                                                            <IconPresentation
-                                                                size={25}
-                                                                stroke={1.2}
-                                                                color="white"
-                                                            />
-                                                        )
-                                                    }
-                                                    {
-                                                        (item?.mimetype === "image/jpeg" ||
-                                                            item?.mimetype === "image/png" ||
-                                                            item?.mimetype === "image/gif" ||
-                                                            item?.mimetype === "image/bmp" ||
-                                                            item?.mimetype === "image/webp") && item?.type === "ấn phẩm mềm" && (
-                                                            <IconPhoto
-                                                                size={25}
-                                                                stroke={1.2}
-                                                                color="white"
-                                                            />
-                                                        )
-                                                    }
-                                                </Box> */}
-
                                                 {
                                                     userRole === "Teacher" && item?.createBy === userId &&
                                                     hasPermission([
@@ -1192,7 +1105,7 @@ const PublicationsPage = () => {
                                                                             background: "gray", color: "white", borderRadius: 2, display: "flex",
                                                                             alignItems: "center", justifyContent: "center", p: 0.5
                                                                         }}>
-                                                                            <IconPlus
+                                                                            <IconShoppingBag
                                                                                 size={20}
                                                                                 stroke={2}
                                                                                 onClick={() => handleAddItem(item)}
@@ -1252,11 +1165,9 @@ const PublicationsPage = () => {
                                 </Grid>
 
                             ))) : (
-                            <StyledTableRow hover role="checkbox" tabIndex={-1} sx={{ cursor: 'pointer' }}>
-                                <StyledTableCell colSpan={8} sx={{ p: "12px" }} padding="checkbox" align="center">
-                                    Không có dữ liệu
-                                </StyledTableCell>
-                            </StyledTableRow>
+                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
+                                <Typography>Chưa có ấn phẩm</Typography>
+                            </Box>
                         )
 
                     }

@@ -114,7 +114,7 @@ const MainLayout = () => {
         sx={{
           bgcolor: theme.palette.background.default,
           transition: drawerOpen ? theme.transitions.create('width') : 'none',
-          backgroundColor: 'red'
+          backgroundColor: '#c1eafe'
         }}
       >
         {header}
@@ -124,7 +124,7 @@ const MainLayout = () => {
       <Sidebar />
       {/* main content */}
       <>
-        <Main theme={theme} open={drawerOpen} sx={{ pt: 5, marginTop: '80px' }}>
+        <Main theme={theme} open={drawerOpen} sx={{ pt: 5, marginTop: '80px'}} >
           {/* breadcrumb */}
           {container && (
             <Container maxWidth="lg">
@@ -182,7 +182,8 @@ export const MainLayoutV2 = () => {
         elevation={0}
         sx={{
           bgcolor: theme.palette.background.default,
-          transition: drawerOpen ? theme.transitions.create('width') : 'none'
+          transition: drawerOpen ? theme.transitions.create('width') : 'none',
+          backgroundColor: '#c1eafe'
         }}
       >
         {header}

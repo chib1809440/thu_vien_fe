@@ -19,6 +19,8 @@ const menu = createSlice({
         },
 
         openDrawer(state, action) {
+            console.log('hihih', action.payload);
+
             state.drawerOpen = action.payload;
         }
     }

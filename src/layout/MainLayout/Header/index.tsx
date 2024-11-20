@@ -27,6 +27,7 @@ const Header = () => {
           [theme.breakpoints.down("md")]: {
             width: "auto",
           },
+          backgroundColor: 'red'
         }}
       >
         <Box component="span" sx={{ display: { xs: 'none', md: 'block' }, flexGrow: 1 }}>

@@ -113,7 +113,8 @@ const MainLayout = () => {
         elevation={0}
         sx={{
           bgcolor: theme.palette.background.default,
-          transition: drawerOpen ? theme.transitions.create('width') : 'none'
+          transition: drawerOpen ? theme.transitions.create('width') : 'none',
+          backgroundColor: 'red'
         }}
       >
         {header}

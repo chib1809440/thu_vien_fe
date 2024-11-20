@@ -259,7 +259,7 @@ const ProfileSection = () => {
 
     return (
         <Grid item>
-            <Box sx={{ display: "flex", gap: 1 }}>
+            <Box sx={{ display: "flex", gap: 1, }}>
                 {openCart && (
                     <FormAddEditLibLoanSlip
                         open={openCart}

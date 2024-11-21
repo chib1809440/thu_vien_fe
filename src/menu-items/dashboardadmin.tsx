@@ -26,7 +26,20 @@ import {
     IconSmartHome,
     IconUserPlus,
     IconUsers,
-    IconVocabulary
+    IconVocabulary,
+    IconInfoCircle,
+    IconBrandWindows,
+    IconTransferIn,
+    IconHomeQuestion,
+    IconReceipt2,
+    IconBrandUbuntu,
+    IconUserCircle,
+    IconBooks,
+    IconBrandAirtable,
+    IconChartRadar,
+    IconFolder,
+    IconListDetails,
+    IconListCheck
 } from '@tabler/icons';
 import { VERSION } from '../config';
 
@@ -36,7 +49,11 @@ const icons = {
     IconCloudComputing, IconCategory, IconPrinter, IconForklift, IconBuildingWarehouse,
     IconHomeSearch, IconDevices, IconEyeTable, IconSmartHome, IconUserPlus,
     IconReceipt, IconReceiptRefund, IconShare, IconLocation, IconBuildingCastle,
-    IconReportMoney, IconReportAnalytics, IconBrowserPlus, IconBrowser, IconNotes, IconBrandWechat, IconMicrophone, IconFileText, IconBook
+    IconReportMoney, IconReportAnalytics, IconBrowserPlus, IconBrowser, IconNotes, 
+    IconBrandWechat, IconMicrophone, IconFileText, IconBook, IconInfoCircle,
+    IconBrandWindows, IconTransferIn, IconHomeQuestion, IconReceipt2, IconBrandUbuntu,
+    IconUserCircle, IconBooks, IconBrandAirtable, IconChartRadar, IconFolder,
+    IconListDetails, IconListCheck
 };
 
 
@@ -64,7 +81,7 @@ const dashboardAdmin = {
             title: "Hệ thống",
             type: 'collapse',
             // url: '/he-thong',
-            icon: icons.IconBrowser,
+            icon: icons.IconBrandWindows,
             breadcrumbs: false,
             permissions: [{
                 "resource": "groups",
@@ -82,7 +99,7 @@ const dashboardAdmin = {
                     title: "Nhóm",
                     type: 'item',
                     url: '/he-thong/quan-ly-nhom',
-                    icon: icons.IconDeviceAnalytics,
+                    icon: icons.IconBrandUbuntu,
                     breadcrumbs: false,
                     permissions: [{
                         "resource": "groups",
@@ -100,7 +117,7 @@ const dashboardAdmin = {
                     title: "Thư viện",
                     type: 'item',
                     url: '/he-thong/quan-ly-thu-vien',
-                    icon: icons.IconDeviceAnalytics,
+                    icon: icons.IconBooks,
                     breadcrumbs: false,
                     permissions: [{
                         "resource": "all",
@@ -109,10 +126,10 @@ const dashboardAdmin = {
                 },
                 {
                     id: 'quan-ly-tai-khoan-admin',
-                    title: "Tài khoản admin thư viện",
+                    title: "Tài khoản thủ thư",
                     type: 'item',
                     url: '/he-thong/quan-ly-tai-khoan-admin',
-                    icon: icons.IconDeviceAnalytics,
+                    icon: icons.IconUserCircle,
                     breadcrumbs: false,
                     permissions: [{
                         "resource": "all",
@@ -124,7 +141,7 @@ const dashboardAdmin = {
                     title: "Tài khoản",
                     type: 'item',
                     url: '/quan-ly-tai-khoan',
-                    icon: icons.IconDeviceAnalytics,
+                    icon: icons.IconUserCircle,
                     breadcrumbs: false,
                     permissions: [{
                         "resource": "users",
@@ -136,7 +153,7 @@ const dashboardAdmin = {
                     title: "Vai trò",
                     type: 'item',
                     url: '/vai-tro',
-                    icon: icons.IconBrowserPlus,
+                    icon: icons.IconChartRadar,
                     breadcrumbs: false,
                     permissions: [{
                         "resource": "all",
@@ -158,7 +175,7 @@ const dashboardAdmin = {
             title: "Quản lý nhập kho",
             type: 'collapse',
             url: '/quan-ly-nhap-kho',
-            icon: icons.IconBrowser,
+            icon: icons.IconTransferIn,
             breadcrumbs: false,
             permissions: [{
                 "resource": "suppliers",
@@ -176,7 +193,7 @@ const dashboardAdmin = {
                     title: "Nhà cung cấp",
                     type: 'item',
                     url: '/quan-ly-nhap-kho/nha-cung-cap',
-                    icon: icons.IconEyeTable,
+                    icon: icons.IconHomeQuestion,
                     breadcrumbs: false,
                     permissions: [{
                         "resource": "suppliers",
@@ -188,7 +205,7 @@ const dashboardAdmin = {
                     title: "Phiếu nhập kho",
                     type: 'item',
                     url: '/quan-ly-nhap-kho/phieu-nhap-kho',
-                    icon: icons.IconEyeTable,
+                    icon: icons.IconReceipt2,
                     breadcrumbs: false,
                     permissions: [{
                         "resource": "warehousereceipts",
@@ -202,7 +219,7 @@ const dashboardAdmin = {
             title: "Quản lý kho",
             type: 'collapse',
             url: '/quan-ly-kho',
-            icon: icons.IconBrowser,
+            icon: icons.IconBuildingWarehouse,
             breadcrumbs: false,
             permissions: [
             {
@@ -219,7 +236,7 @@ const dashboardAdmin = {
                     title: "Tủ - Kệ",
                     type: 'item',
                     url: '/quan-ly-kho/tu-ke',
-                    icon: icons.IconEyeTable,
+                    icon: icons.IconBrandAirtable,
                     breadcrumbs: false
                 },
                 {
@@ -227,7 +244,7 @@ const dashboardAdmin = {
                     title: "Kho",
                     type: 'item',
                     url: '/quan-ly-kho/kho',
-                    icon: icons.IconDevices,
+                    icon: icons.IconBuildingWarehouse,
                     breadcrumbs: false
                 },
                 {
@@ -257,7 +274,7 @@ const dashboardAdmin = {
             id: 'quan-ly-danh-muc',
             title: "Quản lý danh mục",
             type: 'collapse',
-            icon: icons.IconBrowser,
+            icon: icons.IconFolder,
             permissions: [{
                 "resource": "materials",
                 "action": "manage"
@@ -301,7 +318,7 @@ const dashboardAdmin = {
                     title: "Lĩnh vực",
                     type: 'item',
                     url: '/quan-ly-danh-muc/linh-vuc',
-                    icon: icons.IconBrowser,
+                    icon: icons.IconCategory,
                     breadcrumbs: false,
                     permissions: [{
                         "resource": "all",
@@ -393,7 +410,7 @@ const dashboardAdmin = {
             title: "Thông tin trường",
             type: 'item',
             url: '/thong-tin',
-            icon: icons.IconLocation,
+            icon: icons.IconInfoCircle,
             breadcrumbs: false,
             permissions: [{
                 "resource": "statisticals",
@@ -478,7 +495,7 @@ export const dashboardAdminV2 = {
             title: "Chia sẻ danh mục",
             breadcrumbs: false,
             type: 'collapse',
-            icon: icons.IconBrowser,
+            icon: icons.IconFolder,
             permissions: [{
                 "resource": "categories",
                 "action": "manage"
@@ -506,7 +523,7 @@ export const dashboardAdminV2 = {
                     title: "Lĩnh vực",
                     type: 'item',
                     url: '/lien-thong/chia-se-danh-muc/linh-vuc',
-                    icon: icons.IconBrowser,
+                    icon: icons.IconCategory,
                     breadcrumbs: false,
                 },
                 {
@@ -532,7 +549,7 @@ export const dashboardAdminV2 = {
             url: 'danh-sach-muon-tra-lien-thong',
             breadcrumbs: false,
             type: 'collapse',
-            icon: icons.IconBrowser,
+            icon: icons.IconReceipt,
             permissions: [{
                 "resource": "publications",
                 "action": "manage"
@@ -547,7 +564,7 @@ export const dashboardAdminV2 = {
                     title: "Danh sách mượn",
                     type: 'item',
                     url: '/lien-thong/chia-se-danh-muc/phieu-muon-lien-thong',
-                    icon: icons.IconBrowserPlus,
+                    icon: icons.IconListDetails,
                     breadcrumbs: false,
                     permissions: [{
                         "resource": "loanslips",
@@ -560,7 +577,7 @@ export const dashboardAdminV2 = {
                     title: "Danh sách yêu cầu mượn",
                     type: 'item',
                     url: '/lien-thong/chia-se-danh-muc/phieu-muon-yeu-cau-lien-thong',
-                    icon: icons.IconBrowserPlus,
+                    icon: icons.IconListCheck,
                     breadcrumbs: false,
                     permissions: [{
                         "resource": "categories",

@@ -11,7 +11,6 @@ import publicationsService from "../../../_apis/services/publications.service";
 import ImageCard from "../../../components/custom/card/ImageCard";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import PaginationForm from "../../../components/custom/form/PaginationForm";
-import { StyledTableCell, StyledTableRow } from "../../../components/custom/table-list/style";
 import StyledButton from "../../../components/default/button/StyledButton";
 import StyledIconButton from "../../../components/default/button/StyledIconButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
@@ -876,6 +875,7 @@ const PublicationsPage = () => {
                             {
                                 hasPermission([
                                     { resource: "publications", action: "manage" },
+                                    { resource: "publications", action: "delete" },
                                 ]) ?
                                     <Link
                                         to="/thu-vien/danh-sach-xoa-an-pham"
@@ -947,11 +947,11 @@ const PublicationsPage = () => {
                     pagination={data?.data?.meta}
                 /> */}
 
-                <Grid container spacing={2} p={4} pt={3}>
+                <Grid container spacing={2} p={4} pt={1.5}>
                     {
                         isLoading === false && isFetching === false && data?.data?.result.length > 0 ? (
                             data?.data?.result.map((item, index) => (
-                                <Grid item xs={12} sm={6} md={3} lg={4} xl={3} >
+                                <Grid item xs={12} sm={12} md={6} lg={4} xl={3} >
                                     <Paper sx={{ p: 2, height: "100%", border: `1px solid ${theme.palette.grey[300]}`, }} elevation={0}>
                                         <Box sx={{ display: "flex", height: "100%", flexDirection: "column", alignItems: "center", justifyContent: "space-between" }}>
                                             <Paper sx={{ width: "100%", position: "relative" }}>
@@ -1025,7 +1025,7 @@ const PublicationsPage = () => {
                                                     </StyledIconButton>
                                                 }
 
-                                                <Box>
+                                                <Box sx={{ position: "relative" }}>
                                                     <StyledIconButton
                                                         disableHoverEffect
                                                         sx={{
@@ -1036,12 +1036,13 @@ const PublicationsPage = () => {
                                                             background: "none",
                                                             display: "flex",
                                                             alignItems: "center", justifyContent: "center",
-                                                            [theme.breakpoints.down("sm")]: {
-                                                                width: "7%",
-                                                            },
                                                             [theme.breakpoints.down("md")]: {
-                                                                width: "10%",
+                                                                width: "20%",
                                                             },
+                                                            [theme.breakpoints.down("sm")]: {
+                                                                width: "40%",
+                                                            },
+
 
                                                         }}
                                                     >

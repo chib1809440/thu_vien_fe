@@ -38,7 +38,7 @@ const Sidebar = ({ window }: SidebarProps) => {
                     // height: !matchUpMd ? "calc(100vh - 56px)" : "calc(100vh - 88px)",
                     paddingLeft: "16px",
                     paddingRight: "16px",
-                    paddingTop: "16px",
+                    paddingTop: "21px",
                     paddingBottom: "16px",
                 }}
             >
@@ -141,8 +141,19 @@ const Sidebar = ({ window }: SidebarProps) => {
                                     color: "#3078ec !important",
                                 },
                             },
-                        },
 
+                        },
+                        "& a.MuiButtonBase-root.MuiListItemButton-root.MuiListItemButton-gutters.MuiListItemButton-root.MuiListItemButton-gutters.css-15ee415-MuiButtonBase-root-MuiListItemButton-root": {
+                            width: "100%",
+                            paddingLeft: "15px",
+                            '&:hover': {
+                                background: "#e4f2fd !important"
+                            },
+                            '&.Mui-selected': {
+                                color: '#3078ec !important',
+                                background: "#e4f2fd  !important"
+                            },
+                        },
                         "& .MuiListItemIcon-root": {
                             color: "white !important",
                         },
@@ -180,12 +191,12 @@ export const SidebarV2 = ({ window }: SidebarProps) => {
                     // height: !matchUpMd ? "calc(100vh - 56px)" : "calc(100vh - 88px)",
                     paddingLeft: "16px",
                     paddingRight: "16px",
-                    paddingTop: "16px",
+                    paddingTop: "21px",
                     paddingBottom: "16px",
 
                 }}
             >
-                  <Box
+                <Box
                     sx={{
                         display: 'flex',
                         justifyContent: 'space-between', // Space between Logo and Avatar
@@ -242,11 +253,11 @@ export const SidebarV2 = ({ window }: SidebarProps) => {
         window !== undefined ? () => window.document.body : undefined;
     return (
         <Box component="nav"
-        sx={{
-            flexShrink: { md: 0 },
-            width: matchUpMd ? 280 : 'auto',
-        }}
-        aria-label="mailbox folders">
+            sx={{
+                flexShrink: { md: 0 },
+                width: matchUpMd ? 280 : 'auto',
+            }}
+            aria-label="mailbox folders">
             <Drawer
                 container={container}
                 variant={matchUpMd ? 'persistent' : 'temporary'}
@@ -266,24 +277,34 @@ export const SidebarV2 = ({ window }: SidebarProps) => {
                         boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 12px",
                     },
                     "& .MuiButtonBase-root.MuiListItemButton-root": {
-                            color: "white !important",
-                            '&:hover': {
-                                color: '#3078ec !important',
-                                "& .MuiListItemIcon-root": {
-                                    color: "#3078ec !important",
-                                },
-                            },
-                            '&.Mui-selected': {
-                                color: '#3078ec !important',
-                                "& .MuiListItemIcon-root": {
-                                    color: "#3078ec !important",
-                                },
+                        color: "white !important",
+                        '&:hover': {
+                            color: '#3078ec !important',
+                            "& .MuiListItemIcon-root": {
+                                color: "#3078ec !important",
                             },
                         },
-
-                        "& .MuiListItemIcon-root": {
-                            color: "white !important",
+                        '&.Mui-selected': {
+                            color: '#3078ec !important',
+                            "& .MuiListItemIcon-root": {
+                                color: "#3078ec !important",
+                            },
                         },
+                    },
+                    "& a.MuiButtonBase-root.MuiListItemButton-root.MuiListItemButton-gutters.MuiListItemButton-root.MuiListItemButton-gutters.css-15ee415-MuiButtonBase-root-MuiListItemButton-root": {
+                        width: "100%",
+                        paddingLeft: "15px",
+                        '&:hover': {
+                            background: "#e4f2fd !important"
+                        },
+                        '&.Mui-selected': {
+                            color: '#3078ec !important',
+                            background: "#e4f2fd  !important"
+                        },
+                    },
+                    "& .MuiListItemIcon-root": {
+                        color: "white !important",
+                    },
                 }}
                 ModalProps={{ keepMounted: true }}
                 color="inherit"

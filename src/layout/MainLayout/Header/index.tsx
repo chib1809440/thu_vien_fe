@@ -1,5 +1,5 @@
 // material-ui
-import { Avatar, Box } from "@mui/material";
+import { Avatar, Box, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 // project imports
@@ -23,7 +23,7 @@ const Header = () => {
         sx={{
           width: 228,
           display: "flex",
-          alignItems:"center",
+          alignItems: "center",
           [theme.breakpoints.down("md")]: {
             width: "auto",
           },
@@ -54,9 +54,20 @@ const Header = () => {
 
       {/* header search */}
       {/* <SearchSection /> */}
+      <Box
+        sx={{
+          paddingLeft: "50px",
+          [theme.breakpoints.down("sm")]: {
+            display: "none",
+          },
+        }}
+      >
+        <Typography sx={{ fontSize: "20px", fontWeight: 500, color: "#004085" }}>
+          Phần mềm Quản lí Thư viện - Liên thông Thư viện GD Lib
+        </Typography>
+      </Box>
       <Box sx={{ flexGrow: 1 }} />
       <Box sx={{ flexGrow: 1 }} />
-
       <ProfileSection />
     </>
   );

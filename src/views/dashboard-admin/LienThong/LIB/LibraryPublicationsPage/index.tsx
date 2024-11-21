@@ -1,13 +1,14 @@
-import { Chip, Typography } from "@mui/material";
+import { Grid, Paper, Tooltip, Typography, useTheme } from "@mui/material";
 import { Box } from "@mui/system";
 import { IconBook } from "@tabler/icons";
-import { IconEye, IconFileWord, IconPdf, IconPhoto, IconPlus, IconPresentation, IconVideo } from "@tabler/icons-react";
+import { IconFileWord, IconPdf, IconPhoto, IconPresentation, IconShoppingBag, IconVideo } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import ImageCard from "../../../../../components/custom/card/ImageCard";
 import ActionsForm from "../../../../../components/custom/form/ActionForm";
-import TableList from "../../../../../components/custom/table-list/TableList";
-import { useAuth } from "../../../../../contexts/JWTContext";
+import PaginationForm from "../../../../../components/custom/form/PaginationForm";
+import StyledIconButton from "../../../../../components/default/button/StyledIconButton";
 import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
 import { useFetchAuthorLink } from "../../../../../hooks/services/author/author-query";
 import { useFetchCategoryLink } from "../../../../../hooks/services/category/category-query";
@@ -16,16 +17,15 @@ import { useFetchMaterialLink } from "../../../../../hooks/services/material/mat
 import { useFetchPublicationsLink } from "../../../../../hooks/services/publications/publications-query";
 import { useFetchPublisherLink } from "../../../../../hooks/services/publisher/publisher-query";
 import useQueryString from "../../../../../hooks/services/useQueryString";
-import { Role } from "../../../../../interfaces/role";
 import { addItem } from "../../../../../store/slices/cartLoanSlip";
-import { TColumn, TMenuOption } from "../../../../../types/common/table";
+import { TMenuOption } from "../../../../../types/common/table";
 import { TLibrary } from "../../../../../types/models/library.type";
 import { CreatePublication } from "../../../../../types/models/loanSlip.type";
 import { TPublications } from "../../../../../types/models/publications.type";
 import IBreadcrumsCustom from "../../../../../ui-component/breadcrums";
 import MainCard from "../../../../../ui-component/cards/MainCard";
-import { statusOptions, typeOptions } from "../../../../../utils/constants.utils";
-import { getLabelFromOptions, parserParams } from "../../../../../utils/object";
+import { colorType, typeOptions } from "../../../../../utils/constants.utils";
+import { parserParams } from "../../../../../utils/object";
 import FilterByItems from "../../../PublicationsPage/ui-components/FilterByItems";
 import PublicationsDetailsDialog from "../../../PublicationsPage/ui-components/PublicationsDetailsDialog";
 
@@ -34,6 +34,7 @@ const LibraryPublicationsPage = () => {
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
+    const theme = useTheme();
 
     const [selectedLibrary, setSelectedLibrary] = useState(0);
     const [selectedMaterial, setSelectedMaterial] = useState(0);
@@ -43,19 +44,6 @@ const LibraryPublicationsPage = () => {
     const [selectedPublisher, setSelectedPublisher] = useState(0);
     const [barcodeSearch, setBarcodeSearch] = useState("");
     const items = useSelector((state: { cartLoanSlip: { items: CreatePublication[] } }) => state.cartLoanSlip.items);
-    const { logout, user } = useAuth();
-
-    const libraryId = useMemo(() => {
-        if (!user) return null;
-        const _user = { ...user } as any;
-        return _user?.data?.libraryId;
-    }, [user]);
-
-    const userRole = useMemo(() => {
-        if (!user) return null;
-        const _user = { ...user } as any;
-        return (_user?.data?.roleId as Role)?.name;
-    }, [user]);
 
     const filter = useMemo(
         () =>
@@ -203,179 +191,6 @@ const LibraryPublicationsPage = () => {
             draggable: true, // Cho phép kéo thả để đóng thông báo
         })
     };
-    const columns: TColumn<TPublications & { libraryDetails?: TLibrary }>[] = useMemo(
-        () => [
-            {
-                id: "name",
-                disablePadding: "none",
-                label: "Tên ấn phẩm",
-                align: "left",
-                sxRow: { px: 3, maxWidth: 150 },
-                render: (row) => {
-                    const hasWhitespace = /\s/.test(row?.name);
-                    return (
-                        <Typography noWrap={!hasWhitespace}>
-                            {capitalizeFirstLetter(row?.name)}
-                        </Typography>
-                    );
-                },
-            },
-            {
-                id: "type",
-                disablePadding: "none",
-                label: "Loại ấn phẩm",
-                align: "left",
-                sxRow: { px: 3, maxWidth: 150 },
-                render: (row) => {
-                    const selectedType = typeOptions.find((option) => option.value === row.type);
-
-                    const chipColor =
-                        selectedType?.value === "ấn phẩm cứng" ? "#007e43" : "#fa7d70";
-
-                    return selectedType ? (
-                        <Chip
-                            label={selectedType.label}
-                            style={{ backgroundColor: chipColor, color: "#fff" }}
-                            variant="filled"
-                        />
-                    ) : null;
-                },
-            },
-
-            {
-                id: "isPublic",
-                disablePadding: "none",
-                label: "Thông tin ấn phẩm",
-                align: "left",
-                sxRow: {
-                    px: 4,
-                    maxWidth: 300,
-                },
-                render: (row) => {
-                    return (
-                        <>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                                Thư viện:  <Typography textTransform={"capitalize"} ml={1} fontWeight={600}>{(row?.libraryDetails as TLibrary)?.name}</Typography>
-                            </Box>
-
-                            {
-                                row?.barcode && (
-                                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                                        Barcode: <Typography ml={1} fontWeight={600}>{row?.barcode}</Typography>
-                                    </Box>
-                                )
-                            }
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                                Trạng thái: <Typography ml={1} fontWeight={600}>{getLabelFromOptions(statusOptions, row?.status)}</Typography>
-                            </Box>
-                            <Box mt={1}>
-                                {
-                                    (!row?.mimetype || (row?.mimetype === "image/jpeg" ||
-                                        row?.mimetype === "image/png" ||
-                                        row?.mimetype === "image/gif" ||
-                                        row?.mimetype === "image/bmp" ||
-                                        row?.mimetype === "image/webp") && row?.type === "ấn phẩm cứng") && (
-                                        <IconBook
-                                            size={30}
-                                            stroke={1.5}
-                                            color="#007e43"
-                                        />
-                                    )
-                                }
-                                {
-                                    (row?.mimetype === "application/pdf") && (
-                                        <IconPdf
-                                            size={30}
-                                            stroke={1.5}
-                                            color="#fd6033"
-                                        />
-                                    )
-                                }
-                                {
-                                    (row?.mimetype === "application/msword" || row?.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && (
-                                        <IconFileWord
-                                            size={30}
-                                            stroke={1.5}
-                                            color="#007bff"
-                                        />
-                                    )
-                                }
-                                {
-                                    (row?.mimetype === "video/mp4" || row?.mimetype === "video/x-msvideo" || row?.mimetype === "video/x-matroska" || row?.mimetype === "video/webm") && (
-                                        <IconVideo
-                                            size={30}
-                                            stroke={1.5}
-                                            color="#ff5733"
-                                        />
-                                    )
-                                }
-                                {
-                                    (row?.mimetype === "application/vnd.ms-powerpoint" ||
-                                        row?.mimetype === "application/vnd.openxmlformats-officedocument.presentationml.presentation") && (
-                                        <IconPresentation
-                                            size={30}
-                                            stroke={1.5}
-                                            color="#ffc107"
-                                        />
-                                    )
-                                }
-                                {
-                                    (row?.mimetype === "image/jpeg" ||
-                                        row?.mimetype === "image/png" ||
-                                        row?.mimetype === "image/gif" ||
-                                        row?.mimetype === "image/bmp" ||
-                                        row?.mimetype === "image/webp") && row?.type === "ấn phẩm mềm" && (
-                                        <IconPhoto
-                                            size={30}
-                                            stroke={1.5}
-                                            color="#28a745"
-                                        />
-                                    )
-                                }
-                            </Box>
-
-                        </>
-                    );
-                },
-            },
-
-            {
-                id: "action",
-                disablePadding: "none",
-                align: "center",
-                label: "Hành động",
-                render: (row) => {
-                    return (
-                        <Box
-                            sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                gap: 1,
-                            }}
-                        >
-                            <IconEye
-                                size={25}
-                                stroke={1.5}
-                                onClick={() => handleViewDetails(row)}
-                            />
-                            {
-                                userRole!== "Student" && row?.type === "ấn phẩm cứng" && row?.libraryDetails && row?.libraryDetails?._id !== libraryId && (
-                                    <IconPlus
-                                        size={25}
-                                        stroke={1.5}
-                                        onClick={() => handleAddItem(row)}
-                                    />
-                                )
-                            }
-                        </Box>
-                    );
-                },
-            },
-        ],
-        [handleViewDetails]
-    );
-
 
     const actionMenus = useMemo((): TMenuOption[] => {
         return [];
@@ -429,13 +244,178 @@ const LibraryPublicationsPage = () => {
                         publisherData,
                     })}
                 />
-                <TableList
+                {/* <TableList
                     columns={columns}
                     rows={data?.data?.result || []}
                     isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
-                />
+                /> */}
+
+                <Grid container spacing={2} p={4} pt={1.5}>
+                    {
+                        isLoading === false && isFetching === false && data?.data?.result.length > 0 ? (
+                            data?.data?.result.map((item, index) => (
+                                <Grid item xs={12} sm={12} md={6} lg={4} xl={3} >
+                                    <Paper sx={{ p: 2, height: "100%", border: `1px solid ${theme.palette.grey[300]}`, }} elevation={0}>
+                                        <Box sx={{ display: "flex", height: "100%", flexDirection: "column", alignItems: "center", justifyContent: "space-between" }}>
+                                            <Paper sx={{ width: "100%", position: "relative" }}>
+                                                <Box onClick={() => handleViewDetails(item)}>
+                                                    <ImageCard id={item._id} photo={item?.priviewImage
+                                                        ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
+                                                        : item?.path
+                                                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
+                                                            : ""} aspectRatio={"16/9"} objectFit="contain" />
+                                                </Box>
+                                                <StyledIconButton
+                                                    disableHoverEffect
+                                                    sx={{
+                                                        position: "absolute",
+                                                        top: 0,
+                                                        right: 0,
+                                                        margin: "8px",
+                                                        background: colorType(item?.mimetype),
+                                                        boxShadow: "5px 5px 7px rgba(0.1, 0.1, 0.1, 0.1)",
+                                                        [theme.breakpoints.down("sm")]: {
+                                                            width: "7%",
+                                                        },
+                                                        [theme.breakpoints.down("md")]: {
+                                                            width: "10%",
+                                                        },
+                                                    }}
+                                                >
+                                                    {
+                                                        (!item?.mimetype || (item?.mimetype === "image/jpeg" ||
+                                                            item?.mimetype === "image/png" ||
+                                                            item?.mimetype === "image/gif" ||
+                                                            item?.mimetype === "image/bmp" ||
+                                                            item?.mimetype === "image/webp") && item?.type === "ấn phẩm cứng") && (
+                                                            <IconBook
+                                                                size={30}
+                                                                stroke={1.5}
+                                                                color="white"
+                                                            />
+                                                        )
+                                                    }
+                                                    {
+                                                        (item?.mimetype === "application/pdf") && (
+                                                            <IconPdf
+                                                                size={30}
+                                                                stroke={1.5}
+                                                                color="white"
+                                                            />
+                                                        )
+                                                    }
+                                                    {
+                                                        (item?.mimetype === "application/msword" || item?.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && (
+                                                            <IconFileWord
+                                                                size={30}
+                                                                stroke={1.5}
+                                                                color="white"
+                                                            />
+                                                        )
+                                                    }
+                                                    {
+                                                        (item?.mimetype === "video/mp4" || item?.mimetype === "video/x-msvideo" || item?.mimetype === "video/x-matroska" || item?.mimetype === "video/webm") && (
+                                                            <IconVideo
+                                                                size={30}
+                                                                stroke={1.5}
+                                                                color="white"
+                                                            />
+                                                        )
+                                                    }
+                                                    {
+                                                        (item?.mimetype === "application/vnd.ms-powerpoint" ||
+                                                            item?.mimetype === "application/vnd.openxmlformats-officedocument.presentationml.presentation") && (
+                                                            <IconPresentation
+                                                                size={30}
+                                                                stroke={1.5}
+                                                                color="white"
+                                                            />
+                                                        )
+                                                    }
+                                                    {
+                                                        (item?.mimetype === "image/jpeg" ||
+                                                            item?.mimetype === "image/png" ||
+                                                            item?.mimetype === "image/gif" ||
+                                                            item?.mimetype === "image/bmp" ||
+                                                            item?.mimetype === "image/webp") && item?.type === "ấn phẩm mềm" && (
+                                                            <IconPhoto
+                                                                size={30}
+                                                                stroke={1.5}
+                                                                color="white"
+                                                            />
+                                                        )
+                                                    }
+                                                </StyledIconButton>
+
+                                                <Box>
+
+                                                    <StyledIconButton
+                                                        disableHoverEffect
+                                                        sx={{
+                                                            position: "absolute",
+                                                            zIndex: 999,
+                                                            bottom: -90,
+                                                            right: -15,
+                                                            margin: "8px",
+                                                            background: "none",
+                                                            [theme.breakpoints.down("sm")]: {
+                                                                width: "7%",
+                                                            },
+                                                            [theme.breakpoints.down("md")]: {
+                                                                width: "10%",
+                                                            },
+                                                        }}
+                                                    >
+                                                        {
+                                                            item?.type === "ấn phẩm cứng" && (
+                                                                <Tooltip title="Mượn ấn phẩm" arrow placement="top">
+                                                                    <Box bgcolor={'red'} sx={{
+                                                                        background: "gray", color: "white", borderRadius: 2, display: "flex",
+                                                                        alignItems: "center", justifyContent: "center", p: 0.5
+                                                                    }}>
+                                                                        <IconShoppingBag
+                                                                            size={20}
+                                                                            stroke={2}
+                                                                            onClick={() => handleAddItem(item)}
+                                                                        />
+                                                                    </Box>
+                                                                </Tooltip>
+                                                            )
+                                                        }
+                                                    </StyledIconButton>
+
+                                                </Box>
+                                            </Paper>
+                                            <Box sx={{ display: "flex", alignItems: "flex-start", height: "100%", minHeight: "75px", width: "200px" }}>
+                                                <Typography pt={2} color={theme.palette.info.dark} textAlign={"center"} variant="h6" fontSize={"16px !important"}
+                                                    sx={{
+                                                        whiteSpace: "nowrap",
+                                                        overflow: "hidden",
+                                                        textOverflow: "ellipsis",
+                                                        width: "100%"
+                                                    }}
+                                                >{capitalizeFirstLetter(item.name)}</Typography>
+                                            </Box>
+
+                                        </Box>
+                                    </Paper>
+                                </Grid>
+
+                            ))) : (
+                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
+                                <Typography>Chưa có ấn phẩm</Typography>
+                            </Box>
+                        )
+
+                    }
+                    < Grid item xs={12}>
+                        {data?.data?.meta && Object.keys(data?.data?.meta).length > 0 && (
+                            <PaginationForm pagination={data?.data?.meta} />
+                        )}
+                    </Grid>
+                </Grid>
             </MainCard>
         </div>
     );

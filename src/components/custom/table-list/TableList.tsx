@@ -41,7 +41,7 @@ function TableList<T>({
     const theme = useTheme();
 
     return (
-        <Box p={4} pt={0}>
+        <Box p={4} pt={2}>
             {checked && checked.length > 0 && (
                 <Alert severity="info" sx={{ mb: 3 }}>
                     Có{" "}

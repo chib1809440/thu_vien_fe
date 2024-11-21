@@ -1,20 +1,30 @@
-import { Box, Breadcrumbs, Link, Typography } from '@mui/material';
+import { Box, Breadcrumbs, Link, Typography, useTheme } from '@mui/material';
 import styled from 'styled-components';
 import HomeIcon from '@mui/icons-material/Home';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 export interface IBreadcrumsCustomProps {
     mainProfile?: any;
     profile?: string;
-    link?:string;
+    link?: string;
+    sx?: any;
 }
 
-export default function IBreadcrumsCustom({ mainProfile, profile, link, ...props }: IBreadcrumsCustomProps) {
+
+export default function IBreadcrumsCustom({ mainProfile, profile, link, sx,...props }: IBreadcrumsCustomProps) {
+    const theme = useTheme();
     return (
-        <Container>
+        <Container
+            style={{
+                border: '1px solid',
+                borderColor: theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.primary[200] + 75,
+                ...sx,
+            }}
+
+        >
             <BreadcrumsHeader>
                 <Box color="inherit" sx={{ fontSize: '16px', fontWeight: '500', color: '#212121' }}>
                     {mainProfile}
-                </Box> 
+                </Box>
             </BreadcrumsHeader>
             <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} maxItems={3} aria-label="breadcrumb" sx={{
                 background: 'white',

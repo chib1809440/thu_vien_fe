@@ -1,5 +1,5 @@
-import { Grid, MenuItem, Select, Typography } from '@mui/material';
-import { FC } from 'react';
+import { Grid, IconButton, Menu, MenuItem, Select, Typography } from '@mui/material';
+import { FC, useState } from 'react';
 import CustomInput from '../../../../components/default/input/CustomInput';
 import { TApiMultipleRecords } from '../../../../types/api/api.type';
 import { TAuthor } from '../../../../types/models/author';
@@ -8,6 +8,7 @@ import { TMaterial } from '../../../../types/models/material';
 import { TPublisher } from '../../../../types/models/publisher';
 import { TTypeVoice } from '../../../../types/models/type-voice';
 import { capitalizeFirstLetter } from '../../../../helpers/capitalizeFirstLetter';
+import { GridFilterListIcon } from '@mui/x-data-grid';
 
 type Props = {
     selectedPublications?: number;
@@ -50,11 +51,31 @@ const FilterByItems: FC<Props> = ({
     typeOptions,
     typeVoiceData
 }) => {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+    // Mở menu lọc
+    const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    // Đóng menu lọc
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
     return (
-        <Grid container pl={4} pr={4} xs={12} sm={12} md={12} lg={12} gap={2} sx={{ display: "flex", mb: 1, flexWrap: "wrap", mt: 1 }}>
+        <Grid container pl={4} pr={4} xs={12} sm={12} md={12} lg={12} gap={2}
+            sx={{
+                display: 'flex', mb: 1, flexWrap: "wrap", mt: 1
+            }}
+        >
             {
                 typeOptions?.length > 0 && (
-                    <Grid item xs={12} sm={12} md={2} lg={2}>
+                    <Grid item xs={12} sm={12} md={2} lg={2}
+                        sx={{
+                            marginBottom: { xs: 0, sm: 0, md: 2, lg: 2 },
+                            display: { xs: 'none', sm: 'none', md: 'flex' }
+                        }}>
                         <Select
                             labelId="publications-select"
                             label="Loại ấn phẩm"
@@ -74,7 +95,11 @@ const FilterByItems: FC<Props> = ({
             }
             {
                 materialData?.data?.result?.length > 0 && (
-                    <Grid item xs={12} sm={12} md={2} lg={2}>
+                    <Grid item xs={12} sm={12} md={2} lg={2}
+                        sx={{
+                            marginBottom: { xs: 0, sm: 0, md: 2, lg: 2 },
+                            display: { xs: 'none', sm: 'none', md: 'flex' }
+                        }}>
                         <Select
                             labelId="material-select"
                             label="Dạng học liệu"
@@ -96,7 +121,8 @@ const FilterByItems: FC<Props> = ({
                 categoryData?.data?.result?.length > 0 && (
                     <Grid item xs={12} sm={12} md={2} lg={2}
                         sx={{
-                            marginBottom: { xs: 0, sm: 0, md: 2, lg: 2 }
+                            marginBottom: { xs: 0, sm: 0, md: 2, lg: 2 },
+                            display: { xs: 'none', sm: 'none', md: 'flex' }
                         }}
                     >
                         <Select
@@ -120,7 +146,8 @@ const FilterByItems: FC<Props> = ({
                 authorData?.data?.result?.length > 0 && (
                     <Grid item xs={12} sm={12} md={2} lg={2}
                         sx={{
-                            marginBottom: { xs: 0, sm: 0, md: 2, lg: 2 }
+                            marginBottom: { xs: 0, sm: 0, md: 2, lg: 2 },
+                            display: { xs: 'none', sm: 'none', md: 'flex' }
                         }}
                     >
                         <Select
@@ -144,7 +171,8 @@ const FilterByItems: FC<Props> = ({
                 publisherData?.data?.result?.length > 0 && (
                     <Grid item xs={12} sm={12} md={2.5} lg={2.5}
                         sx={{
-                            marginBottom: { xs: 0, sm: 0, md: 2, lg: 2 }
+                            marginBottom: { xs: 0, sm: 0, md: 2, lg: 2 },
+                            display: { xs: 'none', sm: 'none', md: 'flex' }
                         }}
                     >
                         <Select
@@ -168,7 +196,8 @@ const FilterByItems: FC<Props> = ({
                 typeVoiceData?.data?.result?.length > 0 && (
                     <Grid item xs={12} sm={12} md={2} lg={2}
                         sx={{
-                            marginBottom: { xs: 0, sm: 0, md: 2, lg: 2 }
+                            marginBottom: { xs: 0, sm: 0, md: 2, lg: 2 },
+                            display: { xs: 'none', sm: 'none', md: 'flex' }
                         }}
                     >
                         <Select
@@ -188,7 +217,141 @@ const FilterByItems: FC<Props> = ({
                     </Grid>
                 )
             }
+            <Grid item xs={12} sm={12} md={2} lg={2} sx={{ display: { xs: 'flex', md: 'none' }, justifyContent: 'flex-end', padding: { xs: 0, sm: 0, }, }}>
+                <IconButton onClick={handleMenuOpen} size="large">
+                    <Typography mr={1}>Lọc theo danh mục</Typography>
+                    <GridFilterListIcon />
+                </IconButton>
+            </Grid>
+
+            <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                PaperProps={{
+                    sx: {
+                        width: '250px',
+                    },
+                }}
+            >
+                {typeOptions?.length > 0 && (
+                    <MenuItem>
+                        <Select
+                            labelId="publications-select"
+                            label="Loại ấn phẩm"
+                            value={selectedPublications}
+                            onChange={handlePublicationsFilterChange}
+                            fullWidth
+                            size="small"
+                        >
+                            <MenuItem value={0}>Tất cả loại ấn phẩm</MenuItem>
+                            {typeOptions?.map((item, index) => (
+                                <MenuItem key={index} value={item.value}>
+                                    {capitalizeFirstLetter(item.label)}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </MenuItem>
+                )}
+                {materialData?.data?.result?.length > 0 && (
+                    <MenuItem>
+                        <Select
+                            labelId="material-select"
+                            label="Dạng học liệu"
+                            value={selectedMaterial}
+                            onChange={handleMaterialFilterChange}
+                            fullWidth
+                            size="small"
+                        >
+                            <MenuItem value={0}>Tất cả dạng học liệu</MenuItem>
+                            {materialData?.data?.result?.map((item, index) => (
+                                <MenuItem key={index} value={item._id}>
+                                    {capitalizeFirstLetter(item.name)}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </MenuItem>
+                )}
+                {categoryData?.data?.result?.length > 0 && (
+                    <MenuItem>
+                        <Select
+                            labelId="category-select"
+                            label="Lĩnh vực"
+                            value={selectedCategory}
+                            onChange={handleCategoryFilterChange}
+                            fullWidth
+                            size="small"
+                        >
+                            <MenuItem value={0}>Tất cả lĩnh vực</MenuItem>
+                            {categoryData?.data?.result?.map((item, index) => (
+                                <MenuItem key={index} value={item._id}>
+                                    {capitalizeFirstLetter(item.name)}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </MenuItem>
+                )}
+                {authorData?.data?.result?.length > 0 && (
+                    <MenuItem>
+                        <Select
+                            labelId="author-select"
+                            label="Tác giả"
+                            value={selectedAuthor}
+                            onChange={handleAuthorFilterChange}
+                            fullWidth
+                            size="small"
+                        >
+                            <MenuItem value={0}>Tất cả tác giả</MenuItem>
+                            {authorData?.data?.result?.map((item, index) => (
+                                <MenuItem key={index} value={item._id}>
+                                    <Typography textTransform={"capitalize"}>{item.name}</Typography>
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </MenuItem>
+                )}
+                {publisherData?.data?.result?.length > 0 && (
+                    <MenuItem>
+                        <Select
+                            labelId="publisher-select"
+                            label="Nhà xuất bản"
+                            value={selectedPublisher}
+                            onChange={handlePublisherFilterChange}
+                            fullWidth
+                            size="small"
+                        >
+                            <MenuItem value={0}>Tất cả nhà xuất bản</MenuItem>
+                            {publisherData?.data?.result?.map((item, index) => (
+                                <MenuItem key={index} value={item._id}>
+                                    <Typography textTransform={"capitalize"}>{item.name}</Typography>
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </MenuItem>
+                )}
+                {typeVoiceData?.data?.result?.length > 0 && (
+                    <MenuItem>
+                        <Select
+                            labelId="typeVoice-select"
+                            label="Loại voice"
+                            value={selectedTypeVoice}
+                            onChange={handleTypeVoiceFilterChange}
+                            fullWidth
+                            size="small"
+                        >
+                            <MenuItem value={0}>Tất cả loại voice</MenuItem>
+                            {typeVoiceData?.data?.result?.map((item, index) => (
+                                <MenuItem key={index} value={item._id}>
+                                    {capitalizeFirstLetter(item.name)}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </MenuItem>
+                )}
+            </Menu>
         </Grid>
+
+
     );
 };
 

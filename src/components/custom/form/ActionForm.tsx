@@ -1,4 +1,4 @@
-import { Box, Grid, Menu, MenuItem, Select } from "@mui/material";
+import { Box, Grid, IconButton, Menu, MenuItem, Select, Typography } from "@mui/material";
 import { IconSettings } from "@tabler/icons";
 import { FC, MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -9,6 +9,7 @@ import { TMenuOption } from "../../../types/common/table";
 import CustomInput from "../../default/input/CustomInput";
 import { TLibrary } from "../../../types/models/library.type";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
+import MenuIcon from '@mui/icons-material/Menu';
 
 type Props = {
     actions?: TMenuOption[];
@@ -35,6 +36,10 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = useMemo(() => Boolean(anchorEl), [anchorEl]);
     const debounceSearch = useDebounce(contentSearch, 500);
+    const [searchMenuAnchorEl, setSearchMenuAnchorEl] = useState<null | HTMLElement>(null); // Anchor for search menu
+    const [actionsMenuAnchorEl, setActionsMenuAnchorEl] = useState<null | HTMLElement>(null); // Anchor for actions menu
+    const searchMenuOpen = useMemo(() => Boolean(searchMenuAnchorEl), [searchMenuAnchorEl]);
+    const actionsMenuOpen = useMemo(() => Boolean(actionsMenuAnchorEl), [actionsMenuAnchorEl]);
 
     useEffect(() => {
         if (!debounceSearch) {
@@ -59,117 +64,268 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
         setAnchorEl(null);
     }, []);
 
+    const handleSearchMenuOpen = useCallback((event: MouseEvent<HTMLElement>) => {
+        setSearchMenuAnchorEl(event.currentTarget);
+        setActionsMenuAnchorEl(null); // Close actions menu if it's open
+    }, []);
+
+    const handleActionsMenuOpen = useCallback((event: MouseEvent<HTMLElement>) => {
+        setActionsMenuAnchorEl(event.currentTarget);
+        setSearchMenuAnchorEl(null); // Close search menu if it's open
+    }, []);
+
+    const handleMenuClose = useCallback(() => {
+        setSearchMenuAnchorEl(null);
+        setActionsMenuAnchorEl(null);
+    }, []);
+
     const handleContentSearch = useCallback((value: string) => {
         setContentSearch(value);
     }, []);
 
     return (
-        <Grid container pl={4} pr={4} pt={2}>
-            <Grid item xs={12} sm={12} md={barcode || libraryData ? 8 : 3} lg={barcode || libraryData ? 8 : 4} marginBottom={4} sx={{ display: "flex" }} gap={2} >
-                <SearchNoButtonSection
-                    fullwidth
-                    contentSearch={contentSearch}
-                    handleContentSearch={handleContentSearch}
-                    placeholder={placeholderSearch}
-                />
-                {
-                    barcode ?
-                        (<SearchNoButtonSection
-                            fullwidth
-                            contentSearch={barcodeSearch}
-                            handleContentSearch={handleBarcodeSearch}
-                            placeholder={placeholder}
-                        />)
-                        : ""
-                }
-                {
-                    selectedValuePublication ? (<Select
-                        labelId="publications-select"
-                        label="Ấn phẩm"
-                        value={selectedValuePublication}
-                        onChange={handleValuePublication}
-                        input={<CustomInput size="small" label="Ấn phẩm" />}
-                    >
-                        <MenuItem value="thuvien">Ấn phẩm của thư viện</MenuItem>
-                        <MenuItem value="canhan">Ấn phẩm cá nhân</MenuItem>
-                    </Select>) : ""
-                }
-                {
-                    libraryData ? (
-                        <Select
-                            labelId="library-select"
-                            label="Thư Viện"
-                            value={selectedLibrary}
-                            onChange={handleLibraryFilterChange}
-                            input={<CustomInput size="small" label="Thư Viện" />}
+        <>
+            <Grid container pl={4} pr={4} pt={2}>
+                <Grid item xs={12} sm={12} md={barcode || libraryData ? 8 : 3} lg={barcode || libraryData ? 8 : 4} marginBottom={4} gap={2}
+                    sx={{
+                        flexWrap: 'wrap',
+                        marginBottom: { xs: 0, sm: 0, md: 2, lg: 2 },
+                        display: { xs: 'none', sm: 'none', md: 'flex' }
+                    }}
+                >
+                    <SearchNoButtonSection
+                        fullwidth
+                        contentSearch={contentSearch}
+                        handleContentSearch={handleContentSearch}
+                        placeholder={placeholderSearch}
+                    />
+                    {
+                        barcode ?
+                            (<SearchNoButtonSection
+                                fullwidth
+                                contentSearch={barcodeSearch}
+                                handleContentSearch={handleBarcodeSearch}
+                                placeholder={placeholder}
+                            />)
+                            : ""
+                    }
+                    {
+                        selectedValuePublication ? (<Select
+                            labelId="publications-select"
+                            label="Ấn phẩm"
+                            value={selectedValuePublication}
+                            onChange={handleValuePublication}
+                            input={<CustomInput size="small" label="Ấn phẩm" />}
                         >
-                            <MenuItem value={0}>Tất cả thư viện</MenuItem>
-                            {libraryData?.map((item, index) => (
-                                <MenuItem key={index} value={item._id}>
-                                    {capitalizeFirstLetter(item.name)}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    ) : ""
-                }
-            </Grid>
+                            <MenuItem value="thuvien">Ấn phẩm của thư viện</MenuItem>
+                            <MenuItem value="canhan">Ấn phẩm cá nhân</MenuItem>
+                        </Select>) : ""
+                    }
+                    {
+                        libraryData ? (
+                            <Select
+                                labelId="library-select"
+                                label="Thư Viện"
+                                value={selectedLibrary}
+                                onChange={handleLibraryFilterChange}
+                                input={<CustomInput size="small" label="Thư Viện" />}
+                            >
+                                <MenuItem value={0}>Tất cả thư viện</MenuItem>
+                                {libraryData?.map((item, index) => (
+                                    <MenuItem key={index} value={item._id}>
+                                        {capitalizeFirstLetter(item.name)}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        ) : ""
+                    }
+                </Grid>
 
-            {actions.length > 0 && (
-                <Grid item xs={12} sm={6} md={barcode || libraryData ? 4 : 9} lg={barcode || libraryData ? 4 : 8} marginBottom={4}>
-                    <Box
+                {actions.length > 0 && (
+                    <Grid item xs={12} sm={6} md={barcode || libraryData ? 4 : 9} lg={barcode || libraryData ? 4 : 8} marginBottom={4}
                         sx={{
-                            display: "flex",
-                            justifyContent: { xs: "space-between", sm: "flex-end" },
-                            alignItems: "center",
-                            gap: 1,
+                            display: { xs: 'none', sm: 'none', md: 'flex' }
                         }}
                     >
-                        <StyledButton
-                            size="small"
-                            variant="outlined"
-                            color="default"
-                            aria-controls={open ? "basic-menu" : undefined}
-                            aria-haspopup="true"
-                            aria-expanded={open ? "true" : undefined}
-                            onClick={handleClickAction}
-                            startIcon={<IconSettings size={20} stroke={1.5} />}
-                        >
-                            Thao tác
-                        </StyledButton>
-
-                        <Menu
-                            id="basic-menu"
-                            anchorEl={anchorEl}
-                            open={open}
-                            onClose={handleClose}
-                            MenuListProps={{
-                                "aria-labelledby": "basic-button",
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: { xs: "space-between", sm: "flex-end" },
+                                alignItems: "center",
+                                gap: 1,
                             }}
                         >
+                            <StyledButton
+                                size="small"
+                                variant="outlined"
+                                color="default"
+                                aria-controls={open ? "basic-menu" : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={open ? "true" : undefined}
+                                onClick={handleClickAction}
+                                startIcon={<IconSettings size={20} stroke={1.5} />}
+                            >
+                                Thao tác
+                            </StyledButton>
 
-                            {actions.map((action, idx) => (
-                                action.component ? (
-                                    <Box key={idx} sx={{ ml: 2 }}>
-                                        {action.component}
-                                    </Box>
-                                ) : (
-                                    <MenuItem
-                                        key={idx}
-                                        sx={{ fontSize: "0.875rem" }}
-                                        onClick={action.onClick}
-                                    >
-                                        <Box sx={{ display: "flex", alignItems: "center" }}>
-                                            {action.icon}
-                                            <Box sx={{ ml: 1 }}>{action.label}</Box>
+                            <Menu
+                                id="basic-menu"
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={handleClose}
+                                MenuListProps={{
+                                    "aria-labelledby": "basic-button",
+                                }}
+                            >
+
+                                {actions.map((action, idx) => (
+                                    action.component ? (
+                                        <Box key={idx} sx={{ ml: 2 }}>
+                                            {action.component}
                                         </Box>
+                                    ) : (
+                                        <MenuItem
+                                            key={idx}
+                                            sx={{ fontSize: "0.875rem" }}
+                                            onClick={action.onClick}
+                                        >
+                                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                                {action.icon}
+                                                <Box sx={{ ml: 1 }}>{action.label}</Box>
+                                            </Box>
+                                        </MenuItem>
+                                    )
+                                ))}
+                            </Menu>
+                        </Box>
+                    </Grid>
+                )}
+            </Grid>
+
+            {/* Menu Button for mobile */}
+            <Grid item xs={12} sm={12} md={barcode || libraryData ? 4 : 9} lg={barcode || libraryData ? 4 : 8}
+                sx={{
+                    marginBottom: { xs: 0, sm: 0, md: 4 }, display: { xs: 'block', md: 'none' },
+                }}>
+                <IconButton onClick={handleSearchMenuOpen} size="large" sx={{ display: { xs: 'flex', md: 'none' } }}>
+                    <MenuIcon />
+                    <Typography ml={1}>Tìm kiếm hoặc thao tác</Typography>
+                </IconButton>
+
+                <Menu
+                    anchorEl={searchMenuAnchorEl}
+                    open={searchMenuOpen}
+                    onClose={handleMenuClose}
+                    PaperProps={{
+                        sx: { width: '250px' }, // Set width for the mobile menu
+                    }}
+                >
+                    <MenuItem>
+                        <SearchNoButtonSection
+                            fullwidth
+                            contentSearch={contentSearch}
+                            handleContentSearch={handleContentSearch}
+                            placeholder={placeholderSearch}
+                        />
+                    </MenuItem>
+
+                    {barcode && (
+                        <MenuItem>
+                            <SearchNoButtonSection
+                                fullwidth
+                                contentSearch={barcodeSearch}
+                                handleContentSearch={handleBarcodeSearch}
+                                placeholder={placeholder}
+                            />
+                        </MenuItem>
+                    )}
+
+                    {selectedValuePublication && (
+                        <MenuItem>
+                            <Select
+                                labelId="publications-select"
+                                label="Ấn phẩm"
+                                value={selectedValuePublication}
+                                onChange={handleValuePublication}
+                                fullWidth
+                                size="small"
+                            >
+                                <MenuItem value="thuvien">Ấn phẩm của thư viện</MenuItem>
+                                <MenuItem value="canhan">Ấn phẩm cá nhân</MenuItem>
+                            </Select>
+                        </MenuItem>
+                    )}
+
+                    {libraryData && (
+                        <MenuItem>
+                            <Select
+                                labelId="library-select"
+                                label="Thư Viện"
+                                value={selectedLibrary}
+                                onChange={handleLibraryFilterChange}
+                                fullWidth
+                                size="small"
+                            >
+                                <MenuItem value={0}>Tất cả thư viện</MenuItem>
+                                {libraryData?.map((item, index) => (
+                                    <MenuItem key={index} value={item._id}>
+                                        {capitalizeFirstLetter(item.name)}
                                     </MenuItem>
-                                )
-                            ))}
-                        </Menu>
-                    </Box>
-                </Grid>
-            )}
-        </Grid>
+                                ))}
+                            </Select>
+                        </MenuItem>
+                    )}
+                    {actions.length > 0 && (
+                        <MenuItem>
+                            <StyledButton
+                                size="small"
+                                variant="outlined"
+                                color="default"
+                                aria-controls={open ? "basic-menu" : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={open ? "true" : undefined}
+                                onClick={handleClickAction}
+                                startIcon={<IconSettings size={20} stroke={1.5} />}
+                            >
+                                Thao tác
+                            </StyledButton>
+
+                            <Menu
+                                id="basic-menu"
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={handleClose}
+                                MenuListProps={{
+                                    "aria-labelledby": "basic-button",
+                                }}
+                            >
+
+                                {actions.map((action, idx) => (
+                                    action.component ? (
+                                        <Box key={idx} sx={{ ml: 2 }}>
+                                            {action.component}
+                                        </Box>
+                                    ) : (
+                                        <MenuItem
+                                            key={idx}
+                                            sx={{ fontSize: "0.875rem" }}
+                                            onClick={action.onClick}
+                                        >
+                                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                                {action.icon}
+                                                <Box sx={{ ml: 1 }}>{action.label}</Box>
+                                            </Box>
+                                        </MenuItem>
+                                    )
+                                ))}
+                            </Menu>
+                        </MenuItem>
+                    )}
+                </Menu>
+            </Grid>
+
+
+        </ >
     );
 };
 

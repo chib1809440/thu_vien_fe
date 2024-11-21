@@ -8,6 +8,7 @@ import {
   Container,
   CssBaseline,
   Toolbar,
+  Typography,
   useMediaQuery,
 } from "@mui/material";
 import { Theme, styled, useTheme } from "@mui/material/styles";
@@ -24,6 +25,7 @@ import Sidebar, { SidebarV2 } from "./Sidebar";
 
 // assets
 import { IconChevronRight } from "@tabler/icons";
+import Footer from "./Footer";
 interface MainStyleProps {
   theme: Theme;
   open: boolean;
@@ -41,7 +43,8 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<Ma
         duration: theme.transitions.duration.shorter,
       }),
       [theme.breakpoints.up('md')]: {
-        marginLeft: -(drawerWidth - 20),
+        // marginLeft: -(drawerWidth - 20),
+        marginLeft: -(drawerWidth),
         width: `calc(100% - ${drawerWidth}px)`,
       },
       [theme.breakpoints.down('md')]: {
@@ -124,20 +127,21 @@ const MainLayout = () => {
       <Sidebar />
       {/* main content */}
       <>
-        <Main theme={theme} open={drawerOpen} sx={{ pt: 5, marginTop: '80px'}} >
+        <Main theme={theme} open={drawerOpen} sx={{ pt: 5, marginTop: '80px', background: "#f2fcfe" }} >
           {/* breadcrumb */}
-          {container && (
-            <Container maxWidth="lg">
-              <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
-              <Outlet />
-            </Container>
-          )}
-          {!container && (
-            <>
-              <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
-              <Outlet />
-            </>
-          )}
+            {container && (
+              <Container maxWidth="lg">
+                <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
+                <Outlet />
+              </Container>
+            )}
+            {!container && (
+              <>
+                <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
+                <Outlet />
+              </>
+            )}
+          <Footer />
         </Main>
         {/* {openBC && <ModalUser isOpen={openBC} userID={userID}/>} */}
       </>
@@ -196,18 +200,19 @@ export const MainLayoutV2 = () => {
       <>
         <Main theme={theme} open={drawerOpen} sx={{ pt: 5, marginTop: '80px' }}>
           {/* breadcrumb */}
-          {container && (
-            <Container maxWidth="lg">
-              <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
-              <Outlet />
-            </Container>
-          )}
-          {!container && (
-            <>
-              <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
-              <Outlet />
-            </>
-          )}
+            {container && (
+              <Container maxWidth="lg">
+                <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
+                <Outlet />
+              </Container>
+            )}
+            {!container && (
+              <>
+                <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
+                <Outlet />
+              </>
+            )}
+          <Footer />
         </Main>
       </>
       {/* </ProviderLoader> */}

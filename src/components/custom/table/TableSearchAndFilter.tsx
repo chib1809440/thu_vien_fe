@@ -82,7 +82,7 @@ export function SearchAndFilter({ contentSearch, actionPromotedClass, actionRest
     return (
         <Grid container pl={4} pr={4} pt={2} >
             <Grid item xs={12} sm={12} md={3} lg={4} marginBottom={2}>
-                <SearchNoButtonSection fullwidth contentSearch={contentSearch} handleContentSearch={handleContentSearch} />
+                <SearchNoButtonSection fullwidth contentSearch={contentSearch} handleContentSearch={handleContentSearch} placeholder="Tìm kiếm theo tên" />
             </Grid>
             <Grid item xs={12} sm={6} md={9} lg={8} marginBottom={2}>
                 <Box sx={{

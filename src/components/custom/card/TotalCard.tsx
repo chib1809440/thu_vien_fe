@@ -84,7 +84,7 @@ const TotalCard = ({ icon: IconComponent = GroupOutlinedIcon, bgColor, count, ti
                         </Grid>
                     </Grid>
                     <Grid item>
-                        <Typography sx={{ fontSize: '1rem', fontWeight: 500 }}>
+                        <Typography noWrap sx={{ fontSize: '1rem', fontWeight: 500, maxWidth: { xs: '170px', md: "100%" } }}>
                             {title} {/* Hiển thị tiêu đề */}
                         </Typography>
                     </Grid>

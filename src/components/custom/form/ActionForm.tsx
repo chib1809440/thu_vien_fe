@@ -1,15 +1,15 @@
-import { Box, Grid, IconButton, Menu, MenuItem, Select, Typography } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import { Box, Button, Grid, Menu, MenuItem, Select, Typography } from "@mui/material";
 import { IconSettings } from "@tabler/icons";
 import { FC, MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import useDebounce from "../../../hooks/useDebounce";
-import SearchNoButtonSection from "../search/SearchNoButton";
-import StyledButton from "../../default/button/StyledButton";
-import { TMenuOption } from "../../../types/common/table";
-import CustomInput from "../../default/input/CustomInput";
-import { TLibrary } from "../../../types/models/library.type";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
-import MenuIcon from '@mui/icons-material/Menu';
+import useDebounce from "../../../hooks/useDebounce";
+import { TMenuOption } from "../../../types/common/table";
+import { TLibrary } from "../../../types/models/library.type";
+import StyledButton from "../../default/button/StyledButton";
+import CustomInput from "../../default/input/CustomInput";
+import SearchNoButtonSection from "../search/SearchNoButton";
 
 type Props = {
     actions?: TMenuOption[];
@@ -25,10 +25,19 @@ type Props = {
     libraryData?: TLibrary[];
 };
 
-const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSearch, barcode = false, placeholder = 'Tìm kiếm theo mã ấn phẩm', selectedValuePublication, handleValuePublication, selectedLibrary,
+const ActionsForm: FC<Props> = ({
+    actions = [],
+    barcodeSearch,
+    handleBarcodeSearch,
+    barcode = false,
+    placeholder = "Tìm kiếm theo barcode",
+    selectedValuePublication,
+    handleValuePublication,
+    selectedLibrary,
     placeholderSearch = "Tìm kiếm theo tên",
     handleLibraryFilterChange,
-    libraryData }) => {
+    libraryData,
+}) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const querySearch = searchParams.get("q") || "";
 
@@ -85,12 +94,30 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
 
     return (
         <>
-            <Grid container pl={4} pr={4} pt={2}>
-                <Grid item xs={12} sm={12} md={barcode || libraryData ? 8 : 3} lg={barcode || libraryData ? 8 : 4} marginBottom={4} gap={2}
+            <Grid
+                container
+                spacing={2}
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    pl: { xs: 0, sm: 0, md: 4 },
+                    pr: { xs: 0, sm: 0, md: 4 },
+                    pt: { xs: 2, sm: 2, md: 2 },
+                    pb: { xs: 0, sm: 0, md: 2 },
+                }}
+            >
+                <Grid
+                    item
+                    xs={12}
+                    sm={12}
+                    md={barcode || libraryData ? 9 : 3}
+                    lg={barcode || libraryData ? 9 : 4}
                     sx={{
-                        flexWrap: 'wrap',
-                        marginBottom: { xs: 0, sm: 0, md: 2, lg: 2 },
-                        display: { xs: 'none', sm: 'none', md: 'flex' }
+                        flexWrap: { xs: "wrap", sm: "wrap", md: "nowrap" },
+                        gap: 2,
+                        display: { xs: "none", sm: "none", md: "flex" },
+                        mb: 1
                     }}
                 >
                     <SearchNoButtonSection
@@ -99,18 +126,18 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
                         handleContentSearch={handleContentSearch}
                         placeholder={placeholderSearch}
                     />
-                    {
-                        barcode ?
-                            (<SearchNoButtonSection
-                                fullwidth
-                                contentSearch={barcodeSearch}
-                                handleContentSearch={handleBarcodeSearch}
-                                placeholder={placeholder}
-                            />)
-                            : ""
-                    }
-                    {
-                        selectedValuePublication ? (<Select
+
+                    {barcode && (
+                        <SearchNoButtonSection
+                            fullwidth
+                            contentSearch={barcodeSearch}
+                            handleContentSearch={handleBarcodeSearch}
+                            placeholder={placeholder}
+                        />
+                    )}
+
+                    {selectedValuePublication && (
+                        <Select
                             labelId="publications-select"
                             label="Ấn phẩm"
                             value={selectedValuePublication}
@@ -119,38 +146,44 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
                         >
                             <MenuItem value="thuvien">Ấn phẩm của thư viện</MenuItem>
                             <MenuItem value="canhan">Ấn phẩm cá nhân</MenuItem>
-                        </Select>) : ""
-                    }
-                    {
-                        libraryData ? (
-                            <Select
-                                labelId="library-select"
-                                label="Thư Viện"
-                                value={selectedLibrary}
-                                onChange={handleLibraryFilterChange}
-                                input={<CustomInput size="small" label="Thư Viện" />}
-                            >
-                                <MenuItem value={0}>Tất cả thư viện</MenuItem>
-                                {libraryData?.map((item, index) => (
-                                    <MenuItem key={index} value={item._id}>
-                                        {capitalizeFirstLetter(item.name)}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        ) : ""
-                    }
+                        </Select>
+                    )}
+
+                    {libraryData && (
+                        <Select
+                            labelId="library-select"
+                            label="Thư Viện"
+                            value={selectedLibrary}
+                            onChange={handleLibraryFilterChange}
+                            input={<CustomInput size="small" label="Thư Viện" />}
+                        >
+                            <MenuItem value={0}>Tất cả thư viện</MenuItem>
+                            {libraryData?.map((item, index) => (
+                                <MenuItem key={index} value={item._id}>
+                                    {capitalizeFirstLetter(item.name)}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    )}
                 </Grid>
 
-                {actions.length > 0 && (
-                    <Grid item xs={12} sm={6} md={barcode || libraryData ? 4 : 9} lg={barcode || libraryData ? 4 : 8} marginBottom={4}
+                {actions?.length > 0 && (
+                    <Grid
+                        item
+                        xs={12}
+                        sm={6}
+                        md={barcode || libraryData ? 3 : 9}
+                        lg={barcode || libraryData ? 3 : 8}
                         sx={{
-                            display: { xs: 'none', sm: 'none', md: 'flex' }
+                            display: { xs: "none", sm: "none", md: "flex" },
+                            justifyContent: "flex-end",
+                            alignItems: "center",
                         }}
                     >
                         <Box
                             sx={{
                                 display: "flex",
-                                justifyContent: { xs: "space-between", sm: "flex-end" },
+                                justifyContent: "flex-end",
                                 alignItems: "center",
                                 gap: 1,
                             }}
@@ -177,8 +210,7 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
                                     "aria-labelledby": "basic-button",
                                 }}
                             >
-
-                                {actions.map((action, idx) => (
+                                {actions.map((action, idx) =>
                                     action.component ? (
                                         <Box key={idx} sx={{ ml: 2 }}>
                                             {action.component}
@@ -195,7 +227,7 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
                                             </Box>
                                         </MenuItem>
                                     )
-                                ))}
+                                )}
                             </Menu>
                         </Box>
                     </Grid>
@@ -203,21 +235,32 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
             </Grid>
 
             {/* Menu Button for mobile */}
-            <Grid item xs={12} sm={12} md={barcode || libraryData ? 4 : 9} lg={barcode || libraryData ? 4 : 8}
+            <Grid
+                item
+                xs={12}
+                sm={12}
+                md={barcode || libraryData ? 4 : 9}
+                lg={barcode || libraryData ? 4 : 8}
                 sx={{
-                    marginBottom: { xs: 0, sm: 0, md: 4 }, display: { xs: 'block', md: 'none' },
-                }}>
-                <IconButton onClick={handleSearchMenuOpen} size="large" sx={{ display: { xs: 'flex', md: 'none' } }}>
+                    marginBottom: { xs: 0, sm: 0, md: 4 },
+                    display: { xs: "block", md: "none" },
+                }}
+            >
+                <Button
+                    onClick={handleSearchMenuOpen}
+                    size="large"
+                    sx={{ display: { xs: "flex", md: "none" }, pl: 0, pr: 0, py: 0, mb: 1, textTransform: "inherit" }}
+                >
                     <MenuIcon />
                     <Typography ml={1}>Tìm kiếm hoặc thao tác</Typography>
-                </IconButton>
+                </Button>
 
                 <Menu
                     anchorEl={searchMenuAnchorEl}
                     open={searchMenuOpen}
                     onClose={handleMenuClose}
                     PaperProps={{
-                        sx: { width: '250px' }, // Set width for the mobile menu
+                        sx: { width: "250px" }, // Set width for the mobile menu
                     }}
                 >
                     <MenuItem>
@@ -299,8 +342,7 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
                                     "aria-labelledby": "basic-button",
                                 }}
                             >
-
-                                {actions.map((action, idx) => (
+                                {actions.map((action, idx) =>
                                     action.component ? (
                                         <Box key={idx} sx={{ ml: 2 }}>
                                             {action.component}
@@ -317,15 +359,13 @@ const ActionsForm: FC<Props> = ({ actions = [], barcodeSearch, handleBarcodeSear
                                             </Box>
                                         </MenuItem>
                                     )
-                                ))}
+                                )}
                             </Menu>
                         </MenuItem>
                     )}
                 </Menu>
             </Grid>
-
-
-        </ >
+        </>
     );
 };
 

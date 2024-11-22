@@ -252,7 +252,7 @@ const LibraryPublicationsPage = () => {
                     pagination={data?.data?.meta}
                 /> */}
 
-                <Grid container spacing={2} p={4} pt={1.5}>
+                <Grid container spacing={2} sx={{ p: { xs: 0, sm: 0, md: "12px 32px" }, pt: 2 }}>
                     {
                         isLoading === false && isFetching === false && data?.data?.result.length > 0 ? (
                             data?.data?.result.map((item, index) => (
@@ -285,11 +285,13 @@ const LibraryPublicationsPage = () => {
                                                     }}
                                                 >
                                                     {
-                                                        (!item?.mimetype || (item?.mimetype === "image/jpeg" ||
-                                                            item?.mimetype === "image/png" ||
-                                                            item?.mimetype === "image/gif" ||
-                                                            item?.mimetype === "image/bmp" ||
-                                                            item?.mimetype === "image/webp") && item?.type === "ấn phẩm cứng") && (
+                                                        (!item?.mimetype || [
+                                                            "image/jpeg",
+                                                            "image/png",
+                                                            "image/gif",
+                                                            "image/bmp",
+                                                            "image/webp",
+                                                        ].includes(item?.mimetype) && item?.type === "ấn phẩm cứng") && (
                                                             <IconBook
                                                                 size={30}
                                                                 stroke={1.5}
@@ -307,7 +309,10 @@ const LibraryPublicationsPage = () => {
                                                         )
                                                     }
                                                     {
-                                                        (item?.mimetype === "application/msword" || item?.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && (
+                                                        [
+                                                            "application/msword",
+                                                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                                        ].includes(item?.mimetype) && (
                                                             <IconFileWord
                                                                 size={30}
                                                                 stroke={1.5}
@@ -316,7 +321,12 @@ const LibraryPublicationsPage = () => {
                                                         )
                                                     }
                                                     {
-                                                        (item?.mimetype === "video/mp4" || item?.mimetype === "video/x-msvideo" || item?.mimetype === "video/x-matroska" || item?.mimetype === "video/webm") && (
+                                                        [
+                                                            "video/mp4",
+                                                            "video/x-matroska",
+                                                            "video/webm",
+                                                            "video/x-msvideo",
+                                                        ].includes(item?.mimetype) && (
                                                             <IconVideo
                                                                 size={30}
                                                                 stroke={1.5}
@@ -325,8 +335,10 @@ const LibraryPublicationsPage = () => {
                                                         )
                                                     }
                                                     {
-                                                        (item?.mimetype === "application/vnd.ms-powerpoint" ||
-                                                            item?.mimetype === "application/vnd.openxmlformats-officedocument.presentationml.presentation") && (
+                                                        [
+                                                            "application/vnd.ms-powerpoint",
+                                                            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                                                        ].includes(item?.mimetype) && (
                                                             <IconPresentation
                                                                 size={30}
                                                                 stroke={1.5}
@@ -335,11 +347,13 @@ const LibraryPublicationsPage = () => {
                                                         )
                                                     }
                                                     {
-                                                        (item?.mimetype === "image/jpeg" ||
-                                                            item?.mimetype === "image/png" ||
-                                                            item?.mimetype === "image/gif" ||
-                                                            item?.mimetype === "image/bmp" ||
-                                                            item?.mimetype === "image/webp") && item?.type === "ấn phẩm mềm" && (
+                                                        [
+                                                            "image/jpeg",
+                                                            "image/png",
+                                                            "image/gif",
+                                                            "image/bmp",
+                                                            "image/webp",
+                                                        ].includes(item?.mimetype) &&(
                                                             <IconPhoto
                                                                 size={30}
                                                                 stroke={1.5}

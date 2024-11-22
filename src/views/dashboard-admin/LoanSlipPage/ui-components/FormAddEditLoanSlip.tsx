@@ -561,11 +561,11 @@ const FormAddEditLoanSlip: FC<Props> = ({
                 }}
                 disableEscapeKeyDown
             >
-                <DialogTitle sx={{ p: 4 }}>
+                <DialogTitle sx={{ p: { xs: 2, sm: 2, md: 4 } }}>
                     {isEditMode ? "Sửa phiếu mượn" : "Thêm phiếu mượn mới"}
                 </DialogTitle>
 
-                <DialogContent sx={{ p: 8 }} >
+                <DialogContent sx={{ p: { xs: 3, sm: 3, md: 8 } }}>
                     {
                         (roleName === "Owner" || roleName === "Admin") && <Grid container spacing={2}>
                             <Box sx={{ display: 'none' }}>
@@ -588,8 +588,8 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                 </Box>
                             </Grid>
                             <Grid container spacing={2}>
-                                <Grid item xs={2}>
-                                    <Box style={{ width: "100%" }} sx={{ mt: 2, mb: 2, ml: 2 }}>
+                                <Grid item xs={12} md={2}>
+                                    <Box style={{ width: "100%" }} sx={{ mt: 2, mb: { xs: 0, sm: 0, md: 2 }, ml: 2 }}>
                                         {
                                             isEditMode ? <>
                                                 <Typography sx={{ ml: 1, mt: 2, fontWeight: "bold" }}>
@@ -609,27 +609,28 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                     onChange={(e) => setbarcodeUserId(e.target.value)}
                                                     inputRef={barcodeUserIdRef}
                                                     autoFocus
+                                                    sx={{ width: { xs: "94%", sm: "94%", md: "100%" } }}
                                                 />
                                             </>
                                         }
 
                                     </Box>
                                 </Grid>
-                                <Grid item xs={3}>
-                                    <Typography sx={{ ml: 4, mt: 2, fontWeight: "bold" }}>
+                                <Grid item xs={12} md={3}>
+                                    <Typography sx={{ ml: { xs: 2, sm: 2, md: 4 }, mt: 2, fontWeight: "bold" }}>
                                         Họ và tên:
                                         <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
                                             {userData?.data?.result?.fullname || "Không có dữ liệu"}
                                         </span>
                                     </Typography>
-                                    <Typography sx={{ ml: 4, mt: 2, fontWeight: "bold" }}>
+                                    <Typography sx={{ ml: { xs: 2, sm: 2, md: 4 }, mt: 2, fontWeight: "bold" }}>
                                         Địa chỉ:
                                         <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
                                             {userData?.data?.result?.address || "Không có dữ liệu"}
                                         </span>
                                     </Typography>
                                 </Grid>
-                                <Grid item xs={3}>
+                                <Grid item xs={12} md={3}>
                                     <Typography sx={{ ml: 2, mt: 2, fontWeight: "bold" }}>
                                         Số điện thoại:
                                         <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
@@ -643,7 +644,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                         </span>
                                     </Typography>
                                 </Grid>
-                                <Grid item xs={3}>
+                                <Grid item xs={12} md={3}>
                                     <Typography sx={{ ml: 2, mt: 2, fontWeight: "bold" }}>
                                         Email:
                                         <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
@@ -653,7 +654,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                     <Typography sx={{ ml: 2, mt: 2, fontWeight: "bold" }}>
                                         Vai trò:
                                         <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
-                                            {(getLabelFromOptions(statusRole,(userData?.data?.result?.roleId as Role)?.name)) || "Không có dữ liệu"}
+                                            {(getLabelFromOptions(statusRole, (userData?.data?.result?.roleId as Role)?.name)) || "Không có dữ liệu"}
                                         </span>
                                     </Typography>
                                 </Grid>
@@ -677,7 +678,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
 
                                 <Grid container spacing={2}>
-                                    <Grid item xs={6}>
+                                    <Grid item xs={12} sm={12} md={6}>
                                         <Box style={{ width: "100%" }} sx={{ mt: 2 }}>
                                             <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                 Ngày mượn  <span className="required_text">(*)</span>{" "}
@@ -705,7 +706,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                             />
                                         </Box>
                                     </Grid>
-                                    <Grid item xs={6}>
+                                    <Grid item xs={12} sm={12} md={6}>
                                         <Box style={{ width: "100%" }} sx={{ mt: 2 }}>
                                             <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                 Ngày trả  <span className="required_text">(*)</span>{" "}

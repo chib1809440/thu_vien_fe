@@ -372,7 +372,7 @@ const FormAddEditPublications: FC<Props> = ({
                     {isEditMode ? "Sửa thông tin ấn phẩm" : "Thêm thông tin ấn phẩm mới"}
                 </DialogTitle>
 
-                <DialogContent sx={{ px: 6 }}>
+                <DialogContent sx={{ px: { xs: 3, sm: 3, md: 6 } }}>
                     <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
                         <Box
                             sx={{
@@ -381,6 +381,9 @@ const FormAddEditPublications: FC<Props> = ({
                                 gap: 2,
                                 width: "100%",
                                 mt: 2,
+                                "& .css-1saycg4": {
+                                    margin: "auto",
+                                }
                             }}
                         >
                             <Uploadimage
@@ -592,7 +595,7 @@ const FormAddEditPublications: FC<Props> = ({
                     </Form>
                 </DialogContent>
 
-                <DialogActions sx={{ pr: 6, pb: 2 }}>
+                <DialogActions sx={{ pr: { xs: 3, sm: 3, md: 6 }, pb: 2 }}>
                     <Button disabled={isFetching} onClick={onClose} color="error" style={{ fontSize: 14 }}>
                         Huỷ
                     </Button>
@@ -610,16 +613,18 @@ const FormAddEditPublications: FC<Props> = ({
                 </DialogActions>
             </Dialog>
 
-            {openAdd && (
-                <FormAddCommonDialog
-                    open={openAdd}
-                    onClose={handleClose}
-                    initialValues={getInitialValuesAdd}
-                    onSubmit={handleAddSubmit}
-                    typeToAdd={typeToAdd}
-                />
-            )}
-        </FormikProvider>
+            {
+                openAdd && (
+                    <FormAddCommonDialog
+                        open={openAdd}
+                        onClose={handleClose}
+                        initialValues={getInitialValuesAdd}
+                        onSubmit={handleAddSubmit}
+                        typeToAdd={typeToAdd}
+                    />
+                )
+            }
+        </FormikProvider >
     );
 };
 

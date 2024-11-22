@@ -62,11 +62,13 @@ const PaginationForm: FC<Props> = ({ pagination }) => {
                 alignItems: "center",
                 gap: 2,
                 flexDirection: "row",
+                flexWrap: "wrap"
             }}
         >
             <Box
                 sx={{
-                    py: 2,
+                    pt: { xs: 3, sm: 3, md: 2 },
+                    pb: { xs: 1, sm: 1, md: 2 },
                     display: "flex",
                     justifyContent: "flex-start",
                     alignItems: "center",

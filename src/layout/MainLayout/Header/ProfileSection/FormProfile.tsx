@@ -125,6 +125,9 @@ const FormProfile: FC<Props> = ({
                                 gap: 2,
                                 width: "100%",
                                 my: 2,
+                                "& .css-1saycg4": {
+                                    margin: "auto",
+                                }
                             }}
                         >
                             <Uploadimage
@@ -221,7 +224,7 @@ const FormProfile: FC<Props> = ({
                         </Box>
                     </Form>
                 </DialogContent>
-                <DialogActions sx={{ pr: 4, pb: 2 }}>
+                <DialogActions sx={{ pr: 3, pl: 3 }}>
                     <StyledButton
                         color="primary"
                         size="small"

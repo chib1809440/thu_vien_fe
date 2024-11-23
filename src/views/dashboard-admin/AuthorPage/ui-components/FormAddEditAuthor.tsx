@@ -97,11 +97,12 @@ const FormAddEditAuthor: FC<Props> = ({
                         Huỷ
                     </Button>
                     <StyledButton
+                        disableHoverEffect
                         color="primary"
                         size="small"
                         variant="contained"
                         onClick={handleSubmit as () => void}
-                        sx={{ paddingTop: 1.3, paddingBottom: 1.3 }}
+                        sx={{ paddingTop: 1.3, paddingBottom: 1.3, marginRight: 3 }}
                     >
                         {isFetching ? "Đang thực hiện..." : isEditMode ? "Cập nhật" : "Thêm mới"}
                     </StyledButton>

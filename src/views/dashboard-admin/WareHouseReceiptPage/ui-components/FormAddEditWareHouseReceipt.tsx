@@ -395,7 +395,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                     }}
                     disableEscapeKeyDown
                 >
-                    <DialogTitle sx={{ p: 4 }}>
+                    <DialogTitle sx={{ p: { xs: 2, sm: 2, md: 4 } }}>
                         {isEditMode ? "Sửa thông tin phiếu nhập kho" : "Thêm thông tin phiếu nhập kho mới"}
                     </DialogTitle>
                     {openAddEdit && (
@@ -419,7 +419,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                             wareHouseReceipt={true}
                         />
                     )}
-                    <DialogContent sx={{ p: 8 }}>
+                    <DialogContent sx={{ p: { xs: 3, sm: 3, md: 8 } }}>
                         <Box sx={{ display: 'none' }}>
                             {
                                 wareHouseReceipt && <PrintWareHouseReceipt ref={componentRef} wareHouseReceipt={wareHouseReceipt} />
@@ -490,47 +490,55 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                         </FormHelperText>
                                     )}
                             </Box>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12}>
-                                    <Box sx={{ mt: 4, display: 'flex', alignItems: 'center' }}>
+                            <Grid container spacing={2} sx={{ mt: { xs: 0, sm: 0, md: 0.5 } }}>
+                                {/* <Grid item xs={12}> */}
+                                {/* <Box sx={{ mt: { xs: 2, sm: 2, md: 4 }, display: 'flex', alignItems: 'center' }}> */}
+                                <Grid item xs={12} md={2}>
+                                    <StyledButton
+                                        color="primary"
+                                        size="small"
+                                        variant="contained"
+                                        disableHoverEffect
+                                        sx={{ paddingTop: 1.3, paddingBottom: 1.3, marginRight: 2 }}
+
+                                    >
+                                        Thông tin ấn phẩm
+                                    </StyledButton>
+                                </Grid>
+                                <Grid item xs={8} md={2}>
+                                    {
+                                        hasPermission([
+                                            { resource: "publications", action: "manage" },
+                                            { resource: "publications", action: "create" },
+                                        ]) &&
+
                                         <StyledButton
                                             color="primary"
                                             size="small"
+                                            type="button"
+                                            startIcon={<IconPlus stroke={2} />}
                                             variant="contained"
-                                            disableHoverEffect
-                                            sx={{ paddingTop: 1.3, paddingBottom: 1.3, marginRight: 2 }}
-
+                                            onClick={addLoanSlip}
                                         >
-                                            Thông tin ấn phẩm
+                                            Thêm ấn phẩm mới
                                         </StyledButton>
-                                        {
-                                            hasPermission([
-                                                { resource: "publications", action: "manage" },
-                                                { resource: "publications", action: "create" },
-                                            ]) &&
+                                    }
+                                </Grid>
+                                <Grid item xs={4} md={2}>
 
-                                            <StyledButton
-                                                color="primary"
-                                                size="small"
-                                                type="button"
-                                                startIcon={<IconPlus stroke={2} />}
-                                                variant="contained"
-                                                onClick={addLoanSlip}
-                                            >
-                                                Thêm ấn phẩm mới
-                                            </StyledButton>
-                                        }
 
-                                        <IconCirclePlusFilled
-                                            style={{ cursor: 'pointer', marginLeft: '10px', marginRight: '10px' }} // Khoảng cách giữa Chip và Icon
-                                            onClick={() => handleAddPublication()} // Gọi hàm thêm
-                                            color="green"
-                                            size={30}
-                                            stroke={1.5}
-                                        />
+                                    <IconCirclePlusFilled
+                                        style={{ cursor: 'pointer', marginLeft: '10px', marginRight: '10px' }} // Khoảng cách giữa Chip và Icon
+                                        onClick={() => handleAddPublication()} // Gọi hàm thêm
+                                        color="green"
+                                        size={30}
+                                        stroke={1.5}
+                                    />
 
-                                    </Box>
-                                    <TableContainer component={Paper} sx={{ mt: 4 }}>
+                                </Grid>
+                                {/* </Box> */}
+                                <Grid item xs={12}>
+                                    <TableContainer component={Paper} sx={{ mt: { xs: 0, sm: 0, md: 1 } }}>
                                         <Table sx={{ minWidth: 700 }} aria-label="customized table">
                                             <TableHead>
                                                 <TableRow>
@@ -626,6 +634,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                     </Box>
                                 </Grid>
                             </Grid>
+                            {/* </Grid> */}
                         </Form>
 
                     </DialogContent>
@@ -641,6 +650,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                             </Button>
                         }
                         <StyledButton
+                            disableHoverEffect
                             color="primary"
                             size="small"
                             variant="contained"

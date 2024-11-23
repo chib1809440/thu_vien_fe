@@ -61,7 +61,7 @@ export default function ModalDetails(props: {
                     Chi tiết phiếu mượn
                 </DialogTitle>
                 <DialogContent>
-                    <Grid container gap={0.5}>
+                    <Grid container gap={0.5} >
                         <CsGrid container>
                             <CsTypography>Mã phiếu</CsTypography>
                             <CsTypographyContent>{`PM${data?.loanSlipNumber}`}</CsTypographyContent>

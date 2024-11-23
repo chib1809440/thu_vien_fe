@@ -1043,71 +1043,75 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
                 </DialogContent>
 
-                <DialogActions sx={{ p: 4 }}>
-                    <Button disabled={isFetching} onClick={onClose} color="error">
-                        Huỷ
-                    </Button>
-                    {
-
-                        (roleName === "Owner" || roleName === "Admin") && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
-                            Trả sách
+                <DialogActions sx={{ p: 4, display: 'flex', flexDirection: { xs: 'column', sm: 'column', md: 'row' }, gap: 1 }}>
+                    <Box sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'row' }, gap: 2 }}>
+                        <Button disabled={isFetching} onClick={onClose} color="error">
+                            Huỷ
                         </Button>
-                    }
-                    {
-                        loanSlip &&
-                        isEditMode &&
-                        loanSlip.status !== "đang mượn" && loanSlip.status !== "đã trả" && // Kiểm tra status
-                        !loanSlip.isCancel && (
-                            <Button
-                                onClick={() => handleOpenDialog('cancel')}
-                                style={{ background: '#c62828', color: 'white' }}
-                                variant="contained"
-                            >
-                                Hủy phiếu mượn
-                            </Button>
-                        )
-                    }
-                    {
+                        {
 
-                        (roleName === "Owner" || roleName === "Admin") && isEditMode && <Button onClick={() => handleOpenDialog('print')} style={{ background: '#212121', color: 'white' }} variant="contained"  >
-                            In
-                        </Button>
-                    }
-                    {
-                        (roleName === "Owner" || roleName === "Admin") && !loanSlip?.isReturn ? (
-                            <Button
-                                disabled={isFetching}
-                                onClick={() => handleOpenDialog('submit')}
-                                variant="contained"
-                                color="primary"
-                            >
-                                {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
+                            (roleName === "Owner" || roleName === "Admin") && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                                Trả sách
                             </Button>
-                        ) : (
-                            <>
-                                {!isEditMode ? (
-                                    <Button
-                                        disabled={isFetching}
-                                        onClick={() => handleOpenDialog('submit')}
-                                        variant="contained"
-                                        color="primary"
-                                    >
-                                        {isFetching ? "Đang thêm..." : "Thêm mới"}
-                                    </Button>
-                                ) : !loanSlip?.isAgree ? ( // Kiểm tra nếu là chế độ chỉnh sửa và loanSlip.isAgree là false
-                                    <Button
-                                        disabled={isFetching}
-                                        onClick={() => handleOpenDialog('submit')}
-                                        variant="contained"
-                                        color="primary"
-                                    >
-                                        Cập nhật
-                                    </Button>
-                                ) : null}
-                            </>
+                        }
+                        {
 
-                        )
-                    }
+                            (roleName === "Owner" || roleName === "Admin") && isEditMode && <Button onClick={() => handleOpenDialog('print')} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                                In
+                            </Button>
+                        }
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'row' }, gap: 2, mt: { xs: 2, sm: 2, md: 0 } }}>
+                        {
+                            loanSlip &&
+                            isEditMode &&
+                            loanSlip.status !== "đang mượn" && loanSlip.status !== "đã trả" && // Kiểm tra status
+                            !loanSlip.isCancel && (
+                                <Button
+                                    onClick={() => handleOpenDialog('cancel')}
+                                    style={{ background: '#c62828', color: 'white' }}
+                                    variant="contained"
+                                >
+                                    Hủy phiếu mượn
+                                </Button>
+                            )
+                        }
+                        {
+                            (roleName === "Owner" || roleName === "Admin") && !loanSlip?.isReturn ? (
+                                <Button
+                                    disabled={isFetching}
+                                    onClick={() => handleOpenDialog('submit')}
+                                    variant="contained"
+                                    color="primary"
+                                >
+                                    {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
+                                </Button>
+                            ) : (
+                                <>
+                                    {!isEditMode ? (
+                                        <Button
+                                            disabled={isFetching}
+                                            onClick={() => handleOpenDialog('submit')}
+                                            variant="contained"
+                                            color="primary"
+                                        >
+                                            {isFetching ? "Đang thêm..." : "Thêm mới"}
+                                        </Button>
+                                    ) : !loanSlip?.isAgree ? ( // Kiểm tra nếu là chế độ chỉnh sửa và loanSlip.isAgree là false
+                                        <Button
+                                            disabled={isFetching}
+                                            onClick={() => handleOpenDialog('submit')}
+                                            variant="contained"
+                                            color="primary"
+                                        >
+                                            Cập nhật
+                                        </Button>
+                                    ) : null}
+                                </>
+
+                            )
+                        }
+                    </Box>
                     <AlertConfirmDialog
                         openConfirm={openDialog}
                         handleOpenConfirmDialog={handleCloseDialog}

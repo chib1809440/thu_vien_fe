@@ -75,7 +75,7 @@ const FormAddEditLibrary: FC<Props> = ({
 
                 <DialogContent>
                     <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
-                        <Box sx={{ display: "flex", gap: 2 }}>
+                        <Box sx={{ display: "flex", gap: { xs: 1, sm: 1, md: 2 }, flexWrap: "wrap" }}>
                             <InputForm
                                 label="Tên thư viện"
                                 placeholder="Nhập tên thư viện"
@@ -92,7 +92,7 @@ const FormAddEditLibrary: FC<Props> = ({
                                 {...getFieldProps("managementAgency")}
                             />
                         </Box>
-                        <Box sx={{ display: "flex", gap: 2 }}>
+                        <Box sx={{ display: "flex", gap: { xs: 1, sm: 1, md: 2 }, flexWrap: "wrap" }}>
                             <InputForm
                                 type="number"
                                 required
@@ -116,7 +116,7 @@ const FormAddEditLibrary: FC<Props> = ({
                                 {...getFieldProps("phoneNumber")}
                             />
                         </Box>
-                        
+
                         <InputForm
                             label="Địa chỉ"
                             placeholder="Nhập địa chỉ"
@@ -152,7 +152,7 @@ const FormAddEditLibrary: FC<Props> = ({
                         size="small"
                         variant="contained"
                         onClick={handleSubmit as () => void}
-                        sx={{ paddingTop: 1.3, paddingBottom: 1.3 }}
+                        sx={{ paddingTop: 1.3, paddingBottom: 1.3, marginRight: 3 }}
                     >
                         {isFetching ? "Đang thực hiện..." : isEditMode ? "Cập nhật" : "Thêm mới"}
                     </StyledButton>

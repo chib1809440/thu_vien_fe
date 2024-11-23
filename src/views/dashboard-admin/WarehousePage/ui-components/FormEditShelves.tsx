@@ -148,7 +148,7 @@ const FormEditShelves: FC<Props> = ({
 
                     <DialogContent>
                         <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
-                            <Box sx={{ display: "flex", gap: 2 }}>
+                            <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap"  }}>
                                 <InputForm
                                     label="Tên ấn phẩm"
                                     error={touched.name && Boolean(errors.name)}

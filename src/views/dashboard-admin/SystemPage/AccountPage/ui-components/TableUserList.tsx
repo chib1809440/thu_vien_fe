@@ -85,7 +85,7 @@ function TableUserList<T extends DataType>({
         refetch()
     }, [filterRoleId]);
     const { hasPermission } = usePermission();
-    const {user: currenUser} = useAuth();
+    const { user: currenUser } = useAuth();
     const userRole = useMemo(() => {
         if (!currenUser) return null;
         const _user = { ...currenUser } as any;
@@ -319,7 +319,7 @@ function TableUserList<T extends DataType>({
             }
         }
     }
-   
+
     return (
         <>
             {isOpenLibCard && <PrintAccount ref={componentRef} dataUsers={checkedUsers} />}
@@ -331,7 +331,12 @@ function TableUserList<T extends DataType>({
                 actionLibCardSelectedItem={handleOpenLibs}
                 onHandleLibCardSelectedItem={handleLibCardSelected}
             />
-            <Grid container pl={4} pr={4} xs={12} sm={12} md={12} lg={12} gap={2} sx={{ display: "flex", mb: 1, flexWrap: "wrap", mt: 1 }}>
+             <Grid container xs={12} sm={12} md={12} lg={12} gap={2} sx={{
+                display: "flex", mb: 1, flexWrap: "wrap",
+                pl: { xs: 0, sm: 0, md: 4 },
+                mt: { xs: 0, sm: 0, md: 1 },
+                pr: { xs: 0, sm: 0, md: 4 }
+            }}>
                 <Grid item xs={12} sm={12} md={2} lg={2}>
                     <Select
                         labelId="roles-select"
@@ -352,7 +357,7 @@ function TableUserList<T extends DataType>({
                 </Grid>
             </Grid>
             {/* Table */}
-            <Box p={4} pt={0}>
+            <Box sx={{ px: { xs: 0, sm: 0, md: 4 }, pt: { xs: 0, sm: 0, md: 2 } }}>
                 {
                     checked && checked.length > 0 && (
                         <Alert severity="info" sx={{ mb: 3 }}>
@@ -431,43 +436,43 @@ function TableUserList<T extends DataType>({
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{getLabelFromOptions(statusRole, (row?.roleId as Role)?.name)}</StyledTableCell>
                                                         {
                                                             (row?.roleId as Role)?.name === userRole ?
-                                                            <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}></StyledTableCell>
-                                                            : row?.isActive ?
-                                                            (
-                                                                <StyledTableCell padding="none" align="center">
-                                                                    <Box sx={{
-                                                                        display: "flex",
-                                                                        justifyContent: "center",
-                                                                        alignItems: "center",
-                                                                        gap: 1
-                                                                    }}>
-                                                                        <IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} />
-                                                                        <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
-                                                                        <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
-                                                                        {
-                                                                            hasPermission([
-                                                                                { resource: "all", action: "manage" },
-                                                                                { resource: "activeaccounts", action: "update" },
-                                                                            ]) && (user?.roleId as Role)?.name !== "Super Admin" &&
-                                                                            <LockOpen onClick={() => handleClickBlock(row?._id)} />
-                                                                        }
+                                                                <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}></StyledTableCell>
+                                                                : row?.isActive ?
+                                                                    (
+                                                                        <StyledTableCell padding="none" align="center">
+                                                                            <Box sx={{
+                                                                                display: "flex",
+                                                                                justifyContent: "center",
+                                                                                alignItems: "center",
+                                                                                gap: 1
+                                                                            }}>
+                                                                                <IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} />
+                                                                                <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
+                                                                                <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
+                                                                                {
+                                                                                    hasPermission([
+                                                                                        { resource: "all", action: "manage" },
+                                                                                        { resource: "activeaccounts", action: "update" },
+                                                                                    ]) && (user?.roleId as Role)?.name !== "Super Admin" &&
+                                                                                    <LockOpen onClick={() => handleClickBlock(row?._id)} />
+                                                                                }
 
-                                                                    </Box>
-                                                                </StyledTableCell>
-                                                            ) :
-                                                            (
-                                                                <StyledTableCell padding="none" align="center">
-                                                                    <Box sx={{
-                                                                        display: "flex",
-                                                                        justifyContent: "center",
-                                                                        alignItems: "center",
-                                                                        gap: 1
-                                                                    }}
-                                                                    >
-                                                                        <Lock onClick={() => handleClickOpenBlock(row?._id)} />
-                                                                    </Box>
-                                                                </StyledTableCell>
-                                                            )
+                                                                            </Box>
+                                                                        </StyledTableCell>
+                                                                    ) :
+                                                                    (
+                                                                        <StyledTableCell padding="none" align="center">
+                                                                            <Box sx={{
+                                                                                display: "flex",
+                                                                                justifyContent: "center",
+                                                                                alignItems: "center",
+                                                                                gap: 1
+                                                                            }}
+                                                                            >
+                                                                                <Lock onClick={() => handleClickOpenBlock(row?._id)} />
+                                                                            </Box>
+                                                                        </StyledTableCell>
+                                                                    )
                                                         }
 
                                                     </StyledTableRow>
@@ -493,7 +498,11 @@ function TableUserList<T extends DataType>({
                     </Table>
                 </TableContainer>
                 {/* Panigation */}
-                <CsFlexRowBetween>
+                <CsFlexRowBetween sx={{
+                    mt: { xs: 1, sm: 1, md: 0 },
+                    display: "flex",
+                    flexWrap: "wrap"
+                }}>
                     <Box sx={{
                         py: 2,
                         display: "flex",

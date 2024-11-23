@@ -495,7 +495,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     {isEditMode ? "Sửa phiếu mượn" : "Thêm phiếu mượn mới"} {loanSlip?.isCancel === true ? <span style={{ color: '#c62828' }}>(Đã hủy phiếu)</span> : ""}
                 </DialogTitle>
 
-                <DialogContent sx={{ p: 8 }} >
+                <DialogContent sx={{ p: { xs: 3, sm: 3, md: 8 } }} >
                     <Box sx={{ display: 'none' }}>
                         {
                             loanSlip && libraryDetail && <PrintLoanSlip libraryDetail={libraryDetail} ref={componentRef} loanSlip={loanSlip} />
@@ -517,7 +517,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
 
                                 <Grid container spacing={2}>
-                                    <Grid item xs={6}>
+                                    <Grid item xs={12} sm={12} md={6}>
                                         <Box style={{ width: "100%" }} sx={{ mt: 2 }}>
                                             <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                 Ngày mượn  <span className="required_text">(*)</span>{" "}
@@ -545,7 +545,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                             />
                                         </Box>
                                     </Grid>
-                                    <Grid item xs={6}>
+                                    <Grid item xs={12} sm={12} md={6}>
                                         <Box style={{ width: "100%" }} sx={{ mt: 2 }}>
                                             <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                 Ngày trả  <span className="required_text">(*)</span>{" "}
@@ -579,7 +579,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                         </Grid>
                     </Grid>
                     <Grid container spacing={3} sx={{ mt: 1 }}>
-                        <Grid item md={12}>
+                        <Grid item xs={12} sm={12} md={12}>
                             <Box style={{ width: "100%" }} sx={{ mb: 1.5 }}>
                                 <Typography sx={{ display: 'flex', alignItems: 'center', mb: 1.5, fontWeight: "bold" }}>
                                     <span style={{ marginRight: '8px' }}>Nhóm thư viện</span>
@@ -957,46 +957,50 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     }
                 </DialogContent>
 
-                <DialogActions sx={{ p: 4 }}>
-                    <Button disabled={isFetching} onClick={onClose} color="error">
-                        Đóng
-                    </Button>
-                    {
-
-                        loanSlip && ((libraryId as string) === loanSlip.libraryId) && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={handleReturnLoanSlip} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
-                            Trả sách
+                <DialogActions sx={{ p: 4, display: 'flex', flexDirection: { xs: 'column', sm: 'column', md: 'row' }, gap: 1 }}>
+                    <Box sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'row' }, gap: 2 }}>
+                        <Button disabled={isFetching} onClick={onClose} color="error">
+                            Đóng
                         </Button>
-                    }
-                    {
+                        {
 
-                        loanSlip && ((libraryId as string) === loanSlip.libraryId) && isEditMode && <Button onClick={() => handlePrint()} style={{ background: '#212121', color: 'white' }} variant="contained"  >
-                            In
-                        </Button>
-                    }
-                    {
-                        loanSlip &&
-                        isEditMode &&
-                        loanSlip.status !== "đang mượn" && loanSlip.status !== "đã trả" && // Kiểm tra status
-                        !loanSlip.isCancel && (
-                            <Button
-                                onClick={() => handleCancelLoanSlip(loanSlip)}
-                                style={{ background: '#c62828', color: 'white' }}
-                                variant="contained"
-                            >
-                                Hủy phiếu mượn
+                            loanSlip && ((libraryId as string) === loanSlip.libraryId) && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={handleReturnLoanSlip} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                                Trả sách
                             </Button>
-                        )
-                    }
-                    {
-                        !loanSlip?.isReturn && <Button
-                            disabled={isFetching}
-                            onClick={handleSubmit as () => void}
-                            variant="contained"
-                            color="primary"
-                        >
-                            {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
-                        </Button>
-                    }
+                        }
+                        {
+
+                            loanSlip && ((libraryId as string) === loanSlip.libraryId) && isEditMode && <Button onClick={() => handlePrint()} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                                In
+                            </Button>
+                        }
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'row' }, gap: 2, mt: { xs: 2, sm: 2, md: 0 } }}>
+                        {
+                            loanSlip &&
+                            isEditMode &&
+                            loanSlip.status !== "đang mượn" && loanSlip.status !== "đã trả" && // Kiểm tra status
+                            !loanSlip.isCancel && (
+                                <Button
+                                    onClick={() => handleCancelLoanSlip(loanSlip)}
+                                    style={{ background: '#c62828', color: 'white' }}
+                                    variant="contained"
+                                >
+                                    Hủy phiếu mượn
+                                </Button>
+                            )
+                        }
+                        {
+                            !loanSlip?.isReturn && <Button
+                                disabled={isFetching}
+                                onClick={handleSubmit as () => void}
+                                variant="contained"
+                                color="primary"
+                            >
+                                {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
+                            </Button>
+                        }
+                    </Box>
 
                 </DialogActions>
             </Dialog>

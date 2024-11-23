@@ -22,7 +22,7 @@ export default function Footer() {
                 alignItems: "center",
                 width: "100%",
                 flexDirection:{ xs: "column", sm: "column", md: "row" },
-                mt:{ xs: 4, sm: 4, md: 0 }
+                mt:{ xs: 2, sm: 4, md: 0 }
             }}>
                 <Box>
                     <Typography variant="body2" sx={{ fontWeight: 600 }} textTransform={"uppercase"}>CTY CP Giải pháp Công nghệ GD Việt Nam</Typography>

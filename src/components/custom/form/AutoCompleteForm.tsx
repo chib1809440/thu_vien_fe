@@ -72,7 +72,7 @@ const AutocompleteForm = <Type extends Record<string, any>>({
             fullWidth
             error={error}
         >
-            <Box sx={{ display: "flex", alignItems: "center", my: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", my: 1, flexWrap: "wrap" }}>
                 <Typography sx={{ fontWeight: "bold" }}>
                     {label} {required && <span className="required_text">(*)</span>}
                 </Typography>
@@ -97,7 +97,8 @@ const AutocompleteForm = <Type extends Record<string, any>>({
                             type="button"
                             startIcon={<IconPlus stroke={2} size={20} />}
                             onClick={handleAddLibAndAccount}
-                            sx={{ marginRight: 2, marginLeft: 2 }}
+                            //@ts-ignore
+                            sx={{ marginRight: 2, marginLeft: { xs: 0, sm: 0, md: 2 }, marginBottom: { xs: 2, sm: 2, md: 0 }, marginTop: { xs: 2, sm: 2, md: 0 } }}
                         >
                             Thêm thư viện
                         </StyledButton>
@@ -143,9 +144,9 @@ const AutocompleteForm = <Type extends Record<string, any>>({
                                 .map((option, _) =>
                                     option?.[keyLabel]?.length > limitText
                                         ? capitalizeFirstLetter(option?.[keyLabel]).slice(
-                                              0,
-                                              limitText
-                                          ) + "..."
+                                            0,
+                                            limitText
+                                        ) + "..."
                                         : capitalizeFirstLetter(option?.[keyLabel])
                                 )
                                 .join(", ")}

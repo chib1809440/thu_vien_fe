@@ -93,7 +93,7 @@ const PublisherDeleteListPage = () => {
                 disablePadding: "none",
                 label: "Tên nhà sản xuất",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200, textTransform: "capitalize"  },
+                sxRow: { paddingRight: 3, maxWidth: 200, textTransform: "capitalize" },
                 render: (row) => {
                     const hasWhitespace = /\s/.test(row?.name);
                     return (
@@ -254,7 +254,7 @@ const PublisherDeleteListPage = () => {
             <MainCard>
                 <Stack spacing={2}>
                     <CsFlexRowBetween>
-                        <Box sx={{ ml: 4, mb: 2 }}>
+                        <Box sx={{ ml: { xs: 0, sm: 0, md: 4 }, mb: 2 }}>
                             <Link to="/quan-ly-danh-muc/nha-san-xuat" style={{ textDecoration: 'none' }}>
                                 <StyledButton
                                     color="primary"

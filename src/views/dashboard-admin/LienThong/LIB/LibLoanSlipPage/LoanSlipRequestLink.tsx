@@ -682,7 +682,12 @@ const LoanSlipRequestLink = () => {
                 <ActionsForm placeholderSearch="Tìm kiếm theo barcode người mượn" actions={actionMenus} barcode={true}
                     barcodeSearch={barcodeSearch}
                     handleBarcodeSearch={handleBarcodeSearch} placeholder="Tìm kiếm theo barcode" />
-                <Grid container pl={4} pr={4} xs={12} sm={12} md={12} lg={12} gap={2} sx={{ display: "flex", mb: 3, flexWrap: "wrap" }}>
+                <Grid container xs={12} sm={12} md={12} lg={12} gap={2} sx={{
+                    display: "flex", mb: 3, flexWrap: "wrap",
+                    pl: { xs: 0, sm: 0, md: 4 },
+                    pr: { xs: 0, sm: 0, md: 4 },
+                    mt: { xs: 2, sm: 2, md: 0 }
+                }}>
                     <Grid item xs={12} sm={12} md={2} lg={2}>
                         <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}

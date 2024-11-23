@@ -84,7 +84,7 @@ const FormAddEditCategory: FC<Props> = ({
                             helperText={touched.description && errors.description}
                             {...getFieldProps("description")}
                         />
-                         <SwitchForm
+                        <SwitchForm
                             value={values?.isLink ?? false}
                             onChange={(checked) => setFieldValue("isLink", checked)}
                             label="Chia sẻ liên thông"
@@ -93,15 +93,16 @@ const FormAddEditCategory: FC<Props> = ({
                 </DialogContent>
 
                 <DialogActions>
-                <Button disabled={isFetching} onClick={onClose} color="error" style={{ fontSize: 14 }}>
+                    <Button disabled={isFetching} onClick={onClose} color="error" style={{ fontSize: 14 }}>
                         Huỷ
                     </Button>
                     <StyledButton
+                        disableHoverEffect
                         color="primary"
                         size="small"
                         variant="contained"
                         onClick={handleSubmit as () => void}
-                        sx={{ paddingTop: 1.3, paddingBottom: 1.3 }}
+                        sx={{ paddingTop: 1.3, paddingBottom: 1.3, marginRight: 3 }}
                     >
                         {isFetching ? "Đang thực hiện..." : isEditMode ? "Cập nhật" : "Thêm mới"}
                     </StyledButton>

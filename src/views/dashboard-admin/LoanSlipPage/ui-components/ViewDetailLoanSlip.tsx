@@ -95,7 +95,7 @@ const ViewDetailLoanSlip: FC<Props> = ({
                 Chi tiết phiếu mượn
             </DialogTitle>
 
-            <DialogContent sx={{ p: 8 }} >
+            <DialogContent sx={{ p: { xs: 3, sm: 3, md: 8 } }} >
                 <Typography variant="h3" align="center" sx={{ mt: 0 }}>
                     {capitalizeFirstLetter(libraryDetail?.name)}
                 </Typography>

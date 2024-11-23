@@ -1,33 +1,29 @@
-import { Button, Chip, FormControl, Grid, MenuItem, Select, Switch, useTheme } from "@mui/material";
+import { Chip, FormControl, Grid, MenuItem, Select, useTheme } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { IconCalendar, IconEye, IconFileExport, IconPencil, IconPlus, IconPrinter, IconTrash, IconX } from "@tabler/icons";
-import { IconClockSearch, IconTrashXFilled } from "@tabler/icons-react";
+import { IconCalendar, IconEye, IconPencil, IconPlus, IconTrash, IconX } from "@tabler/icons";
+import { vi } from "date-fns/locale";
+import ExcelJS from 'exceljs';
 import { useCallback, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../../../components/custom/form/ActionForm";
 import TableList from "../../../../../components/custom/table-list/TableList";
 import StyledButton from "../../../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../../../components/default/dialog/ConfirmDeleteDialog";
-import { useAddLoanSlip, useApprovalLoanSlip, useCancelLoanSlip, useDeleteLoanSlip, useDeleteManyLoanSlip, useDeleteSoftLoanSlip, useDeleteSoftManyLoanSlip, useEditLoanSlip, useReturnLoanSlip } from "../../../../../hooks/services/loanSlip/loanSlip-mutation";
-import { useFetchLoanSlip, useFetchLoanSlipLink, useReFetchLoanSlip, useReFetchLoanSlipLink } from "../../../../../hooks/services/loanSlip/loanSlip-query";
+import { useAuth } from "../../../../../contexts/JWTContext";
+import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
+import { formatDate } from "../../../../../helpers/formatDate";
+import { useAddLoanSlip, useApprovalLoanSlip, useCancelLoanSlip, useDeleteLoanSlip, useEditLoanSlip, useReturnLoanSlip } from "../../../../../hooks/services/loanSlip/loanSlip-mutation";
+import { useFetchLoanSlipLink, useReFetchLoanSlipLink } from "../../../../../hooks/services/loanSlip/loanSlip-query";
 import useQueryString from "../../../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../../../types/common/table";
 import { CreatePublication, TLoanSlip, TLoanSlipCreate } from "../../../../../types/models/loanSlip.type";
 import IBreadcrumsCustom from "../../../../../ui-component/breadcrums";
 import MainCard from "../../../../../ui-component/cards/MainCard";
-import { formatDate } from "../../../../../helpers/formatDate";
-import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
-import { useReactToPrint } from "react-to-print";
-import { vi } from "date-fns/locale";
-import Html2Pdf from 'html2pdf.js';
 import { parserParams } from "../../../../../utils/object";
-import { useFetchPublications } from "../../../../../hooks/services/publications/publications-query";
-import DatePicker from "react-datepicker";
-import ExcelJS from 'exceljs';
-import FormAddEditLibLoanSlip from "./ui-components/FormAddEditLibLoanSlip";
-import { useAuth } from "../../../../../contexts/JWTContext";
 import ViewDetailLoanSlip from "../../../LoanSlipPage/ui-components/ViewDetailLoanSlip";
+import FormAddEditLibLoanSlip from "./ui-components/FormAddEditLibLoanSlip";
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -638,7 +634,7 @@ const LoanSlipPage = () => {
             )}
             <MainCard>
 
-                <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
+                <Stack spacing={2} sx={{ paddingLeft: { xs: 0, sm: 0, md: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
                     <Box display="flex" flexWrap="wrap">
                         <Box>
                             <StyledButton
@@ -668,7 +664,12 @@ const LoanSlipPage = () => {
                 <ActionsForm actions={actionMenus} barcode={true}
                     barcodeSearch={barcodeSearch}
                     handleBarcodeSearch={handleBarcodeSearch} placeholder="Tìm kiếm theo barcode" />
-                <Grid container pl={4} pr={4} xs={12} sm={12} md={12} lg={12} gap={2} sx={{ display: "flex", mb: 3, flexWrap: "wrap" }}>
+                <Grid container xs={12} sm={12} md={12} lg={12} gap={2} sx={{
+                    display: "flex", mb: 3, flexWrap: "wrap",
+                    pl: { xs: 0, sm: 0, md: 4 },
+                    pr: { xs: 0, sm: 0, md: 4 },
+                    mt: { xs: 2, sm: 2, md: 0 }
+                }}>
                     <Grid item xs={12} sm={12} md={2} lg={2}>
                         <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}

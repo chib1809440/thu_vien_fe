@@ -38,8 +38,8 @@ export default function RolePage() {
             />
             <MainCard >
                 <Stack spacing={2}>
-                    <CsFlexRowBetween>
-                        <Box sx={{ ml: 4 }}>
+                    {/* <CsFlexRowBetween>
+                        <Box sx={{ ml: { xs: 0, sm: 0, md: 4 } }}>
                             <StyledButton
                                 color='primary'
                                 size="small"
@@ -51,7 +51,7 @@ export default function RolePage() {
                             </StyledButton>
                         </Box>
 
-                    </CsFlexRowBetween>
+                    </CsFlexRowBetween> */}
                     <TableRoleList<Role>
                         orderByKey={"name"}
                         headCells={headCells}

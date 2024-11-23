@@ -81,7 +81,7 @@ const FormEditLiquidation: FC<Props> = ({
                             value={(values?.publicationId as TPublications)?.name}
                             disabled
                         />
-                        <Box sx={{ display: "flex", gap: 2 }}>
+                        <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap"  }}>
                             <InputForm
                                 label="Tổng số lượng ấn phẩm sách"
                                 type="number"

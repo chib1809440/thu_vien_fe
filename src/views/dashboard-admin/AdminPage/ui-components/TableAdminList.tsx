@@ -86,7 +86,7 @@ function TableAdminList<T extends DataType>({
         if (!account) return null;
         const _user = { ...account } as any;
         return _user?.data?.roleId?.name;
-    }, [account]);    
+    }, [account]);
 
     const { data: roles } = useRoleBySuperAdminList();
     const { data: users, isPending, error, isError, isPlaceholderData, isFetching, refetch } =
@@ -284,7 +284,12 @@ function TableAdminList<T extends DataType>({
         <>
             <SearchAndFilter onHandleDeleteSelectedItem={handleDeleteItemSelected} actionDeleteSelectedItem={true} contentSearch={contentSearch} handleContentSearch={setContentSearch} />
             {/* Table */}
-            <Grid container pl={4} pr={4} xs={12} sm={12} md={12} lg={12} gap={2} sx={{ display: "flex", mb: 1, flexWrap: "wrap", mt: 1 }}>
+            <Grid container xs={12} sm={12} md={12} lg={12} gap={2} sx={{
+                display: "flex", mb: 1, flexWrap: "wrap",
+                pl: { xs: 0, sm: 0, md: 4 },
+                mt: { xs: 0, sm: 0, md: 1 },
+                pr: { xs: 0, sm: 0, md: 4 }
+            }}>
                 <Grid item xs={12} sm={12} md={2} lg={2}>
                     <Select
                         labelId="roles-select"
@@ -305,7 +310,7 @@ function TableAdminList<T extends DataType>({
                     </Select>
                 </Grid>
             </Grid>
-            <Box p={4} pt={0}>
+            <Box sx={{ px: { xs: 0, sm: 0, md: 4 }, pt:{ xs: 0, sm: 0, md: 2 } }}>
                 {
                     checked && checked.length > 0 && (
                         <Alert severity="info" sx={{ mb: 3 }}>
@@ -440,13 +445,17 @@ function TableAdminList<T extends DataType>({
                     </Table>
                 </TableContainer>
                 {/* Panigation */}
-                <CsFlexRowBetween>
+                <CsFlexRowBetween sx={{
+                    mt: { xs: 1, sm: 1, md: 0 },
+                    display: "flex",
+                    flexWrap: "wrap"
+                }}>
                     <Box sx={{
                         py: 2,
                         display: "flex",
                         justifyContent: "flex-start",
                         alignItems: "center",
-                        gap: 1
+                        gap: 1,
                     }}>
                         <FormControl sx={{ minWidth: 64 }}>
                             <Select

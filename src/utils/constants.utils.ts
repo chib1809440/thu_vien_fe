@@ -1,6 +1,6 @@
 export const typeOptions = [
     { value: 'ấn phẩm cứng', label: 'Ấn phẩm truyền thống' },
-    { value: 'ấn phẩm mềm', label: 'Ấn phẩm mềm' },
+    { value: 'ấn phẩm mềm', label: 'Ấn phẩm điện tử' },
 ];
 
 export const statusOptions = [

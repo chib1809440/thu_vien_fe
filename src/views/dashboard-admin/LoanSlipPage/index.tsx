@@ -1,5 +1,5 @@
-import { Button, Chip, FormControl, Grid, MenuItem, Select, useTheme } from "@mui/material";
-import { Box, Stack } from "@mui/system";
+import { Accordion, AccordionDetails, AccordionSummary, Button, Chip, FormControl, Grid, MenuItem, Paper, Select, Typography, useTheme } from "@mui/material";
+import { Box, Stack, useMediaQuery } from "@mui/system";
 import { IconCalendar, IconEye, IconFileExport, IconPencil, IconPlus, IconTrash, IconX } from "@tabler/icons";
 import { vi } from "date-fns/locale";
 import ExcelJS from 'exceljs';
@@ -22,9 +22,12 @@ import { TColumn, TMenuOption } from "../../../types/common/table";
 import { CreatePublication, TLoanSlip, TLoanSlipCreate } from "../../../types/models/loanSlip.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
-import { parserParams } from "../../../utils/object";
+import { getLabelFromOptions, parserParams } from "../../../utils/object";
 import FormAddEditLoanSlip from "./ui-components/FormAddEditLoanSlip";
 import ViewDetailLoanSlip from "./ui-components/ViewDetailLoanSlip";
+import PaginationForm from "../../../components/custom/form/PaginationForm";
+import { StyledTableCell, StyledTableRow } from "../../../components/custom/table-list/style";
+import { ExpandMore } from "@mui/icons-material";
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -629,7 +632,7 @@ const LoanSlipPage = () => {
             //     onClick: handleDeleteMultiple,
             // },
             {
-                label: "Xuất excel",
+                label: "Xuất danh sách phiếu mượn",
                 icon: <IconFileExport size={20} stroke={1.5} />,
                 onClick: handleExportLoanSlipExcel,
             },
@@ -658,6 +661,9 @@ const LoanSlipPage = () => {
             userId: ''
         };
     }, [selectedEdit]);
+
+    const isMd = useMediaQuery('(min-width: 900px)');
+    
     return (
         <div>
             <IBreadcrumsCustom
@@ -693,40 +699,42 @@ const LoanSlipPage = () => {
                     paddingBottom: { xs: 2, sm: 2 },
                     width: '100%'
                 }}>
-                    <Box display="flex" flexWrap="wrap">
+                    <Box display="flex" flexWrap="wrap" sx={{ flexDirection: { xs: 'column', sm: 'column', md: "row" } }}>
                         <Box>
-                            <StyledButton
-                                color="primary"
+                            <Button color="primary"
                                 size="small"
                                 startIcon={<IconPlus stroke={2} />}
-                                variant="contained"
                                 onClick={addLoanSlip}
+                                variant="contained"
+                                sx={{
+                                    borderRadius: "8px", py: 0.8,
+                                    px: 1.7,
+                                    textTransform: "inherit"
+                                }}
                             >
                                 {(roleName === "Owner" || roleName === "Admin") ? "Thêm mới" : "Đăng ký mượn sách"}
-                            </StyledButton>
+                            </Button>
                         </Box>
 
-                        <Box>
+                        <Box sx={{ mt: { xs: 2, sm: 2, md: 0 }, ml: { xs: 0, sm: 0, md: 2 } }}>
                             <Link to="/quan-ly-muon-tra/phieu-muon/danh-sach-xoa-phieu-muon" style={{ textDecoration: 'none' }}>
-                                <StyledButton
+                                <Button
                                     sx={{
                                         background: "#de524a", color: "white",
-                                        //@ts-ignore
-                                        marginTop: (roleName !== "Owner" && roleName !== "Admin")
-                                            ? { xs: 1, sm: 1, md: 0 }  
-                                            : 0,
-                                        //@ts-ignore
-                                        marginLeft: (roleName !== "Owner" && roleName !== "Admin")
-                                            ? { xs: 0, sm: 0, md: "10px" } 
-                                            : { xs: "10px", sm: "10px", md: "10px" }
+                                        borderRadius: "8px",
+                                        py: 0.8,
+                                        px: 1.7,
+                                        textTransform: "inherit",
+                                        "&: hover": {
+                                            background: "#de524a", color: "white",
+                                        }
                                     }}
                                     size="small"
                                     startIcon={< IconTrash stroke={2} />}
-                                    variant="contained"
-
-                                >
+                                    onClick={addLoanSlip}
+                                    variant="contained"  >
                                     Thùng rác
-                                </StyledButton>
+                                </Button>
                             </Link>
                         </Box>
                     </Box>
@@ -872,17 +880,89 @@ const LoanSlipPage = () => {
                         </div>
                     </Grid>
                 </Grid>
-                <TableList
-                    checked={checkedDelete}
-                    columns={columns}
-                    rows={data?.data?.result || []}
-                    onChecked={handleCheckedDelete}
-                    onToggleCheckedAll={handleCheckedDeleteAll}
-                    checkedAll={checkedAll}
-                    isLoading={isLoading}
-                    keyChecked="_id"
-                    pagination={data?.data?.meta}
-                />
+
+                {
+                    isMd ? <TableList
+                        checked={checkedDelete}
+                        columns={columns}
+                        rows={data?.data?.result || []}
+                        onChecked={handleCheckedDelete}
+                        onToggleCheckedAll={handleCheckedDeleteAll}
+                        checkedAll={checkedAll}
+                        isLoading={isLoading}
+                        keyChecked="_id"
+                        pagination={data?.data?.meta}
+                    />
+                        :
+                        <Grid container spacing={2} sx={{ p: { xs: 0, sm: 0, md: "12px 32px" }, pt: 2 }}>
+                            <Grid item xs={12}>
+                                {
+                                    data?.data?.result?.length > 0 ? (
+                                        data?.data?.result?.map((row, idxRow) => {
+                                            return (
+                                                <>
+                                                    <Accordion
+                                                        key={idxRow}
+                                                        sx={{
+                                                            background: "#e4f2fd",
+                                                            borderRadius: "8px",
+                                                            mt: 2,
+                                                            position: 'relative',
+                                                            zIndex: 1,
+                                                        }}
+                                                    >
+                                                        <AccordionSummary
+                                                            expandIcon={<ExpandMore />}
+                                                            sx={{
+                                                                background: "#e4f2fd",
+                                                                boxShadow: "0px 4px 6px rgba(86, 204, 242, 0.3)",
+                                                                borderRadius: "8px",
+                                                            }}
+                                                        >
+                                                            <Box sx={{ width: '100%' }}>
+                                                                <Typography>
+                                                                Mã phiếu mượn: {row?.barcode}
+                                                                </Typography>
+                                                            </Box>
+                                                        </AccordionSummary>
+
+                                                        <AccordionDetails>
+                                                            <Box sx={{ width: '100%', py: 1 }}>
+                                                                <Typography mt={0.5}>Mã phiếu mượn: <strong>{row?.barcode}</strong></Typography>
+                                                                <Typography mt={0.5}>Ngày mượn: <strong>{formatDate(row?.borrowedDay)}</strong></Typography>
+                                                                <Typography mt={0.5}>Ngày trả: <strong>{formatDate(row?.returnDay)}</strong></Typography>
+                                                                <Typography mt={0.5}>Tình trạng trả: <strong>{capitalizeFirstLetter(row?.status)}</strong></Typography>
+                                                                <Typography mt={0.5}>Trạng thái: <strong>{row?.isAgree=== false ? "Chưa duyệt" : "Đã duyệt"}</strong></Typography>
+                                                                {row?.publications?.length > 0 && (
+                                                                    <Box sx={{ mt: 1 }}>
+                                                                        <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
+                                                                        <ul>
+                                                                            {row?.publications.map((publication, idx) => (
+                                                                                <li key={idx}>{capitalizeFirstLetter(publication?.name)}</li>
+                                                                            ))}
+                                                                        </ul>
+                                                                    </Box>
+                                                                )}
+                                                            </Box>
+                                                        </AccordionDetails>
+                                                    </Accordion>
+
+                                                </>
+                                            );
+                                        })
+                                    ) : (
+                                        <Typography>Chưa có dữ liệu</Typography>
+                                    )
+                                }
+                            </Grid>
+                            <Grid item xs={12}>
+                                {data?.data?.meta && Object.keys(data?.data?.meta).length > 0 && (
+                                    <PaginationForm pagination={data?.data?.meta} />
+                                )}
+                            </Grid>
+                        </Grid>
+                }
+
 
                 <ConfirmDeleteDialog
                     key={"delete"}

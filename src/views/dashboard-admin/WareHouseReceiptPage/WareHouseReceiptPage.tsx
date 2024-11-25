@@ -1,7 +1,8 @@
-import { Button, Chip, Switch, useTheme } from "@mui/material";
+import { Button, Chip, useTheme } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { IconEye, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
+import { IconEye, IconFileExport, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconTrashXFilled } from "@tabler/icons-react";
+import ExcelJS from 'exceljs';
 import { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -9,21 +10,18 @@ import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
+import { formatDate } from "../../../helpers/formatDate";
 import useQueryString from "../../../hooks/services/useQueryString";
+import { useAcceptWareHouseReceipt, useAddWareHouseReceipt, useDeleteSoftManyWareHouseReceipt, useDeleteSoftWareHouseReceipt, useEditWareHouseReceipt } from "../../../hooks/services/warehouseReceipt/warehousereceipt-mutation";
+import { useFetchWareHouseReceipt, useReFetchWareHouseReceipt } from "../../../hooks/services/warehouseReceipt/warehousereceipt-query";
+import { User } from "../../../interfaces/user";
 import { TColumn, TMenuOption } from "../../../types/common/table";
+import { TSupplier } from "../../../types/models/supplier.type";
 import { TWareHouseReceipt, TWareHouseReceiptCreate } from "../../../types/models/warehouse-receipt";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
-import { useFetchWareHouseReceipt, useReFetchWareHouseReceipt } from "../../../hooks/services/warehouseReceipt/warehousereceipt-query";
-import { useAcceptWareHouseReceipt, useAddWareHouseReceipt, useDeleteSoftManyWareHouseReceipt, useDeleteSoftWareHouseReceipt, useEditWareHouseReceipt } from "../../../hooks/services/warehouseReceipt/warehousereceipt-mutation";
-import FormAddEditWareHouseReceipt from "./ui-components/FormAddEditWareHouseReceipt";
-import { User } from "../../../interfaces/user";
-import { TSupplier } from "../../../types/models/supplier.type";
-import { TLoanSlip } from "../../../types/models/loanSlip.type";
-import { useApprovalLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-mutation";
 import usePermission from "../../../utils/hasPermission";
-import { formatDate } from "../../../helpers/formatDate";
-import { TPublications } from "../../../types/models/publications.type";
+import FormAddEditWareHouseReceipt from "./ui-components/FormAddEditWareHouseReceipt";
 import ViewDetailWareHouseReceipt from "./ui-components/ViewDetailWareHouse";
 
 
@@ -317,6 +315,141 @@ const WareHouseReceiptPage = () => {
         });
     }, [checkedDelete]);
 
+    const handleExportWareHouseReceiptExcel = () => {
+        // Tạo một workbook mới
+        console.log(data);
+        if (data) {
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Publications');
+
+            // Thêm hàng tiêu đề chính
+            worksheet.addRow(['Danh sách nhập ấn phẩm']).font = { bold: true, size: 14 };
+            worksheet.addRow([]);
+
+            const currentDateTime = new Date();
+            const formattedDateTime = currentDateTime.toLocaleString('vi-VN', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: false,
+            });
+
+            worksheet.addRow([`Ngày xuất file: ${formattedDateTime}`]).font = { bold: true };
+            worksheet.addRow([]);
+
+            worksheet.addRow([
+                'Mã nhập',
+                'Mã ấn phẩm',
+                'Tên ấn phẩm',
+                'Ngày tạo',
+                'Ngày cập nhật',
+                'Nhà cung cấp',
+                'Người tạo',
+                'Số lượng nhập',
+                'Trạng thái',
+                'Ghi chú'
+            ]).font = { bold: true };
+
+            worksheet.getColumn('A').width = 15;
+            worksheet.getColumn('B').width = 30;
+            worksheet.getColumn('C').width = 30;
+            worksheet.getColumn('D').width = 30;
+            worksheet.getColumn('E').width = 30;
+            worksheet.getColumn('F').width = 30;
+            worksheet.getColumn('G').width = 20;
+            worksheet.getColumn('H').width = 15;
+            worksheet.getColumn('I').width = 15;
+            worksheet.getColumn('J').width = 20;
+
+            const warehouseReceiptsData = data?.data?.result?.map((receipt) => {
+                const supplierName = (receipt?.supplierId as TSupplier)?.name || '';
+                const creatorName = (receipt?.createBy as User)?.fullname || '';
+                const isAccepted = receipt?.isAccept ? 'Đã duyệt' : 'Chưa duyệt'; 
+
+                const publicationsData = receipt?.publications?.map((publication) => {
+                    return {
+                        receiptBarcode: receipt?.barcode || '',
+                        publicationBarcode: publication?.barcode || '',
+                        publicationName: publication?.name || '',
+                        createdAt: formatDate(receipt?.createdAt) || '', 
+                        updatedAt: formatDate(receipt?.updatedAt) || '', 
+                        supplierName: supplierName,
+                        creatorName: creatorName,
+                        quantityWareHouse: publication?.quantityWareHouse || 0,
+                        status: isAccepted,
+                        note: receipt?.note || '',
+                    };
+                });
+
+                return publicationsData; 
+            }).flat(); 
+
+            // Add the data to the worksheet
+            warehouseReceiptsData.forEach((dataRow) => {
+                const row = worksheet.addRow([]);
+                row.values = [
+                    dataRow.receiptBarcode,
+                    dataRow.publicationBarcode,
+                    dataRow.publicationName,
+                    dataRow.createdAt,
+                    dataRow.updatedAt,
+                    dataRow.supplierName,
+                    dataRow.creatorName,
+                    dataRow.quantityWareHouse,
+                    dataRow.status,
+                    dataRow.note,
+                ];
+                row.eachCell((cell) => {
+                    cell.border = {
+                        top: { style: 'thin' },
+                        left: { style: 'thin' },
+                        bottom: { style: 'thin' },
+                        right: { style: 'thin' }
+                    };
+                });
+            });
+
+            // Style the header row
+            const headerRow = worksheet.getRow(4); // Header starts at row 4
+            headerRow.eachCell((cell) => {
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' }
+                };
+                cell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FFCCCCCC' }
+                };
+                cell.font = {
+                    bold: true,
+                    color: { argb: 'FF000000' }
+                };
+            });
+
+            // Tạo file Excel và lưu
+            const currentDateTimeForFileName = currentDateTime.toISOString().replace(/[-:.]/g, "");
+            const fileName = `warehouse_receipt_${currentDateTimeForFileName}.xlsx`;
+
+            workbook.xlsx.writeBuffer().then((buffer) => {
+                const blob = new Blob([buffer], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        } else {
+            toast.error("Không có dữ liệu để xuất excel");
+        }
+    };
+
     const actionMenus = useMemo((): TMenuOption[] => {
         return hasPermission([
             { resource: "warehousereceipts", action: "manage" },
@@ -327,8 +460,13 @@ const WareHouseReceiptPage = () => {
                 icon: <IconTrashXFilled size={20} stroke={1.5} />,
                 onClick: handleDeleteMultiple,
             },
+            {
+                label: "Xuất danh sách nhập kho",
+                icon: <IconFileExport size={20} stroke={1.5} />,
+                onClick: handleExportWareHouseReceiptExcel,
+            },
         ] : [];
-    }, [handleDeleteMultiple]);
+    }, [handleDeleteMultiple, handleExportWareHouseReceiptExcel]);
 
     const initialValues = useMemo((): TWareHouseReceiptCreate => {
         if (selectedEdit) {

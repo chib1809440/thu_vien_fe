@@ -10,7 +10,7 @@ export interface IBreadcrumsCustomProps {
 }
 
 
-export default function IBreadcrumsCustom({ mainProfile, profile, link, sx,...props }: IBreadcrumsCustomProps) {
+export default function IBreadcrumsCustom({ mainProfile, profile, link, sx, ...props }: IBreadcrumsCustomProps) {
     const theme = useTheme();
     return (
         <Container
@@ -30,6 +30,7 @@ export default function IBreadcrumsCustom({ mainProfile, profile, link, sx,...pr
                 background: 'white',
                 padding: '3px 25px',
                 borderRadius: '12px',
+                display: { xs: "none", sm: "none", md: "flex" },
             }}>
                 <Link underline="hover" color="inherit" href="/trang-chu">
                     <HomeIcon />

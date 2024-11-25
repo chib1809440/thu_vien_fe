@@ -340,7 +340,7 @@ function TableUserList<T extends DataType>({
                 <Grid item xs={12} sm={12} md={2} lg={2}>
                     <Select
                         labelId="roles-select"
-                        label="Vai trof"
+                        label="Vai trò"
                         value={filterRoleId}
                         onChange={(event) => {
                             setFilterRoleId(event.target.value)

@@ -1,5 +1,6 @@
 import BackspaceIcon from "@mui/icons-material/Backspace";
 import {
+    Checkbox,
     Chip,
     Grid,
     IconButton,
@@ -9,8 +10,8 @@ import {
     Typography,
     useTheme,
 } from "@mui/material";
-import { Box, Stack } from "@mui/system";
-import { IconBook, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
+import { Box, display, Stack } from "@mui/system";
+import { IconBook, IconFileExport, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import {
     IconEye,
     IconFileDownload,
@@ -22,10 +23,11 @@ import {
     IconPhoto,
     IconPresentation,
     IconShareOff,
-    IconShoppingBag,
+    IconTrashXFilled,
     IconVideo,
-    IconWorldShare,
+    IconWorldShare
 } from "@tabler/icons-react";
+import ExcelJS from 'exceljs';
 import { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -769,6 +771,163 @@ const PublicationsPage = () => {
         }
     };
 
+    const handleExportPublicationsExcel = () => {
+        // Tạo một workbook mới
+        console.log(data);
+        if (data) {
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Publications');
+
+            // Thêm hàng tiêu đề chính
+            worksheet.addRow(['Danh sách ấn phẩm']).font = { bold: true, size: 14 };
+            worksheet.addRow([]);
+
+            const currentDateTime = new Date();
+            const formattedDateTime = currentDateTime.toLocaleString('vi-VN', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: false,
+            });
+
+            worksheet.addRow([`Ngày xuất file: ${formattedDateTime}`]).font = { bold: true };
+            worksheet.addRow([]);
+
+            worksheet.addRow([
+                'Mã ấn phẩm',
+                'Tên ấn phẩm',
+                'Dạng học liệu',
+                'Lĩnh vực',
+                'Tác giả',
+                'Nhà xuất bản',
+                'Số lượng tồn kho',
+                'Số lượng trên kệ',
+                'Số lượng mượn',
+                'Số lượng thanh lý',
+                'Số lượng hư hỏng',
+                'Số lượng tổng',
+                'Trạng thái',
+                'Loại',
+                'Ghi chú'
+            ]).font = { bold: true };
+
+            worksheet.getColumn('A').width = 15;
+            worksheet.getColumn('B').width = 30;
+            worksheet.getColumn('C').width = 30;
+            worksheet.getColumn('D').width = 30;
+            worksheet.getColumn('E').width = 30;
+            worksheet.getColumn('F').width = 30;
+            worksheet.getColumn('G').width = 20;
+            worksheet.getColumn('H').width = 15;
+            worksheet.getColumn('I').width = 15;
+            worksheet.getColumn('J').width = 20;
+            worksheet.getColumn('K').width = 20;
+            worksheet.getColumn('L').width = 15;
+            worksheet.getColumn('M').width = 15;
+            worksheet.getColumn('N').width = 30;
+            worksheet.getColumn('O').width = 30;
+
+            const publicationsData = data?.data?.result?.map((publication) => {
+                const categoryNames = publication?.categoryIds
+                    ? publication?.categoryIds.map((category) => category?.name).join(', ')
+                    : '';
+                const authorNames = publication?.authorIds
+                    ? publication?.authorIds.map((author) => author?.name).join(', ')
+                    : '';
+                const materialNames = publication?.materialIds
+                    ? publication?.materialIds.map((material) => material?.name).join(', ')
+                    : '';
+                const publisherNames = publication?.publisherIds
+                    ? publication?.publisherIds.map((publisher) => publisher?.name).join(', ')
+                    : '';
+                return {
+                    barcode: publication?.barcode,
+                    name: publication?.name,
+                    materialIds: materialNames,
+                    categoryIds: categoryNames,
+                    authorIds: authorNames,
+                    publisherIds: publisherNames,
+                    quantity: publication?.quantity,
+                    shelvesQuantity: publication?.shelvesQuantity,
+                    quantityLoan: publication?.quantityLoan,
+                    quantityLiquidation: publication?.quantityLiquidation,
+                    quantityDamaged: publication?.quantityDamaged,
+                    totalQuantity: publication?.totalQuantity,
+                    status: capitalizeFirstLetter(publication?.status),
+                    type: getLabelFromOptions(typeOptions, publication?.type),
+                    note: publication?.note || ''
+                };
+            });
+
+            publicationsData.forEach((dataRow) => {
+                const row = worksheet.addRow([]);
+                row.values = [
+                    dataRow.barcode,
+                    dataRow.name,
+                    dataRow.materialIds,
+                    dataRow.categoryIds,
+                    dataRow.authorIds,
+                    dataRow.publisherIds,
+                    dataRow.quantity,
+                    dataRow.shelvesQuantity,
+                    dataRow.quantityLoan,
+                    dataRow.quantityLiquidation,
+                    dataRow.quantityDamaged,
+                    dataRow.totalQuantity,
+                    dataRow.status,
+                    dataRow.type,
+                    dataRow.note
+                ];
+                row.eachCell((cell) => {
+                    cell.border = {
+                        top: { style: 'thin' },
+                        left: { style: 'thin' },
+                        bottom: { style: 'thin' },
+                        right: { style: 'thin' }
+                    };
+                });
+            });
+
+            const headerRow = worksheet.getRow(4);
+            headerRow.eachCell((cell) => {
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' }
+                };
+                cell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FFCCCCCC' }
+                };
+                cell.font = {
+                    bold: true,
+                    color: { argb: 'FF000000' }
+                };
+            });
+
+            // Tạo file Excel và lưu
+            const currentDateTimeForFileName = currentDateTime.toISOString().replace(/[-:.]/g, "");
+            const fileName = `publications_${currentDateTimeForFileName}.xlsx`;
+
+            workbook.xlsx.writeBuffer().then((buffer) => {
+                const blob = new Blob([buffer], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        } else {
+            toast.error("Không có dữ liệu để xuất excel");
+        }
+    };
+
     const actionMenus = useMemo((): TMenuOption[] => {
         return hasPermission([
             { resource: "publications", action: "manage" },
@@ -794,13 +953,23 @@ const PublicationsPage = () => {
                     ),
                 },
                 {
-                    label: "Import file excel",
+                    label: "Nhập file excel",
                     icon: <IconFileUpload size={20} stroke={1.5} />,
                     onClick: handleImportExcel,
                 },
+                {
+                    label: "Xuất danh sách ấn phẩm",
+                    icon: <IconFileExport size={20} stroke={1.5} />,
+                    onClick: handleExportPublicationsExcel,
+                },
+                {
+                    label: "Xóa các dữ liệu đã chọn",
+                    icon: <IconTrashXFilled size={20} stroke={1.5} />,
+                    onClick: handleDeleteMultiple,
+                },
             ]
             : [];
-    }, [userRole, handleDeleteMultiple, handleImportExcel]);
+    }, [userRole, handleDeleteMultiple, handleImportExcel, handleExportPublicationsExcel]);
 
     const initialValues = useMemo((): TPublicationsCreate => {
         if (selectedEdit) {
@@ -910,7 +1079,7 @@ const PublicationsPage = () => {
                         </Box>
 
                         <Box
-                            sx={{ display: {xs: "none", sm: "none", md: "block" } }}
+                            sx={{ display: { xs: "none", sm: "none", md: "block" } }}
                         >
                             {hasPermission([
                                 { resource: "publications", action: "manage" },
@@ -991,6 +1160,19 @@ const PublicationsPage = () => {
                 /> */}
 
                 <Grid container spacing={2} sx={{ p: { xs: 0, sm: 0, md: "12px 32px" }, pt: 2 }}>
+                    {data?.data?.result?.length > 0 && (
+                        <Grid item xs={12} p={0} sx={{
+                            display: { xs: "none", sm: "none", md: "flex" },
+                            alignItems: "center", ml: -1, mt: -3
+                        }}>
+                            <Checkbox
+                                checked={checkedAll}
+                                onChange={(e) => handleCheckedDeleteAll(e.target.checked)}
+                            />
+                            <Typography>Chọn tất cả ấn phẩm</Typography>
+                        </Grid>
+                    )}
+
                     {isLoading === false &&
                         isFetching === false &&
                         data?.data?.result.length > 0 ? (
@@ -1001,6 +1183,7 @@ const PublicationsPage = () => {
                                         p: 2,
                                         height: "100%",
                                         border: `1px solid ${theme.palette.grey[300]}`,
+                                        boxShadow: "0px 4px 6px rgba(86, 204, 242, 0.3)"
                                     }}
                                     elevation={0}
                                 >
@@ -1011,8 +1194,23 @@ const PublicationsPage = () => {
                                             flexDirection: "column",
                                             alignItems: "center",
                                             justifyContent: "space-between",
+                                            position: "relative"
                                         }}
                                     >
+                                        <Box sx={{
+                                            display: { xs: "none", sm: "none", md: "flex" },
+                                            position: "absolute",
+                                            zIndex: 99,
+                                            top: -25,
+                                            left: -25,
+
+                                        }}>
+                                            <Checkbox
+                                                checked={checkedDelete.includes(item._id)}
+                                                onChange={(e) => handleCheckedDelete(item, e.target.checked)}
+                                            />
+                                        </Box>
+
                                         <Paper sx={{ width: "100%", position: "relative" }}>
                                             <Box onClick={() => handleViewDetails(item)}>
                                                 <ImageCard
@@ -1193,7 +1391,7 @@ const PublicationsPage = () => {
                                                                     <Box
                                                                         bgcolor={"red"}
                                                                         sx={{
-                                                                            background: "gray",
+                                                                            background: "green",
                                                                             color: "white",
                                                                             borderRadius: 2,
                                                                             display: "flex",
@@ -1202,7 +1400,7 @@ const PublicationsPage = () => {
                                                                             p: 0.5,
                                                                         }}
                                                                     >
-                                                                        <IconShoppingBag
+                                                                        <IconPlus
                                                                             size={20}
                                                                             stroke={2}
                                                                             onClick={() =>

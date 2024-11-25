@@ -282,31 +282,30 @@ const LoanSlipPage = () => {
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
-                id: "borrowedDay",
+                id: "info",
                 disablePadding: "none",
-                label: "Ngày mượn",
+                label: "Thông tin mượn",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
                 render: (row) => {
                     return (
                         <Box
                         >
-                            {formatDate(row.borrowedDay)}
-                        </Box>
-                    );
-                },
-            },
-            {
-                id: "returnDay",
-                disablePadding: "none",
-                label: "Ngày trả",
-                align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => {
-                    return (
-                        <Box
-                        >
-                            {formatDate(row.returnDay)}
+                            <Typography mt={0.5}>Ngày mượn: <strong>{formatDate(row?.borrowedDay)}</strong></Typography>
+                            <Typography mt={0.5}>Ngày trả: <strong>{formatDate(row?.returnDay)}</strong></Typography>
+                            <Typography variant="body1" sx={{ mt: 0.5 }}>
+                                Họ và tên: <strong>{row?.userId?.fullname}</strong> 
+                            </Typography>
+                            {row?.publications?.length > 0 && (
+                                <Box sx={{ mt: 0.5 }}>
+                                    <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
+                                    <ul>
+                                        {row?.publications.map((publication, idx) => (
+                                            <li key={idx}>{capitalizeFirstLetter(publication?.name)}</li>
+                                        ))}
+                                    </ul>
+                                </Box>
+                            )}
                         </Box>
                     );
                 },
@@ -663,7 +662,7 @@ const LoanSlipPage = () => {
     }, [selectedEdit]);
 
     const isMd = useMediaQuery('(min-width: 900px)');
-    
+
     return (
         <div>
             <IBreadcrumsCustom
@@ -921,7 +920,7 @@ const LoanSlipPage = () => {
                                                         >
                                                             <Box sx={{ width: '100%' }}>
                                                                 <Typography>
-                                                                Mã phiếu mượn: {row?.barcode}
+                                                                    Mã phiếu mượn: {row?.barcode}
                                                                 </Typography>
                                                             </Box>
                                                         </AccordionSummary>
@@ -932,7 +931,7 @@ const LoanSlipPage = () => {
                                                                 <Typography mt={0.5}>Ngày mượn: <strong>{formatDate(row?.borrowedDay)}</strong></Typography>
                                                                 <Typography mt={0.5}>Ngày trả: <strong>{formatDate(row?.returnDay)}</strong></Typography>
                                                                 <Typography mt={0.5}>Tình trạng trả: <strong>{capitalizeFirstLetter(row?.status)}</strong></Typography>
-                                                                <Typography mt={0.5}>Trạng thái: <strong>{row?.isAgree=== false ? "Chưa duyệt" : "Đã duyệt"}</strong></Typography>
+                                                                <Typography mt={0.5}>Trạng thái: <strong>{row?.isAgree === false ? "Chưa duyệt" : "Đã duyệt"}</strong></Typography>
                                                                 {row?.publications?.length > 0 && (
                                                                     <Box sx={{ mt: 1 }}>
                                                                         <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>

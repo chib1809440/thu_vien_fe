@@ -6,6 +6,8 @@ import {
     ListItemIcon,
     Menu,
     MenuItem,
+    styled,
+    Tooltip,
     Typography,
     useTheme
 } from '@mui/material';
@@ -283,22 +285,34 @@ const ProfileSection = () => {
                     location.pathname.includes("/lien-thong") ? (
                         <Box
                             sx={{
-                                mt: 1,
                                 position: 'relative',
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 mr: 2,
-                                cursor:"pointer"
+                                cursor: "pointer"
                             }}
                             onClick={handleSetOpenCart}
                         >
-                            <IconBuildingStore color='#3078ec' size={32} />
+                            <Tooltip
+                                title="Danh sách muợn"
+                                arrow
+                            >
+                                <img
+                                    src="/images/phieumuon.png"
+                                    alt="Example"
+                                    style={{
+                                        width: "50px",
+                                        height: "50px",
+                                        objectFit: "cover",
+                                    }}
+                                />
+                            </Tooltip>
                             {items?.length > 0 && ( // Show badge only if item count is greater than 0
                                 <Box
                                     sx={{
                                         position: 'absolute',
                                         top: -8,
-                                        right: -12,
+                                        right: -8,
                                         bgcolor: 'black', // Badge background color
                                         color: 'white', // Badge text color
                                         borderRadius: '50%',
@@ -320,7 +334,6 @@ const ProfileSection = () => {
                     ) : (
                         <Box
                             sx={{
-                                mt: 1,
                                 position: 'relative',
                                 display: 'inline-flex',
                                 alignItems: 'center',
@@ -328,13 +341,26 @@ const ProfileSection = () => {
                             }}
                             onClick={handleSetOpenInternalCart}
                         >
-                             <IconBuildingStore color='#3078ec' size={32} />
+                            <Tooltip
+                                title="Danh sách muợn"
+                                arrow
+                            >
+                                <img
+                                    src="/images/phieumuon.png"
+                                    alt="Example"
+                                    style={{
+                                        width: "50px",
+                                        height: "50px",
+                                        objectFit: "cover",
+                                    }}
+                                />
+                            </Tooltip>
                             {internalItems?.length > 0 && ( // Show badge only if item count is greater than 0
                                 <Box
                                     sx={{
                                         position: 'absolute',
                                         top: -8,
-                                        right: -12,
+                                        right: -8,
                                         bgcolor: 'black', // Badge background color
                                         color: 'white', // Badge text color
                                         borderRadius: '50%',

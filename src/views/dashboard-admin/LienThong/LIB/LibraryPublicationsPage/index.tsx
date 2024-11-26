@@ -1,7 +1,7 @@
 import { Grid, Paper, Tooltip, Typography, useTheme } from "@mui/material";
 import { Box } from "@mui/system";
 import { IconBook } from "@tabler/icons";
-import { IconFileWord, IconPdf, IconPhoto, IconPresentation, IconShoppingBag, IconVideo } from "@tabler/icons-react";
+import { IconFileDescription, IconFileWord, IconPdf, IconPhoto, IconPresentation, IconShoppingBag, IconVideo } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -353,7 +353,7 @@ const LibraryPublicationsPage = () => {
                                                             "image/gif",
                                                             "image/bmp",
                                                             "image/webp",
-                                                        ].includes(item?.mimetype) &&(
+                                                        ].includes(item?.mimetype) && (
                                                             <IconPhoto
                                                                 size={30}
                                                                 stroke={1.5}
@@ -385,16 +385,32 @@ const LibraryPublicationsPage = () => {
                                                         {
                                                             item?.type === "ấn phẩm cứng" && (
                                                                 <Tooltip title="Mượn ấn phẩm" arrow placement="top">
-                                                                    <Box bgcolor={'red'} sx={{
-                                                                        background: "gray", color: "white", borderRadius: 2, display: "flex",
-                                                                        alignItems: "center", justifyContent: "center", p: 0.5
-                                                                    }}>
-                                                                        <IconShoppingBag
-                                                                            size={20}
-                                                                            stroke={2}
-                                                                            onClick={() => handleAddItem(item)}
-                                                                        />
-                                                                    </Box>
+                                                                    <Tooltip
+                                                                        title="Mượn ấn phẩm"
+                                                                        arrow
+                                                                        placement="top"
+                                                                    >
+                                                                        <Box
+                                                                            bgcolor={"red"}
+                                                                            sx={{
+                                                                                background: "green",
+                                                                                color: "white",
+                                                                                borderRadius: 2,
+                                                                                display: "flex",
+                                                                                alignItems: "center",
+                                                                                justifyContent: "center",
+                                                                                p: 0.5,
+                                                                            }}
+                                                                        >
+                                                                            <IconFileDescription
+                                                                                size={20}
+                                                                                stroke={2}
+                                                                                onClick={() =>
+                                                                                    handleAddItem(item)
+                                                                                }
+                                                                            />
+                                                                        </Box>
+                                                                    </Tooltip>
                                                                 </Tooltip>
                                                             )
                                                         }

@@ -44,11 +44,12 @@ type Props = {
 const schema = (isEditMode: boolean) =>
     yup.object().shape({
         name: yup.string().required("Vui lòng nhập tên"),
-        barcode: yup.string().when("type", {
-            is: "ấn phẩm cứng",
-            then: yup.string().required("Vui lòng nhập barcode"),
-            otherwise: yup.string().notRequired(),
-        }),
+        barcode: yup.string().notRequired(),
+        // barcode: yup.string().when("type", {
+        //     is: "ấn phẩm cứng",
+        //     then: yup.string().required("Vui lòng nhập barcode"),
+        //     otherwise: yup.string().notRequired(),
+        // }),
         categoryIds: yup.array().when("type", {
             is: "ấn phẩm cứng",
             then: yup
@@ -423,11 +424,10 @@ const FormAddEditPublications: FC<Props> = ({
                                     <InputForm
                                         label="Barcode"
                                         placeholder="Nhập barcode"
-                                        required={values.type === "ấn phẩm cứng"}
+                                        // required={values.type === "ấn phẩm cứng"}
                                         error={touched.barcode && Boolean(errors.barcode)}
                                         helperText={touched.barcode && errors.barcode}
                                         {...getFieldProps("barcode")}
-                                        disabled={isEditMode}
                                     />
                                 </Box>
 

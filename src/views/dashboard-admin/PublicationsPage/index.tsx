@@ -1,5 +1,6 @@
 import BackspaceIcon from "@mui/icons-material/Backspace";
 import {
+    Alert,
     Checkbox,
     Chip,
     Grid,
@@ -14,6 +15,7 @@ import { Box, display, Stack } from "@mui/system";
 import { IconBook, IconFileExport, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import {
     IconEye,
+    IconFileDescription,
     IconFileDownload,
     IconFileUpload,
     IconFileWord,
@@ -74,6 +76,7 @@ import DialogImportFile from "./ui-components/DialogImportFile ";
 import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
+import TableList from "../../../components/custom/table-list/TableList";
 
 const PublicationsPage = () => {
     const queryString = useQueryString();
@@ -1163,13 +1166,27 @@ const PublicationsPage = () => {
                     {data?.data?.result?.length > 0 && (
                         <Grid item xs={12} p={0} sx={{
                             display: { xs: "none", sm: "none", md: "flex" },
-                            alignItems: "center", ml: -1, mt: -3
+                            flexDirection: "column",
+                            ml: -1, mt: -3
                         }}>
-                            <Checkbox
-                                checked={checkedAll}
-                                onChange={(e) => handleCheckedDeleteAll(e.target.checked)}
-                            />
-                            <Typography>Chọn tất cả ấn phẩm</Typography>
+                            <Box display={"flex"} alignItems={"center"}>
+                                <Checkbox
+                                    checked={checkedAll}
+                                    onChange={(e) => handleCheckedDeleteAll(e.target.checked)}
+                                />
+                                <Typography>Chọn tất cả ấn phẩm</Typography>
+                            </Box>
+                            <Box sx={{ ml: 1}}>
+                                {checkedDelete && checkedDelete.length > 0 && (
+                                    <Alert severity="info">
+                                        Có{" "}
+                                        <Typography component="span" sx={{ fontWeight: "bold" }}>
+                                            {checkedDelete.length}
+                                        </Typography>{" "}
+                                        dữ liệu đã chọn
+                                    </Alert>
+                                )}
+                            </Box>
                         </Grid>
                     )}
 
@@ -1400,7 +1417,7 @@ const PublicationsPage = () => {
                                                                             p: 0.5,
                                                                         }}
                                                                     >
-                                                                        <IconPlus
+                                                                        <IconFileDescription
                                                                             size={20}
                                                                             stroke={2}
                                                                             onClick={() =>

@@ -1138,7 +1138,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                     </Box>
 
                                                     {(!loanSlip || loanSlip?.isAgree === false) && (
-                                                        <Box sx={{ marginTop: 1 }}>
+                                                        <Button variant="outlined" color="error">
                                                             <IconTrash
                                                                 style={{ cursor: 'pointer', color: 'red' }}
                                                                 onClick={() => handleRemovePublication(index)}
@@ -1146,7 +1146,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                                 size={20}
                                                                 stroke={1.5}
                                                             />
-                                                        </Box>
+                                                        </Button>
                                                     )}
                                                 </Box>
                                             </AccordionDetails>

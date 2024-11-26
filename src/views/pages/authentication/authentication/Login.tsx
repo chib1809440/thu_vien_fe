@@ -3,12 +3,9 @@ import { Link } from 'react-router-dom';
 import { Box, Grid, Stack, Typography, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 // project imports
+import Slider from 'react-slick';
 import { AuthSliderProps } from '../../../../types';
 import Logo from '../../../../ui-component/Logo';
-import AuthFooter from '../../../../ui-component/cards/AuthFooter';
-import AuthSlider from '../../../../ui-component/cards/AuthSlider';
-import AuthSliderV2 from '../../../../ui-component/cards/AuthSliderV2';
-import BackgroundPattern2 from '../../../../ui-component/cards/BackgroundPattern2';
 import AuthCardWrapper from '../AuthCardWrapper';
 import AuthWrapper2 from '../AuthWrapper2';
 import AuthLogin from '../auth-forms/AuthLogin';
@@ -31,7 +28,7 @@ const items: AuthSliderProps[] = [
     }
 ];
 
-const itemsV2:any = [
+const itemsV2: any = [
     {
         title: '/model/Render1.png',
         description: ''
@@ -62,100 +59,157 @@ const itemsV2:any = [
 
 const Login = () => {
     const theme = useTheme();
-    const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
-    const matchDownMD = useMediaQuery(theme.breakpoints.down('lg'));
+    const matchDownXS = useMediaQuery(theme.breakpoints.down('xs'));
+    const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
+    const matchDownMD = useMediaQuery(theme.breakpoints.down('md'));
+
+    const settings = {
+        autoplay: true,
+        arrows: false,
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1
+    };
 
     return (
         <AuthWrapper2>
-            <Grid container justifyContent={matchDownSM ? 'center' : 'space-between'} alignItems="center">
-                <Grid item md={6} lg={5} sx={{ position: 'relative', alignSelf: 'stretch', display: { xs: 'none', md: 'block' } }}>
-                    <BackgroundPattern2>
-                        <Grid item container justifyContent="center">
-                            <Grid item xs={12}>
-                                <Grid item container justifyContent="center" sx={{ pb: 2 }}>
-                                    <Grid item xs={10} lg={8} sx={{ '& .slick-list': { pb: 2 } }}>
-                                        <AuthSlider items={items} />
-                                    </Grid>
+            <Grid container justifyContent="center"
+                sx={{
+                    pb: 2, alignItems: "center", flexDirection: "column",
+                    bgcolor: theme.palette.mode === 'dark' ? theme.palette.dark.dark : theme.palette.primary.light,
+                    display: { xs: 'none', sm: "none", md: 'flex' }
+                }}>
+                {/* Logo phần bên ngoài Slider */}
+                <Grid item>
+                    <Link to="#">
+                        <Logo />
+                    </Link>
+                </Grid>
+
+                {/* Slider Content */}
+                <Grid item xs={10} lg={8}>
+                    <Slider {...settings} dots={false} className="hide-on-small">
+                        {items.map((item, i) => (
+                            <Grid key={i} container direction="column" alignItems="center" spacing={2} textAlign="center">
+                                <Grid item>
+                                    <Typography fontSize={26} fontWeight={700}>{item.title}</Typography>
+                                </Grid>
+                                <Grid item>
+                                    <Typography fontSize={14}>{item.description}</Typography>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={12} sx={{ position: 'relative' }}>
-                                <AuthSliderV2 items={itemsV2} />
+                        ))}
+                    </Slider>
+                </Grid>
+
+                <Grid item xs={12} sx={{ position: 'relative' }} >
+                    <Slider {...settings} dots={false}>
+                        {itemsV2.map((item, i) => (
+                            <Grid key={i} container alignItems="center" p={2} textAlign="center" justifyContent='center'>
+                                <Grid item>
+                                    <img style={{ borderRadius: '5px' }} width='100%' src={item.title} alt='logo' />
+                                </Grid>
+                            </Grid>
+                        ))}
+                    </Slider>
+
+                    <Grid item container justifyContent="center" sx={{
+                        position: 'absolute',
+                        top: "50%",
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        zIndex: 10,
+                        width: '80%',
+                        maxWidth: '400px',
+                        backgroundColor: "rgba(255, 255, 255, 0.8)",
+                        borderRadius: "8px"
+                    }}>
+                        <Grid item xs={12} sx={{ position: 'relative' }}>
+                            <Grid item>
+                                <Grid
+                                    container
+                                    alignItems={matchDownXS ? 'center' : 'flex-start'}
+                                    justifyContent={matchDownXS ? 'center' : 'space-between'}
+                                >
+
+                                    <AuthCardWrapper border={matchDownMD} sx={{ backgroundColor: "transparent", }}>
+                                        <Grid container spacing={2} justifyContent="center">
+                                            <Grid item>
+                                                <Stack alignItems="center" justifyContent="center" spacing={1}>
+                                                    <Typography
+                                                        color={theme.palette.secondary.main}
+                                                        gutterBottom
+                                                        variant={matchDownXS ? 'h3' : 'h2'}
+                                                    >
+                                                        GD LIB! Chào mừng bạn trở lại
+                                                    </Typography>
+                                                    <Typography
+                                                        variant="caption"
+                                                        fontSize="16px"
+                                                        textAlign={matchDownXS ? 'center' : 'inherit'}
+                                                    >
+                                                        Nhập thông tin đăng nhập của bạn để tiếp tục
+                                                    </Typography>
+                                                </Stack>
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <AuthLogin loginProp={2} />
+                                            </Grid>
+                                        </Grid>
+                                    </AuthCardWrapper>
+                                </Grid>
                             </Grid>
                         </Grid>
-                    </BackgroundPattern2>
-                </Grid>
-                <Grid item md={6} lg={7} xs={12} sx={{ minHeight: '100vh'}}>
-                    <Grid
-                        sx={{ minHeight: '100vh' }}
-                        container
-                        alignItems={matchDownSM ? 'center' : 'flex-start'}
-                        justifyContent={matchDownSM ? 'center' : 'space-between'}
-                    >
-                        <Grid item sx={{ display: { xs: 'none', md: 'block' }, m: 3 }}>
-                            <Link to="#">
-                                <Logo />
-                            </Link>
-                        </Grid>
-                        <Grid
-                            item
-                            xs={12}
-                            container
-                            justifyContent="center"
-                            alignItems="center"
-                            sx={{ minHeight: { xs: 'calc(100vh - 68px)', md: 'calc(100vh - 152px)' } }}
-                        >
-                            <Stack justifyContent="center" alignItems="center" spacing={5} m={2}>
-                                <Box component={Link} to="#" sx={{ display: { xs: 'block', md: 'none' } }}>
-                                    <Logo />
-                                </Box>
-                                <AuthCardWrapper border={matchDownMD}>
-                                    <Grid container spacing={2} justifyContent="center">
-                                        <Grid item>
-                                            <Stack alignItems="center" justifyContent="center" spacing={1}>
-                                                <Typography
-                                                    color={theme.palette.secondary.main}
-                                                    gutterBottom
-                                                    variant={matchDownSM ? 'h3' : 'h2'}
-                                                >
-                                                    GD LIB! Chào mừng bạn trở lại
-                                                </Typography>
-                                                <Typography
-                                                    variant="caption"
-                                                    fontSize="16px"
-                                                    textAlign={matchDownSM ? 'center' : 'inherit'}
-                                                >
-                                                    Nhập thông tin đăng nhập của bạn để tiếp tục
-                                                </Typography>
-                                            </Stack>
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <AuthLogin loginProp={2} />
-                                        </Grid>
-                                        {/* <Grid item xs={12}>
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <Grid item container direction="column" alignItems="center" xs={12}>
-                                                <Typography
-                                                    component={Link}
-                                                    to="/register"
-                                                    variant="subtitle1"
-                                                    sx={{ textDecoration: 'none' }}
-                                                >
-                                                    Don&apos;t have an account?
-                                                </Typography>
-                                            </Grid>
-                                        </Grid> */}
-                                    </Grid>
-                                </AuthCardWrapper>
-                            </Stack>
-                        </Grid>
-                        <Grid item xs={12} sx={{ m: 1 }}>
-                            <AuthFooter />
-                        </Grid>
                     </Grid>
+
+
                 </Grid>
             </Grid>
-        </AuthWrapper2>
+
+            <Grid
+                container
+                justifyContent="center"
+                alignItems="center"
+                sx={{
+                    minHeight: { xs: 'calc(100vh - 68px)', md: 'calc(100vh - 152px)' },
+                    display: { xs: 'block', sm: 'block', md: 'none' }
+                }}
+            >
+                <Stack justifyContent="center" alignItems="center" spacing={5}>
+                    <Box component={Link} to="#">
+                        <Logo />
+                    </Box>
+                    <AuthCardWrapper border={matchDownMD}>
+                        <Grid container spacing={2} justifyContent="center">
+                            <Grid item>
+                                <Stack alignItems="center" justifyContent="center" spacing={1}>
+                                    <Typography
+                                        color={theme.palette.secondary.main}
+                                        gutterBottom
+                                        variant={matchDownSM ? 'h3' : 'h2'}
+                                    >
+                                        GD LIB! Chào mừng bạn trở lại
+                                    </Typography>
+                                    <Typography
+                                        variant="caption"
+                                        fontSize="16px"
+                                        textAlign={matchDownSM ? 'center' : 'inherit'}
+                                    >
+                                        Nhập thông tin đăng nhập của bạn để tiếp tục
+                                    </Typography>
+                                </Stack>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <AuthLogin loginProp={2} />
+                            </Grid>
+                        </Grid>
+                    </AuthCardWrapper>
+                </Stack>
+            </Grid>
+
+        </AuthWrapper2 >
     );
 };
 

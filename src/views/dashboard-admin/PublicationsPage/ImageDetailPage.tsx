@@ -1,15 +1,14 @@
 import CloseIcon from "@mui/icons-material/Close";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { Box, Dialog, DialogContent, Grid, IconButton, Paper, useTheme } from "@mui/material";
+import { Box, Button, Dialog, DialogContent, IconButton, Paper, useMediaQuery, useTheme } from "@mui/material";
 import { IconVolume } from "@tabler/icons-react";
 import { useMemo, useRef, useState } from "react";
 import ImageCard from "../../../components/custom/card/ImageCard";
-import StyledIconButton from "../../../components/default/button/StyledIconButton";
+import { useAuth } from "../../../contexts/JWTContext";
+import { useFetchTypeVoice } from "../../../hooks/services/type-voice/type-voice-query";
 import { useFetchVoice } from "../../../hooks/services/voice/voice-query";
 import { TPublications } from "../../../types/models/publications.type";
 import MenuAddVoice, { MenuAddVoiceRef } from "./ui-components/MenuAddVoice";
-import { useFetchTypeVoice } from "../../../hooks/services/type-voice/type-voice-query";
-import { useAuth } from "../../../contexts/JWTContext";
 
 const ImageDetailPage = ({
     open,
@@ -26,6 +25,7 @@ const ImageDetailPage = ({
     const { data: typeVoiceData } = useFetchTypeVoice();
     const { user } = useAuth();
     const menuAddVoiceRef = useRef<MenuAddVoiceRef | null>(null);
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     const userId = useMemo(() => {
         if (!user) return null;
@@ -54,7 +54,7 @@ const ImageDetailPage = ({
 
         menuAddVoiceRef.current?.muteAudio();
         onClose();
-        
+
     };
 
     const handleCloseDialogIcon = () => {
@@ -74,104 +74,78 @@ const ImageDetailPage = ({
                     <CloseIcon />
                 </IconButton>
                 <DialogContent>
-                    <Grid item xs={12} sm={6} md={4} xl={3}>
-                        <Paper
-                            sx={{
-                                position: "relative",
-                                p: 1,
-                                height: "100%",
-                                border: `1px solid ${theme.palette.grey[300]}`,
-                            }}
-                            elevation={0}
-                        >
-                            <Box
+                    <Paper
+                        sx={{
+                            position: "relative",
+                            p: 1,
+                            border: `1px solid ${theme.palette.grey[300]}`,
+                        }}
+                        elevation={0}
+                    >
+                        <Box>
+                            <ImageCard
+                                id={publications?._id}
+                                photo={
+                                    publications?.priviewImage
+                                        ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}`
+                                        : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`
+                                }
+                                isViewPhoto={
+                                    publications?.priviewImage
+                                        ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}`
+                                        : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`
+                                }
+                                aspectRatio={"16/9"}
+                                objectFit="contain"
+                                isView={true}
+                                voices={
+                                    voiceData?.data?.result.filter(
+                                        (voice) =>
+                                            (voice?.publicationId as TPublications)
+                                                ?._id === publications._id &&
+                                            voice?.isPublic
+                                    ) || []
+                                }
+                                publications={publications}
+                                handleClickChangeMenu={handleClickChangeMenu}
+                            />
+                        </Box>
+                        <Box >
+                            <Button
+                                onClick={handleClickChangeMenu}
                                 sx={{
-                                    display: "flex",
-                                    position: "relative",
-                                    height: "100%",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
+                                    position: "absolute",
+                                    top: { xs: -4, sm: -4, md: 10 },
+                                    right: { xs: -12, sm: -12, md: 10 },
                                 }}
                             >
-                                <Paper sx={{ width: "100%", position: "relative" }}>
-                                    <Box>
-                                        <ImageCard
-                                            id={publications?._id}
-                                            photo={
-                                                publications?.priviewImage
-                                                    ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}`
-                                                    : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`
-                                            }
-                                            isViewPhoto={
-                                                publications?.priviewImage
-                                                    ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}`
-                                                    : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`
-                                            }
-                                            aspectRatio={"16/9"}
-                                            objectFit="contain"
-                                            isView={true}
-                                            voices={
-                                                voiceData?.data?.result.filter(
-                                                    (voice) =>
-                                                        (voice?.publicationId as TPublications)
-                                                            ?._id === publications._id &&
-                                                        voice?.isPublic
-                                                ) || []
-                                            }
-                                            publications={publications}
-                                            handleClickChangeMenu={handleClickChangeMenu}
-                                        />
-                                    </Box>
-                                </Paper>
-                            </Box>
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    alignItems: "flex-start",
-                                    height: "100%",
-                                    px: 2,
-                                    pb: 2,
-                                }}
-                            >
-                                <StyledIconButton
-                                    disableHoverEffect
-                                    onClick={handleClickChangeMenu}
-                                    sx={{
-                                        position: "absolute",
-                                        top: 0,
-                                        right: 0,
-                                        margin: "8px",
-                                        background: "none",
+                                <IconVolume
+                                    style={{
+                                        color: theme.palette.text.primary,
+                                        width: isSmallScreen ? 18 : 24,
+                                        height: isSmallScreen ? 18 : 24,
                                     }}
-                                >
-                                    <IconVolume
-                                        fontSize="small"
-                                        style={{ color: theme.palette.text.primary }}
-                                    />
-                                    <MoreVertIcon sx={{ color: theme.palette.text.primary }} />
-                                </StyledIconButton>
-                                
-                                    <MenuAddVoice
-                                        ref={menuAddVoiceRef}
-                                        anchorEl={anchorEl}
-                                        onClose={handleClose}
-                                        voiceData={
-                                            voiceData?.data?.result.filter(
-                                                (voice) =>
-                                                    (voice?.publicationId as TPublications)?._id ===
-                                                        publications._id && voice?.isPublic
-                                            ) || []
-                                        }
-                                        publicationsData={publications}
-                                        typeVoiceData={typeVoiceData?.data?.result}
-                                        currentUserId={userId}
-                                        userRole={userRole}
-                                    />
-                                
-                            </Box>
-                        </Paper>
-                    </Grid>
+                                />
+                                <MoreVertIcon sx={{ color: theme.palette.text.primary, width: isSmallScreen ? 18 : 24 }} />
+                            </Button>
+                        </Box>
+                        <MenuAddVoice
+                            ref={menuAddVoiceRef}
+                            anchorEl={anchorEl}
+                            onClose={handleClose}
+                            voiceData={
+                                voiceData?.data?.result.filter(
+                                    (voice) =>
+                                        (voice?.publicationId as TPublications)?._id ===
+                                        publications._id && voice?.isPublic
+                                ) || []
+                            }
+                            publicationsData={publications}
+                            typeVoiceData={typeVoiceData?.data?.result}
+                            currentUserId={userId}
+                            userRole={userRole}
+                        />
+                    </Paper>
                 </DialogContent>
             </Dialog>
         </>

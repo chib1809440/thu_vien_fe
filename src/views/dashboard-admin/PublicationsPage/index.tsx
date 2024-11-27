@@ -144,31 +144,36 @@ const PublicationsPage = () => {
                 : {}),
     });
 
-    const filterByLibId = useMemo(
-        () => parserParams([{ compare: 0, target: { libraryId: selectedLibrary } }]),
-        [selectedLibrary]
-    );
+    // const filterByLibId = useMemo(
+    //     () => parserParams([{ compare: 0, target: { libraryId: selectedLibrary } }]),
+    //     [selectedLibrary]
+    // );
 
-    const { data: categoryData } = useFetchCategory({
-        limit,
-        page,
-        ...filterByLibId,
-    });
-    const { data: materialData } = useFetchMaterial({
-        limit,
-        page,
-        ...filterByLibId,
-    });
-    const { data: authorData } = useFetchAuthor({
-        limit,
-        page,
-        ...filterByLibId,
-    });
-    const { data: publisherData } = useFetchPublisher({
-        limit,
-        page,
-        ...filterByLibId,
-    });
+    // const { data: categoryData } = useFetchCategory({
+    //     limit,
+    //     page,
+    //     ...filterByLibId,
+    // });
+    // const { data: materialData } = useFetchMaterial({
+    //     limit,
+    //     page,
+    //     ...filterByLibId,
+    // });
+    // const { data: authorData } = useFetchAuthor({
+    //     limit,
+    //     page,
+    //     ...filterByLibId,
+    // });
+    // const { data: publisherData } = useFetchPublisher({
+    //     limit,
+    //     page,
+    //     ...filterByLibId,
+    // });
+
+    const { data: categoryData } = useFetchCategory();
+    const { data: materialData } = useFetchMaterial();
+    const { data: authorData } = useFetchAuthor();
+    const { data: publisherData } = useFetchPublisher();
     const { data: libraryData } = useFetchLibrary();
 
     const mutationAdd = useAddPublications();
@@ -1137,18 +1142,23 @@ const PublicationsPage = () => {
                     selectedPublications={selectedPublications}
                     handlePublicationsFilterChange={handlePublicationsFilterChange}
                     typeOptions={typeOptions}
-                    selectedMaterial={selectedMaterial}
-                    handleMaterialFilterChange={handleMaterialFilterChange}
-                    materialData={materialData}
-                    selectedCategory={selectedCategory}
-                    handleCategoryFilterChange={handleCategoryFilterChange}
-                    categoryData={categoryData}
-                    selectedAuthor={selectedAuthor}
-                    handleAuthorFilterChange={handleAuthorFilterChange}
-                    authorData={authorData}
-                    selectedPublisher={selectedPublisher}
-                    handlePublisherFilterChange={handlePublisherFilterChange}
-                    publisherData={publisherData}
+                    {...(userRole !== "Super Admin"
+                        ? {
+                            selectedMaterial: selectedMaterial,
+                            handleMaterialFilterChange: handleMaterialFilterChange,
+                            materialData: materialData,
+                            selectedCategory: selectedCategory,
+                            handleCategoryFilterChange: handleCategoryFilterChange,
+                            categoryData: categoryData,
+                            selectedAuthor: selectedAuthor,
+                            handleAuthorFilterChange: handleAuthorFilterChange,
+                            authorData: authorData,
+                            selectedPublisher: selectedPublisher,
+                            handlePublisherFilterChange: handlePublisherFilterChange,
+                            publisherData: publisherData,
+                        }
+                        : {})}
+
                 />
                 {/* <TableList
                     checked={checkedDelete}
@@ -1176,7 +1186,7 @@ const PublicationsPage = () => {
                                 />
                                 <Typography>Chọn tất cả ấn phẩm</Typography>
                             </Box>
-                            <Box sx={{ ml: 1}}>
+                            <Box sx={{ ml: 1 }}>
                                 {checkedDelete && checkedDelete.length > 0 && (
                                     <Alert severity="info">
                                         Có{" "}

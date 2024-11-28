@@ -88,7 +88,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                         onSuccess: () => {
                             revalidate();
                             toast.success("Chỉnh sửa thành công.");
-                            handleClose();
+                            // handleClose();
                         },
                     }
                 );
@@ -99,7 +99,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                 onSuccess: (data) => {
                     revalidate();
                     toast.success("Thêm thành công.");
-                    setOpenAddEdit(false);
+                    // setOpenAddEdit(false);
                 },
             });
         };
@@ -379,7 +379,18 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                                                                         <IconVolumeOff fontSize="small" />
                                                                     )}
                                                                 </ListItemIcon>
-                                                                Hội thoại {child?.name}
+                                                                <Typography
+                                                                    sx={{
+                                                                        overflow: "hidden",
+                                                                        whiteSpace: "nowrap",
+                                                                        textOverflow: "ellipsis",
+                                                                        maxWidth: "200px",
+                                                                        display: "inline-block"
+                                                                    }}
+                                                                >
+                                                                    Hội thoại {child?.name}
+                                                                </Typography>
+
                                                             </MenuItem>
                                                         </Box>
                                                     </Box>
@@ -496,7 +507,17 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                                                                     <IconVolumeOff fontSize="small" />
                                                                 )}
                                                             </ListItemIcon>
-                                                            Hội thoại {child?.name}
+                                                            <Typography
+                                                                sx={{
+                                                                    overflow: "hidden",
+                                                                    whiteSpace: "nowrap",
+                                                                    textOverflow: "ellipsis",
+                                                                    maxWidth: "200px",
+                                                                    display: "inline-block"
+                                                                }}
+                                                            >
+                                                                Hội thoại {child?.name}
+                                                            </Typography>
                                                         </MenuItem>
                                                     </Box>
                                                 </Box>

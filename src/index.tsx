@@ -48,8 +48,8 @@ root.render(
                     </BrowserRouter>
                 </ConfigProvider>
             </PersistGate>
-        </Provider>,
-    </QueryClientProvider>,
+        </Provider>
+    </QueryClientProvider>
 );
 
 // If you want your app to work offline and load faster, you can change

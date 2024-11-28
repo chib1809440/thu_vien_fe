@@ -24,7 +24,7 @@ interface NavCollapseProps {
 }
 
 const NavCollapse = ({ menu, level }: NavCollapseProps) => {
-    console.log(menu);
+    // console.log(menu);
 
     const theme = useTheme();
     const { borderRadius } = useConfig();

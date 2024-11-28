@@ -77,9 +77,10 @@ const Login = () => {
         <AuthWrapper2>
             <Grid container justifyContent="center"
                 sx={{
-                    pb: 2, alignItems: "center", flexDirection: "column",
-                    bgcolor: theme.palette.mode === 'dark' ? theme.palette.dark.dark : theme.palette.primary.light,
-                    display: { xs: 'none', sm: "none", md: 'flex' }
+                    alignItems: "center", flexDirection: "column",
+                    display: { xs: 'none', sm: "none", md: 'flex' },
+                    maxWidth: "1200px",
+                    m: "auto"
                 }}>
                 {/* Logo phần bên ngoài Slider */}
                 <Grid item>
@@ -123,7 +124,7 @@ const Login = () => {
                         zIndex: 10,
                         width: '80%',
                         maxWidth: '400px',
-                        backgroundColor: "rgba(255, 255, 255, 0.8)",
+                        backgroundColor: "rgba(255, 255, 255, 0.6)",
                         borderRadius: "8px"
                     }}>
                         <Grid item xs={12} sx={{ position: 'relative' }}>
@@ -139,7 +140,7 @@ const Login = () => {
                                             <Grid item>
                                                 <Stack alignItems="center" justifyContent="center" spacing={1}>
                                                     <Typography
-                                                        color={theme.palette.secondary.main}
+                                                        color={"#004085"}
                                                         gutterBottom
                                                         variant={matchDownXS ? 'h3' : 'h2'}
                                                     >
@@ -149,6 +150,7 @@ const Login = () => {
                                                         variant="caption"
                                                         fontSize="16px"
                                                         textAlign={matchDownXS ? 'center' : 'inherit'}
+                                                        color="#616161"
                                                     >
                                                         Nhập thông tin đăng nhập của bạn để tiếp tục
                                                     </Typography>

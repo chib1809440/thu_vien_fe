@@ -196,7 +196,7 @@ function TableAssetList<T extends DataType>({
         <>
             <SearchAndFilter onHandleDeleteSelectedItem={handleDeleteItemSelected} actionDeleteSelectedItem={true} contentSearch={contentSearch} handleContentSearch={setContentSearch} />
             {/* Table */}
-            <Box p={4} pt={0}>
+            <Box sx={{ px: { xs: 0, sm: 0, md: 4 }, pt: { xs: 0, sm: 0, md: 2 } }}>
                 {
                     checked && checked.length > 0 && (
                         <Alert severity="info" sx={{ mb: 3 }}>
@@ -296,7 +296,11 @@ function TableAssetList<T extends DataType>({
                     </Table>
                 </TableContainer>
                 {/* Panigation */}
-                <CsFlexRowBetween>
+                <CsFlexRowBetween sx={{
+                    mt: { xs: 1, sm: 1, md: 0 },
+                    display: "flex",
+                    flexWrap: "wrap"
+                }}>
                     <Box sx={{
                         py: 2,
                         display: "flex",

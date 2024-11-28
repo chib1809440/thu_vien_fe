@@ -1,4 +1,5 @@
-import { Accordion, AccordionDetails, AccordionSummary, Button, Chip, FormControl, Grid, MenuItem, Paper, Select, Typography, useTheme } from "@mui/material";
+import { ExpandMore } from "@mui/icons-material";
+import { Accordion, AccordionDetails, AccordionSummary, Button, Chip, FormControl, Grid, MenuItem, Select, Typography, useTheme } from "@mui/material";
 import { Box, Stack, useMediaQuery } from "@mui/system";
 import { IconCalendar, IconEye, IconFileExport, IconPencil, IconPlus, IconTrash, IconX } from "@tabler/icons";
 import { vi } from "date-fns/locale";
@@ -9,8 +10,8 @@ import { Link } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
+import PaginationForm from "../../../components/custom/form/PaginationForm";
 import TableList from "../../../components/custom/table-list/TableList";
-import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
 import { useAuth } from "../../../contexts/JWTContext";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
@@ -22,12 +23,9 @@ import { TColumn, TMenuOption } from "../../../types/common/table";
 import { CreatePublication, TLoanSlip, TLoanSlipCreate } from "../../../types/models/loanSlip.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
-import { getLabelFromOptions, parserParams } from "../../../utils/object";
+import { parserParams } from "../../../utils/object";
 import FormAddEditLoanSlip from "./ui-components/FormAddEditLoanSlip";
 import ViewDetailLoanSlip from "./ui-components/ViewDetailLoanSlip";
-import PaginationForm from "../../../components/custom/form/PaginationForm";
-import { StyledTableCell, StyledTableRow } from "../../../components/custom/table-list/style";
-import { ExpandMore } from "@mui/icons-material";
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -148,18 +146,30 @@ const LoanSlipPage = () => {
     });
     const handleApprovalLoanSlip = (row: TLoanSlip) => {
         row.status = "chờ nhận sách";
+        const returnDate = new Date(row?.returnDay);
+        const currentDate = new Date(); 
 
-        mutationEdit.mutate(
-            { ...row as any, _id: row._id, userId: row.userId._id },
-            {
-                onSuccess: () => {
-                    revalidate();
-                    toast.success('Giao sách thành công.');
-                    handleClose();
-                },
-            }
-        );
-    };
+        if (isNaN(returnDate.getTime())) {
+            toast.error("Ngày trả sách không hợp lệ.");
+            return;
+        }
+
+        if (returnDate < currentDate) {
+            toast.error("Vui lòng cập nhật lại ngày mượn, ngày trả.")
+            return;
+        } else {
+            mutationEdit.mutate(
+                { ...row as any, _id: row._id, userId: row.userId._id },
+                {
+                    onSuccess: () => {
+                        revalidate();
+                        toast.success('Duyệt phiếu mượn thành công.');
+                        handleClose();
+                    },
+                }
+            );
+        };
+    }
     const handleReturnLoanSlip = (row: TLoanSlip, publications: CreatePublication[]) => {
         mutationReturn.mutate(
             { id: row._id, publications },  // Chuyển đổi tham số thành đối tượng
@@ -243,6 +253,28 @@ const LoanSlipPage = () => {
         }
     };
 
+    const getStatusTextStyles = (status) => {
+        switch (status) {
+            case "đang mượn":
+                return { color: '#FF9800' }; // Màu cho "Đang mượn"
+            case "quá hạn":
+                return { color: '#F44336' }; // Màu cho "Quá hạn"
+            case "đã trả":
+                return { color: '#4CAF50' }; // Màu cho "Đã trả"
+            default:
+                return { color: '#616161' };
+        }
+    };
+
+    const getIsAgreeTextStyles = (isAgree) => {
+        switch (isAgree) {
+            case true:
+                return { color: '#4CAF50' };
+            default:
+                return { color: '#FF9800' };
+        }
+    };
+
     const mutationCancel = useCancelLoanSlip();
     const handleCancelLoanSlip = (row: TLoanSlip) => {
         mutationCancel.mutate(
@@ -260,12 +292,13 @@ const LoanSlipPage = () => {
         );
     };
     const handleDeliveryBook = (row: TLoanSlip) => {
+
         mutationApproval.mutate(
             row._id,
             {
                 onSuccess: () => {
                     revalidate();
-                    toast.success('Chỉnh sửa thành công.');
+                    toast.success('Giao sách thành công.');
                     handleClose();
                 },
             }
@@ -517,9 +550,20 @@ const LoanSlipPage = () => {
             worksheet.addRow([]); // Thêm hàng trống
 
             // Thêm hàng từ ngày đến ngày
-            const startDateExcel = startDate ? formatDate(startDate) : '';
-            const endDateExcel = endDate ? formatDate(endDate) : '';
-            worksheet.addRow([`Từ ngày: ${startDateExcel} đến ngày: ${endDateExcel}`]).font = { bold: true };
+            // const startDateExcel = startDate ? formatDate(startDate) : '';
+            // const endDateExcel = endDate ? formatDate(endDate) : '';
+            // worksheet.addRow([`Từ ngày: ${startDateExcel} đến ngày: ${endDateExcel}`]).font = { bold: true };
+            const currentDateTime = new Date();
+            const formattedDateTime = currentDateTime.toLocaleString('vi-VN', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: false,
+            });
+            worksheet.addRow([`Ngày xuất file: ${formattedDateTime}`]).font = { bold: true };
 
             // Đặt header cho bảng
             worksheet.addRow([
@@ -612,7 +656,7 @@ const LoanSlipPage = () => {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'loan_slips.xlsx'; // Tên file xuất
+                a.download = 'Danhsachphieumuon.xlsx'; // Tên file xuất
                 a.click();
                 URL.revokeObjectURL(url);
             });
@@ -620,8 +664,6 @@ const LoanSlipPage = () => {
             toast.error("Không có dữ liệu để xuất excel");
         }
     };
-
-
 
     const actionMenus = useMemo((): TMenuOption[] => {
         return [
@@ -932,8 +974,8 @@ const LoanSlipPage = () => {
                                                                 <Typography mt={0.5}>Mã phiếu mượn: <strong>{row?.barcode}</strong></Typography>
                                                                 <Typography mt={0.5}>Ngày mượn: <strong>{formatDate(row?.borrowedDay)}</strong></Typography>
                                                                 <Typography mt={0.5}>Ngày trả: <strong>{formatDate(row?.returnDay)}</strong></Typography>
-                                                                <Typography mt={0.5}>Tình trạng trả: <strong>{capitalizeFirstLetter(row?.status)}</strong></Typography>
-                                                                <Typography mt={0.5}>Trạng thái: <strong>{row?.isAgree === false ? "Chưa duyệt" : "Đã duyệt"}</strong></Typography>
+                                                                <Typography mt={0.5}>Tình trạng trả: <strong style={getStatusTextStyles(row.status)}>{capitalizeFirstLetter(row?.status)}</strong></Typography>
+                                                                <Typography mt={0.5}>Trạng thái: <strong style={getIsAgreeTextStyles(row.isAgree)}>{row?.isAgree === false ? "Chưa duyệt" : "Đã duyệt"}</strong></Typography>
                                                                 {row?.publications?.length > 0 && (
                                                                     <Box sx={{ mt: 1 }}>
                                                                         <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>

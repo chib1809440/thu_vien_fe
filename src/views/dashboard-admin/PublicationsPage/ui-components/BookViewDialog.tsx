@@ -32,7 +32,7 @@ const BookViewDialog = ({ open, onClose, publications }: { open: boolean; onClos
             <DialogContent>
                 <Grid item xs={12}>
                     <Grid container spacing={2} >
-                        <Grid item xs={12}>
+                        <Grid item xs={12} sx={{ display: { xs: "none", sm: "none", md: "block" } }}>
                             <CoverCard
                                 title={publications?.name}
                                 subtitle={publications?.type}

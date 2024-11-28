@@ -367,15 +367,17 @@ const WareHouseReceiptPage = () => {
             const warehouseReceiptsData = data?.data?.result?.map((receipt) => {
                 const supplierName = (receipt?.supplierId as TSupplier)?.name || '';
                 const creatorName = (receipt?.createBy as User)?.fullname || '';
-                const isAccepted = receipt?.isAccept ? 'Đã duyệt' : 'Chưa duyệt'; 
+                const isAccepted = receipt?.isAccept ? 'Đã duyệt' : 'Chưa duyệt';
 
                 const publicationsData = receipt?.publications?.map((publication) => {
                     return {
                         receiptBarcode: receipt?.barcode || '',
                         publicationBarcode: publication?.barcode || '',
                         publicationName: publication?.name || '',
-                        createdAt: formatDate(receipt?.createdAt) || '', 
-                        updatedAt: formatDate(receipt?.updatedAt) || '', 
+                        // createdAt: formatDate(receipt?.createdAt) || '', 
+                        // updatedAt: formatDate(receipt?.updatedAt) || '', 
+                        createdAt: receipt?.createdAt ? new Date(receipt?.createdAt) : null, 
+                        updatedAt: receipt?.updatedAt ? new Date(receipt?.updatedAt) : null,
                         supplierName: supplierName,
                         creatorName: creatorName,
                         quantityWareHouse: publication?.quantityWareHouse || 0,
@@ -384,8 +386,16 @@ const WareHouseReceiptPage = () => {
                     };
                 });
 
-                return publicationsData; 
-            }).flat(); 
+                return publicationsData;
+            }).flat();
+
+            warehouseReceiptsData.sort((a: any, b: any) => {
+                if (a.createdAt && b.createdAt) {
+                    return a.createdAt.getTime() - b.createdAt.getTime(); 
+                }
+                return 0;
+            });
+
 
             // Add the data to the worksheet
             warehouseReceiptsData.forEach((dataRow) => {

@@ -1014,6 +1014,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                             return
                                                         }
                                                     }}
+                                                    noOptionsText="Vui lòng nhập tên ấn phẩm"
                                                     renderInput={(params) => (
                                                         <TextField
                                                             {...params}

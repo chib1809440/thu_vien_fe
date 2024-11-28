@@ -146,6 +146,7 @@ const BookViewPage = ({ title, pages }: BookProps) => {
                                     }}
                                     src={item}
                                     alt=""
+                                    loading="lazy"
                                 />
                             </Page>
                         ))}
@@ -163,7 +164,7 @@ const BookViewPage = ({ title, pages }: BookProps) => {
                     borderRadius: `${borderRadius}px ${borderRadius}px 0 0`
                 }}>
 
-                    <Paper sx={{ p: 2 }}>
+                    <Paper sx={{ py: 2, pl: { xs: 0, sm: 0, md: 1 } }}>
                         {fullUrlPages && fullUrlPages.length > 0 && <Typography variant='body2'>Số trang: {fullUrlPages.length}</Typography>
                         }
 

@@ -1,33 +1,27 @@
-import { Button, Chip, FormControl, Grid, MenuItem, Select, Switch, useTheme } from "@mui/material";
-import { Box, Stack } from "@mui/system";
-import { IconCalendar, IconEye, IconFileExport, IconPencil, IconPlus, IconPrinter, IconTrash, IconX } from "@tabler/icons";
-import { IconClockSearch, IconTrashXFilled } from "@tabler/icons-react";
+import { Button, Chip, FormControl, Grid, MenuItem, Select, Typography, useTheme } from "@mui/material";
+import { Box } from "@mui/system";
+import { IconCalendar, IconEye, IconFileExport, IconPencil, IconTrash, IconX } from "@tabler/icons";
+import { vi } from "date-fns/locale";
+import ExcelJS from 'exceljs';
 import { useCallback, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../../../components/custom/form/ActionForm";
 import TableList from "../../../../../components/custom/table-list/TableList";
-import StyledButton from "../../../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../../../components/default/dialog/ConfirmDeleteDialog";
+import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
+import { formatDate } from "../../../../../helpers/formatDate";
 import { useAddLoanSlip, useApprovalLoanSlip, useCancelLoanSlip, useDeleteSoftLoanSlip, useDeleteSoftManyLoanSlip, useEditLoanSlip, useReturnLoanSlip } from "../../../../../hooks/services/loanSlip/loanSlip-mutation";
-import { useFetchLoanSlip, useFetchLoanSlipLink, useFetchLoanSlipRequestLink, useReFetchLoanSlip, useReFetchLoanSlipLink, useReFetchLoanSlipRequestLink } from "../../../../../hooks/services/loanSlip/loanSlip-query";
+import { useFetchLoanSlipRequestLink, useReFetchLoanSlipRequestLink } from "../../../../../hooks/services/loanSlip/loanSlip-query";
 import useQueryString from "../../../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../../../types/common/table";
 import { CreatePublication, TLoanSlip, TLoanSlipCreate } from "../../../../../types/models/loanSlip.type";
 import IBreadcrumsCustom from "../../../../../ui-component/breadcrums";
 import MainCard from "../../../../../ui-component/cards/MainCard";
-import { formatDate } from "../../../../../helpers/formatDate";
-import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
-import { useReactToPrint } from "react-to-print";
-import { vi } from "date-fns/locale";
-import Html2Pdf from 'html2pdf.js';
 import { parserParams } from "../../../../../utils/object";
-import { useFetchPublications } from "../../../../../hooks/services/publications/publications-query";
-import DatePicker from "react-datepicker";
-import ExcelJS from 'exceljs';
-import FormAddEditLibLoanSlip from "./ui-components/FormAddEditLibLoanSlip";
 import ViewDetailLoanSlip from "../../../LoanSlipPage/ui-components/ViewDetailLoanSlip";
-import { User } from "../../../../../interfaces/user";
+import FormAddEditLibLoanSlip from "./ui-components/FormAddEditLibLoanSlip";
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -123,24 +117,37 @@ const LoanSlipRequestLink = () => {
     });
     const handleApprovalLoanSlip = (row: TLoanSlip) => {
         row.status = "chờ nhận sách";
-        mutationEdit.mutate(
-            { ...row as any, _id: row._id, userId: row.userId._id, },
-            {
-                onSuccess: () => {
-                    revalidate();
-                    toast.success('Chỉnh sửa thành công.');
-                    handleClose();
-                },
-            }
-        );
-    };
+        const returnDate = new Date(row?.returnDay);
+        const currentDate = new Date(); 
+
+        if (isNaN(returnDate.getTime())) {
+            toast.error("Ngày trả sách không hợp lệ.");
+            return;
+        }
+
+        if (returnDate < currentDate) {
+            toast.error("Vui lòng cập nhật lại ngày mượn, ngày trả.")
+            return;
+        } else {
+            mutationEdit.mutate(
+                { ...row as any, _id: row._id, userId: row.userId._id },
+                {
+                    onSuccess: () => {
+                        revalidate();
+                        toast.success('Duyệt phiếu mượn thành công.');
+                        handleClose();
+                    },
+                }
+            );
+        };
+    }
     const handleDeliveryBook = (row: TLoanSlip) => {
         mutationApproval.mutate(
             row._id,
             {
                 onSuccess: () => {
                     revalidate();
-                    toast.success('Chỉnh sửa thành công.');
+                    toast.success('Giao sách thành công.');
                     handleClose();
                 },
             }
@@ -239,31 +246,30 @@ const LoanSlipRequestLink = () => {
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
-                id: "borrowedDay",
+                id: "info",
                 disablePadding: "none",
-                label: "Ngày mượn",
+                label: "Thông tin mượn",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
                 render: (row) => {
                     return (
                         <Box
                         >
-                            {formatDate(row.borrowedDay)}
-                        </Box>
-                    );
-                },
-            },
-            {
-                id: "returnDay",
-                disablePadding: "none",
-                label: "Ngày trả",
-                align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => {
-                    return (
-                        <Box
-                        >
-                            {formatDate(row.returnDay)}
+                            <Typography mt={0.5}>Ngày mượn: <strong>{formatDate(row?.borrowedDay)}</strong></Typography>
+                            <Typography mt={0.5}>Ngày trả: <strong>{formatDate(row?.returnDay)}</strong></Typography>
+                            <Typography variant="body1" sx={{ mt: 0.5 }}>
+                                Họ và tên: <strong>{row?.userId?.fullname}</strong>
+                            </Typography>
+                            {row?.publications?.length > 0 && (
+                                <Box sx={{ mt: 0.5 }}>
+                                    <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
+                                    <ul>
+                                        {row?.publications.map((publication, idx) => (
+                                            <li key={idx}>{capitalizeFirstLetter(publication?.name)} (SLM: {publication?.quantityLoan})</li>
+                                        ))}
+                                    </ul>
+                                </Box>
+                            )}
                         </Box>
                     );
                 },
@@ -465,9 +471,20 @@ const LoanSlipRequestLink = () => {
             worksheet.addRow([]); // Thêm hàng trống
 
             // Thêm hàng từ ngày đến ngày
-            const startDateExcel = startDate ? formatDate(startDate) : '';
-            const endDateExcel = endDate ? formatDate(endDate) : '';
-            worksheet.addRow([`Từ ngày: ${startDateExcel} đến ngày: ${endDateExcel}`]).font = { bold: true };
+            // const startDateExcel = startDate ? formatDate(startDate) : '';
+            // const endDateExcel = endDate ? formatDate(endDate) : '';
+            // worksheet.addRow([`Từ ngày: ${startDateExcel} đến ngày: ${endDateExcel}`]).font = { bold: true };
+            const currentDateTime = new Date();
+            const formattedDateTime = currentDateTime.toLocaleString('vi-VN', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: false,
+            });
+            worksheet.addRow([`Ngày xuất file: ${formattedDateTime}`]).font = { bold: true };
 
             // Đặt header cho bảng
             worksheet.addRow([
@@ -508,6 +525,10 @@ const LoanSlipRequestLink = () => {
                     bookTitle: bookTitles || '',
                 };
             });
+
+            // loanSlipsData.sort((a: any, b: any) => {
+            //     return a.borrowDate - b.borrowDate; // Sort by borrowDate in ascending order
+            // });
 
             console.log(loanSlipsData); // Kiểm tra dữ liệu đã chuyển đổi
 
@@ -591,7 +612,7 @@ const LoanSlipRequestLink = () => {
             //     onClick: handleDeleteMultiple,
             // },
             {
-                label: "Xuất excel",
+                label: "Xuất danh sách phiếu mượn",
                 icon: <IconFileExport size={20} stroke={1.5} />,
                 onClick: handleExportLoanSlipExcel,
             },
@@ -681,7 +702,7 @@ const LoanSlipRequestLink = () => {
                 </Stack> */}
                 <ActionsForm placeholderSearch="Tìm kiếm theo barcode người mượn" actions={actionMenus} barcode={true}
                     barcodeSearch={barcodeSearch}
-                    handleBarcodeSearch={handleBarcodeSearch} placeholder="Tìm kiếm theo barcode" />
+                    handleBarcodeSearch={handleBarcodeSearch} placeholder="Tìm kiếm theo barcode phiếu mượn" />
                 <Grid container xs={12} sm={12} md={12} lg={12} gap={2} sx={{
                     display: "flex", mb: 3, flexWrap: "wrap",
                     pl: { xs: 0, sm: 0, md: 4 },

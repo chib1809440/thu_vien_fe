@@ -11,7 +11,7 @@ import {
     Typography,
     useTheme,
 } from "@mui/material";
-import { Box, display, Stack } from "@mui/system";
+import { Box, Stack } from "@mui/system";
 import { IconBook, IconFileExport, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import {
     IconEye,
@@ -76,7 +76,6 @@ import DialogImportFile from "./ui-components/DialogImportFile ";
 import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
-import TableList from "../../../components/custom/table-list/TableList";
 
 const PublicationsPage = () => {
     const queryString = useQueryString();
@@ -425,19 +424,19 @@ const PublicationsPage = () => {
         const duplicateItem = items.find(
             (cartItem) => cartItem.libraryId === createPublication.libraryId
         );
-        if (!duplicateItem && items.length > 0) {
-            const item = items[0];
-            toast.warning(`Chi thêm sách của một thư viện là ${item.libraryName}`, {
-                toastId: "1",
-                position: "bottom-right", // Đặt vị trí ở góc dưới bên phải
-                autoClose: 3000, // Thời gian tự động đóng (ms)
-                hideProgressBar: false, // Hiện thanh tiến trình
-                closeOnClick: true, // Cho phép đóng thông báo bằng cách nhấp
-                pauseOnHover: true, // Tạm dừng khi di chuột
-                draggable: true, // Cho phép kéo thả để đóng thông báo
-            });
-            return;
-        }
+        // if (!duplicateItem && items.length > 0) {
+        //     const item = items[0];
+        //     toast.warning(`Chỉ thêm sách của một thư viện là ${item.libraryName}`, {
+        //         toastId: "1",
+        //         position: "bottom-right", // Đặt vị trí ở góc dưới bên phải
+        //         autoClose: 3000, // Thời gian tự động đóng (ms)
+        //         hideProgressBar: false, // Hiện thanh tiến trình
+        //         closeOnClick: true, // Cho phép đóng thông báo bằng cách nhấp
+        //         pauseOnHover: true, // Tạm dừng khi di chuột
+        //         draggable: true, // Cho phép kéo thả để đóng thông báo
+        //     });
+        //     return;
+        // }
         // Dispatch action để thêm item vào giỏ hàng
         dispatch(addInternalItem(createPublication));
         toast.success("Thêm sản phẩm vào phiếu mượn thành công", {
@@ -920,7 +919,7 @@ const PublicationsPage = () => {
 
             // Tạo file Excel và lưu
             const currentDateTimeForFileName = currentDateTime.toISOString().replace(/[-:.]/g, "");
-            const fileName = `publications_${currentDateTimeForFileName}.xlsx`;
+            const fileName = `DSAP_${currentDateTimeForFileName}.xlsx`;
 
             workbook.xlsx.writeBuffer().then((buffer) => {
                 const blob = new Blob([buffer], { type: 'application/octet-stream' });

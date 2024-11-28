@@ -35,11 +35,11 @@ const VideoDetailPage = ({ open, onClose, publications }: { open: boolean; onClo
                 color='error'
                 sx={{ position: 'absolute', right: 8, top: 2 }}
             >
-                
+
                 <CloseIcon />
             </IconButton>
             <DialogContent>
-                <Grid container spacing={2} px={4}>
+                <Grid container spacing={2} sx={{ px: { xs: 0, sm: 0, md: 4 } }}>
                     <Grid item xs={12} sm={8}>
                         <StyledHeading variant="h5" textTransform={"uppercase"}>VIDEO: {publications?.name}</StyledHeading>
                     </Grid>
@@ -58,18 +58,18 @@ const VideoDetailPage = ({ open, onClose, publications }: { open: boolean; onClo
                                     <Paper sx={{ width: "100%", border: `1px solid ${theme.palette.grey[300]}`, p: 2 }}>
                                         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
                                             <Grid container spacing={2}>
-                                                <Grid item xs={2}>
+                                                <Grid item xs={4} sm={4} md={2}>
                                                     <Typography variant="h4" ><span className="bold-text">Dạng học liệu</span></Typography>
                                                 </Grid>
-                                                <Grid item xs={10}>
+                                                <Grid item xs={8} sm={8} md={10}>
                                                     <Typography variant="body1">Video</Typography>
                                                 </Grid>
                                             </Grid>
                                             <Grid container spacing={2}>
-                                                <Grid item xs={2}>
+                                                <Grid item xs={4} sm={4} md={2}>
                                                     <Typography variant="h4" ><span className="bold-text">Phát hành</span></Typography>
                                                 </Grid>
-                                                <Grid item xs={10}>
+                                                <Grid item xs={8} sm={8} md={10}>
                                                     <Typography variant="body1">Công ty Cổ phần Giải pháp Công nghệ GD Việt Nam</Typography>
                                                 </Grid>
                                             </Grid>
@@ -77,13 +77,13 @@ const VideoDetailPage = ({ open, onClose, publications }: { open: boolean; onClo
                                     </Paper>
                                 </Box>
                             </Grid>
-                            
+
                         </Grid>
                     </Grid>
                 </Grid>
 
             </DialogContent>
-        </Dialog>
+        </Dialog >
 
     );
 }

@@ -1172,7 +1172,7 @@ const PublicationsPage = () => {
                 /> */}
 
                 <Grid container spacing={2} sx={{ p: { xs: 0, sm: 0, md: "12px 32px" }, pt: 2 }}>
-                    {data?.data?.result?.length > 0 && (
+                    {data?.data?.result?.length > 0 && userRole !== "Student" && (
                         <Grid item xs={12} p={0} sx={{
                             display: { xs: "none", sm: "none", md: "flex" },
                             flexDirection: "column",
@@ -1223,19 +1223,22 @@ const PublicationsPage = () => {
                                             position: "relative"
                                         }}
                                     >
-                                        <Box sx={{
-                                            display: { xs: "none", sm: "none", md: "flex" },
-                                            position: "absolute",
-                                            zIndex: 99,
-                                            top: -25,
-                                            left: -25,
+                                        {
+                                            userRole !== "Student" &&
+                                            <Box sx={{
+                                                display: { xs: "none", sm: "none", md: "flex" },
+                                                position: "absolute",
+                                                zIndex: 99,
+                                                top: -25,
+                                                left: -25,
 
-                                        }}>
-                                            <Checkbox
-                                                checked={checkedDelete.includes(item._id)}
-                                                onChange={(e) => handleCheckedDelete(item, e.target.checked)}
-                                            />
-                                        </Box>
+                                            }}>
+                                                <Checkbox
+                                                    checked={checkedDelete.includes(item._id)}
+                                                    onChange={(e) => handleCheckedDelete(item, e.target.checked)}
+                                                />
+                                            </Box>
+                                        }
 
                                         <Paper sx={{ width: "100%", position: "relative" }}>
                                             <Box onClick={() => handleViewDetails(item)}>
@@ -1354,7 +1357,7 @@ const PublicationsPage = () => {
                                                         </Tooltip>
                                                     )}
 
-                                                    {item?.isPublic && (
+                                                    {item?.isPublic && userRole !== "Student" && (
                                                         <Tooltip
                                                             title="Chia sẻ liên thông"
                                                             arrow
@@ -1439,7 +1442,10 @@ const PublicationsPage = () => {
                                                         </StyledIconButton>
                                                     )}
 
-                                                <StyledIconButton
+                                                {hasPermission([
+                                                    { resource: "publications", action: "manage" },
+                                                    { resource: "publications", action: "delete" },
+                                                ]) && <StyledIconButton
                                                     disableHoverEffect
                                                     sx={{
                                                         position: "absolute",
@@ -1456,27 +1462,28 @@ const PublicationsPage = () => {
                                                         },
                                                     }}
                                                 >
-                                                    <Box
-                                                        bgcolor={"red"}
-                                                        sx={{
-                                                            background: "#3078ec",
-                                                            color: "white",
-                                                            borderRadius: 2,
-                                                            display: "flex",
-                                                            alignItems: "center",
-                                                            justifyContent: "center",
-                                                            p: 0.5,
-                                                        }}
-                                                    >
-                                                        <IconPencil
-                                                            onClick={() =>
-                                                                handleEditPublications(item)
-                                                            }
-                                                            size={20}
-                                                            stroke={2}
-                                                        />
-                                                    </Box>
-                                                </StyledIconButton>
+                                                        <Box
+                                                            bgcolor={"red"}
+                                                            sx={{
+                                                                background: "#3078ec",
+                                                                color: "white",
+                                                                borderRadius: 2,
+                                                                display: "flex",
+                                                                alignItems: "center",
+                                                                justifyContent: "center",
+                                                                p: 0.5,
+                                                            }}
+                                                        >
+                                                            <IconPencil
+                                                                onClick={() =>
+                                                                    handleEditPublications(item)
+                                                                }
+                                                                size={20}
+                                                                stroke={2}
+                                                            />
+                                                        </Box>
+                                                    </StyledIconButton>
+                                                }
                                             </Box>
                                         </Paper>
                                         <Box

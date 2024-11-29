@@ -147,7 +147,9 @@ const LoanSlipPage = () => {
     const handleApprovalLoanSlip = (row: TLoanSlip) => {
         row.status = "chờ nhận sách";
         const returnDate = new Date(row?.returnDay);
-        const currentDate = new Date(); 
+        const currentDate = new Date();
+        returnDate.setHours(0, 0, 0, 0);
+        currentDate.setHours(0, 0, 0, 0);
 
         if (isNaN(returnDate.getTime())) {
             toast.error("Ngày trả sách không hợp lệ.");
@@ -155,7 +157,7 @@ const LoanSlipPage = () => {
         }
 
         if (returnDate < currentDate) {
-            toast.error("Vui lòng cập nhật lại ngày mượn, ngày trả.")
+            toast.error("Ngày trả không hợp lệ! Vui lòng cập nhật lại.")
             return;
         } else {
             mutationEdit.mutate(
@@ -326,9 +328,12 @@ const LoanSlipPage = () => {
                         >
                             <Typography mt={0.5}>Ngày mượn: <strong>{formatDate(row?.borrowedDay)}</strong></Typography>
                             <Typography mt={0.5}>Ngày trả: <strong>{formatDate(row?.returnDay)}</strong></Typography>
-                            <Typography variant="body1" sx={{ mt: 0.5 }}>
-                                Họ và tên: <strong>{row?.userId?.fullname}</strong>
-                            </Typography>
+                            {
+                                (roleName === "Admin" || roleName === "Owner") &&
+                                <Typography variant="body1" sx={{ mt: 0.5 }}>
+                                    Người mượn: <strong>{row?.userId?.fullname}</strong>
+                                </Typography>
+                            }
                             {row?.publications?.length > 0 && (
                                 <Box sx={{ mt: 0.5 }}>
                                     <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>

@@ -19,7 +19,8 @@ import {
     IconMicrophone,
     IconNotes,
     IconPrinter,
-    IconReceipt, IconReceiptRefund,
+    IconReceipt,
+    IconReceiptRefund,
     IconReportAnalytics,
     IconReportMoney,
     IconShare,
@@ -39,395 +40,486 @@ import {
     IconChartRadar,
     IconFolder,
     IconListDetails,
-    IconListCheck
-} from '@tabler/icons';
-import { VERSION } from '../config';
+    IconListCheck,
+} from "@tabler/icons";
+import { VERSION } from "../config";
 
 // constant
 const icons = {
-    IconDeviceAnalytics, IconHome2, IconUsers, IconArticle, IconVocabulary,
-    IconCloudComputing, IconCategory, IconPrinter, IconForklift, IconBuildingWarehouse,
-    IconHomeSearch, IconDevices, IconEyeTable, IconSmartHome, IconUserPlus,
-    IconReceipt, IconReceiptRefund, IconShare, IconLocation, IconBuildingCastle,
-    IconReportMoney, IconReportAnalytics, IconBrowserPlus, IconBrowser, IconNotes, 
-    IconBrandWechat, IconMicrophone, IconFileText, IconBook, IconInfoCircle,
-    IconBrandWindows, IconTransferIn, IconHomeQuestion, IconReceipt2, IconBrandUbuntu,
-    IconUserCircle, IconBooks, IconBrandAirtable, IconChartRadar, IconFolder,
-    IconListDetails, IconListCheck
+    IconDeviceAnalytics,
+    IconHome2,
+    IconUsers,
+    IconArticle,
+    IconVocabulary,
+    IconCloudComputing,
+    IconCategory,
+    IconPrinter,
+    IconForklift,
+    IconBuildingWarehouse,
+    IconHomeSearch,
+    IconDevices,
+    IconEyeTable,
+    IconSmartHome,
+    IconUserPlus,
+    IconReceipt,
+    IconReceiptRefund,
+    IconShare,
+    IconLocation,
+    IconBuildingCastle,
+    IconReportMoney,
+    IconReportAnalytics,
+    IconBrowserPlus,
+    IconBrowser,
+    IconNotes,
+    IconBrandWechat,
+    IconMicrophone,
+    IconFileText,
+    IconBook,
+    IconInfoCircle,
+    IconBrandWindows,
+    IconTransferIn,
+    IconHomeQuestion,
+    IconReceipt2,
+    IconBrandUbuntu,
+    IconUserCircle,
+    IconBooks,
+    IconBrandAirtable,
+    IconChartRadar,
+    IconFolder,
+    IconListDetails,
+    IconListCheck,
 };
-
 
 // ==============================|| DASHBOARD MENU ITEMS ||============================== //
 
 const dashboardAdmin = {
-    id: 'dashboard-admin',
+    id: "dashboard-admin",
     // title: `Version ${VERSION}`,
-    type: 'group',
+    type: "group",
     children: [
         {
-            id: 'trang-chu',
+            id: "trang-chu",
             title: "Trang chủ",
-            type: 'item',
-            url: '/trang-chu',
+            type: "item",
+            url: "/trang-chu",
             icon: icons.IconHome2,
             breadcrumbs: false,
-            permissions: [{
-                "resource": "statisticals",
-                "action": "manage"
-            }],
+            permissions: [
+                {
+                    resource: "statisticals",
+                    action: "manage",
+                },
+            ],
         },
         {
-            id: 'thu-vien',
+            id: "thu-vien",
             title: "Hệ thống",
-            type: 'collapse',
+            type: "collapse",
             // url: '/he-thong',
             icon: icons.IconBrandWindows,
             breadcrumbs: false,
-            permissions: [{
-                "resource": "groups",
-                "action": "manage"
-            }, {
-                "resource": "groups",
-                "action": "read"
-            }, {
-                "resource": "all",
-                "action": "manage"
-            }],
+            permissions: [
+                {
+                    resource: "groups",
+                    action: "manage",
+                },
+                {
+                    resource: "groups",
+                    action: "read",
+                },
+                {
+                    resource: "all",
+                    action: "manage",
+                },
+            ],
             children: [
                 {
-                    id: 'quan-ly-nhom',
+                    id: "quan-ly-nhom",
                     title: "Nhóm",
-                    type: 'item',
-                    url: '/he-thong/quan-ly-nhom',
+                    type: "item",
+                    url: "/he-thong/quan-ly-nhom",
                     icon: icons.IconBrandUbuntu,
                     breadcrumbs: false,
-                    permissions: [{
-                        "resource": "groups",
-                        "action": "manage"
-                    }, {
-                        "resource": "groups",
-                        "action": "read"
-                    }, {
-                        "resource": "all",
-                        "action": "manage"
-                    }],
+                    permissions: [
+                        {
+                            resource: "groups",
+                            action: "manage",
+                        },
+                        {
+                            resource: "groups",
+                            action: "read",
+                        },
+                        {
+                            resource: "all",
+                            action: "manage",
+                        },
+                    ],
                 },
                 {
-                    id: 'quan-ly-thu-vien',
+                    id: "quan-ly-thu-vien",
                     title: "Thư viện",
-                    type: 'item',
-                    url: '/he-thong/quan-ly-thu-vien',
+                    type: "item",
+                    url: "/he-thong/quan-ly-thu-vien",
                     icon: icons.IconBooks,
                     breadcrumbs: false,
-                    permissions: [{
-                        "resource": "all",
-                        "action": "manage"
-                    }],
+                    permissions: [
+                        {
+                            resource: "all",
+                            action: "manage",
+                        },
+                    ],
                 },
                 {
-                    id: 'quan-ly-tai-khoan-admin',
+                    id: "quan-ly-tai-khoan-admin",
                     title: "Tài khoản thủ thư",
-                    type: 'item',
-                    url: '/he-thong/quan-ly-tai-khoan-admin',
+                    type: "item",
+                    url: "/he-thong/quan-ly-tai-khoan-admin",
                     icon: icons.IconUserCircle,
                     breadcrumbs: false,
-                    permissions: [{
-                        "resource": "all",
-                        "action": "manage"
-                    }],
+                    permissions: [
+                        {
+                            resource: "all",
+                            action: "manage",
+                        },
+                    ],
                 },
                 {
-                    id: 'quan-ly-tai-khoan',
+                    id: "quan-ly-tai-khoan",
                     title: "Tài khoản",
-                    type: 'item',
-                    url: '/quan-ly-tai-khoan',
+                    type: "item",
+                    url: "/quan-ly-tai-khoan",
                     icon: icons.IconUserCircle,
                     breadcrumbs: false,
-                    permissions: [{
-                        "resource": "users",
-                        "action": "manage"
-                    }],
+                    permissions: [
+                        {
+                            resource: "users",
+                            action: "manage",
+                        },
+                    ],
                 },
                 {
-                    id: 'vai-tro',
+                    id: "vai-tro",
                     title: "Vai trò",
-                    type: 'item',
-                    url: '/vai-tro',
+                    type: "item",
+                    url: "/vai-tro",
                     icon: icons.IconChartRadar,
                     breadcrumbs: false,
-                    permissions: [{
-                        "resource": "all",
-                        "action": "manage"
-                    }],
+                    permissions: [
+                        {
+                            resource: "all",
+                            action: "manage",
+                        },
+                    ],
                 },
-            ]
+            ],
         },
         {
-            id: 'an-pham',
+            id: "an-pham",
             title: "Ấn phẩm",
-            type: 'item',
-            url: '/thu-vien/an-pham',
+            type: "item",
+            url: "/thu-vien/an-pham",
             icon: icons.IconBook,
-            breadcrumbs: false
+            breadcrumbs: false,
         },
         {
-            id: 'quan-ly-nhap-kho',
+            id: "quan-ly-nhap-kho",
             title: "Quản lý nhập kho",
-            type: 'collapse',
-            url: '/quan-ly-nhap-kho',
+            type: "collapse",
+            url: "/quan-ly-nhap-kho",
             icon: icons.IconTransferIn,
             breadcrumbs: false,
-            permissions: [{
-                "resource": "suppliers",
-                "action": "manage"
-            },
-            {
-                "resource": "warehousereceipts",
-                "action": "manage"
-            },
+            permissions: [
+                {
+                    resource: "suppliers",
+                    action: "manage",
+                },
+                {
+                    resource: "warehousereceipts",
+                    action: "manage",
+                },
             ],
 
             children: [
                 {
-                    id: 'nha-cung-cap',
+                    id: "nha-cung-cap",
                     title: "Nhà cung cấp",
-                    type: 'item',
-                    url: '/quan-ly-nhap-kho/nha-cung-cap',
+                    type: "item",
+                    url: "/quan-ly-nhap-kho/nha-cung-cap",
                     icon: icons.IconHomeQuestion,
                     breadcrumbs: false,
-                    permissions: [{
-                        "resource": "suppliers",
-                        "action": "manage"
-                    }],
+                    permissions: [
+                        {
+                            resource: "suppliers",
+                            action: "manage",
+                        },
+                    ],
                 },
                 {
-                    id: 'phieu-nhap-kho',
+                    id: "phieu-nhap-kho",
                     title: "Phiếu nhập kho",
-                    type: 'item',
-                    url: '/quan-ly-nhap-kho/phieu-nhap-kho',
+                    type: "item",
+                    url: "/quan-ly-nhap-kho/phieu-nhap-kho",
                     icon: icons.IconReceipt2,
                     breadcrumbs: false,
-                    permissions: [{
-                        "resource": "warehousereceipts",
-                        "action": "manage"
-                    }],
+                    permissions: [
+                        {
+                            resource: "warehousereceipts",
+                            action: "manage",
+                        },
+                    ],
                 },
-            ]
+            ],
         },
         {
-            id: 'quan-ly-kho',
+            id: "quan-ly-kho",
             title: "Quản lý kho",
-            type: 'collapse',
-            url: '/quan-ly-kho',
+            type: "collapse",
+            url: "/quan-ly-kho",
             icon: icons.IconBuildingWarehouse,
             breadcrumbs: false,
             permissions: [
-            {
-                "resource": "suppliers",
-                "action": "manage"
-            },
-            {
-                "resource": "warehousereceipts",
-                "action": "manage"
-            },],
+                {
+                    resource: "suppliers",
+                    action: "manage",
+                },
+                {
+                    resource: "warehousereceipts",
+                    action: "manage",
+                },
+            ],
             children: [
                 {
-                    id: 'tu-ke',
+                    id: "tu-ke",
                     title: "Tủ - Kệ",
-                    type: 'item',
-                    url: '/quan-ly-kho/tu-ke',
+                    type: "item",
+                    url: "/quan-ly-kho/tu-ke",
                     icon: icons.IconBrandAirtable,
-                    breadcrumbs: false
+                    breadcrumbs: false,
                 },
                 {
-                    id: 'kho',
+                    id: "kho",
                     title: "Kho",
-                    type: 'item',
-                    url: '/quan-ly-kho/kho',
+                    type: "item",
+                    url: "/quan-ly-kho/kho",
                     icon: icons.IconBuildingWarehouse,
-                    breadcrumbs: false
+                    breadcrumbs: false,
                 },
                 {
-                    id: 'thanh-ly-hu-hong',
+                    id: "thanh-ly-hu-hong",
                     title: "Thanh lý - Hư hỏng",
-                    type: 'item',
-                    url: '/quan-ly-kho/thanh-ly-hu-hong',
+                    type: "item",
+                    url: "/quan-ly-kho/thanh-ly-hu-hong",
                     icon: icons.IconDevices,
-                    breadcrumbs: false
+                    breadcrumbs: false,
                 },
-            ]
+            ],
         },
 
         {
-            id: 'phieu-muon',
+            id: "phieu-muon",
             title: "Thông tin phiếu mượn",
-            type: 'item',
-            url: '/quan-ly-muon-tra/phieu-muon',
+            type: "item",
+            url: "/quan-ly-muon-tra/phieu-muon",
             icon: icons.IconReceipt,
             breadcrumbs: false,
-            permissions: [{
-                "resource": "loanslips",
-                "action": "manage"
-            }],
+            permissions: [
+                {
+                    resource: "loanslips",
+                    action: "manage",
+                },
+            ],
         },
         {
-            id: 'quan-ly-danh-muc',
+            id: "quan-ly-danh-muc",
             title: "Quản lý danh mục",
-            type: 'collapse',
+            type: "collapse",
             icon: icons.IconFolder,
-            permissions: [{
-                "resource": "materials",
-                "action": "manage"
-            }, {
-                "resource": "voices",
-                "action": "manage"
-            }, {
-                "resource": "categories",
-                "action": "manage"
-            }, {
-                "resource": "typevoices",
-                "action": "manage"
-            }, {
-                "resource": "authors",
-                "action": "manage"
-            }, {
-                "resource": "publishers",
-                "action": "manage"
-            }, {
-                "resource": "all",
-                "action": "manage"
-            }],
+            permissions: [
+                {
+                    resource: "materials",
+                    action: "manage",
+                },
+                {
+                    resource: "voices",
+                    action: "manage",
+                },
+                {
+                    resource: "categories",
+                    action: "manage",
+                },
+                {
+                    resource: "typevoices",
+                    action: "manage",
+                },
+                {
+                    resource: "authors",
+                    action: "manage",
+                },
+                {
+                    resource: "publishers",
+                    action: "manage",
+                },
+                {
+                    resource: "all",
+                    action: "manage",
+                },
+            ],
             children: [
                 {
-                    id: 'dang-hoc-lieu',
+                    id: "dang-hoc-lieu",
                     title: "Dạng học liệu",
-                    type: 'item',
-                    url: 'quan-ly-danh-muc/dang-hoc-lieu',
+                    type: "item",
+                    url: "quan-ly-danh-muc/dang-hoc-lieu",
                     icon: icons.IconFileText,
                     breadcrumbs: false,
-                    permissions: [{
-                        "resource": "materials",
-                        "action": "manage"
-                    }, {
-                        "resource": "all",
-                        "action": "manage"
-                    }],
+                    permissions: [
+                        {
+                            resource: "materials",
+                            action: "manage",
+                        },
+                        {
+                            resource: "all",
+                            action: "manage",
+                        },
+                    ],
                 },
                 {
-                    id: 'linh-vuc',
+                    id: "linh-vuc",
                     title: "Lĩnh vực",
-                    type: 'item',
-                    url: '/quan-ly-danh-muc/linh-vuc',
+                    type: "item",
+                    url: "/quan-ly-danh-muc/linh-vuc",
                     icon: icons.IconCategory,
                     breadcrumbs: false,
-                    permissions: [{
-                        "resource": "all",
-                        "action": "manage"
-                    }, {
-                        "resource": "categories",
-                        "action": "manage"
-                    }],
+                    permissions: [
+                        {
+                            resource: "all",
+                            action: "manage",
+                        },
+                        {
+                            resource: "categories",
+                            action: "manage",
+                        },
+                    ],
                 },
                 {
-                    id: 'tu-ke',
+                    id: "tu-ke",
                     title: "Tủ - Kệ",
-                    type: 'item',
-                    url: '/quan-ly-danh-muc/tu-ke',
+                    type: "item",
+                    url: "/quan-ly-danh-muc/tu-ke",
                     icon: icons.IconHomeSearch,
                     breadcrumbs: false,
-                    permissions: [{
-                        "resource": "all",
-                        "action": "manage"
-                    }, {
-                        "resource": "shelves",
-                        "action": "manage"
-                    }],
+                    permissions: [
+                        {
+                            resource: "all",
+                            action: "manage",
+                        },
+                        {
+                            resource: "shelves",
+                            action: "manage",
+                        },
+                    ],
                 },
                 {
-                    id: 'tac-gia',
+                    id: "tac-gia",
                     title: "Tác giả",
-                    type: 'item',
-                    url: '/quan-ly-danh-muc/tac-gia',
+                    type: "item",
+                    url: "/quan-ly-danh-muc/tac-gia",
                     icon: icons.IconUserPlus,
                     breadcrumbs: false,
-                    permissions: [{
-                        "resource": "authors",
-                        "action": "manage"
-                    }, {
-                        "resource": "all",
-                        "action": "manage"
-                    }],
+                    permissions: [
+                        {
+                            resource: "authors",
+                            action: "manage",
+                        },
+                        {
+                            resource: "all",
+                            action: "manage",
+                        },
+                    ],
                 },
                 {
-                    id: 'nha-san-xuat',
+                    id: "nha-san-xuat",
                     title: "Nhà xuất bản",
-                    type: 'item',
-                    url: '/quan-ly-danh-muc/nha-san-xuat',
+                    type: "item",
+                    url: "/quan-ly-danh-muc/nha-san-xuat",
                     icon: icons.IconUsers,
                     breadcrumbs: false,
-                    permissions: [{
-                        "resource": "all",
-                        "action": "manage"
-                    }, {
-                        "resource": "publishers",
-                        "action": "manage"
-                    }],
+                    permissions: [
+                        {
+                            resource: "all",
+                            action: "manage",
+                        },
+                        {
+                            resource: "publishers",
+                            action: "manage",
+                        },
+                    ],
                 },
                 {
-                    id: 'loai-voice',
+                    id: "loai-voice",
                     title: "Loại voice",
-                    type: 'item',
-                    url: '/quan-ly-danh-muc/loai-voice',
+                    type: "item",
+                    url: "/quan-ly-danh-muc/loai-voice",
                     icon: icons.IconMicrophone,
                     breadcrumbs: false,
-                    permissions: [{
-                        "resource": "all",
-                        "action": "manage"
-                    }, {
-                        "resource": "typevoices",
-                        "action": "manage"
-                    }],
+                    permissions: [
+                        {
+                            resource: "all",
+                            action: "manage",
+                        },
+                        {
+                            resource: "typevoices",
+                            action: "manage",
+                        },
+                    ],
                 },
                 {
-                    id: 'voice',
+                    id: "voice",
                     title: "Voice",
-                    type: 'item',
-                    url: '/quan-ly-danh-muc/voice',
+                    type: "item",
+                    url: "/quan-ly-danh-muc/voice",
                     icon: icons.IconMicrophone,
                     breadcrumbs: false,
-                    permissions: [{
-                        "resource": "all",
-                        "action": "manage"
-                    }, {
-                        "resource": "voices",
-                        "action": "manage"
-                    }],
-                }
-            ]
+                    permissions: [
+                        {
+                            resource: "all",
+                            action: "manage",
+                        },
+                        {
+                            resource: "voices",
+                            action: "manage",
+                        },
+                    ],
+                },
+            ],
         },
         {
-            id: 'thong-tin',
+            id: "thong-tin",
             title: "Thông tin trường",
-            type: 'item',
-            url: '/thong-tin',
+            type: "item",
+            url: "/thong-tin",
             icon: icons.IconInfoCircle,
             breadcrumbs: false,
-            permissions: [{
-                "resource": "statisticals",
-                "action": "manage"
-            }],
+            permissions: [
+                {
+                    resource: "statisticals",
+                    action: "manage",
+                },
+            ],
         },
         {
-            id: 'tai-san-thu-vien',
+            id: "tai-san-thu-vien",
             title: "Quản lý tài sản",
-            type: 'item',
-            url: '/tai-san-thu-vien',
+            type: "item",
+            url: "/tai-san-thu-vien",
             icon: icons.IconBrowser,
             breadcrumbs: false,
-            permissions: [{
-                "resource": "assets",
-                "action": "manage"
-            }],
+            permissions: [
+                {
+                    resource: "assets",
+                    action: "manage",
+                },
+            ],
         },
         // {
         //     id: 'ho-tro-ai',
@@ -438,165 +530,185 @@ const dashboardAdmin = {
         //     breadcrumbs: false
         // },
         {
-            id: 'lien-thong',
+            id: "lien-thong-thu-vien",
             title: "Liên thông thư viện",
-            type: 'item',
-            url: '/lien-thong',
+            type: "item",
+            url: "/lien-thong",
             icon: icons.IconBuildingCastle,
             breadcrumbs: false,
-            permissions: [{
-                "resource": "categories",
-                "action": "manage"
-            }, {
-                "resource": "materials",
-                "action": "manage"
-            }, {
-                "resource": "authors",
-                "action": "manage"
-            }, {
-                "resource": "publishers",
-                "action": "manage"
-            }, {
-                "resource": "loanslips",
-                "action": "manage"
-            }, {
-                "resource": "publications",
-                "action": "read"
-            }
+            permissions: [
+                {
+                    resource: "categories",
+                    action: "manage",
+                },
+                {
+                    resource: "materials",
+                    action: "manage",
+                },
+                {
+                    resource: "authors",
+                    action: "manage",
+                },
+                {
+                    resource: "publishers",
+                    action: "manage",
+                },
+                {
+                    resource: "loanslips",
+                    action: "manage",
+                },
+                {
+                    resource: "publications",
+                    action: "read",
+                },
             ],
-            // disabled
         },
-    ]
+    ],
 };
 
 export const dashboardAdminV2 = {
-    id: 'dashboard-admin',
+    id: "dashboard-admin",
     // title: `Version ${VERSION}`,
-    type: 'group',
+    type: "group",
     children: [
+        // {
+        //     id: 'trang-chu',
+        //     title: "Trang chủ thư viện",
+        //     type: 'item',
+        //     url: '/trang-chu',
+        //     icon: icons.IconHome2,
+        //     breadcrumbs: false
+        // },
         {
-            id: 'trang-chu',
-            title: "Trang chủ thư viện",
-            type: 'item',
-            url: '/trang-chu',
-            icon: icons.IconHome2,
-            breadcrumbs: false
-        },
-        {
-            id: 'lien-thong',
+            id: "lien-thong",
             title: "Chia sẻ ấn phẩm",
-            type: 'item',
-            url: '/lien-thong',
+            type: "item",
+            url: "/lien-thong",
             icon: icons.IconBook,
-            breadcrumbs: false
+            breadcrumbs: false,
         },
         {
-            id: 'chia-se-danh-muc',
+            id: "chia-se-danh-muc",
             title: "Chia sẻ danh mục",
             breadcrumbs: false,
-            type: 'collapse',
+            type: "collapse",
             icon: icons.IconFolder,
-            permissions: [{
-                "resource": "categories",
-                "action": "manage"
-            }, {
-                "resource": "materials",
-                "action": "manage"
-            }, {
-                "resource": "authors",
-                "action": "manage"
-            }, {
-                "resource": "publishers",
-                "action": "manage"
-            }],
+            permissions: [
+                {
+                    resource: "categories",
+                    action: "manage",
+                },
+                {
+                    resource: "materials",
+                    action: "manage",
+                },
+                {
+                    resource: "authors",
+                    action: "manage",
+                },
+                {
+                    resource: "publishers",
+                    action: "manage",
+                },
+            ],
             children: [
                 {
-                    id: 'dang-hoc-lieu',
+                    id: "dang-hoc-lieu-lien-thong",
                     title: "Dạng học liệu",
-                    type: 'item',
-                    url: '/lien-thong/chia-se-danh-muc/dang-hoc-lieu',
+                    type: "item",
+                    url: "/lien-thong/chia-se-danh-muc/dang-hoc-lieu",
                     icon: icons.IconFileText,
                     breadcrumbs: false,
                 },
                 {
-                    id: 'linh-vuc',
+                    id: "linh-vuc-lien-thong",
                     title: "Lĩnh vực",
-                    type: 'item',
-                    url: '/lien-thong/chia-se-danh-muc/linh-vuc',
+                    type: "item",
+                    url: "/lien-thong/chia-se-danh-muc/linh-vuc",
                     icon: icons.IconCategory,
                     breadcrumbs: false,
                 },
                 {
-                    id: 'tac-gia',
+                    id: "tac-gia-lien-thong",
                     title: "Tác giả",
-                    type: 'item',
-                    url: '/lien-thong/chia-se-danh-muc/tac-gia',
+                    type: "item",
+                    url: "/lien-thong/chia-se-danh-muc/tac-gia",
                     icon: icons.IconUserPlus,
-                    breadcrumbs: false
+                    breadcrumbs: false,
                 },
                 {
-                    id: 'nha-san-xuat',
+                    id: "nha-san-xuat-lien-thong",
                     title: "Nhà xuất bản",
-                    type: 'item',
-                    url: '/lien-thong/chia-se-danh-muc/nha-san-xuat',
+                    type: "item",
+                    url: "/lien-thong/chia-se-danh-muc/nha-san-xuat",
                     icon: icons.IconUsers,
-                    breadcrumbs: false
-                }]
+                    breadcrumbs: false,
+                },
+            ],
         },
         {
-            id: 'danh-sach-muon-tra-lien-thong',
+            id: "danh-sach-muon-tra-lien-thong",
             title: "Quản lý mượn trả",
-            url: 'danh-sach-muon-tra-lien-thong',
+            url: "danh-sach-muon-tra-lien-thong",
             breadcrumbs: false,
-            type: 'collapse',
+            type: "collapse",
             icon: icons.IconReceipt,
-            permissions: [{
-                "resource": "publications",
-                "action": "manage"
-            }, {
-                "resource": "publications",
-                "action": "create"
-            }],
+            permissions: [
+                {
+                    resource: "publications",
+                    action: "manage",
+                },
+                {
+                    resource: "publications",
+                    action: "create",
+                },
+            ],
             children: [
                 {
                     // mượn trường khác
-                    id: 'phieu-muon-lien-thong',
+                    id: "phieu-muon-lien-thong",
                     title: "Danh sách mượn",
-                    type: 'item',
-                    url: '/lien-thong/chia-se-danh-muc/phieu-muon-lien-thong',
+                    type: "item",
+                    url: "/lien-thong/chia-se-danh-muc/phieu-muon-lien-thong",
                     icon: icons.IconListDetails,
                     breadcrumbs: false,
-                    permissions: [{
-                        "resource": "loanslips",
-                        "action": "manage"
-                    }],
+                    permissions: [
+                        {
+                            resource: "loanslips",
+                            action: "manage",
+                        },
+                    ],
                 },
                 {
                     // trường khác yêu cầu mượn
-                    id: 'phieu-muon-yeu-cau-lien-thong',
+                    id: "phieu-muon-yeu-cau-lien-thong",
                     title: "Danh sách yêu cầu mượn",
-                    type: 'item',
-                    url: '/lien-thong/chia-se-danh-muc/phieu-muon-yeu-cau-lien-thong',
+                    type: "item",
+                    url: "/lien-thong/chia-se-danh-muc/phieu-muon-yeu-cau-lien-thong",
                     icon: icons.IconListCheck,
                     breadcrumbs: false,
-                    permissions: [{
-                        "resource": "categories",
-                        "action": "manage"
-                    }, {
-                        "resource": "materials",
-                        "action": "manage"
-                    }, {
-                        "resource": "authors",
-                        "action": "manage"
-                    }, {
-                        "resource": "publishers",
-                        "action": "manage"
-                    }]
+                    permissions: [
+                        {
+                            resource: "categories",
+                            action: "manage",
+                        },
+                        {
+                            resource: "materials",
+                            action: "manage",
+                        },
+                        {
+                            resource: "authors",
+                            action: "manage",
+                        },
+                        {
+                            resource: "publishers",
+                            action: "manage",
+                        },
+                    ],
                 },
-            ]
-        }
-    ]
+            ],
+        },
+    ],
 };
-
 
 export default dashboardAdmin;

@@ -261,16 +261,16 @@ const LoanSlipPage = () => {
             case "đã trả":
                 return { color: '#4CAF50' }; // Màu cho "Đã trả"
             default:
-                return { color: '#616161' }; 
+                return { color: '#616161' };
         }
     };
 
     const getIsAgreeTextStyles = (isAgree) => {
         switch (isAgree) {
             case true:
-                return { color: '#4CAF50' }; 
+                return { color: '#4CAF50' };
             default:
-                return { color: '#FF9800' }; 
+                return { color: '#FF9800' };
         }
     };
     const columns: TColumn<TLoanSlip>[] = useMemo(
@@ -294,9 +294,6 @@ const LoanSlipPage = () => {
                         >
                             <Typography mt={0.5}>Ngày mượn: <strong>{formatDate(row?.borrowedDay)}</strong></Typography>
                             <Typography mt={0.5}>Ngày trả: <strong>{formatDate(row?.returnDay)}</strong></Typography>
-                            <Typography variant="body1" sx={{ mt: 0.5 }}>
-                                Họ và tên: <strong>{row?.userId?.fullname}</strong>
-                            </Typography>
                             {row?.publications?.length > 0 && (
                                 <Box sx={{ mt: 0.5 }}>
                                     <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
@@ -709,7 +706,7 @@ const LoanSlipPage = () => {
                 </Stack>
                 <ActionsForm actions={actionMenus} barcode={true}
                     barcodeSearch={barcodeSearch}
-                    handleBarcodeSearch={handleBarcodeSearch} placeholder="Tìm kiếm theo barcode" />
+                    handleBarcodeSearch={handleBarcodeSearch} placeholder="Tìm kiếm theo barcode phiếu mượn" />
                 <Grid container xs={12} sm={12} md={12} lg={12} gap={2} sx={{
                     display: "flex", mb: 3, flexWrap: "wrap",
                     pl: { xs: 0, sm: 0, md: 4 },
@@ -917,19 +914,6 @@ const LoanSlipPage = () => {
                                                                         stroke={1.5}
                                                                     />
                                                                 </Button>
-                                                                {
-                                                                    ((row.status !== "chờ nhận sách" || roleName === "Owner" || roleName === "Admin") && row.status !== "đã hủy" &&
-                                                                        (row.isAgree === false || roleName === "Owner" || roleName === "Admin")) && (
-                                                                        <Button variant="outlined" style={{ marginLeft: 5 }}>
-                                                                            <IconPencil
-                                                                                onClick={() => handleEditLoanSlip(row)}
-                                                                                size={22}
-                                                                                stroke={1.5}
-
-                                                                            />
-                                                                        </Button>
-                                                                    )
-                                                                }
 
                                                                 {
                                                                     row.status !== "chờ nhận sách" && row.isAgree === false && row.status !== "đã hủy" &&

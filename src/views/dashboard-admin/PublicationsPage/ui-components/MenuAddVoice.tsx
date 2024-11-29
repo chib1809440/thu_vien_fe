@@ -1,4 +1,4 @@
-import { Box, Divider, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material";
+import { Box, Divider, ListItemIcon, Menu, MenuItem, Typography, useMediaQuery } from "@mui/material";
 import { IconFlag, IconPlus, IconVolume, IconVolumeOff } from "@tabler/icons-react";
 import { FC, forwardRef, useMemo, useRef, useState, useImperativeHandle } from "react";
 import { toast } from "react-toastify";
@@ -238,6 +238,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
             publicationsData?.createBy === currentUserId || userRole === "Admin" || userRole === "Owner"
         );
         const currentPath = window.location.pathname;
+        const isMd = useMediaQuery('(min-width: 900px)');
 
         return (
             <>
@@ -317,7 +318,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                                             <ul
                                                 style={{
                                                     position: "absolute",
-                                                    minWidth: "300px",
+                                                    maxWidth: isMd ? "200px" : "300px",
                                                     backgroundColor: "white",
                                                     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
                                                     zIndex: 10,
@@ -384,7 +385,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                                                                         overflow: "hidden",
                                                                         whiteSpace: "nowrap",
                                                                         textOverflow: "ellipsis",
-                                                                        maxWidth: "200px",
+                                                                        maxWidth: isMd ? "200px" : "120px",
                                                                         display: "inline-block"
                                                                     }}
                                                                 >
@@ -449,7 +450,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                                         <ul
                                             style={{
                                                 position: "absolute",
-                                                minWidth: "300px",
+                                                maxWidth: isMd ? "300px" : "200px",
                                                 backgroundColor: "white",
                                                 boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
                                                 zIndex: 10,
@@ -512,7 +513,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                                                                     overflow: "hidden",
                                                                     whiteSpace: "nowrap",
                                                                     textOverflow: "ellipsis",
-                                                                    maxWidth: "200px",
+                                                                    maxWidth: isMd ? "200px" : "120px",
                                                                     display: "inline-block"
                                                                 }}
                                                             >

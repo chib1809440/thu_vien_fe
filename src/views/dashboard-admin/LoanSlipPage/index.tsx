@@ -979,14 +979,14 @@ const LoanSlipPage = () => {
                                                                 <Typography mt={0.5}>Mã phiếu mượn: <strong>{row?.barcode}</strong></Typography>
                                                                 <Typography mt={0.5}>Ngày mượn: <strong>{formatDate(row?.borrowedDay)}</strong></Typography>
                                                                 <Typography mt={0.5}>Ngày trả: <strong>{formatDate(row?.returnDay)}</strong></Typography>
-                                                                <Typography mt={0.5}>Tình trạng trả: <strong style={getStatusTextStyles(row.status)}>{capitalizeFirstLetter(row?.status)}</strong></Typography>
+                                                                <Typography mt={0.5}>Tình trạng: <strong style={getStatusTextStyles(row.status)}>{capitalizeFirstLetter(row?.status)}</strong></Typography>
                                                                 <Typography mt={0.5}>Trạng thái: <strong style={getIsAgreeTextStyles(row.isAgree)}>{row?.isAgree === false ? "Chưa duyệt" : "Đã duyệt"}</strong></Typography>
                                                                 {row?.publications?.length > 0 && (
                                                                     <Box sx={{ mt: 1 }}>
                                                                         <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
                                                                         <ul>
                                                                             {row?.publications.map((publication, idx) => (
-                                                                                <li key={idx}>{capitalizeFirstLetter(publication?.name)}(SLM: {publication?.quantityLoan})</li>
+                                                                                <li key={idx}>{capitalizeFirstLetter(publication?.name)}(SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
                                                                             ))}
                                                                         </ul>
                                                                     </Box>

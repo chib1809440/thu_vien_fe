@@ -988,7 +988,6 @@ const LoanSlipPage = () => {
                                                             borderRadius: "8px",
                                                             mt: 2,
                                                             position: 'relative',
-                                                            zIndex: 1,
                                                         }}
                                                     >
                                                         <AccordionSummary

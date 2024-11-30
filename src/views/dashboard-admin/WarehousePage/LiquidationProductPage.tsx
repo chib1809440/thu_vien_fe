@@ -260,12 +260,12 @@ const LiquidationProductPage = () => {
             )}
 
             <MainCard>
-                <ActionsForm
+                {/* <ActionsForm
                     actions={actionMenus}
                     barcode={true}
                     barcodeSearch={barcodeSearch}
                     handleBarcodeSearch={handleBarcodeSearch}
-                />
+                /> */}
 
                 <TableList
                     checked={checkedDelete}

@@ -253,7 +253,7 @@ const LoanSlipRequestLink = () => {
                 disablePadding: "none",
                 label: "Thông tin mượn",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
+                sxRow: { paddingRight: 3, maxWidth: 300 },
                 render: (row) => {
                     return (
                         <Box
@@ -269,9 +269,9 @@ const LoanSlipRequestLink = () => {
                             {row?.publications?.length > 0 && (
                                 <Box sx={{ mt: 0.5 }}>
                                     <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
-                                    <ul>
+                                    <ul style={{ margin: 0 }}>
                                         {row?.publications.map((publication, idx) => (
-                                            <li key={idx}>{capitalizeFirstLetter(publication?.name)} (SLM: {publication?.quantityLoan})</li>
+                                            <li key={idx}>{capitalizeFirstLetter(publication?.name)}(SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
                                         ))}
                                     </ul>
                                 </Box>
@@ -491,6 +491,7 @@ const LoanSlipRequestLink = () => {
                 hour12: false,
             });
             worksheet.addRow([`Ngày xuất file: ${formattedDateTime}`]).font = { bold: true };
+            worksheet.addRow([]);
 
             // Đặt header cho bảng
             worksheet.addRow([
@@ -501,8 +502,9 @@ const LoanSlipRequestLink = () => {
                 'Ngày mượn',
                 'Ngày trả',
                 'Trạng thái',
-                'Sách mượn'
-            ]);
+                'Ấn phẩm mượn',
+                'Trạng thái trả ấn phẩm'
+            ]).font = { bold: true };
 
             // Đặt kiểu định dạng cho các cột
             worksheet.getColumn('A').width = 15;
@@ -513,12 +515,39 @@ const LoanSlipRequestLink = () => {
             worksheet.getColumn('F').width = 20;
             worksheet.getColumn('G').width = 15;
             worksheet.getColumn('H').width = 50;
+            worksheet.getColumn('I').width = 50;
 
             // Lấy dữ liệu từ API
             const loanSlipsData = data?.data?.result?.map((loanSlip) => {
                 const bookTitles = loanSlip?.publications?.map(publication => {
-                    return `${publication.name} (${publication.quantityLoan} quyển)`;
-                }).join('\n');
+                    return `${capitalizeFirstLetter(publication.name)} (${publication.quantityLoan} quyển)`;
+                }).join(', ');
+                const returnQuantities = loanSlip?.publications?.map(publication => {
+                    let statusText = '';
+                    
+                    // Kiểm tra trạng thái và trả về thông báo tương ứng
+                    if (loanSlip?.status === 'đã hủy') {
+                        statusText = 'Đã hủy';
+                    } else if (loanSlip?.status === 'đang mượn' && publication.quantityReturn === 0) {
+                        statusText = 'Chưa trả';
+                    } else if (loanSlip?.status === 'đã trả' && publication.quantityReturn === publication.quantityLoan) {
+                        statusText = 'Đã trả xong';
+                    } else {
+                        // Calculate how many books are still needed to return
+                        const remainingQuantity = publication.quantityLoan - publication.quantityReturn;
+                        if (remainingQuantity > 0) {
+                            statusText = `Còn ${remainingQuantity} quyển cần trả`;
+                        } else {
+                            statusText = 'Đã trả xong';
+                        }
+                    }
+                    
+                    return statusText;
+                });
+                
+                const allReturned = loanSlip?.publications?.every(publication => publication.quantityReturn === publication.quantityLoan);
+                
+                const finalReturnQuantity = allReturned ? 'Đã trả xong' : returnQuantities.join(', ');
 
                 return {
                     barcode: loanSlip?.barcode,
@@ -529,12 +558,9 @@ const LoanSlipRequestLink = () => {
                     returnDate: formatDate(loanSlip?.returnDay),
                     status: capitalizeFirstLetter(loanSlip?.status),
                     bookTitle: bookTitles || '',
+                    returnQuantity: finalReturnQuantity || '0 quyển'
                 };
             });
-
-            // loanSlipsData.sort((a: any, b: any) => {
-            //     return a.borrowDate - b.borrowDate; // Sort by borrowDate in ascending order
-            // });
 
             console.log(loanSlipsData); // Kiểm tra dữ liệu đã chuyển đổi
 
@@ -549,7 +575,8 @@ const LoanSlipRequestLink = () => {
                     dataRow.borrowDate,
                     dataRow.returnDate,
                     dataRow.status,
-                    dataRow.bookTitle
+                    dataRow.bookTitle,
+                    dataRow.returnQuantity
                 ];
                 row.eachCell((cell) => {
                     cell.border = {
@@ -587,7 +614,7 @@ const LoanSlipRequestLink = () => {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'loan_slips.xlsx'; // Tên file xuất
+                a.download = 'DanhsachphieumuonLT.xlsx'; // Tên file xuất
                 a.click();
                 URL.revokeObjectURL(url);
             });
@@ -716,7 +743,7 @@ const LoanSlipRequestLink = () => {
                     mt: { xs: 2, sm: 2, md: 0 }
                 }}>
                     <Grid item xs={12} sm={12} md={2} lg={2}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Lọc theo:
                             </span>
@@ -757,7 +784,7 @@ const LoanSlipRequestLink = () => {
                         </div>
                     </Grid>
                     <Grid item xs={12} sm={12} md={3} lg={3}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Từ ngày:
                             </span>
@@ -778,7 +805,7 @@ const LoanSlipRequestLink = () => {
                         </div>
                     </Grid>
                     <Grid item xs={12} sm={12} md={3} lg={3}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Đến ngày:
                             </span>
@@ -799,7 +826,7 @@ const LoanSlipRequestLink = () => {
                         </div>
                     </Grid>
                     <Grid item xs={12} sm={12} md={3} lg={3}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Trạng thái:
                             </span>

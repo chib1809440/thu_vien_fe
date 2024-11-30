@@ -287,7 +287,7 @@ const LoanSlipPage = () => {
                 disablePadding: "none",
                 label: "Thông tin mượn",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
+                sxRow: { paddingRight: 3, maxWidth: 300 },
                 render: (row) => {
                     return (
                         <Box
@@ -297,9 +297,9 @@ const LoanSlipPage = () => {
                             {row?.publications?.length > 0 && (
                                 <Box sx={{ mt: 0.5 }}>
                                     <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
-                                    <ul>
+                                    <ul style={{ margin: 0 }}>
                                         {row?.publications.map((publication, idx) => (
-                                            <li key={idx}>{capitalizeFirstLetter(publication?.name)} (SLM: {publication?.quantityLoan})</li>
+                                            <li key={idx}>{capitalizeFirstLetter(publication?.name)}(SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
                                         ))}
                                     </ul>
                                 </Box>
@@ -704,7 +704,7 @@ const LoanSlipPage = () => {
                         </Box> */}
                     </Box>
                 </Stack>
-                <ActionsForm actions={actionMenus} barcode={true}
+                <ActionsForm isActive={false} actions={actionMenus} barcode={true}
                     barcodeSearch={barcodeSearch}
                     handleBarcodeSearch={handleBarcodeSearch} placeholder="Tìm kiếm theo barcode phiếu mượn" />
                 <Grid container xs={12} sm={12} md={12} lg={12} gap={2} sx={{
@@ -714,10 +714,10 @@ const LoanSlipPage = () => {
                     mt: { xs: 2, sm: 2, md: 0 }
                 }}>
                     <Grid item xs={12} sm={12} md={2} lg={2}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
-                            <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
+                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
+                            <Typography sx={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Lọc theo:
-                            </span>
+                            </Typography>
                             <div className="date-picker-container">
                                 <FormControl fullWidth>
                                     <Select
@@ -752,20 +752,21 @@ const LoanSlipPage = () => {
                                     </Select>
                                 </FormControl>
                             </div>
-                        </div>
+                        </Box>
                     </Grid>
                     <Grid item xs={12} sm={12} md={3} lg={3}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
-                            <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
+                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
+                            <Typography sx={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Từ ngày:
-                            </span>
+                            </Typography>
                             <div className="date-picker-container">
                                 <DatePicker
                                     locale={vi}
                                     selected={startDate}
                                     dateFormat="dd/MM/yyyy" // Định dạng ngày tháng năm
                                     onChange={(date: Date | null) => setStartDate(date)}
-                                    customInput={<CustomInput value={startDate ? startDate.toLocaleDateString() : ''} onClick={() => { }} />}
+                                    customInput={<CustomInput value={startDate ? startDate.toLocaleDateString() : ''} onClick={() => { }} />
+                                    }
                                 />
                                 {
                                     startDate && <span className="icon-clear" onClick={handleClearStartDate}>
@@ -773,13 +774,13 @@ const LoanSlipPage = () => {
                                     </span>
                                 }
                             </div>
-                        </div>
+                        </Box>
                     </Grid>
                     <Grid item xs={12} sm={12} md={3} lg={3}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
-                            <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
+                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
+                            <Typography sx={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Đến ngày:
-                            </span>
+                            </Typography>
                             <div className="date-picker-container">
                                 <DatePicker
                                     selected={endDate}
@@ -794,13 +795,13 @@ const LoanSlipPage = () => {
                                 }
                             </div>
 
-                        </div>
+                        </Box>
                     </Grid>
                     <Grid item xs={12} sm={12} md={3} lg={3}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
-                            <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
+                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
+                            <Typography sx={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Trạng thái:
-                            </span>
+                            </Typography>
                             <div className="date-picker-container">
                                 <FormControl fullWidth>
                                     <Select
@@ -841,7 +842,7 @@ const LoanSlipPage = () => {
                                     </Select>
                                 </FormControl>
                             </div>
-                        </div>
+                        </Box>
                     </Grid>
                 </Grid>
                 {
@@ -871,8 +872,7 @@ const LoanSlipPage = () => {
                                                             background: "#e4f2fd",
                                                             borderRadius: "8px",
                                                             mt: 2,
-                                                            position: 'relative',
-                                                            zIndex: 1,
+                                                            position: 'relative'
                                                         }}
                                                     >
                                                         <AccordionSummary
@@ -898,11 +898,11 @@ const LoanSlipPage = () => {
                                                                 <Typography mt={0.5}>Tình trạng trả: <strong style={getStatusTextStyles(row.status)}>{capitalizeFirstLetter(row?.status)}</strong></Typography>
                                                                 <Typography mt={0.5}>Trạng thái: <strong style={getIsAgreeTextStyles(row.isAgree)}>{row?.isAgree === false ? "Chưa duyệt" : "Đã duyệt"}</strong></Typography>
                                                                 {row?.publications?.length > 0 && (
-                                                                    <Box sx={{ mt: 1 }}>
+                                                                    <Box sx={{ mt: 0.5 }}>
                                                                         <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
-                                                                        <ul>
+                                                                        <ul style={{ marginTop: 5 }}>
                                                                             {row?.publications.map((publication, idx) => (
-                                                                                <li key={idx}>{capitalizeFirstLetter(publication?.name)}(SLM: {publication?.quantityLoan})</li>
+                                                                                <li key={idx}>{capitalizeFirstLetter(publication?.name)}(SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
                                                                             ))}
                                                                         </ul>
                                                                     </Box>

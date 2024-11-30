@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import { Box, Grid, Skeleton, Typography } from '@mui/material';
+import { Box, Grid, Skeleton, Typography, useMediaQuery } from '@mui/material';
 import { dispatch, useSelector } from '../../../store';
 import { getLoanSlipWaiting } from '../../../store/slices/loanSlip';
 import { getRegisterSlipWaiting } from '../../../store/slices/registerSlip';
@@ -44,6 +44,8 @@ export default function HomePage() {
             y: item.totalBorrowed, // Giá trị tương ứng
         }));
     }, [statisticals]);
+
+    const isMD = useMediaQuery('(min-width: 900px)');
     return (
         <>
             <Typography variant="h3" fontWeight="bold" gutterBottom>
@@ -72,7 +74,7 @@ export default function HomePage() {
                 </Grid>
             </Grid>
             {
-                barChartData.length > 0 && (
+                isMD && barChartData.length > 0 && (
                     <Grid container spacing={2} sx={{ mt: 3 }}>
                         <Grid item xs={12}>
                             <Typography variant="h3" fontWeight="bold" gutterBottom>

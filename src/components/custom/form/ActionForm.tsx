@@ -23,6 +23,7 @@ type Props = {
     selectedLibrary?: number;
     handleLibraryFilterChange?: (event: any) => void;
     libraryData?: TLibrary[];
+    isActive?: boolean;
 };
 
 const ActionsForm: FC<Props> = ({
@@ -37,6 +38,7 @@ const ActionsForm: FC<Props> = ({
     placeholderSearch = "Tìm kiếm theo tên",
     handleLibraryFilterChange,
     libraryData,
+    isActive = true
 }) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const querySearch = searchParams.get("q") || "";
@@ -120,12 +122,14 @@ const ActionsForm: FC<Props> = ({
                         mb: 1
                     }}
                 >
-                    <SearchNoButtonSection
-                        fullwidth
-                        contentSearch={contentSearch}
-                        handleContentSearch={handleContentSearch}
-                        placeholder={placeholderSearch}
-                    />
+                    {
+                        isActive && <SearchNoButtonSection
+                            fullwidth
+                            contentSearch={contentSearch}
+                            handleContentSearch={handleContentSearch}
+                            placeholder={placeholderSearch}
+                        />
+                    }
 
                     {barcode && (
                         <SearchNoButtonSection
@@ -263,7 +267,7 @@ const ActionsForm: FC<Props> = ({
                         sx: { width: "250px" }, // Set width for the mobile menu
                     }}
                 >
-                    <MenuItem>
+                    {isActive && <MenuItem>
                         <SearchNoButtonSection
                             fullwidth
                             contentSearch={contentSearch}
@@ -271,6 +275,7 @@ const ActionsForm: FC<Props> = ({
                             placeholder={placeholderSearch}
                         />
                     </MenuItem>
+                    }
 
                     {barcode && (
                         <MenuItem>

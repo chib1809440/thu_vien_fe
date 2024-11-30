@@ -321,7 +321,7 @@ const LoanSlipPage = () => {
                 disablePadding: "none",
                 label: "Thông tin mượn",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
+                sxRow: { paddingRight: 3, maxWidth: 300 },
                 render: (row) => {
                     return (
                         <Box
@@ -337,9 +337,9 @@ const LoanSlipPage = () => {
                             {row?.publications?.length > 0 && (
                                 <Box sx={{ mt: 0.5 }}>
                                     <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
-                                    <ul>
+                                    <ul style={{ marginTop: 5 }}>
                                         {row?.publications.map((publication, idx) => (
-                                            <li key={idx}>{capitalizeFirstLetter(publication?.name)} (SLM: {publication?.quantityLoan})</li>
+                                            <li key={idx}>{capitalizeFirstLetter(publication?.name)}(SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
                                         ))}
                                     </ul>
                                 </Box>
@@ -569,6 +569,7 @@ const LoanSlipPage = () => {
                 hour12: false,
             });
             worksheet.addRow([`Ngày xuất file: ${formattedDateTime}`]).font = { bold: true };
+            worksheet.addRow([]);
 
             // Đặt header cho bảng
             worksheet.addRow([
@@ -579,8 +580,9 @@ const LoanSlipPage = () => {
                 'Ngày mượn',
                 'Ngày trả',
                 'Trạng thái',
-                'Sách mượn'
-            ]);
+                'Ấn phẩm mượn',
+                'Trạng thái trả ấn phẩm'
+            ]).font = { bold: true };
 
             // Đặt kiểu định dạng cho các cột
             worksheet.getColumn('A').width = 15;
@@ -591,12 +593,40 @@ const LoanSlipPage = () => {
             worksheet.getColumn('F').width = 20;
             worksheet.getColumn('G').width = 15;
             worksheet.getColumn('H').width = 50;
+            worksheet.getColumn('I').width = 50;
 
             // Lấy dữ liệu từ API
             const loanSlipsData = data?.data?.result?.map((loanSlip) => {
                 const bookTitles = loanSlip?.publications?.map(publication => {
-                    return `${publication.name} (${publication.quantityLoan} quyển)`;
-                }).join('\n');
+                    return `${capitalizeFirstLetter(publication.name)} (${publication.quantityLoan} quyển)`;
+                }).join(', ');
+                const returnQuantities = loanSlip?.publications?.map(publication => {
+                    let statusText = '';
+                    
+                    // Kiểm tra trạng thái và trả về thông báo tương ứng
+                    if (loanSlip?.status === 'đã hủy') {
+                        statusText = 'Đã hủy';
+                    } else if (loanSlip?.status === 'đang mượn' && publication.quantityReturn === 0) {
+                        statusText = 'Chưa trả';
+                    } else if (loanSlip?.status === 'đã trả' && publication.quantityReturn === publication.quantityLoan) {
+                        statusText = 'Đã trả xong';
+                    } else {
+                        // Calculate how many books are still needed to return
+                        const remainingQuantity = publication.quantityLoan - publication.quantityReturn;
+                        if (remainingQuantity > 0) {
+                            statusText = `Còn ${remainingQuantity} quyển cần trả`;
+                        } else {
+                            statusText = 'Đã trả xong';
+                        }
+                    }
+                    
+                    return statusText;
+                });
+                
+                const allReturned = loanSlip?.publications?.every(publication => publication.quantityReturn === publication.quantityLoan);
+                
+                const finalReturnQuantity = allReturned ? 'Đã trả xong' : returnQuantities.join(', ');
+                
 
                 return {
                     barcode: loanSlip?.barcode,
@@ -607,6 +637,7 @@ const LoanSlipPage = () => {
                     returnDate: formatDate(loanSlip?.returnDay),
                     status: capitalizeFirstLetter(loanSlip?.status),
                     bookTitle: bookTitles || '',
+                    returnQuantity: finalReturnQuantity || '0 quyển'
                 };
             });
 
@@ -623,7 +654,8 @@ const LoanSlipPage = () => {
                     dataRow.borrowDate,
                     dataRow.returnDate,
                     dataRow.status,
-                    dataRow.bookTitle
+                    dataRow.bookTitle,
+                    dataRow.returnQuantity
                 ];
                 row.eachCell((cell) => {
                     cell.border = {
@@ -661,7 +693,7 @@ const LoanSlipPage = () => {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'Danhsachphieumuon.xlsx'; // Tên file xuất
+                a.download = 'DanhsachphieumuonLT.xlsx'; // Tên file xuất
                 a.click();
                 URL.revokeObjectURL(url);
             });
@@ -786,7 +818,7 @@ const LoanSlipPage = () => {
                     </Box>
                 </Stack>
 
-                <ActionsForm actions={actionMenus} barcode={true}
+                <ActionsForm isActive={(roleName === "Admin" || roleName === "Owner") ? true : false} actions={actionMenus} barcode={true}
                     barcodeSearch={barcodeSearch}
                     placeholderSearch="Tìm kiếm theo barcode người mượn"
                     handleBarcodeSearch={handleBarcodeSearch} placeholder="Tìm kiếm theo barcode" />
@@ -798,7 +830,7 @@ const LoanSlipPage = () => {
                     mt: { xs: 2, sm: 2, md: 0 }
                 }}>
                     <Grid item xs={12} sm={12} md={2} lg={2}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Lọc theo:
                             </span>
@@ -839,7 +871,7 @@ const LoanSlipPage = () => {
                         </div>
                     </Grid>
                     <Grid item xs={12} sm={12} md={3} lg={3}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Từ ngày:
                             </span>
@@ -860,7 +892,7 @@ const LoanSlipPage = () => {
                         </div>
                     </Grid>
                     <Grid item xs={12} sm={12} md={3} lg={3}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Đến ngày:
                             </span>
@@ -881,7 +913,7 @@ const LoanSlipPage = () => {
                         </div>
                     </Grid>
                     <Grid item xs={12} sm={12} md={3} lg={3}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Trạng thái:
                             </span>
@@ -982,9 +1014,9 @@ const LoanSlipPage = () => {
                                                                 <Typography mt={0.5}>Tình trạng: <strong style={getStatusTextStyles(row.status)}>{capitalizeFirstLetter(row?.status)}</strong></Typography>
                                                                 <Typography mt={0.5}>Trạng thái: <strong style={getIsAgreeTextStyles(row.isAgree)}>{row?.isAgree === false ? "Chưa duyệt" : "Đã duyệt"}</strong></Typography>
                                                                 {row?.publications?.length > 0 && (
-                                                                    <Box sx={{ mt: 1 }}>
+                                                                    <Box sx={{ mt: 0.5 }}>
                                                                         <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
-                                                                        <ul>
+                                                                        <ul style={{ marginTop: 5 }}>
                                                                             {row?.publications.map((publication, idx) => (
                                                                                 <li key={idx}>{capitalizeFirstLetter(publication?.name)}(SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
                                                                             ))}

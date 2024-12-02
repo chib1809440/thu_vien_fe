@@ -339,7 +339,7 @@ const LoanSlipPage = () => {
                                     <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
                                     <ul style={{ marginTop: 5 }}>
                                         {row?.publications.map((publication, idx) => (
-                                            <li key={idx}>{capitalizeFirstLetter(publication?.name)}(SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
+                                            <li key={idx}>{capitalizeFirstLetter(publication?.name)} (SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
                                         ))}
                                     </ul>
                                 </Box>
@@ -602,7 +602,7 @@ const LoanSlipPage = () => {
                 }).join(', ');
                 const returnQuantities = loanSlip?.publications?.map(publication => {
                     let statusText = '';
-                    
+
                     // Kiểm tra trạng thái và trả về thông báo tương ứng
                     if (loanSlip?.status === 'đã hủy') {
                         statusText = 'Đã hủy';
@@ -619,14 +619,14 @@ const LoanSlipPage = () => {
                             statusText = 'Đã trả xong';
                         }
                     }
-                    
+
                     return statusText;
                 });
-                
+
                 const allReturned = loanSlip?.publications?.every(publication => publication.quantityReturn === publication.quantityLoan);
-                
+
                 const finalReturnQuantity = allReturned ? 'Đã trả xong' : returnQuantities.join(', ');
-                
+
 
                 return {
                     barcode: loanSlip?.barcode,
@@ -1017,7 +1017,7 @@ const LoanSlipPage = () => {
                                                                         <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
                                                                         <ul style={{ marginTop: 5 }}>
                                                                             {row?.publications.map((publication, idx) => (
-                                                                                <li key={idx}>{capitalizeFirstLetter(publication?.name)}(SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
+                                                                                <li key={idx}>{capitalizeFirstLetter(publication?.name)} (SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
                                                                             ))}
                                                                         </ul>
                                                                     </Box>

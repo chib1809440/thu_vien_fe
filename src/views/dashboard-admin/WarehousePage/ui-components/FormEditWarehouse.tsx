@@ -22,12 +22,17 @@ import { useReFetchShelf } from "../../../../hooks/services/shelf/shelf-query";
 import { toast } from "react-toastify";
 import FormAddEditShelf from "../../ShelfPage/ui-components/FormAddEditShelf";
 
-const schema = yup.object().shape({
-    name: yup.string().required("Vui lòng nhập tên"),
-    quantity: yup.number().required("Vui lòng nhập số lượng"),
-    shelvesQuantity: yup.number().required("Vui lòng nhập số lượng trên kệ"),
-    shelvesId: yup.string().required("Vui lòng chọn kệ").nullable(),
-});
+const schema = (statusWarehouse: string) => {
+    return yup.object().shape({
+        name: yup.string().required("Vui lòng nhập tên"),
+        quantity: yup.number().required("Vui lòng nhập số lượng"),
+        shelvesQuantity: yup.number().required("Vui lòng nhập số lượng trên kệ"),
+        shelvesId:
+            statusWarehouse === "trên kệ"
+                ? yup.string().required("Vui lòng chọn kệ").nullable()
+                : yup.string().nullable().notRequired(),
+    });
+};
 
 type Props = {
     open: boolean;
@@ -43,13 +48,12 @@ const FormEditWarehouse: FC<Props> = ({
     open,
     onClose,
     onSubmit,
-
     shelfOptions,
     initialValues = {
         name: "",
         quantity: 0,
         shelvesQuantity: 0,
-        shelvesId: "",
+        shelvesId: null,
     },
     isFetching = false,
     isEditMode = false,
@@ -71,9 +75,10 @@ const FormEditWarehouse: FC<Props> = ({
 
     const formik = useFormik<TPublicationsCreate>({
         initialValues,
-        validationSchema: schema,
+        validationSchema: schema(statusWarehouse),
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
+            console.log(values);
             if (touchedMount.additionalQuantity && errorsMount.additionalQuantity) {
                 return;
             }

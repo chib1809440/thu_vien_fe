@@ -271,7 +271,7 @@ const LoanSlipRequestLink = () => {
                                     <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
                                     <ul style={{ margin: 0 }}>
                                         {row?.publications.map((publication, idx) => (
-                                            <li key={idx}>{capitalizeFirstLetter(publication?.name)}(SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
+                                            <li key={idx}>{capitalizeFirstLetter(publication?.name)} (SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
                                         ))}
                                     </ul>
                                 </Box>

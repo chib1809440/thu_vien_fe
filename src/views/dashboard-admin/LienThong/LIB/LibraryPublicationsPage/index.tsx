@@ -399,24 +399,26 @@ const LibraryPublicationsPage = () => {
                                                             userRole !== "Student" && item?.type === "ấn phẩm cứng" && item?.libraryDetails && item?.libraryDetails?._id !== libraryId && (
                                                                 <Tooltip title="Mượn ấn phẩm" arrow placement="top">
                                                                     <Box
-                                                                        bgcolor={"red"}
                                                                         sx={{
-                                                                            background: "green",
+                                                                            background: item?.status === "có sẵn" ? "green" : "gray",
                                                                             color: "white",
                                                                             borderRadius: 2,
                                                                             display: "flex",
                                                                             alignItems: "center",
                                                                             justifyContent: "center",
                                                                             p: 0.5,
+                                                                            pointerEvents: item?.status === "có sẵn" ? "auto" : "none",
+                                                                            opacity: item?.status === "có sẵn" ? 1 : 0.5,
                                                                         }}
                                                                     >
-
                                                                         <IconFileDescription
                                                                             size={20}
                                                                             stroke={2}
-                                                                            onClick={() =>
-                                                                                handleAddItem(item)
-                                                                            }
+                                                                            onClick={() => {
+                                                                                if (item?.status === "có sẵn") {
+                                                                                    handleAddItem(item);
+                                                                                }
+                                                                            }}
                                                                         />
                                                                     </Box>
                                                                 </Tooltip>

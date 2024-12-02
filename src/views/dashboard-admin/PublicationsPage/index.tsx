@@ -969,11 +969,15 @@ const PublicationsPage = () => {
                     icon: <IconFileExport size={20} stroke={1.5} />,
                     onClick: handleExportPublicationsExcel,
                 },
-                {
-                    label: "Xóa các dữ liệu đã chọn",
-                    icon: <IconTrashXFilled size={20} stroke={1.5} />,
-                    onClick: handleDeleteMultiple,
-                },
+                ...(userRole === "Admin" || userRole === "Owner"
+                    ? [
+                        {
+                            label: "Xóa các dữ liệu đã chọn",
+                            icon: <IconTrashXFilled size={20} stroke={1.5} />,
+                            onClick: handleDeleteMultiple,
+                        },
+                    ]
+                    : []),
             ]
             : [];
     }, [userRole, handleDeleteMultiple, handleImportExcel, handleExportPublicationsExcel]);
@@ -1172,7 +1176,7 @@ const PublicationsPage = () => {
                 /> */}
 
                 <Grid container spacing={2} sx={{ p: { xs: 0, sm: 0, md: "12px 32px" }, pt: 2 }}>
-                    {data?.data?.result?.length > 0 && userRole !== "Student" && (
+                    {data?.data?.result?.length > 0 && userRole !== "Student" && userRole !== "Teacher"  && (
                         <Grid item xs={12} p={0} sx={{
                             display: { xs: "none", sm: "none", md: "flex" },
                             flexDirection: "column",
@@ -1224,7 +1228,7 @@ const PublicationsPage = () => {
                                         }}
                                     >
                                         {
-                                            userRole !== "Student" &&
+                                            userRole !== "Student" && userRole !== "Teacher"  &&
                                             <Box sx={{
                                                 display: { xs: "none", sm: "none", md: "flex" },
                                                 position: "absolute",
@@ -1412,29 +1416,28 @@ const PublicationsPage = () => {
                                                             }}
                                                         >
                                                             {item?.type === "ấn phẩm cứng" && (
-                                                                <Tooltip
-                                                                    title="Mượn ấn phẩm"
-                                                                    arrow
-                                                                    placement="top"
-                                                                >
+                                                                <Tooltip title="Mượn ấn phẩm" arrow placement="top">
                                                                     <Box
-                                                                        bgcolor={"red"}
                                                                         sx={{
-                                                                            background: "green",
+                                                                            background: item?.status === "có sẵn" ? "green" : "gray",
                                                                             color: "white",
                                                                             borderRadius: 2,
                                                                             display: "flex",
                                                                             alignItems: "center",
                                                                             justifyContent: "center",
                                                                             p: 0.5,
+                                                                            pointerEvents: item?.status === "có sẵn" ? "auto" : "none",
+                                                                            opacity: item?.status === "có sẵn" ? 1 : 0.5,
                                                                         }}
                                                                     >
                                                                         <IconFileDescription
                                                                             size={20}
                                                                             stroke={2}
-                                                                            onClick={() =>
-                                                                                handleAddItem(item)
-                                                                            }
+                                                                            onClick={() => {
+                                                                                if (item?.status === "có sẵn") {
+                                                                                    handleAddItem(item);
+                                                                                }
+                                                                            }}
                                                                         />
                                                                     </Box>
                                                                 </Tooltip>
@@ -1508,7 +1511,7 @@ const PublicationsPage = () => {
                                                     width: "100%",
                                                 }}
                                             >
-                                                {capitalizeFirstLetter(item.name)}
+                                                {capitalizeFirstLetter(item?.name)}
                                             </Typography>
                                         </Box>
                                     </Box>

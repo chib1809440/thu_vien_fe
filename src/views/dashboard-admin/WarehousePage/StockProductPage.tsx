@@ -160,7 +160,7 @@ const StockProductPage = () => {
             {
                 id: "barcode",
                 disablePadding: "none",
-                label: "Mã(ISBN)",
+                label: "Mã ấn phẩm",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },

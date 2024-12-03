@@ -445,7 +445,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                                         </Grid>
                                     </Grid>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item xs={12} sm={12} md={6}>
+                                        {/* <Grid item xs={12} sm={12} md={6}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Lớp
@@ -473,8 +473,8 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                                                         </FormHelperText>
                                                     )}
                                             </Box>
-                                        </Grid>
-                                        <Grid item xs={12} sm={12} md={6}>
+                                        </Grid> */}
+                                        <Grid item xs={12} sm={12} md={12}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Trường

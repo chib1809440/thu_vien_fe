@@ -80,7 +80,7 @@ import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog
 const PublicationsPage = () => {
     const queryString = useQueryString();
     const page = queryString?.page ?? 1;
-    const limit = queryString?.limit ?? 5;
+    const limit = queryString?.limit ?? 6;
     const search = queryString?.q ?? "";
     const theme = useTheme();
 
@@ -1035,6 +1035,7 @@ const PublicationsPage = () => {
                     open={openImportFile}
                     onClose={handleCloseImportExcel}
                     onSubmit={handleSubmitImportFile}
+                    title={"Thêm mới thông tin ấn phẩm bằng excel"}
                 />
             )}
 
@@ -1176,7 +1177,7 @@ const PublicationsPage = () => {
                 /> */}
 
                 <Grid container spacing={2} sx={{ p: { xs: 0, sm: 0, md: "12px 32px" }, pt: 2 }}>
-                    {data?.data?.result?.length > 0 && userRole !== "Student" && userRole !== "Teacher"  && (
+                    {data?.data?.result?.length > 0 && userRole !== "Student" && userRole !== "Teacher" && (
                         <Grid item xs={12} p={0} sx={{
                             display: { xs: "none", sm: "none", md: "flex" },
                             flexDirection: "column",
@@ -1228,7 +1229,7 @@ const PublicationsPage = () => {
                                         }}
                                     >
                                         {
-                                            userRole !== "Student" && userRole !== "Teacher"  &&
+                                            userRole !== "Student" && userRole !== "Teacher" &&
                                             <Box sx={{
                                                 display: { xs: "none", sm: "none", md: "flex" },
                                                 position: "absolute",
@@ -1416,7 +1417,7 @@ const PublicationsPage = () => {
                                                             }}
                                                         >
                                                             {item?.type === "ấn phẩm cứng" && (
-                                                                <Tooltip title="Mượn ấn phẩm" arrow placement="top">
+                                                                <Tooltip title={item?.status === "có sẵn" ? "Mượn ấn phẩm" : "Ấn phẩm không có sẵn"} arrow placement="top">
                                                                     <Box
                                                                         sx={{
                                                                             background: item?.status === "có sẵn" ? "green" : "gray",
@@ -1426,7 +1427,7 @@ const PublicationsPage = () => {
                                                                             alignItems: "center",
                                                                             justifyContent: "center",
                                                                             p: 0.5,
-                                                                            pointerEvents: item?.status === "có sẵn" ? "auto" : "none",
+                                                                            // pointerEvents: item?.status === "có sẵn" ? "auto" : "none",
                                                                             opacity: item?.status === "có sẵn" ? 1 : 0.5,
                                                                         }}
                                                                     >

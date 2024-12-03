@@ -34,10 +34,11 @@ import PrintAccount from "../PrintAccount";
 import { getLabelFromOptions } from "../../../../../utils/object";
 import { statusRole } from "../../../../../utils/constants.utils";
 import { Lock, LockOpen } from "@mui/icons-material";
-import { activeUser, blockUser } from "../../../../../_apis/user.api";
+import { activeUser, blockUser, importExcelUser } from "../../../../../_apis/user.api";
 import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
 import { useAuth } from "../../../../../contexts/JWTContext";
 import usePermission from "../../../../../utils/hasPermission";
+import DialogImportFile from "../../../PublicationsPage/ui-components/DialogImportFile ";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -320,6 +321,59 @@ function TableUserList<T extends DataType>({
         }
     }
 
+    const [openImportFile, setOpenImportFile] = useState(false);
+
+    const handleImportExcel = () => {
+        setOpenImportFile(true);
+    };
+
+    const handleCloseImportExcel = () => {
+        setOpenImportFile(false);
+    };
+
+    const handleSubmitImportFile = async (file: File) => {
+        try {
+            const response = await importExcelUser(file);
+            refetch();
+            const duplicateBarcodeErrors = response?.data?.errors.filter(
+                (error) => error.error === "Username or email already exists"
+            );            
+
+            if (duplicateBarcodeErrors.length > 0) {
+                const rows = duplicateBarcodeErrors.map(({ row }) => row);
+                const uniqueRows = Array.from(new Set(rows));
+                const rowList = uniqueRows.join(", ");
+
+                if (response?.data?.users?.length === 0) {
+                    // Nếu không có users nào và có lỗi
+                    toast.error(
+                        <span>
+                            Tên tài khoản hoặc email đã tồn tại:
+                            <strong style={{ color: "red" }}>[ {rowList} ]</strong>.
+                        </span>
+                    );
+                } else {
+                    // Nếu có users nhưng vẫn có lỗi
+                    toast.success("Tải file excel thành công");
+                    toast.error(
+                        <span>
+                            Tên tài khoản hoặc email đã tồn tại:
+                            <strong style={{ color: "red" }}>[ {rowList} ]</strong>.
+                        </span>,
+                        { autoClose: 4000 }
+                    );
+                }
+            } else {
+                // Nếu không có lỗi nào
+                toast.success("Tải file excel thành công");
+            }
+
+            setOpenImportFile(false);
+        } catch (error) {
+            toast.error(error?.message);
+        }
+    };
+
     return (
         <>
             {isOpenLibCard && <PrintAccount ref={componentRef} dataUsers={checkedUsers} />}
@@ -330,8 +384,12 @@ function TableUserList<T extends DataType>({
                 handleContentSearch={setContentSearch}
                 actionLibCardSelectedItem={handleOpenLibs}
                 onHandleLibCardSelectedItem={handleLibCardSelected}
+                actionImportFile={true}
+                onHandleImportFile={handleImportExcel}
+                actionDownLoadFile={true}
+                fileUrl={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/template-user.xlsx`}
             />
-             <Grid container xs={12} sm={12} md={12} lg={12} gap={2} sx={{
+            <Grid container xs={12} sm={12} md={12} lg={12} gap={2} sx={{
                 display: "flex", mb: 1, flexWrap: "wrap",
                 pl: { xs: 0, sm: 0, md: 4 },
                 mt: { xs: 0, sm: 0, md: 1 },
@@ -602,6 +660,14 @@ function TableUserList<T extends DataType>({
                     onHandleConfirm={handleConfirmLibCard}
                     openConfirm={isOpenLibCard}
                     handleOpenConfirmDialog={setIsOpenLibCard}
+                />
+            )}
+            {openImportFile && (
+                <DialogImportFile
+                    open={openImportFile}
+                    onClose={handleCloseImportExcel}
+                    onSubmit={handleSubmitImportFile}
+                    title={"Thêm mới thông tin tài khoản bằng excel"}
                 />
             )}
         </>

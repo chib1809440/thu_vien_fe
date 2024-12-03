@@ -160,6 +160,27 @@ const ActionsForm: FC<Props> = ({
                             value={selectedLibrary}
                             onChange={handleLibraryFilterChange}
                             input={<CustomInput size="small" label="Thư Viện" />}
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        maxHeight: 200,
+                                        overflowY: 'auto',
+                                        '&::-webkit-scrollbar': {
+                                            width: '3px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb': {
+                                            backgroundColor: '#888',
+                                            borderRadius: '10px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb:hover': {
+                                            backgroundColor: '#555',
+                                        },
+                                        '&::-webkit-scrollbar-track': {
+                                            backgroundColor: '#f1f1f1',
+                                        },
+                                    },
+                                },
+                            }}
                         >
                             <MenuItem value={0}>Tất cả thư viện</MenuItem>
                             {libraryData?.map((item, index) => (
@@ -313,6 +334,27 @@ const ActionsForm: FC<Props> = ({
                                 onChange={handleLibraryFilterChange}
                                 fullWidth
                                 size="small"
+                                MenuProps={{
+                                    PaperProps: {
+                                        sx: {
+                                            maxHeight: 200,
+                                            overflowY: 'auto',
+                                            '&::-webkit-scrollbar': {
+                                                width: '3px',
+                                            },
+                                            '&::-webkit-scrollbar-thumb': {
+                                                backgroundColor: '#888',
+                                                borderRadius: '10px',
+                                            },
+                                            '&::-webkit-scrollbar-thumb:hover': {
+                                                backgroundColor: '#555',
+                                            },
+                                            '&::-webkit-scrollbar-track': {
+                                                backgroundColor: '#f1f1f1',
+                                            },
+                                        },
+                                    },
+                                }}
                             >
                                 <MenuItem value={0}>Tất cả thư viện</MenuItem>
                                 {libraryData?.map((item, index) => (

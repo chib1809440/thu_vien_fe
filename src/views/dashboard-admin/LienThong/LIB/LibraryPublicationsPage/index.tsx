@@ -397,7 +397,7 @@ const LibraryPublicationsPage = () => {
                                                     >
                                                         {
                                                             userRole !== "Student" && item?.type === "ấn phẩm cứng" && item?.libraryDetails && item?.libraryDetails?._id !== libraryId && (
-                                                                <Tooltip title="Mượn ấn phẩm" arrow placement="top">
+                                                                <Tooltip title={item?.status === "có sẵn" ? "Mượn ấn phẩm" : "Ấn phẩm không có sẵn"} arrow placement="top">
                                                                     <Box
                                                                         sx={{
                                                                             background: item?.status === "có sẵn" ? "green" : "gray",
@@ -407,7 +407,7 @@ const LibraryPublicationsPage = () => {
                                                                             alignItems: "center",
                                                                             justifyContent: "center",
                                                                             p: 0.5,
-                                                                            pointerEvents: item?.status === "có sẵn" ? "auto" : "none",
+                                                                            // pointerEvents: item?.status === "có sẵn" ? "auto" : "none",
                                                                             opacity: item?.status === "có sẵn" ? 1 : 0.5,
                                                                         }}
                                                                     >

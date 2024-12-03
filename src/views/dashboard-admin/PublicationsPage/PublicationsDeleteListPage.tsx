@@ -107,7 +107,7 @@ const PublicationsDeleteListPage = () => {
             {
                 id: "barcode",
                 disablePadding: "none",
-                label: "Mã (ISBN)",
+                label: "Mã ấn phẩm",
                 align: "left",
                 sxRow: { px: 3, maxWidth: 200 },
             },

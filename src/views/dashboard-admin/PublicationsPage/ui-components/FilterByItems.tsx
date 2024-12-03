@@ -97,6 +97,27 @@ const FilterByItems: FC<Props> = ({
                         value={selectedPublications}
                         onChange={handlePublicationsFilterChange}
                         input={<CustomInput size="small" label="Loại ấn phẩm" />}
+                        MenuProps={{
+                            PaperProps: {
+                                sx: {
+                                    maxHeight: 200,
+                                    overflowY: 'auto',
+                                    '&::-webkit-scrollbar': {
+                                        width: '3px',
+                                    },
+                                    '&::-webkit-scrollbar-thumb': {
+                                        backgroundColor: '#888',
+                                        borderRadius: '10px',
+                                    },
+                                    '&::-webkit-scrollbar-thumb:hover': {
+                                        backgroundColor: '#555',
+                                    },
+                                    '&::-webkit-scrollbar-track': {
+                                        backgroundColor: '#f1f1f1',
+                                    },
+                                },
+                            },
+                        }}
                     >
                         <MenuItem value={0}>Tất cả loại ấn phẩm</MenuItem>
                         {typeOptions?.map((item, index) => (
@@ -125,6 +146,27 @@ const FilterByItems: FC<Props> = ({
                         value={selectedMaterial}
                         onChange={handleMaterialFilterChange}
                         input={<CustomInput size="small" label="Dạng học liệu" />}
+                        MenuProps={{
+                            PaperProps: {
+                                sx: {
+                                    maxHeight: 200,
+                                    overflowY: 'auto',
+                                    '&::-webkit-scrollbar': {
+                                        width: '3px',
+                                    },
+                                    '&::-webkit-scrollbar-thumb': {
+                                        backgroundColor: '#888',
+                                        borderRadius: '10px',
+                                    },
+                                    '&::-webkit-scrollbar-thumb:hover': {
+                                        backgroundColor: '#555',
+                                    },
+                                    '&::-webkit-scrollbar-track': {
+                                        backgroundColor: '#f1f1f1',
+                                    },
+                                },
+                            },
+                        }}
                     >
                         <MenuItem value={0}>Tất cả dạng học liệu</MenuItem>
                         {materialData?.data?.result?.map((item, index) => (
@@ -153,6 +195,27 @@ const FilterByItems: FC<Props> = ({
                         value={selectedCategory}
                         onChange={handleCategoryFilterChange}
                         input={<CustomInput size="small" label="Lĩnh vực" />}
+                        MenuProps={{
+                            PaperProps: {
+                                sx: {
+                                    maxHeight: 200,
+                                    overflowY: 'auto',
+                                    '&::-webkit-scrollbar': {
+                                        width: '3px',
+                                    },
+                                    '&::-webkit-scrollbar-thumb': {
+                                        backgroundColor: '#888',
+                                        borderRadius: '10px',
+                                    },
+                                    '&::-webkit-scrollbar-thumb:hover': {
+                                        backgroundColor: '#555',
+                                    },
+                                    '&::-webkit-scrollbar-track': {
+                                        backgroundColor: '#f1f1f1',
+                                    },
+                                },
+                            },
+                        }}
                     >
                         <MenuItem value={0}>Tất cả lĩnh vực</MenuItem>
                         {categoryData?.data?.result?.map((item, index) => (
@@ -181,6 +244,27 @@ const FilterByItems: FC<Props> = ({
                         value={selectedAuthor}
                         onChange={handleAuthorFilterChange}
                         input={<CustomInput size="small" label="Tác giả" />}
+                        MenuProps={{
+                            PaperProps: {
+                                sx: {
+                                    maxHeight: 200,
+                                    overflowY: 'auto',
+                                    '&::-webkit-scrollbar': {
+                                        width: '3px',
+                                    },
+                                    '&::-webkit-scrollbar-thumb': {
+                                        backgroundColor: '#888',
+                                        borderRadius: '10px',
+                                    },
+                                    '&::-webkit-scrollbar-thumb:hover': {
+                                        backgroundColor: '#555',
+                                    },
+                                    '&::-webkit-scrollbar-track': {
+                                        backgroundColor: '#f1f1f1',
+                                    },
+                                },
+                            },
+                        }}
                     >
                         <MenuItem value={0}>Tất cả tác giả</MenuItem>
                         {authorData?.data?.result?.map((item, index) => (
@@ -209,6 +293,27 @@ const FilterByItems: FC<Props> = ({
                         value={selectedPublisher}
                         onChange={handlePublisherFilterChange}
                         input={<CustomInput size="small" label="Nhà xuất bản" />}
+                        MenuProps={{
+                            PaperProps: {
+                                sx: {
+                                    maxHeight: 200,
+                                    overflowY: 'auto',
+                                    '&::-webkit-scrollbar': {
+                                        width: '3px',
+                                    },
+                                    '&::-webkit-scrollbar-thumb': {
+                                        backgroundColor: '#888',
+                                        borderRadius: '10px',
+                                    },
+                                    '&::-webkit-scrollbar-thumb:hover': {
+                                        backgroundColor: '#555',
+                                    },
+                                    '&::-webkit-scrollbar-track': {
+                                        backgroundColor: '#f1f1f1',
+                                    },
+                                },
+                            },
+                        }}
                     >
                         <MenuItem value={0}>Tất cả nhà xuất bản</MenuItem>
                         {publisherData?.data?.result?.map((item, index) => (
@@ -237,6 +342,27 @@ const FilterByItems: FC<Props> = ({
                         value={selectedTypeVoice}
                         onChange={handleTypeVoiceFilterChange}
                         input={<CustomInput size="small" label="Loại voice" />}
+                        MenuProps={{
+                            PaperProps: {
+                                sx: {
+                                    maxHeight: 200,
+                                    overflowY: 'auto',
+                                    '&::-webkit-scrollbar': {
+                                        width: '3px',
+                                    },
+                                    '&::-webkit-scrollbar-thumb': {
+                                        backgroundColor: '#888',
+                                        borderRadius: '10px',
+                                    },
+                                    '&::-webkit-scrollbar-thumb:hover': {
+                                        backgroundColor: '#555',
+                                    },
+                                    '&::-webkit-scrollbar-track': {
+                                        backgroundColor: '#f1f1f1',
+                                    },
+                                },
+                            },
+                        }}
                     >
                         <MenuItem value={0}>Tất cả loại voice</MenuItem>
                         {typeVoiceData?.data?.result?.map((item, index) => (
@@ -260,7 +386,7 @@ const FilterByItems: FC<Props> = ({
                     padding: { xs: 0, sm: 0 },
                 }}
             >
-                <Button onClick={handleMenuOpen} size="large" sx={{ pl: 0, pr: 0, py: 0, mb: 1, textTransform:"inherit" }}>
+                <Button onClick={handleMenuOpen} size="large" sx={{ pl: 0, pr: 0, py: 0, mb: 1, textTransform: "inherit" }}>
                     <GridFilterListIcon />
                     <Typography ml={1}>Lọc theo danh mục</Typography>
                 </Button>
@@ -304,6 +430,27 @@ const FilterByItems: FC<Props> = ({
                             onChange={handleMaterialFilterChange}
                             fullWidth
                             size="small"
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        maxHeight: 200,
+                                        overflowY: 'auto',
+                                        '&::-webkit-scrollbar': {
+                                            width: '3px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb': {
+                                            backgroundColor: '#888',
+                                            borderRadius: '10px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb:hover': {
+                                            backgroundColor: '#555',
+                                        },
+                                        '&::-webkit-scrollbar-track': {
+                                            backgroundColor: '#f1f1f1',
+                                        },
+                                    },
+                                },
+                            }}
                         >
                             <MenuItem value={0}>Tất cả dạng học liệu</MenuItem>
                             {materialData?.data?.result?.map((item, index) => (
@@ -323,6 +470,27 @@ const FilterByItems: FC<Props> = ({
                             onChange={handleCategoryFilterChange}
                             fullWidth
                             size="small"
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        maxHeight: 200,
+                                        overflowY: 'auto',
+                                        '&::-webkit-scrollbar': {
+                                            width: '3px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb': {
+                                            backgroundColor: '#888',
+                                            borderRadius: '10px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb:hover': {
+                                            backgroundColor: '#555',
+                                        },
+                                        '&::-webkit-scrollbar-track': {
+                                            backgroundColor: '#f1f1f1',
+                                        },
+                                    },
+                                },
+                            }}
                         >
                             <MenuItem value={0}>Tất cả lĩnh vực</MenuItem>
                             {categoryData?.data?.result?.map((item, index) => (
@@ -342,6 +510,27 @@ const FilterByItems: FC<Props> = ({
                             onChange={handleAuthorFilterChange}
                             fullWidth
                             size="small"
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        maxHeight: 200,
+                                        overflowY: 'auto',
+                                        '&::-webkit-scrollbar': {
+                                            width: '3px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb': {
+                                            backgroundColor: '#888',
+                                            borderRadius: '10px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb:hover': {
+                                            backgroundColor: '#555',
+                                        },
+                                        '&::-webkit-scrollbar-track': {
+                                            backgroundColor: '#f1f1f1',
+                                        },
+                                    },
+                                },
+                            }}
                         >
                             <MenuItem value={0}>Tất cả tác giả</MenuItem>
                             {authorData?.data?.result?.map((item, index) => (
@@ -363,6 +552,27 @@ const FilterByItems: FC<Props> = ({
                             onChange={handlePublisherFilterChange}
                             fullWidth
                             size="small"
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        maxHeight: 200,
+                                        overflowY: 'auto',
+                                        '&::-webkit-scrollbar': {
+                                            width: '3px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb': {
+                                            backgroundColor: '#888',
+                                            borderRadius: '10px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb:hover': {
+                                            backgroundColor: '#555',
+                                        },
+                                        '&::-webkit-scrollbar-track': {
+                                            backgroundColor: '#f1f1f1',
+                                        },
+                                    },
+                                },
+                            }}
                         >
                             <MenuItem value={0}>Tất cả nhà xuất bản</MenuItem>
                             {publisherData?.data?.result?.map((item, index) => (
@@ -384,6 +594,27 @@ const FilterByItems: FC<Props> = ({
                             onChange={handleTypeVoiceFilterChange}
                             fullWidth
                             size="small"
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        maxHeight: 200,
+                                        overflowY: 'auto',
+                                        '&::-webkit-scrollbar': {
+                                            width: '3px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb': {
+                                            backgroundColor: '#888',
+                                            borderRadius: '10px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb:hover': {
+                                            backgroundColor: '#555',
+                                        },
+                                        '&::-webkit-scrollbar-track': {
+                                            backgroundColor: '#f1f1f1',
+                                        },
+                                    },
+                                },
+                            }}
                         >
                             <MenuItem value={0}>Tất cả loại voice</MenuItem>
                             {typeVoiceData?.data?.result?.map((item, index) => (

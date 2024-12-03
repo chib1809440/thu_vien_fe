@@ -1,6 +1,6 @@
 import { EntityResponse, SingleRecordResponse } from '../interfaces/entityResponse';
 import { ChangePasswordUserModel, User } from '../interfaces/user';
-import { TApiOneRecord } from '../types/api/api.type';
+import { TApiModifyRecord, TApiOneRecord } from '../types/api/api.type';
 import axios from '../utils/axios';
 
 const USER_API = '/user';
@@ -191,3 +191,15 @@ export const activeUser = async (id: string): Promise<EntityResponse<User>> => {
     const response = await axios.patch<EntityResponse<User>>(`${USER_API}/active-account/${id}`);
     return response.data;
 };
+
+//import excel
+export const importExcelUser = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await axios.post(`${USER_API}/import-excel`, formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+    return response.data as TApiModifyRecord<{ users: any; errors?: any }>;
+}

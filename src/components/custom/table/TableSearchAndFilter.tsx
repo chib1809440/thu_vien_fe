@@ -1,5 +1,5 @@
 import { Box, Grid, Menu, MenuItem } from "@mui/material";
-import { IconBookUpload, IconDownload, IconFileImport, IconPrinter, IconRestore, IconSettings, IconTransformFilled, IconTrashXFilled } from "@tabler/icons-react";
+import { IconBookUpload, IconDownload, IconFileDownload, IconFileImport, IconPrinter, IconRestore, IconSettings, IconTransformFilled, IconTrashXFilled } from "@tabler/icons-react";
 import { useState } from "react";
 import StyledButton from "../../default/button/StyledButton";
 import SearchNoButtonSection from "../search/SearchNoButton";
@@ -28,9 +28,16 @@ interface PropSearch {
     onHandlePromotedClass?: () => void,
     onHandleRestoreSelectedItem?: () => void,
     onHandleLibCardSelectedItem?: () => void,
-
+    fileUrl?: string
 }
-export function SearchAndFilter({ contentSearch, actionPromotedClass, actionRestoreSelectedItem, onHandleRestoreSelectedItem, onHandleImportQuestionFile, actionImportQuestionFile, onHandlePromotedClass, actionChangeClass, onHandleChangeClass, onHandleDeleteSelectedItem, actionDeleteSelectedItem, handleContentSearch, onHandleImportFile, onHandleDownloadFile, onHandlePrintFile, placeholderText, actionDownLoadFile, actionImportFile, pathFileActionDownLoadFile, actionPrintFile, actionExportFile, onHandleExportFile, actionLibCardSelectedItem, onHandleLibCardSelectedItem }: PropSearch) {
+export function SearchAndFilter({
+    contentSearch, actionPromotedClass, actionRestoreSelectedItem,
+    onHandleRestoreSelectedItem, onHandleImportQuestionFile, actionImportQuestionFile,
+    onHandlePromotedClass, actionChangeClass, onHandleChangeClass, onHandleDeleteSelectedItem,
+    actionDeleteSelectedItem, handleContentSearch, onHandleImportFile, onHandleDownloadFile,
+    onHandlePrintFile, placeholderText, actionDownLoadFile, actionImportFile, pathFileActionDownLoadFile,
+    actionPrintFile, actionExportFile, onHandleExportFile, actionLibCardSelectedItem, onHandleLibCardSelectedItem,
+    fileUrl }: PropSearch) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -127,10 +134,21 @@ export function SearchAndFilter({ contentSearch, actionPromotedClass, actionRest
                         }}
                     >
                         {
-                            actionDownLoadFile && <MenuItem onClick={handleDownloadFile} sx={{ fontSize: '0.875rem' }}>
+                            actionDownLoadFile && <MenuItem sx={{ fontSize: '0.875rem' }}>
                                 <Box sx={{ display: "flex", alignItems: "center" }}>
                                     <IconDownload size={20} stroke={1.5} />
-                                    <Box sx={{ ml: 1 }} >Tải file mẫu</Box>
+                                    <a
+                                        href={fileUrl}
+                                        style={{
+                                            textDecoration: "none",
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            color: "#616161",
+                                            marginLeft: 4
+                                        }}
+                                    >
+                                        Tải file mẫu
+                                    </a>
                                 </Box>
                             </MenuItem>
                         }
@@ -138,7 +156,7 @@ export function SearchAndFilter({ contentSearch, actionPromotedClass, actionRest
                             actionImportFile && <MenuItem onClick={handleImportFile} sx={{ fontSize: '0.875rem' }}>
                                 <Box sx={{ display: "flex", alignItems: "center" }}>
                                     <IconFileImport size={20} stroke={1.5} />
-                                    <Box sx={{ ml: 1 }}>Nhập file</Box>
+                                    <Box sx={{ ml: 1 }}>Nhập file excel</Box>
                                 </Box>
                             </MenuItem>
                         }
@@ -163,6 +181,14 @@ export function SearchAndFilter({ contentSearch, actionPromotedClass, actionRest
                                 <Box sx={{ display: "flex", alignItems: "center" }}>
                                     <IconPrinter size={20} stroke={1.5} />
                                     <Box sx={{ ml: 1 }}>In</Box>
+                                </Box>
+                            </MenuItem>
+                        }
+                        {
+                            actionLibCardSelectedItem && <MenuItem onClick={handleLibCardSeletedItem} sx={{ fontSize: '0.875rem' }}>
+                                <Box sx={{ display: "flex", alignItems: "center" }}>
+                                    <IconPrinter size={20} stroke={1.5} />
+                                    <Box sx={{ ml: 1 }}>In thẻ thư viện</Box>
                                 </Box>
                             </MenuItem>
                         }
@@ -195,14 +221,6 @@ export function SearchAndFilter({ contentSearch, actionPromotedClass, actionRest
                                 <Box sx={{ display: "flex", alignItems: "center" }}>
                                     <IconRestore size={20} stroke={1.5} />
                                     <Box sx={{ ml: 1 }}>Khối phục dữ liệu đã chọn</Box>
-                                </Box>
-                            </MenuItem>
-                        }
-                        {
-                            actionLibCardSelectedItem && <MenuItem onClick={handleLibCardSeletedItem} sx={{ fontSize: '0.875rem' }}>
-                                <Box sx={{ display: "flex", alignItems: "center" }}>
-                                    <IconPrinter size={20} stroke={1.5} />
-                                    <Box sx={{ ml: 1 }}>In thẻ thư viện</Box>
                                 </Box>
                             </MenuItem>
                         }

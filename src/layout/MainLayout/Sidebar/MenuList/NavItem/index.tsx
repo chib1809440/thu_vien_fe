@@ -14,7 +14,7 @@ import { activeItem, openDrawer } from '../../../../../store/slices/menu';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 
 // types
-import { LinkTarget, NavItemType }  from '../../../../../types';
+import { LinkTarget, NavItemType } from '../../../../../types';
 
 interface NavItemProps {
     item: NavItemType;

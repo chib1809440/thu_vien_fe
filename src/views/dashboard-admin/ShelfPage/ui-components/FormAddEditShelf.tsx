@@ -4,6 +4,7 @@ import { FC, useMemo } from "react";
 import * as yup from "yup";
 import InputForm from "../../../../components/custom/form/InputForm";
 import { TShelvesCreate } from "../../../../types/models/shelves";
+import StyledButton from "../../../../components/default/button/StyledButton";
 
 type Props = {
     open: boolean;
@@ -95,17 +96,19 @@ const FormAddEditShelf: FC<Props> = ({
                 </DialogContent>
 
                 <DialogActions>
-                    <Button disabled={isFetching} onClick={onClose} color="error">
+                    <Button disabled={isFetching} onClick={onClose} color="error" style={{ fontSize: 14 }}>
                         Huỷ
                     </Button>
-                    <Button
-                        disabled={isFetching}
-                        onClick={handleSubmit as () => void}
-                        variant="contained"
+                    <StyledButton
+                        disableHoverEffect
                         color="primary"
+                        size="small"
+                        variant="contained"
+                        onClick={handleSubmit as () => void}
+                        sx={{ paddingTop: 1.3, paddingBottom: 1.3, marginRight: 3 }}
                     >
-                        {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
-                    </Button>
+                        {isFetching ? "Đang thực hiện..." : isEditMode ? "Cập nhật" : "Thêm mới"}
+                    </StyledButton>
                 </DialogActions>
             </Dialog>
         </FormikProvider>

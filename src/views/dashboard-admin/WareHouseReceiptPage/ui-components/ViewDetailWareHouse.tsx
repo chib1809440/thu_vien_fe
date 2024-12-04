@@ -89,7 +89,7 @@ const ViewDetailWareHouseReceipt: FC<Props> = ({
                 Chi tiết phiếu nhập kho
             </DialogTitle>
 
-            <DialogContent sx={{ p: 8 }} >
+            <DialogContent sx={{ p: { xs: 3, sm: 3, md: 8 } }} >
                 <Box sx={{ display: 'none' }}>
                     {
                         wareHouseReceipt && <PrintWareHouseReceipt ref={componentRef} wareHouseReceipt={wareHouseReceipt} />

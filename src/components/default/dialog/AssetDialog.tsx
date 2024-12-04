@@ -183,7 +183,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <DialogTitle sx={{ m: 0, pt: 3, pb: 0 }} id="customized-dialog-title">
+                <DialogTitle sx={{ m: 0, pb: 2 }} id="customized-dialog-title">
                     <Typography variant="h4">{title}</Typography>
                 </DialogTitle>
                 <IconButton
@@ -227,7 +227,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={6}>
+                                        <Grid item xs={12} sm={12} md={6}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Tên tài sản <span className="required_text">(*)</span>{" "}
@@ -256,7 +256,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                                     )}
                                             </Box>
                                         </Grid>
-                                        <Grid item md={6}>
+                                        <Grid item xs={12} sm={12} md={6}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Số lượng tổng <span className="required_text">(*)</span>{" "}
@@ -289,7 +289,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                     {
                                         id ? <>
                                             <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                                <Grid item md={6}>
+                                                <Grid item xs={12} sm={12} md={6}>
                                                     <Box style={{ width: "100%" }}>
                                                         <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                             Số lượng sử dụng
@@ -318,7 +318,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                                             )}
                                                     </Box>
                                                 </Grid>
-                                                <Grid item md={6}>
+                                                <Grid item xs={12} sm={12} md={6}>
                                                     <Box style={{ width: "100%" }}>
                                                         <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                             Số lượng trong kho
@@ -349,7 +349,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                                 </Grid>
                                             </Grid>
                                             <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                                <Grid item md={6}>
+                                                <Grid item xs={12} sm={12} md={6}>
                                                     <Box style={{ width: "100%" }}>
                                                         <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                             Số lượng thanh lý
@@ -378,7 +378,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                                             )}
                                                     </Box>
                                                 </Grid>
-                                                <Grid item md={6}>
+                                                <Grid item xs={12} sm={12} md={6}>
                                                     <Box style={{ width: "100%" }}>
                                                         <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                             Số lượng hư hỏng
@@ -412,7 +412,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                     }
 
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={12}>
+                                        <Grid item xs={12} sm={12} md={12}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Mô tả
@@ -443,7 +443,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                         </Grid>
                                     </Grid>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={12}>
+                                        <Grid item xs={12} sm={12} md={12}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Ghi chú

@@ -160,7 +160,7 @@ const StockProductPage = () => {
             {
                 id: "barcode",
                 disablePadding: "none",
-                label: "Mã(ISBN)",
+                label: "Mã ấn phẩm",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
@@ -279,11 +279,11 @@ const StockProductPage = () => {
     }, []);
 
     const initialValues = useMemo((): TPublicationsCreate => {
-        if (selectedEdit) {
+        if (selectedEdit) {            
             return {
                 name: selectedEdit.name,
                 quantity: selectedEdit.quantity,
-                shelvesId: ((selectedEdit.shelvesId as TShelves)?._id),
+                shelvesId: ((selectedEdit.shelvesId as TShelves)?._id) || null,
                 shelvesQuantity: selectedEdit.shelvesQuantity,
                 quantityLiquidation: selectedEdit.quantityLiquidation,
                 quantityDamaged: selectedEdit.quantityDamaged,

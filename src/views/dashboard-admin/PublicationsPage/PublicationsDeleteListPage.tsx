@@ -1,4 +1,4 @@
-import { Chip, Switch } from "@mui/material";
+import { Chip, Switch, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconArrowBack, IconArrowBackUp, IconTrash } from "@tabler/icons";
 import { IconRestore, IconTrashXFilled } from "@tabler/icons-react";
@@ -18,6 +18,7 @@ import { TPublications } from "../../../types/models/publications.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { typeOptions } from "../../../utils/constants.utils";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 
 const PublicationsDeleteListPage = () => {
@@ -94,11 +95,19 @@ const PublicationsDeleteListPage = () => {
                 label: "Tên ấn phẩm",
                 align: "left",
                 sxRow: { px: 3, maxWidth: 150 },
+                render: (row) => {
+                    const hasWhitespace = /\s/.test(row?.name);
+                    return (
+                        <Typography noWrap={!hasWhitespace}>
+                            {capitalizeFirstLetter(row?.name)}
+                        </Typography>
+                    );
+                },
             },
             {
                 id: "barcode",
                 disablePadding: "none",
-                label: "Mã (ISBN)",
+                label: "Mã ấn phẩm",
                 align: "left",
                 sxRow: { px: 3, maxWidth: 200 },
             },
@@ -291,7 +300,7 @@ const PublicationsDeleteListPage = () => {
             <MainCard>
                 <Stack spacing={2}>
                     <CsFlexRowBetween>
-                        <Box sx={{ ml: 4, mb: 2 }}>
+                        <Box sx={{ ml: { xs: 0, sm: 0, md: 4 }, mb: 2 }}>
                             <Link to="/thu-vien/an-pham" style={{ textDecoration: 'none' }}>
                                 <StyledButton
                                     color="primary"

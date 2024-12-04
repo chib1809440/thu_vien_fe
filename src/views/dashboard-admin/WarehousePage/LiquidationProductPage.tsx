@@ -99,7 +99,7 @@ const LiquidationProductPage = () => {
             {
                 id: "barcode",
                 disablePadding: "none",
-                label: "Mã(ISBN)",
+                label: "Mã ấn phẩm",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
                 render: (row) => (row.publicationId as TPublications)?.barcode,
@@ -260,12 +260,12 @@ const LiquidationProductPage = () => {
             )}
 
             <MainCard>
-                <ActionsForm
+                {/* <ActionsForm
                     actions={actionMenus}
                     barcode={true}
                     barcodeSearch={barcodeSearch}
                     handleBarcodeSearch={handleBarcodeSearch}
-                />
+                /> */}
 
                 <TableList
                     checked={checkedDelete}

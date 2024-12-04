@@ -326,7 +326,7 @@ const LibraryPage = () => {
                                 { resource: "all", action: "manage" },
                                 { resource: "libraries", action: "manage" },
                             ]) &&
-                            <Box sx={{ ml: 4, mb: 2 }}>
+                            <Box sx={{ ml: { xs: 0, sm: 0, md: 4 }, mb: 2 }}>
                                 <StyledButton
                                     color="primary"
                                     size="small"

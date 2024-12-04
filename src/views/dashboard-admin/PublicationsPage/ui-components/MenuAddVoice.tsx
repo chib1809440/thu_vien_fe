@@ -1,4 +1,4 @@
-import { Box, Divider, ListItemIcon, Menu, MenuItem, Typography } from "@mui/material";
+import { Box, Divider, ListItemIcon, Menu, MenuItem, Typography, useMediaQuery } from "@mui/material";
 import { IconFlag, IconPlus, IconVolume, IconVolumeOff } from "@tabler/icons-react";
 import { FC, forwardRef, useMemo, useRef, useState, useImperativeHandle } from "react";
 import { toast } from "react-toastify";
@@ -88,7 +88,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                         onSuccess: () => {
                             revalidate();
                             toast.success("Chỉnh sửa thành công.");
-                            handleClose();
+                            // handleClose();
                         },
                     }
                 );
@@ -99,7 +99,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                 onSuccess: (data) => {
                     revalidate();
                     toast.success("Thêm thành công.");
-                    setOpenAddEdit(false);
+                    // setOpenAddEdit(false);
                 },
             });
         };
@@ -238,6 +238,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
             publicationsData?.createBy === currentUserId || userRole === "Admin" || userRole === "Owner"
         );
         const currentPath = window.location.pathname;
+        const isMd = useMediaQuery('(min-width: 900px)');
 
         return (
             <>
@@ -250,7 +251,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                             overflow: "visible",
                             borderRadius: 0,
                             filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-                            mt: 1.5,
+                            mt: { xs: 0, sm: 0, md: 1 },
                         },
                     }}
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
@@ -258,7 +259,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                 >
                     {canAddVoice && (
                         <MenuItem onClick={handleOpenAddVoice}>
-                            <ListItemIcon>
+                            <ListItemIcon sx={{ display: { xs: "none", sm: "none", md: "flex" } }}>
                                 <IconPlus size={20} />
                             </ListItemIcon>
                             Thêm voice
@@ -281,13 +282,6 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                                             justifyContent: "space-between",
                                             alignItems: "center",
                                             backgroundColor: "white",
-                                            pl: 1,
-                                            pr: 1,
-                                            transition: "all 0.3s",
-                                            "&:hover": {
-                                                color: "#1791e2",
-                                                backgroundColor: "rgba(248, 248, 248, 0.5)",
-                                            },
                                         }}
                                     >
                                         {type?.voices?.length > 0 && (
@@ -295,81 +289,118 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                                                 onClick={() => handleClickTypeVoice(type)}
                                                 key={type._id}
                                                 selected={activeTypeVoiceId === type._id}
-                                                style={{ width: "100%" }}
+                                                sx={{
+                                                    '&:hover': {
+                                                        color: "#1791e2",
+                                                        backgroundColor: "rgba(248, 248, 248, 0.5)",
+                                                        transition: "all 0.3s",
+                                                    },
+                                                    '&.Mui-selected': {
+                                                        color: "#1791e2",
+                                                        backgroundColor: "rgba(248, 248, 248, 0.5)",
+                                                        transition: "all 0.3s",
+                                                    },
+                                                    '& .MuiListItemIcon-root': {
+                                                        color: 'inherit',
+                                                    }
+                                                }}
                                             >
-                                                <ListItemIcon>
+                                                <ListItemIcon sx={{
+                                                    display: { xs: "none", sm: "none", md: "flex" },
+                                                }}>
                                                     <IconFlag />
                                                 </ListItemIcon>
                                                 {type.name}
                                             </MenuItem>
                                         )}
+                                        {/* {hoveredTypeId === type._id && type?.voices?.length > 0 && ( */}
+                                        {openVoices === type._id && type?.voices?.length > 0 && (
+                                            <ul
+                                                style={{
+                                                    position: "absolute",
+                                                    maxWidth: isMd ? "200px" : "300px",
+                                                    backgroundColor: "white",
+                                                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                                                    zIndex: 10,
+                                                    right: "100%",
+                                                    top: canAddVoice ? "48%" : "90%",
+                                                    listStyle: "none",
+                                                    padding: 0,
+                                                    margin: 0,
+                                                }}
+                                            >
+                                                {type?.voices?.map((child) => (
+                                                    <Box
+                                                        key={child._id}
+                                                    // onMouseEnter={() => setHoveredTypeId(type._id)}
+                                                    // onMouseLeave={() => setHoveredTypeId(null)}
+                                                    >
+                                                        <Box
+                                                            sx={{
+                                                                display: "flex",
+                                                                justifyContent: "space-between",
+                                                                alignItems: "center",
+                                                                padding: { xs: 0.5, sm: 0.5, md: 1.5 },
+                                                                backgroundColor: "white",
+                                                            }}
+                                                        >
+                                                            <MenuItem
+                                                                key={child._id}
+                                                                onClick={() =>
+                                                                    handleClickVoice(
+                                                                        child.path,
+                                                                        child._id,
+                                                                        type._id
+                                                                    )
+                                                                }
+                                                                selected={playingVoiceId === child._id}
+                                                                sx={{
+                                                                    '&:hover': {
+                                                                        color: "#1791e2",
+                                                                        backgroundColor: "rgba(248, 248, 248, 0.5)",
+                                                                        transition: "all 0.3s",
+                                                                    },
+                                                                    '&.Mui-selected': {
+                                                                        color: "#1791e2",
+                                                                        backgroundColor: "rgba(248, 248, 248, 0.5)",
+                                                                        transition: "all 0.3s",
+                                                                    },
+                                                                    '& .MuiListItemIcon-root': {
+                                                                        color: 'inherit',
+                                                                    }
+                                                                }}
+                                                            >
+                                                                <ListItemIcon>
+                                                                    {playingVoiceId === child._id ? (
+                                                                        <IconVolume
+                                                                            fontSize="small"
+                                                                            className="animate"
+                                                                        />
+                                                                    ) : (
+                                                                        <IconVolumeOff fontSize="small" />
+                                                                    )}
+                                                                </ListItemIcon>
+                                                                <Typography
+                                                                    sx={{
+                                                                        overflow: "hidden",
+                                                                        whiteSpace: "nowrap",
+                                                                        textOverflow: "ellipsis",
+                                                                        maxWidth: isMd ? "200px" : "120px",
+                                                                        display: "inline-block"
+                                                                    }}
+                                                                >
+                                                                    Hội thoại {child?.name}
+                                                                </Typography>
+
+                                                            </MenuItem>
+                                                        </Box>
+                                                    </Box>
+                                                ))}
+                                            </ul>
+                                        )}
                                     </Box>
 
-                                    {/* {hoveredTypeId === type._id && type?.voices?.length > 0 && ( */}
-                                    {openVoices === type._id && type?.voices?.length > 0 && (
-                                        <ul
-                                            style={{
-                                                position: "absolute",
-                                                minWidth: "300px",
-                                                backgroundColor: "white",
-                                                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                                                zIndex: 10,
-                                                right: "100%",
-                                                top: canAddVoice ? "48%" : "90%",
-                                                listStyle: "none",
-                                                padding: 0,
-                                                margin: 0,
-                                            }}
-                                        >
-                                            {type?.voices?.map((child) => (
-                                                <Box
-                                                    key={child._id}
-                                                // onMouseEnter={() => setHoveredTypeId(type._id)}
-                                                // onMouseLeave={() => setHoveredTypeId(null)}
-                                                >
-                                                    <Box
-                                                        sx={{
-                                                            display: "flex",
-                                                            justifyContent: "space-between",
-                                                            alignItems: "center",
-                                                            padding: 1,
-                                                            backgroundColor: "white",
-                                                            transition: "all 0.3s",
-                                                            "&:hover": {
-                                                                color: "#1791e2",
-                                                                backgroundColor:
-                                                                    "rgba(248, 248, 248, 0.5)",
-                                                            },
-                                                        }}
-                                                    >
-                                                        <MenuItem
-                                                            key={child._id}
-                                                            onClick={() =>
-                                                                handleClickVoice(
-                                                                    child.path,
-                                                                    child._id,
-                                                                    type._id
-                                                                )
-                                                            }
-                                                            selected={playingVoiceId === child._id}
-                                                        >
-                                                            <ListItemIcon>
-                                                                {playingVoiceId === child._id ? (
-                                                                    <IconVolume
-                                                                        fontSize="small"
-                                                                        className="animate"
-                                                                    />
-                                                                ) : (
-                                                                    <IconVolumeOff fontSize="small" />
-                                                                )}
-                                                            </ListItemIcon>
-                                                            Hội thoại {child?.name}
-                                                        </MenuItem>
-                                                    </Box>
-                                                </Box>
-                                            ))}
-                                        </ul>
-                                    )}
+
                                 </li>
                             ))
                         ) : (
@@ -384,13 +415,6 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                                         justifyContent: "space-between",
                                         alignItems: "center",
                                         backgroundColor: "white",
-                                        pl: 1,
-                                        pr: 1,
-                                        transition: "all 0.3s",
-                                        "&:hover": {
-                                            color: "#1791e2",
-                                            backgroundColor: "rgba(248, 248, 248, 0.5)",
-                                        },
                                     }}
                                 >
                                     {type?.voices?.length > 0 && (
@@ -398,76 +422,112 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                                             onClick={() => handleClickTypeVoice(type)}
                                             key={type._id}
                                             selected={activeTypeVoiceId === type._id}
-                                            style={{ width: "100%" }}
+                                            sx={{
+                                                '&:hover': {
+                                                    color: "#1791e2",
+                                                    backgroundColor: "rgba(248, 248, 248, 0.5)",
+                                                    transition: "all 0.3s",
+                                                },
+                                                '&.Mui-selected': {
+                                                    color: "#1791e2",
+                                                    backgroundColor: "rgba(248, 248, 248, 0.5)",
+                                                    transition: "all 0.3s",
+                                                },
+                                                '& .MuiListItemIcon-root': {
+                                                    color: 'inherit',
+                                                }
+                                            }}
                                         >
-                                            <ListItemIcon>
+                                            <ListItemIcon sx={{
+                                                display: { xs: "none", sm: "none", md: "flex" },
+                                            }}>
                                                 <IconFlag />
                                             </ListItemIcon>
                                             {type.name}
                                         </MenuItem>
                                     )}
+                                    {openVoices === type._id && type?.voices?.length > 0 && (
+                                        <ul
+                                            style={{
+                                                position: "absolute",
+                                                maxWidth: isMd ? "300px" : "200px",
+                                                backgroundColor: "white",
+                                                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                                                zIndex: 10,
+                                                right: "100%",
+                                                top: "20%",
+                                                listStyle: "none",
+                                                padding: 0,
+                                                margin: 0,
+                                            }}
+                                        >
+                                            {type?.voices?.map((child) => (
+                                                <Box key={child._id}>
+                                                    <Box
+                                                        sx={{
+                                                            display: "flex",
+                                                            justifyContent: "space-between",
+                                                            alignItems: "center",
+                                                            padding: { xs: 0.5, sm: 0.5, md: 1.5 },
+                                                            backgroundColor: "white",
+                                                        }}
+                                                    >
+                                                        <MenuItem
+                                                            key={child._id}
+                                                            onClick={() =>
+                                                                handleClickVoice(
+                                                                    child.path,
+                                                                    child._id,
+                                                                    type._id
+                                                                )
+                                                            }
+                                                            selected={playingVoiceId === child._id}
+                                                            sx={{
+                                                                '&:hover': {
+                                                                    color: "#1791e2",
+                                                                    backgroundColor: "rgba(248, 248, 248, 0.5)",
+                                                                    transition: "all 0.3s",
+                                                                },
+                                                                '&.Mui-selected': {
+                                                                    color: "#1791e2",
+                                                                    backgroundColor: "rgba(248, 248, 248, 0.5)",
+                                                                    transition: "all 0.3s",
+                                                                },
+                                                                '& .MuiListItemIcon-root': {
+                                                                    color: 'inherit',
+                                                                }
+                                                            }}
+                                                        >
+                                                            <ListItemIcon>
+                                                                {playingVoiceId === child._id ? (
+                                                                    <IconVolume
+                                                                        fontSize="small"
+                                                                        className="animate"
+                                                                    />
+                                                                ) : (
+                                                                    <IconVolumeOff fontSize="small" />
+                                                                )}
+                                                            </ListItemIcon>
+                                                            <Typography
+                                                                sx={{
+                                                                    overflow: "hidden",
+                                                                    whiteSpace: "nowrap",
+                                                                    textOverflow: "ellipsis",
+                                                                    maxWidth: isMd ? "200px" : "120px",
+                                                                    display: "inline-block"
+                                                                }}
+                                                            >
+                                                                Hội thoại {child?.name}
+                                                            </Typography>
+                                                        </MenuItem>
+                                                    </Box>
+                                                </Box>
+                                            ))}
+                                        </ul>
+                                    )}
                                 </Box>
 
-                                {openVoices === type._id && type?.voices?.length > 0 && (
-                                    <ul
-                                        style={{
-                                            position: "absolute",
-                                            minWidth: "300px",
-                                            backgroundColor: "white",
-                                            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                                            zIndex: 10,
-                                            right: "100%",
-                                            top: "29%",
-                                            listStyle: "none",
-                                            padding: 0,
-                                            margin: 0,
-                                        }}
-                                    >
-                                        {type?.voices?.map((child) => (
-                                            <Box key={child._id}>
-                                                <Box
-                                                    sx={{
-                                                        display: "flex",
-                                                        justifyContent: "space-between",
-                                                        alignItems: "center",
-                                                        padding: 1.5,
-                                                        backgroundColor: "white",
-                                                        transition: "all 0.3s",
-                                                        "&:hover": {
-                                                            color: "#1791e2",
-                                                            backgroundColor:
-                                                                "rgba(248, 248, 248, 0.5)",
-                                                        },
-                                                    }}
-                                                >
-                                                    <MenuItem
-                                                        key={child._id}
-                                                        onClick={() =>
-                                                            handleClickVoice(
-                                                                child.path,
-                                                                child._id,
-                                                                type._id
-                                                            )
-                                                        }
-                                                        selected={playingVoiceId === child._id}
-                                                    >
-                                                        <ListItemIcon>
-                                                            {playingVoiceId === child._id ? (
-                                                                <IconVolume
-                                                                    fontSize="small"
-                                                                    className="animate"
-                                                                />
-                                                            ) : (
-                                                                <IconVolumeOff fontSize="small" />
-                                                            )}
-                                                        </ListItemIcon>
-                                                        Hội thoại {child?.name}
-                                                    </MenuItem>
-                                                </Box>
-                                            </Box>
-                                        ))}
-                                    </ul>
-                                )}
+
                             </li>
                         ))
                     ) : (

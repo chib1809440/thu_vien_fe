@@ -21,14 +21,14 @@ const headCells: HeadCell[] = [
         numeric: false,
         disablePadding: true,
         label: 'Thông tin cá nhân',
-    }, 
+    },
     {
         id: 'user_role',
         numeric: false,
         disablePadding: true,
         label: 'Vai trò',
     },
-   
+
     {
         id: 'action',
         numeric: false,
@@ -51,7 +51,7 @@ export default function AccountPage() {
             <MainCard>
                 <Stack spacing={2}>
                     <CsFlexRowBetween>
-                        <Box sx={{ ml: 4 }}>
+                        <Box sx={{ ml: { xs: 0, sm: 0, md: 4 } }}>
                             <StyledButton
                                 color='primary'
                                 size="small"

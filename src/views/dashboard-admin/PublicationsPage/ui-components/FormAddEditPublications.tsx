@@ -44,11 +44,12 @@ type Props = {
 const schema = (isEditMode: boolean) =>
     yup.object().shape({
         name: yup.string().required("Vui lòng nhập tên"),
-        barcode: yup.string().when("type", {
-            is: "ấn phẩm cứng",
-            then: yup.string().required("Vui lòng nhập barcode"),
-            otherwise: yup.string().notRequired(),
-        }),
+        barcode: yup.string().notRequired(),
+        // barcode: yup.string().when("type", {
+        //     is: "ấn phẩm cứng",
+        //     then: yup.string().required("Vui lòng nhập barcode"),
+        //     otherwise: yup.string().notRequired(),
+        // }),
         categoryIds: yup.array().when("type", {
             is: "ấn phẩm cứng",
             then: yup
@@ -372,7 +373,7 @@ const FormAddEditPublications: FC<Props> = ({
                     {isEditMode ? "Sửa thông tin ấn phẩm" : "Thêm thông tin ấn phẩm mới"}
                 </DialogTitle>
 
-                <DialogContent sx={{ px: 6 }}>
+                <DialogContent sx={{ px: { xs: 3, sm: 3, md: 6 } }}>
                     <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
                         <Box
                             sx={{
@@ -381,6 +382,9 @@ const FormAddEditPublications: FC<Props> = ({
                                 gap: 2,
                                 width: "100%",
                                 mt: 2,
+                                "& .css-1saycg4": {
+                                    margin: "auto",
+                                }
                             }}
                         >
                             <Uploadimage
@@ -420,11 +424,10 @@ const FormAddEditPublications: FC<Props> = ({
                                     <InputForm
                                         label="Barcode"
                                         placeholder="Nhập barcode"
-                                        required={values.type === "ấn phẩm cứng"}
+                                        // required={values.type === "ấn phẩm cứng"}
                                         error={touched.barcode && Boolean(errors.barcode)}
                                         helperText={touched.barcode && errors.barcode}
                                         {...getFieldProps("barcode")}
-                                        disabled={isEditMode}
                                     />
                                 </Box>
 
@@ -592,32 +595,36 @@ const FormAddEditPublications: FC<Props> = ({
                     </Form>
                 </DialogContent>
 
-                <DialogActions sx={{ pr: 6, pb: 2 }}>
+                <DialogActions sx={{ pr: { xs: 3, sm: 3, md: 6 }, pb: 2 }}>
                     <Button disabled={isFetching} onClick={onClose} color="error" style={{ fontSize: 14 }}>
                         Huỷ
                     </Button>
                     <StyledButton
+                        disableHoverEffect
                         color="primary"
                         size="small"
                         variant="contained"
                         onClick={handleSubmit as () => void}
                         sx={{ paddingTop: 1.3, paddingBottom: 1.3 }}
+                        disabled={isFetching}
                     >
                         {isFetching ? "Đang thực hiện..." : isEditMode ? "Cập nhật" : "Thêm mới"}
                     </StyledButton>
                 </DialogActions>
             </Dialog>
 
-            {openAdd && (
-                <FormAddCommonDialog
-                    open={openAdd}
-                    onClose={handleClose}
-                    initialValues={getInitialValuesAdd}
-                    onSubmit={handleAddSubmit}
-                    typeToAdd={typeToAdd}
-                />
-            )}
-        </FormikProvider>
+            {
+                openAdd && (
+                    <FormAddCommonDialog
+                        open={openAdd}
+                        onClose={handleClose}
+                        initialValues={getInitialValuesAdd}
+                        onSubmit={handleAddSubmit}
+                        typeToAdd={typeToAdd}
+                    />
+                )
+            }
+        </FormikProvider >
     );
 };
 

@@ -1,12 +1,11 @@
 // material-ui
-import { Avatar, Box } from "@mui/material";
+import { Avatar, Box, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 // project imports
 import { IconMenu2 } from "@tabler/icons";
 import { useDispatch, useSelector } from "../../../store";
 import { openDrawer } from "../../../store/slices/menu";
-import LogoSection from "../LogoSection";
 import ProfileSection from "./ProfileSection";
 
 
@@ -24,15 +23,13 @@ const Header = () => {
         sx={{
           width: 228,
           display: "flex",
+          alignItems: "center",
           [theme.breakpoints.down("md")]: {
             width: "auto",
           },
-          backgroundColor: 'red'
+          backgroundColor: '#c1eafe'
         }}
       >
-        <Box component="span" sx={{ display: { xs: 'none', md: 'block' }, flexGrow: 1 }}>
-          <LogoSection />
-        </Box>
 
         <Avatar
           variant="rounded"
@@ -57,9 +54,20 @@ const Header = () => {
 
       {/* header search */}
       {/* <SearchSection /> */}
+      <Box
+        sx={{
+          paddingLeft: "50px",
+          [theme.breakpoints.down("sm")]: {
+            display: "none",
+          },
+        }}
+      >
+        <Typography sx={{ fontSize: "20px", fontWeight: 500, color: "#004085" }}>
+          Phần mềm Quản lí Thư viện - Liên thông Thư viện GD Lib
+        </Typography>
+      </Box>
       <Box sx={{ flexGrow: 1 }} />
       <Box sx={{ flexGrow: 1 }} />
-
       <ProfileSection />
     </>
   );

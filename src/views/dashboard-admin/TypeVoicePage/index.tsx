@@ -243,7 +243,11 @@ const TypeVoicePage = () => {
             )}
 
             <MainCard>
-                <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
+                <Stack spacing={2} sx={{
+                    paddingLeft: { xs: 0, sm: 0, md: 4 },
+                    paddingBottom: { xs: 2, sm: 2 },
+                    width: '100%'
+                }}>
                     <Box display="flex" flexWrap="wrap">
                         {
                             hasPermission([

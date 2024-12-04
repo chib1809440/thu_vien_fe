@@ -1,14 +1,21 @@
-import { Button, Chip, FormControl, Grid, MenuItem, Select, Switch, useTheme } from "@mui/material";
-import { Box, Stack } from "@mui/system";
-import { IconCalendar, IconEye, IconFileExport, IconPencil, IconPlus, IconPrinter, IconTrash, IconX } from "@tabler/icons";
-import { IconClockSearch, IconTrashXFilled } from "@tabler/icons-react";
+import { ExpandMore } from "@mui/icons-material";
+import { Accordion, AccordionDetails, AccordionSummary, Button, Chip, FormControl, Grid, MenuItem, Select, Typography, useTheme } from "@mui/material";
+import { Box, Stack, useMediaQuery } from "@mui/system";
+import { IconCalendar, IconEye, IconFileExport, IconPencil, IconPlus, IconTrash, IconX } from "@tabler/icons";
+import { vi } from "date-fns/locale";
+import ExcelJS from 'exceljs';
 import { useCallback, useMemo, useRef, useState } from "react";
+import DatePicker from "react-datepicker";
 import { Link } from "react-router-dom";
+import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
+import PaginationForm from "../../../components/custom/form/PaginationForm";
 import TableList from "../../../components/custom/table-list/TableList";
-import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
+import { useAuth } from "../../../contexts/JWTContext";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
+import { formatDate } from "../../../helpers/formatDate";
 import { useAddLoanSlip, useApprovalLoanSlip, useCancelLoanSlip, useDeleteSoftLoanSlip, useDeleteSoftManyLoanSlip, useEditLoanSlip, useReturnLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-mutation";
 import { useFetchLoanSlip, useReFetchLoanSlip } from "../../../hooks/services/loanSlip/loanSlip-query";
 import useQueryString from "../../../hooks/services/useQueryString";
@@ -16,19 +23,9 @@ import { TColumn, TMenuOption } from "../../../types/common/table";
 import { CreatePublication, TLoanSlip, TLoanSlipCreate } from "../../../types/models/loanSlip.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
-import FormAddEditLoanSlip from "./ui-components/FormAddEditLoanSlip";
-import { formatDate } from "../../../helpers/formatDate";
-import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
-import { useReactToPrint } from "react-to-print";
-import { vi } from "date-fns/locale";
-import Html2Pdf from 'html2pdf.js';
-import PrintLoanSlip from "./ui-components/PrintLoanSlip";
 import { parserParams } from "../../../utils/object";
-import { useFetchPublications } from "../../../hooks/services/publications/publications-query";
-import DatePicker from "react-datepicker";
-import ExcelJS from 'exceljs';
+import FormAddEditLoanSlip from "./ui-components/FormAddEditLoanSlip";
 import ViewDetailLoanSlip from "./ui-components/ViewDetailLoanSlip";
-import { useAuth } from "../../../contexts/JWTContext";
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -86,7 +83,6 @@ const LoanSlipPage = () => {
         endDate,
         ...filter,
     });
-    console.log(filterDateType);
 
     const mutationAdd = useAddLoanSlip();
     const mutationApproval = useApprovalLoanSlip();
@@ -150,18 +146,32 @@ const LoanSlipPage = () => {
     });
     const handleApprovalLoanSlip = (row: TLoanSlip) => {
         row.status = "chờ nhận sách";
+        const returnDate = new Date(row?.returnDay);
+        const currentDate = new Date();
+        returnDate.setHours(0, 0, 0, 0);
+        currentDate.setHours(0, 0, 0, 0);
 
-        mutationEdit.mutate(
-            { ...row as any, _id: row._id, userId: row.userId._id },
-            {
-                onSuccess: () => {
-                    revalidate();
-                    toast.success('Giao sách thành công.');
-                    handleClose();
-                },
-            }
-        );
-    };
+        if (isNaN(returnDate.getTime())) {
+            toast.error("Ngày trả sách không hợp lệ.");
+            return;
+        }
+
+        if (returnDate < currentDate) {
+            toast.error("Ngày trả không hợp lệ! Vui lòng cập nhật lại.")
+            return;
+        } else {
+            mutationEdit.mutate(
+                { ...row as any, _id: row._id, userId: row.userId._id },
+                {
+                    onSuccess: () => {
+                        revalidate();
+                        toast.success('Duyệt phiếu mượn thành công.');
+                        handleClose();
+                    },
+                }
+            );
+        };
+    }
     const handleReturnLoanSlip = (row: TLoanSlip, publications: CreatePublication[]) => {
         mutationReturn.mutate(
             { id: row._id, publications },  // Chuyển đổi tham số thành đối tượng
@@ -244,6 +254,29 @@ const LoanSlipPage = () => {
                 return { color: 'black', background: '#E0E0E0' }; // Màu mặc định nếu không có trạng thái phù hợp
         }
     };
+
+    const getStatusTextStyles = (status) => {
+        switch (status) {
+            case "đang mượn":
+                return { color: '#FF9800' }; // Màu cho "Đang mượn"
+            case "quá hạn":
+                return { color: '#F44336' }; // Màu cho "Quá hạn"
+            case "đã trả":
+                return { color: '#4CAF50' }; // Màu cho "Đã trả"
+            default:
+                return { color: '#616161' };
+        }
+    };
+
+    const getIsAgreeTextStyles = (isAgree) => {
+        switch (isAgree) {
+            case true:
+                return { color: '#4CAF50' };
+            default:
+                return { color: '#FF9800' };
+        }
+    };
+
     const mutationCancel = useCancelLoanSlip();
     const handleCancelLoanSlip = (row: TLoanSlip) => {
         mutationCancel.mutate(
@@ -261,12 +294,13 @@ const LoanSlipPage = () => {
         );
     };
     const handleDeliveryBook = (row: TLoanSlip) => {
+
         mutationApproval.mutate(
             row._id,
             {
                 onSuccess: () => {
                     revalidate();
-                    toast.success('Chỉnh sửa thành công.');
+                    toast.success('Giao sách thành công.');
                     handleClose();
                 },
             }
@@ -283,31 +317,33 @@ const LoanSlipPage = () => {
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
-                id: "borrowedDay",
+                id: "info",
                 disablePadding: "none",
-                label: "Ngày mượn",
+                label: "Thông tin mượn",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
+                sxRow: { paddingRight: 3, maxWidth: 300 },
                 render: (row) => {
                     return (
                         <Box
                         >
-                            {formatDate(row.borrowedDay)}
-                        </Box>
-                    );
-                },
-            },
-            {
-                id: "returnDay",
-                disablePadding: "none",
-                label: "Ngày trả",
-                align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => {
-                    return (
-                        <Box
-                        >
-                            {formatDate(row.returnDay)}
+                            <Typography mt={0.5}>Ngày mượn: <strong>{formatDate(row?.borrowedDay)}</strong></Typography>
+                            <Typography mt={0.5}>Ngày trả: <strong>{formatDate(row?.returnDay)}</strong></Typography>
+                            {
+                                (roleName === "Admin" || roleName === "Owner") &&
+                                <Typography variant="body1" sx={{ mt: 0.5 }}>
+                                    Người mượn: <strong>{row?.userId?.fullname}</strong>
+                                </Typography>
+                            }
+                            {row?.publications?.length > 0 && (
+                                <Box sx={{ mt: 0.5 }}>
+                                    <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
+                                    <ul style={{ marginTop: 5 }}>
+                                        {row?.publications.map((publication, idx) => (
+                                            <li key={idx}>{capitalizeFirstLetter(publication?.name)} (SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
+                                        ))}
+                                    </ul>
+                                </Box>
+                            )}
                         </Box>
                     );
                 },
@@ -519,9 +555,21 @@ const LoanSlipPage = () => {
             worksheet.addRow([]); // Thêm hàng trống
 
             // Thêm hàng từ ngày đến ngày
-            const startDateExcel = startDate ? formatDate(startDate) : '';
-            const endDateExcel = endDate ? formatDate(endDate) : '';
-            worksheet.addRow([`Từ ngày: ${startDateExcel} đến ngày: ${endDateExcel}`]).font = { bold: true };
+            // const startDateExcel = startDate ? formatDate(startDate) : '';
+            // const endDateExcel = endDate ? formatDate(endDate) : '';
+            // worksheet.addRow([`Từ ngày: ${startDateExcel} đến ngày: ${endDateExcel}`]).font = { bold: true };
+            const currentDateTime = new Date();
+            const formattedDateTime = currentDateTime.toLocaleString('vi-VN', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: false,
+            });
+            worksheet.addRow([`Ngày xuất file: ${formattedDateTime}`]).font = { bold: true };
+            worksheet.addRow([]);
 
             // Đặt header cho bảng
             worksheet.addRow([
@@ -532,8 +580,9 @@ const LoanSlipPage = () => {
                 'Ngày mượn',
                 'Ngày trả',
                 'Trạng thái',
-                'Sách mượn'
-            ]);
+                'Ấn phẩm mượn',
+                'Trạng thái trả ấn phẩm'
+            ]).font = { bold: true };
 
             // Đặt kiểu định dạng cho các cột
             worksheet.getColumn('A').width = 15;
@@ -544,12 +593,40 @@ const LoanSlipPage = () => {
             worksheet.getColumn('F').width = 20;
             worksheet.getColumn('G').width = 15;
             worksheet.getColumn('H').width = 50;
+            worksheet.getColumn('I').width = 50;
 
             // Lấy dữ liệu từ API
             const loanSlipsData = data?.data?.result?.map((loanSlip) => {
                 const bookTitles = loanSlip?.publications?.map(publication => {
-                    return `${publication.name} (${publication.quantityLoan} quyển)`;
-                }).join('\n');
+                    return `${capitalizeFirstLetter(publication.name)} (${publication.quantityLoan} quyển)`;
+                }).join(', ');
+                const returnQuantities = loanSlip?.publications?.map(publication => {
+                    let statusText = '';
+
+                    // Kiểm tra trạng thái và trả về thông báo tương ứng
+                    if (loanSlip?.status === 'đã hủy') {
+                        statusText = 'Đã hủy';
+                    } else if (loanSlip?.status === 'đang mượn' && publication.quantityReturn === 0) {
+                        statusText = 'Chưa trả';
+                    } else if (loanSlip?.status === 'đã trả' && publication.quantityReturn === publication.quantityLoan) {
+                        statusText = 'Đã trả xong';
+                    } else {
+                        // Calculate how many books are still needed to return
+                        const remainingQuantity = publication.quantityLoan - publication.quantityReturn;
+                        if (remainingQuantity > 0) {
+                            statusText = `Còn ${remainingQuantity} quyển cần trả`;
+                        } else {
+                            statusText = 'Đã trả xong';
+                        }
+                    }
+
+                    return statusText;
+                });
+
+                const allReturned = loanSlip?.publications?.every(publication => publication.quantityReturn === publication.quantityLoan);
+
+                const finalReturnQuantity = allReturned ? 'Đã trả xong' : returnQuantities.join(', ');
+
 
                 return {
                     barcode: loanSlip?.barcode,
@@ -560,6 +637,7 @@ const LoanSlipPage = () => {
                     returnDate: formatDate(loanSlip?.returnDay),
                     status: capitalizeFirstLetter(loanSlip?.status),
                     bookTitle: bookTitles || '',
+                    returnQuantity: finalReturnQuantity || '0 quyển'
                 };
             });
 
@@ -576,7 +654,8 @@ const LoanSlipPage = () => {
                     dataRow.borrowDate,
                     dataRow.returnDate,
                     dataRow.status,
-                    dataRow.bookTitle
+                    dataRow.bookTitle,
+                    dataRow.returnQuantity
                 ];
                 row.eachCell((cell) => {
                     cell.border = {
@@ -614,7 +693,7 @@ const LoanSlipPage = () => {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'loan_slips.xlsx'; // Tên file xuất
+                a.download = 'DanhsachphieumuonLT.xlsx'; // Tên file xuất
                 a.click();
                 URL.revokeObjectURL(url);
             });
@@ -622,8 +701,6 @@ const LoanSlipPage = () => {
             toast.error("Không có dữ liệu để xuất excel");
         }
     };
-
-
 
     const actionMenus = useMemo((): TMenuOption[] => {
         return [
@@ -633,7 +710,7 @@ const LoanSlipPage = () => {
             //     onClick: handleDeleteMultiple,
             // },
             {
-                label: "Xuất excel",
+                label: "Xuất danh sách phiếu mượn",
                 icon: <IconFileExport size={20} stroke={1.5} />,
                 onClick: handleExportLoanSlipExcel,
             },
@@ -662,6 +739,9 @@ const LoanSlipPage = () => {
             userId: ''
         };
     }, [selectedEdit]);
+
+    const isMd = useMediaQuery('(min-width: 900px)');
+
     return (
         <div>
             <IBreadcrumsCustom
@@ -692,41 +772,65 @@ const LoanSlipPage = () => {
             )}
             <MainCard>
 
-                <Stack spacing={2} sx={{ paddingLeft: { xs: 4, sm: 4 }, paddingBottom: { xs: 2, sm: 2 }, width: '100%' }}>
-                    <Box display="flex" flexWrap="wrap">
+                <Stack spacing={2} sx={{
+                    paddingLeft: { xs: 0, sm: 0, md: 4 },
+                    paddingBottom: { xs: 2, sm: 2 },
+                    width: '100%'
+                }}>
+                    <Box display="flex" flexWrap="wrap" sx={{ flexDirection: { xs: 'column', sm: 'column', md: "row" } }}>
                         <Box>
-                            <StyledButton
-                                color="primary"
+                            <Button color="primary"
                                 size="small"
                                 startIcon={<IconPlus stroke={2} />}
-                                variant="contained"
                                 onClick={addLoanSlip}
+                                variant="contained"
+                                sx={{
+                                    borderRadius: "8px", py: 0.8,
+                                    px: 1.7,
+                                    textTransform: "inherit"
+                                }}
                             >
                                 {(roleName === "Owner" || roleName === "Admin") ? "Thêm mới" : "Đăng ký mượn sách"}
-                            </StyledButton>
+                            </Button>
                         </Box>
 
-                        <Box>
+                        <Box sx={{ mt: { xs: 2, sm: 2, md: 0 }, ml: { xs: 0, sm: 0, md: 2 } }}>
                             <Link to="/quan-ly-muon-tra/phieu-muon/danh-sach-xoa-phieu-muon" style={{ textDecoration: 'none' }}>
-                                <StyledButton
-                                    sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                <Button
+                                    sx={{
+                                        background: "#de524a", color: "white",
+                                        borderRadius: "8px",
+                                        py: 0.8,
+                                        px: 1.7,
+                                        textTransform: "inherit",
+                                        "&: hover": {
+                                            background: "#de524a", color: "white",
+                                        }
+                                    }}
                                     size="small"
-                                    startIcon={<IconTrash stroke={2} />}
-                                    variant="contained"
-                                >
+                                    startIcon={< IconTrash stroke={2} />}
+                                    onClick={addLoanSlip}
+                                    variant="contained"  >
                                     Thùng rác
-                                </StyledButton>
+                                </Button>
                             </Link>
                         </Box>
                     </Box>
                 </Stack>
-                <ActionsForm actions={actionMenus} barcode={true}
+
+                <ActionsForm isActive={(roleName === "Admin" || roleName === "Owner") ? true : false} actions={actionMenus} barcode={true}
                     barcodeSearch={barcodeSearch}
                     placeholderSearch="Tìm kiếm theo barcode người mượn"
                     handleBarcodeSearch={handleBarcodeSearch} placeholder="Tìm kiếm theo barcode" />
-                <Grid container pl={4} pr={4} xs={12} sm={12} md={12} lg={12} gap={2} sx={{ display: "flex", mb: 3, flexWrap: "wrap" }}>
+
+                <Grid container xs={12} sm={12} md={12} lg={12} gap={2} sx={{
+                    display: "flex", mb: 3, flexWrap: "wrap",
+                    pl: { xs: 0, sm: 0, md: 4 },
+                    pr: { xs: 0, sm: 0, md: 4 },
+                    mt: { xs: 2, sm: 2, md: 0 }
+                }}>
                     <Grid item xs={12} sm={12} md={2} lg={2}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Lọc theo:
                             </span>
@@ -767,7 +871,7 @@ const LoanSlipPage = () => {
                         </div>
                     </Grid>
                     <Grid item xs={12} sm={12} md={3} lg={3}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Từ ngày:
                             </span>
@@ -788,7 +892,7 @@ const LoanSlipPage = () => {
                         </div>
                     </Grid>
                     <Grid item xs={12} sm={12} md={3} lg={3}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Đến ngày:
                             </span>
@@ -809,7 +913,7 @@ const LoanSlipPage = () => {
                         </div>
                     </Grid>
                     <Grid item xs={12} sm={12} md={3} lg={3}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Trạng thái:
                             </span>
@@ -856,17 +960,119 @@ const LoanSlipPage = () => {
                         </div>
                     </Grid>
                 </Grid>
-                <TableList
-                    checked={checkedDelete}
-                    columns={columns}
-                    rows={data?.data?.result || []}
-                    onChecked={handleCheckedDelete}
-                    onToggleCheckedAll={handleCheckedDeleteAll}
-                    checkedAll={checkedAll}
-                    isLoading={isLoading}
-                    keyChecked="_id"
-                    pagination={data?.data?.meta}
-                />
+
+                {
+                    isMd ? <TableList
+                        checked={checkedDelete}
+                        columns={columns}
+                        rows={data?.data?.result || []}
+                        onChecked={handleCheckedDelete}
+                        onToggleCheckedAll={handleCheckedDeleteAll}
+                        checkedAll={checkedAll}
+                        isLoading={isLoading}
+                        keyChecked="_id"
+                        pagination={data?.data?.meta}
+                    />
+                        :
+                        <Grid container spacing={2} sx={{ p: { xs: 0, sm: 0, md: "12px 32px" }, pt: 2 }}>
+                            <Grid item xs={12}>
+                                {
+                                    data?.data?.result?.length > 0 ? (
+                                        data?.data?.result?.map((row, idxRow) => {
+                                            return (
+                                                <>
+                                                    <Accordion
+                                                        key={idxRow}
+                                                        sx={{
+                                                            background: "#e4f2fd",
+                                                            borderRadius: "8px",
+                                                            mt: 2,
+                                                            position: 'relative',
+                                                        }}
+                                                    >
+                                                        <AccordionSummary
+                                                            expandIcon={<ExpandMore />}
+                                                            sx={{
+                                                                background: "#e4f2fd",
+                                                                boxShadow: "0px 4px 6px rgba(86, 204, 242, 0.3)",
+                                                                borderRadius: "8px",
+                                                            }}
+                                                        >
+                                                            <Box sx={{ width: '100%' }}>
+                                                                <Typography>
+                                                                    Mã phiếu mượn: {row?.barcode}
+                                                                </Typography>
+                                                            </Box>
+                                                        </AccordionSummary>
+
+                                                        <AccordionDetails>
+                                                            <Box sx={{ width: '100%', py: 1 }}>
+                                                                <Typography mt={0.5}>Mã phiếu mượn: <strong>{row?.barcode}</strong></Typography>
+                                                                <Typography mt={0.5}>Ngày mượn: <strong>{formatDate(row?.borrowedDay)}</strong></Typography>
+                                                                <Typography mt={0.5}>Ngày trả: <strong>{formatDate(row?.returnDay)}</strong></Typography>
+                                                                <Typography mt={0.5}>Tình trạng: <strong style={getStatusTextStyles(row.status)}>{capitalizeFirstLetter(row?.status)}</strong></Typography>
+                                                                <Typography mt={0.5}>Trạng thái: <strong style={getIsAgreeTextStyles(row.isAgree)}>{row?.isAgree === false ? "Chưa duyệt" : "Đã duyệt"}</strong></Typography>
+                                                                {row?.publications?.length > 0 && (
+                                                                    <Box sx={{ mt: 0.5 }}>
+                                                                        <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
+                                                                        <ul style={{ marginTop: 5 }}>
+                                                                            {row?.publications.map((publication, idx) => (
+                                                                                <li key={idx}>{capitalizeFirstLetter(publication?.name)} (SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
+                                                                            ))}
+                                                                        </ul>
+                                                                    </Box>
+                                                                )}
+                                                                <Button variant="outlined" color="inherit">
+                                                                    <IconEye
+                                                                        onClick={() => handleViewDetailLoanSlip(row)}
+                                                                        size={22}
+                                                                        stroke={1.5}
+                                                                    />
+                                                                </Button>
+                                                                {
+                                                                    ((row.status !== "chờ nhận sách" || roleName === "Owner" || roleName === "Admin") && row.status !== "đã hủy" &&
+                                                                        (row.isAgree === false || roleName === "Owner" || roleName === "Admin")) && (
+                                                                        <Button variant="outlined" style={{ marginLeft: 5 }}>
+                                                                            <IconPencil
+                                                                                onClick={() => handleEditLoanSlip(row)}
+                                                                                size={22}
+                                                                                stroke={1.5}
+
+                                                                            />
+                                                                        </Button>
+                                                                    )
+                                                                }
+
+                                                                {
+                                                                    row.status !== "chờ nhận sách" && row.isAgree === false && row.status !== "đã hủy" &&
+                                                                    <Button variant="outlined" color="error" style={{ marginLeft: 5 }}>
+                                                                        <IconTrash
+                                                                            size={22}
+                                                                            stroke={1.5}
+                                                                            onClick={() => handleOpenConfirmDialog(row)}
+                                                                        />
+                                                                    </Button>
+                                                                }
+                                                            </Box>
+                                                        </AccordionDetails>
+                                                    </Accordion>
+
+                                                </>
+                                            );
+                                        })
+                                    ) : (
+                                        <Typography>Chưa có dữ liệu</Typography>
+                                    )
+                                }
+                            </Grid>
+                            <Grid item xs={12}>
+                                {data?.data?.meta && Object.keys(data?.data?.meta).length > 0 && (
+                                    <PaginationForm pagination={data?.data?.meta} />
+                                )}
+                            </Grid>
+                        </Grid>
+                }
+
 
                 <ConfirmDeleteDialog
                     key={"delete"}

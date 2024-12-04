@@ -24,6 +24,8 @@ interface NavCollapseProps {
 }
 
 const NavCollapse = ({ menu, level }: NavCollapseProps) => {
+    // console.log(menu);
+
     const theme = useTheme();
     const { borderRadius } = useConfig();
 
@@ -112,9 +114,9 @@ const NavCollapse = ({ menu, level }: NavCollapseProps) => {
                     borderRadius: `${borderRadius}px`,
                     mb: 0.5,
                     alignItems: 'flex-start',
-                    backgroundColor: level > 1 ? 'transparent !important' : 'inherit',
+                    // backgroundColor: level > 1 ? 'transparent !important' : 'inherit',
                     py: level > 1 ? 1 : 1.25,
-                    pl: `${level * 24}px`
+                    pl: `${level * 24}px`,
                 }}
                 selected={selected === menu.id}
                 onClick={handleClick}
@@ -128,7 +130,7 @@ const NavCollapse = ({ menu, level }: NavCollapseProps) => {
                     }
                     secondary={
                         menu.caption && (
-                            <Typography variant="caption" sx={{ ...theme.typography.subMenuCaption }} display="block" gutterBottom>
+                            <Typography variant="caption" sx={{ ...theme.typography.subMenuCaption, bgcolor: "red" }} display="block" gutterBottom>
                                 {menu.caption}
                             </Typography>
                         )
@@ -146,17 +148,21 @@ const NavCollapse = ({ menu, level }: NavCollapseProps) => {
                         component="div"
                         disablePadding
                         sx={{
-                            position: 'relative',
-                            '&:after': {
-                                content: "''",
-                                position: 'absolute',
-                                left: '32px',
-                                top: 0,
-                                height: '100%',
-                                width: '1px',
-                                opacity: theme.palette.mode === 'dark' ? 0.2 : 1,
-                                background: theme.palette.mode === 'dark' ? theme.palette.dark.light : theme.palette.primary.light
-                            }
+                            // position: 'relative',
+                            // '&:after': {
+                            //     content: "''",
+                            //     position: 'absolute',
+                            //     left: '32px',
+                            //     top: 0,
+                            //     height: '100%',
+                            //     width: '1px',
+                            //     opacity: theme.palette.mode === 'dark' ? 0.2 : 1,
+                            //     background: theme.palette.mode === 'dark' ? theme.palette.dark.light : theme.palette.primary.light
+                            // },
+                            borderLeft: `1px dashed ${theme.palette.primary.light}`,
+                            pl:1,
+                            width: "85%",
+                            float: "right"
                         }}
                     >
                         {menus}

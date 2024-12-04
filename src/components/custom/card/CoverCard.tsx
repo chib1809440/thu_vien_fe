@@ -7,30 +7,13 @@ import {
     IconVideo
 } from "@tabler/icons-react";
 import useConfig from "../../../hooks/useConfig";
-import { statusOptions, typeOptions } from "../../../utils/constants.utils";
+import { getRandomPastelGradient, statusOptions, typeOptions } from "../../../utils/constants.utils";
 import { getLabelFromOptions } from "../../../utils/object";
 import StyledButton from "../../default/button/StyledButton";
 import { StyledHeading } from "../../default/typography";
 import ImageCard from "./ImageCard";
 import Barcode from 'react-barcode';
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
-
-const pastelGradients = [
-    "linear-gradient(90deg, rgba(144, 238, 144, 1) 0%, rgba(173, 216, 230, 1) 100%)",
-    "linear-gradient(90deg, rgba(221, 160, 221, 1) 0%, rgba(255, 192, 203, 1) 100%)",
-    "linear-gradient(90deg, rgba(255, 255, 224, 1) 0%, rgba(255, 165, 0, 1) 100%)",
-    "linear-gradient(90deg, rgba(255, 192, 203, 1) 0%, rgba(255, 99, 71, 1) 100%)",
-    "linear-gradient(90deg, rgba(255, 99, 71, 1) 0%, rgba(255, 255, 224, 1) 100%)",
-    "linear-gradient(90deg, rgba(255, 165, 0, 1) 0%, rgba(255, 192, 203, 1) 100%)",
-    "linear-gradient(90deg, rgba(255, 192, 203, 1) 0%, rgba(255, 99, 71, 1) 100%)",
-    "linear-gradient(90deg, rgba(255, 255, 224, 1) 0%, rgba(255, 165, 0, 1) 100%)",
-    "linear-gradient(90deg, rgba(135, 206, 235, 1) 0%, rgba(0, 255, 255, 1) 100%)",
-    "linear-gradient(90deg, rgba(221, 160, 221, 1) 0%, rgba(255, 192, 203, 1) 100%)",
-];
-
-const getRandomPastelGradient = () => {
-    return pastelGradients[Math.floor(Math.random() * pastelGradients.length)];
-};
 
 interface CoverCardProps {
     title?: string;

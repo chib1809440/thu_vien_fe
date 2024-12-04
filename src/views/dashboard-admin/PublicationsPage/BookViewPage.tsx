@@ -5,7 +5,7 @@ import { Box, Container, Paper, Typography, useTheme } from '@mui/material';
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 import StyledIconButton from '../../../components/default/button/StyledIconButton';
 import useConfig from '../../../hooks/useConfig';
-import "./style.css"
+import "./style.css";
 
 interface PageCoverProps {
     children: ReactNode;
@@ -20,10 +20,11 @@ const PageCover = React.forwardRef<HTMLDivElement, PageCoverProps>((props, ref) 
         </div>
     );
 });
+
 interface PageProps {
     children: ReactNode;
     number: number;
-    header?: ReactNode
+    header?: ReactNode;
 }
 
 const Page = React.forwardRef<HTMLDivElement, PageProps>((props, ref) => {
@@ -35,10 +36,12 @@ const Page = React.forwardRef<HTMLDivElement, PageProps>((props, ref) => {
         </div>
     );
 });
+
 interface BookProps {
-    pages?: string[],
-    title?: string,
+    pages?: string[];
+    title?: string;
 }
+
 const BookViewPage = ({ title, pages }: BookProps) => {
     const fullUrlPages = pages?.map(page =>
         `${process.env.REACT_APP_BASE_API_FILE_URL}/${page}`
@@ -48,7 +51,7 @@ const BookViewPage = ({ title, pages }: BookProps) => {
     const [totalPage, setTotalPage] = useState(0);
     const flipBook = useRef(null);
     const theme = useTheme();
-    const { borderRadius } = useConfig()
+    const { borderRadius } = useConfig();
 
     const screen = useFullScreenHandle();
     const isFull = screen.active;
@@ -59,7 +62,6 @@ const BookViewPage = ({ title, pages }: BookProps) => {
     });
 
     useEffect(() => {
-        // Hàm cập nhật kích thước cửa sổ
         const handleResize = () => {
             setWindowSize({
                 width: window.innerWidth,
@@ -67,10 +69,8 @@ const BookViewPage = ({ title, pages }: BookProps) => {
             });
         };
 
-        // Lắng nghe sự kiện resize của cửa sổ
         window.addEventListener('resize', handleResize);
 
-        // Dọn dẹp sự kiện khi component bị unmount
         return () => {
             window.removeEventListener('resize', handleResize);
         };
@@ -81,12 +81,11 @@ const BookViewPage = ({ title, pages }: BookProps) => {
     };
 
     const prevButtonClick = () => {
-        flipBook.current.pageFlip().flipPrev()
+        flipBook.current.pageFlip().flipPrev();
     };
 
     const onPage = (e) => {
         setPage(e.data);
-        // console.log("onPage", e.data);
     };
 
     const onScreenChange = () => {
@@ -100,7 +99,13 @@ const BookViewPage = ({ title, pages }: BookProps) => {
     }, [fullUrlPages]);
 
     return (
-        <Paper sx={{ border: `1px solid ${theme.palette.grey[200]}`, borderRadius: `${borderRadius}px` }}>
+        <Paper sx={{
+            border: `1px solid ${theme.palette.grey[200]}`,
+            borderRadius: `${borderRadius}px`,
+            [theme.breakpoints.down('sm')]: {
+                border: 'none',
+            },
+        }}>
             <FullScreen handle={screen}>
                 <Container maxWidth="xl" sx={{ p: 2, display: "flex", height: "100%", alignItems: "center", justifyContent: "center" }}>
                     <HTMLFlipBook
@@ -130,7 +135,6 @@ const BookViewPage = ({ title, pages }: BookProps) => {
                         showPageCorners={true}
                         disableFlipByClick={true}
                     >
-
                         {fullUrlPages?.map((item, index) => (
                             <Page number={index} key={index}>
                                 <img
@@ -146,10 +150,10 @@ const BookViewPage = ({ title, pages }: BookProps) => {
                                     }}
                                     src={item}
                                     alt=""
+                                    loading="lazy"
                                 />
                             </Page>
                         ))}
-
                     </HTMLFlipBook>
                 </Container>
                 <Box sx={{
@@ -162,11 +166,12 @@ const BookViewPage = ({ title, pages }: BookProps) => {
                     bottom: 0,
                     borderRadius: `${borderRadius}px ${borderRadius}px 0 0`
                 }}>
-
-                    <Paper sx={{ p: 2 }}>
-                        {fullUrlPages && fullUrlPages.length > 0 && <Typography variant='body2'>Số trang: {fullUrlPages.length}</Typography>
-                        }
-
+                    <Paper sx={{ py: 2, pl: { xs: 0, sm: 0, md: 1 } }}>
+                        {fullUrlPages && fullUrlPages.length > 0 && (
+                            <Typography variant='body2'>
+                                Trang {page + 1} / {fullUrlPages.length}
+                            </Typography>
+                        )}
                     </Paper>
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 1 }}>
                         <StyledIconButton size='small' variant='outlined' onClick={prevButtonClick}>
@@ -179,7 +184,6 @@ const BookViewPage = ({ title, pages }: BookProps) => {
                         {isFull ? (
                             <StyledIconButton size='small' variant='outlined' onClick={() => onScreenChange()}>
                                 <IconArrowsMinimize />
-
                             </StyledIconButton>
                         ) : (
                             <StyledIconButton size='small' variant='outlined' onClick={() => onScreenChange()}>
@@ -188,9 +192,7 @@ const BookViewPage = ({ title, pages }: BookProps) => {
                         )}
                     </Box>
                 </Box>
-
             </FullScreen>
-
         </Paper>
     );
 };

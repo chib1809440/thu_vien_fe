@@ -74,7 +74,7 @@ export default function AssetPage() {
             <MainCard>
                 <Stack spacing={2}>
                     <CsFlexRowBetween>
-                        <Box sx={{ ml: 4 }}>
+                        <Box sx={{ ml: { xs: 0, sm: 0, md: 4 } }}>
                             <StyledButton
                                 color='primary'
                                 size="small"
@@ -85,7 +85,13 @@ export default function AssetPage() {
                                 Thêm tài sản
                             </StyledButton>
                             <StyledButton
-                               sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                sx={{
+                                    background: "#de524a", color: "white",
+                                    //@ts-ignore
+                                    marginLeft: { xs: 0, sm: 0, md: "10px" },
+                                    //@ts-ignore
+                                    marginTop: { xs: 1, sm: 1, md: 0 }
+                                }}
                                 size="small"
                                 startIcon={<IconTrash stroke={2} />}
                                 variant="contained"

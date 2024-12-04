@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import { Box, Grid, Skeleton, Typography } from '@mui/material';
+import { Box, Grid, Skeleton, Typography, useMediaQuery } from '@mui/material';
 import { dispatch, useSelector } from '../../../store';
 import { getLoanSlipWaiting } from '../../../store/slices/loanSlip';
 import { getRegisterSlipWaiting } from '../../../store/slices/registerSlip';
@@ -44,35 +44,37 @@ export default function HomePage() {
             y: item.totalBorrowed, // Giá trị tương ứng
         }));
     }, [statisticals]);
+
+    const isMD = useMediaQuery('(min-width: 900px)');
     return (
         <>
             <Typography variant="h3" fontWeight="bold" gutterBottom>
                 Thống kê danh mục
             </Typography>
             <Grid container spacing={2} sx={{ mt: 1 }}>
-                <Grid item xs={3}>
+                <Grid item xs={6} sm={6} md={3}>
                     <TotalCard title={getLabelFromOptions(typeOptions, statisticals?.data?.result?.totalPublication[0]?.type) || "Ấn phẩm truyền thống"}
                         count={statisticals?.data?.result?.totalPublication[0]?.count ?? 0} icon={IconBook} bgColor="#1e88e5" bgColorIcon="#014ea6" />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={6} sm={6} md={3}>
                     <TotalCard title={getLabelFromOptions(typeOptions, statisticals?.data?.result?.totalPublication[1]?.type) || "Ấn phẩm mềm"}
                         count={statisticals?.data?.result?.totalPublication[1]?.count ?? 0} icon={IconBook} bgColor="#ff4d4d" bgColorIcon="#cc0000" />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={6} sm={6} md={3}>
                     <TotalCard title="Số lượng sách có sẵn" count={statisticals?.data?.result?.totalBorrowable} icon={IconBook} bgColor="#ffb84d" bgColorIcon="#cc7a00" />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={6} sm={6} md={3}>
                     <TotalCard title="Tổng số phiếu đang mượn" count={statisticals?.data?.result?.totalBorrowedBooks} icon={Icon12Hours} bgColor="#00b3b3" bgColorIcon="#009999" />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={6} sm={6} md={3}>
                     <TotalCard title="Tổng số phiếu trả" count={statisticals?.data?.result?.totalReturnedBooks} icon={IconAB} bgColor="#00b300" bgColorIcon="#009900" />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={6} sm={6} md={3}>
                     <TotalCard title="Tổng số phiếu quá hạn" count={statisticals?.data?.result?.totalOverdueLoans} icon={Icon3dCubeSphereOff} bgColor="#e60073" bgColorIcon="#b30059" />
                 </Grid>
             </Grid>
             {
-                barChartData.length > 0 && (
+                isMD && barChartData.length > 0 && (
                     <Grid container spacing={2} sx={{ mt: 3 }}>
                         <Grid item xs={12}>
                             <Typography variant="h3" fontWeight="bold" gutterBottom>

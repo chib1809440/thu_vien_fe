@@ -1,5 +1,5 @@
 import { LoadingButton } from "@mui/lab";
-import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { FC, useCallback, useMemo, useRef, useState } from "react";
@@ -9,7 +9,7 @@ import { Form, FormikProvider, useFormik } from "formik";
 import { toast } from "react-toastify";
 
 import { IconTrash } from "@tabler/icons";
-import { IconPencil, IconPlus } from "@tabler/icons-react";
+import { IconEye, IconPencil, IconPlus } from "@tabler/icons-react";
 import "react-datepicker/dist/react-datepicker.css";
 import * as yup from "yup";
 import InputForm from "../../../../components/custom/form/InputForm";
@@ -34,6 +34,8 @@ import { statusVoiceImage } from "../../../../utils/constants.utils";
 import { getLabelFromOptions } from "../../../../utils/object";
 import FormAddEditTypeVoice from "../../TypeVoicePage/ui-components/FormAddEditTypeVoice";
 import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
+import PaginationForm from "../../../../components/custom/form/PaginationForm";
+import { ExpandMore } from "@mui/icons-material";
 
 type Props = {
     open: boolean;
@@ -252,8 +254,8 @@ const DialogAddEditVoice: FC<Props> = ({
             reader.onload = (event) => {
                 setDefaultImage(event.target?.result as string);
             };
-            reader.readAsDataURL(file);            
-            setFileName(file.name);            
+            reader.readAsDataURL(file);
+            setFileName(file.name);
             setFieldValue("file", file);
             setFieldValue("name", file.name)
         },
@@ -293,6 +295,9 @@ const DialogAddEditVoice: FC<Props> = ({
         };
     }, []);
 
+    const isMd = useMediaQuery('(min-width: 900px)');
+    const dataVoiceOfPublications = data?.data?.result?.filter(row => row.isPublic === true && (publicationsData?._id === (row?.publicationId as TPublications)?._id))
+
     return (
         <>
             {openAdd && (
@@ -313,7 +318,7 @@ const DialogAddEditVoice: FC<Props> = ({
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-description"
                 >
-                    <DialogTitle sx={{ m: 0, pt: 3, pb: 0, px: 8 }} id="customized-dialog-title">
+                    <DialogTitle sx={{ m: 0, pt: 3, pb: 0, px: { xs: 3, sm: 3, md: 8 } }} id="customized-dialog-title">
                         <Box sx={{ display: "flex", alignItems: "center" }}>
                             {!selectEdit ? "Thêm voice cho ấn phẩm tranh:" : "Cập nhật voice cho ấn phẩm tranh:"}
                             <Typography color={"primary"} ml={1} variant="h3" fontWeight={500}>
@@ -330,7 +335,7 @@ const DialogAddEditVoice: FC<Props> = ({
                         </IconButton>
                     </DialogTitle>
 
-                    <DialogContent sx={{ px: 8, py: 0, mt: 5 }}>
+                    <DialogContent sx={{ px: { xs: 3, sm: 3, md: 8 }, py: 0, mt: 5 }}>
                         <StyledButton
                             color="primary"
                             size="small"
@@ -343,7 +348,7 @@ const DialogAddEditVoice: FC<Props> = ({
 
                         <Box sx={{ mt: 2 }}>
                             <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
-                                <Box sx={{ display: "flex", gap: 2 }}>
+                                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
                                     <SelectForm
                                         label="Chọn loại voice"
                                         text="Loại voice:"
@@ -380,7 +385,7 @@ const DialogAddEditVoice: FC<Props> = ({
                                         }
                                         error={touched.isPrivate && Boolean(errors.isPrivate)}
                                         helperText={touched.isPrivate && errors.isPrivate}
-                                        sx={{ mt: 2.5 }}
+                                        sx={{ mt: { xs: 0, sm: 0, md: 2.5 } }}
                                     />
 
                                     <InputForm
@@ -390,7 +395,7 @@ const DialogAddEditVoice: FC<Props> = ({
                                         error={touched.order && Boolean(errors.order)}
                                         helperText={touched.order && errors.order}
                                         {...getFieldProps("order")}
-                                        sxBox={{ mt: 2.5 }}
+                                        sxBox={{ mt: { xs: 0, sm: 0, md: 2.5 } }}
                                     />
                                 </Box>
 
@@ -408,7 +413,7 @@ const DialogAddEditVoice: FC<Props> = ({
                                     defaultImage={filenameDefault || defaultImage}
                                     onChange={handleChangeImage}
                                     error={touched.file && errors.file}
-                                    fileName={values?.name || fileName }
+                                    fileName={values?.name || fileName}
                                 />
                             </Form>
                         </Box>
@@ -431,15 +436,88 @@ const DialogAddEditVoice: FC<Props> = ({
                             </Typography>
                         </Box>
                         <MainCard>
-                            <TableList
-                                checked={checkedDelete}
-                                columns={columns}
-                                rows={data?.data?.result?.filter(row => row.isPublic === true && (publicationsData?._id === (row?.publicationId as TPublications)?._id)) || []}
-                                onChecked={handleCheckedDelete}
-                                onToggleCheckedAll={handleCheckedDeleteAll}
-                                checkedAll={checkedAll}
-                                isLoading={isLoading}
-                            />
+                            {
+                                isMd ?
+                                    <TableList
+                                        checked={checkedDelete}
+                                        columns={columns}
+                                        rows={dataVoiceOfPublications || []}
+                                        onChecked={handleCheckedDelete}
+                                        onToggleCheckedAll={handleCheckedDeleteAll}
+                                        checkedAll={checkedAll}
+                                        isLoading={isLoading}
+                                    />
+                                    :
+                                    <Grid container spacing={2} sx={{ p: { xs: 0, sm: 0, md: "12px 32px" }, pt: 2 }}>
+                                        <Grid item xs={12}>
+                                            {
+                                                dataVoiceOfPublications?.length > 0 ? (
+                                                    dataVoiceOfPublications?.map((row, idxRow) => {
+                                                        return (
+                                                            <>
+                                                                <Accordion
+                                                                    key={idxRow}
+                                                                    sx={{
+                                                                        background: "#e4f2fd",
+                                                                        borderRadius: "8px",
+                                                                        mt: 2,
+                                                                        position: 'relative',
+                                                                        zIndex: 1,
+                                                                    }}
+                                                                >
+                                                                    <AccordionSummary
+                                                                        expandIcon={<ExpandMore />}
+                                                                        sx={{
+                                                                            background: "#e4f2fd",
+                                                                            boxShadow: "0px 4px 6px rgba(86, 204, 242, 0.3)",
+                                                                            borderRadius: "8px",
+                                                                        }}
+                                                                    >
+                                                                        <Box sx={{ width: '100%' }}>
+                                                                            <Typography>
+                                                                                Tên voice: {row?.name.replace(/\.mp3$/, "")}
+                                                                            </Typography>
+                                                                        </Box>
+                                                                    </AccordionSummary>
+
+                                                                    <AccordionDetails>
+                                                                        <Box sx={{ width: '100%', py: 1 }}>
+                                                                            <Typography mt={0.5}>Tên voice: <strong>{row?.name.replace(/\.mp3$/, "")}</strong></Typography>
+                                                                            <Typography mt={0.5}>Loại giọng: <strong>{(row?.typeVoiceId as TTypeVoice)?.name}</strong></Typography>
+                                                                            <Typography mt={0.5}>Loại hội thoại: <strong>{getLabelFromOptions(statusVoiceImage, row?.isPrivate)}</strong></Typography>
+                                                                            <Typography mt={0.5}>STT: <strong>{row?.order}</strong></Typography>
+
+
+                                                                            <Button variant="outlined" style={{ marginTop: 5}}>
+                                                                                <IconPencil
+                                                                                    onClick={() => handleEditVoice(row)}
+                                                                                    size={22}
+                                                                                    stroke={1.5}
+
+                                                                                />
+                                                                            </Button>
+
+                                                                            <Button variant="outlined" color="error" style={{ marginLeft: 5, marginTop: 5}}>
+                                                                                <IconTrash
+                                                                                    size={22}
+                                                                                    stroke={1.5}
+                                                                                    onClick={() => handleOpenConfirmDialog(row)}
+                                                                                />
+                                                                            </Button>
+                                                                        </Box>
+                                                                    </AccordionDetails>
+                                                                </Accordion>
+
+                                                            </>
+                                                        );
+                                                    })
+                                                ) : (
+                                                    <Typography>Chưa có dữ liệu</Typography>
+                                                )
+                                            }
+                                        </Grid>
+                                    </Grid>
+                            }
 
                             <ConfirmDeleteDialog
                                 key={"delete"}

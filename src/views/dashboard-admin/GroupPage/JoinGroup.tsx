@@ -170,7 +170,7 @@ const JoinGroup = () => {
             <MainCard>
                 <Stack spacing={2}>
                     <CsFlexRowBetween>
-                        <Box sx={{ ml: 4, mb: 2 }}>
+                        <Box sx={{ ml: { xs: 0, sm: 0, md: 4 }, mb: 2 }}>
                             <Link to="/he-thong/quan-ly-nhom" style={{ textDecoration: 'none' }}>
                                 <StyledButton
                                     color="primary"

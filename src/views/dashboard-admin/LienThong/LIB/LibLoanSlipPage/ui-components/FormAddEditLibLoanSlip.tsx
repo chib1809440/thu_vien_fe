@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, Table, TableBody, TableContainer, TableHead, TextField, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, Grid, InputAdornment, InputLabel, MenuItem, Select, Table, TableBody, TableContainer, TableHead, TextField, Typography } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import * as yup from "yup";
@@ -6,7 +6,7 @@ import InputForm from "../../../../../../components/custom/form/InputForm";
 import SwitchForm from "../../../../../../components/custom/form/SwitchForm";
 import { CreatePublication, TLoanSlip, TLoanSlipCreate } from "../../../../../../types/models/loanSlip.type";
 import DatePicker from "react-datepicker";
-import { Label } from "@mui/icons-material";
+import { ExpandMore, Label } from "@mui/icons-material";
 import { vi } from "date-fns/locale";
 import useDebounce, { searchDelay } from "../../../../../../hooks/useDebounce";
 import { getUserByBarCode } from "../../../../../../_apis/user.api";
@@ -17,7 +17,7 @@ import { styled } from '@mui/material/styles';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TPublications } from "../../../../../../types/models/publications.type";
-import { positions } from "@mui/system";
+import { positions, useMediaQuery } from "@mui/system";
 import publicationsService from "../../../../../../_apis/services/publications.service";
 import useDebounceArray from "../../../../../../hooks/useDebounceArray";
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
@@ -476,6 +476,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
     }, [user]);
     // console.log("sss", loanSlip.libraryId);
     // console.log("sss", user);
+    const isMd = useMediaQuery('(min-width: 900px)');
 
     return (
         <FormikProvider value={formik}>
@@ -495,7 +496,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     {isEditMode ? "Sửa phiếu mượn" : "Thêm phiếu mượn mới"} {loanSlip?.isCancel === true ? <span style={{ color: '#c62828' }}>(Đã hủy phiếu)</span> : ""}
                 </DialogTitle>
 
-                <DialogContent sx={{ p: 8 }} >
+                <DialogContent sx={{ p: { xs: 3, sm: 3, md: 8 } }} >
                     <Box sx={{ display: 'none' }}>
                         {
                             loanSlip && libraryDetail && <PrintLoanSlip libraryDetail={libraryDetail} ref={componentRef} loanSlip={loanSlip} />
@@ -517,7 +518,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
 
                                 <Grid container spacing={2}>
-                                    <Grid item xs={6}>
+                                    <Grid item xs={12} sm={12} md={6}>
                                         <Box style={{ width: "100%" }} sx={{ mt: 2 }}>
                                             <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                 Ngày mượn  <span className="required_text">(*)</span>{" "}
@@ -545,7 +546,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                             />
                                         </Box>
                                     </Grid>
-                                    <Grid item xs={6}>
+                                    <Grid item xs={12} sm={12} md={6}>
                                         <Box style={{ width: "100%" }} sx={{ mt: 2 }}>
                                             <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                 Ngày trả  <span className="required_text">(*)</span>{" "}
@@ -579,7 +580,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                         </Grid>
                     </Grid>
                     <Grid container spacing={3} sx={{ mt: 1 }}>
-                        <Grid item md={12}>
+                        <Grid item xs={12} sm={12} md={12}>
                             <Box style={{ width: "100%" }} sx={{ mb: 1.5 }}>
                                 <Typography sx={{ display: 'flex', alignItems: 'center', mb: 1.5, fontWeight: "bold" }}>
                                     <span style={{ marginRight: '8px' }}>Nhóm thư viện</span>
@@ -681,7 +682,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                         </ul>
                                     </div>
                                 )}
-                                <TableContainer component={Paper} sx={{ mt: 4 }}>
+                                <TableContainer component={Paper} sx={{ mt: 4, display: { xs: "none", sm: "none", md: "flex" } }}>
                                     <Table sx={{ minWidth: 700 }} aria-label="customized table">
                                         <TableHead>
                                             <TableRow>
@@ -885,6 +886,194 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                         </TableBody>
                                     </Table>
                                 </TableContainer>
+
+                                {
+
+                                    !isMd &&
+
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: '100%' }}>
+                                        {publications?.map((row, index) => (
+                                            <Box key={index}>
+
+                                                {row.publicationId === '' && (
+                                                    <Autocomplete
+                                                        getOptionLabel={(option) => (option?.name)}
+                                                        loading={loadingSearch}
+                                                        options={dropdownOptions}
+                                                        onChange={(event, value) =>
+                                                            handlePublicationChange(event, value, index)
+                                                        }
+                                                        disablePortal
+                                                        value={publications[index] || null}
+                                                        onInputChange={(event, newInputValue, reason) => {
+                                                            if (reason === 'reset') {
+                                                                setDropdownOptions([])
+                                                                return
+                                                            }
+                                                        }}
+                                                        noOptionsText="Vui lòng nhập tên ấn phẩm"
+                                                        renderInput={(params) => (
+                                                            <TextField
+                                                                {...params}
+                                                                inputRef={index === publications.length - 1 ? lastInputRef : null}
+                                                                onChange={(event) => handleBarCodeChange(index, event.target.value)}
+                                                                InputProps={{
+                                                                    ...params.InputProps,
+                                                                    startAdornment: (
+                                                                        <InputAdornment position="start">
+                                                                            Tên ấn phẩm:
+                                                                        </InputAdornment>
+                                                                    ),
+                                                                }}
+                                                                sx={{ marginTop: 3 }}
+                                                            />
+                                                        )}
+                                                    />
+                                                )}
+                                            </Box>
+                                        ))}
+                                    </Box>
+                                }
+
+                                {publications?.map((row, index) => (
+                                    <>
+                                        {(row?.barcode || row?.name) && !isMd && (
+                                            <Accordion key={index} sx={{
+                                                background: "#e4f2fd", borderRadius: "8px",
+                                                mt: 2,
+                                                position: 'relative', zIndex: 1,
+                                            }}>
+                                                <AccordionSummary expandIcon={<ExpandMore />} sx={{ background: "#e4f2fd", boxShadow: "0px 4px 6px rgba(86, 204, 242, 0.3)", borderRadius: "8px" }}>
+                                                    <Box sx={{ width: '100%' }}>
+                                                        <Typography>
+                                                            Tên ấn phẩm: <strong>{row.publicationId !== '' && capitalizeFirstLetter(row?.name)}</strong>
+                                                        </Typography>
+                                                    </Box>
+                                                </AccordionSummary>
+
+                                                <AccordionDetails>
+                                                    <Box sx={{ width: '100%', py: 1 }}>
+                                                        <Box sx={{ my: 1 }}>
+                                                            <Typography mt={0.5}>Mã ấn phẩm: <strong>{row?.barcode}</strong></Typography>
+                                                            <Typography mt={0.5}>Tên ấn phẩm: <strong>{capitalizeFirstLetter(row?.name)}</strong></Typography>
+                                                            <Typography mt={0.5}>Số lượng tồn kho: <strong>{row?.quantity}</strong></Typography>
+                                                            <Typography mt={0.5}>Số lượng trên kệ: <strong>{row?.shelvesQuantity}</strong></Typography>
+                                                            {
+                                                                row?.quantityLoan && <Typography mt={0.5}>Số lượng mượn: <strong>{row?.quantityLoan}</strong></Typography>
+                                                            }
+                                                        </Box>
+
+                                                        {
+                                                            isEditMode && loanSlip?.isAgree === true ? <>
+                                                                {
+                                                                    loanSlip?.isReturn === false &&
+
+                                                                    <Box style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                                                                        <TextField
+                                                                            variant="outlined"
+                                                                            fullWidth
+                                                                            placeholder="Số lượng"
+                                                                            type="number"
+                                                                            value={isEditMode && loanSlip.isAgree == true ? row.quantityModify : row.quantityLoan}
+                                                                            onChange={(e) => {
+                                                                                const updatedPublications = [...publications];
+                                                                                const updatedItem = { ...updatedPublications[index] }; // Tạo bản sao sâu của đối tượng
+
+                                                                                if (isEditMode && loanSlip.isAgree === true) {
+                                                                                    if (Number(e.target.value) > updatedItem.quantityLoan - updatedItem.quantityReturn) {
+                                                                                        toast.error("Số lượng trả không lớn hơn số lượng mượn");
+                                                                                        return;
+                                                                                    }
+                                                                                    updatedItem.quantityModify = Number(e.target.value);
+                                                                                } else {
+                                                                                    updatedItem.quantityLoan = Number(e.target.value);
+                                                                                }
+
+                                                                                updatedPublications[index] = updatedItem; // Gán bản sao đã chỉnh sửa vào mảng
+                                                                                setPublications(updatedPublications); // Cập nhật state
+                                                                            }}
+                                                                            sx={{ flexShrink: 1, width: '40%', mr: 1 }} // Điều chỉnh width và margingjgvhjghghghghghgutytyt phải
+                                                                        />
+                                                                        <Typography variant="h6">{`/${row.quantityLoan - row.quantityReturn}`}</Typography> {/* Hiển thị giá trị bên cạnh */}
+                                                                    </Box>
+                                                                }
+                                                            </> : <>
+
+                                                                <Box sx={{ marginBottom: 1 }}>
+                                                                    <TextField
+                                                                        variant="outlined"
+                                                                        fullWidth
+                                                                        placeholder="Số lượng"
+                                                                        value={row.quantityLoan}
+                                                                        onChange={(e) => {
+                                                                            let updatedPublications = [...publications];
+                                                                            updatedPublications[index] = { ...updatedPublications[index] }; // Create a copy of the specific item
+                                                                            updatedPublications[index].quantityLoan = Number(e.target.value); // Modify the copy
+                                                                            setPublications(updatedPublications); // Update the state
+                                                                        }}
+                                                                        InputProps={{
+                                                                            startAdornment: <InputAdornment position="start">Số lượng mượn:</InputAdornment>,  // "kg" as a prefix
+                                                                        }}
+                                                                    />
+                                                                </Box>
+
+                                                            </>
+                                                        }
+
+                                                        {/* Position (Editable when not in edit mode) */}
+                                                        <Box sx={{ marginBottom: 1, marginTop: 1 }}>
+                                                            {(!isEditMode || (isEditMode && loanSlip?.isAgree === false)) ? (
+                                                                <Select
+                                                                    value={row.position || 'trên kệ'} // Default value is "trên kệ"
+                                                                    onChange={(e) => {
+                                                                        const updatedPublications = [...publications]; // Shallow copy of publications array
+                                                                        const updatedRow = { ...updatedPublications[index] }; // Deep copy of the specific row object
+                                                                        updatedRow.position = e.target.value; // Update the position field on the copied object
+                                                                        updatedPublications[index] = updatedRow; // Replace the original item with the updated copy
+                                                                        setPublications(updatedPublications); // Update state
+                                                                    }}
+                                                                    fullWidth
+                                                                >
+                                                                    <MenuItem value="trong kho">Trong kho</MenuItem>
+                                                                    <MenuItem value="trên kệ">Trên kệ</MenuItem>
+                                                                </Select>
+                                                            ) : (
+                                                                capitalizeFirstLetter(row?.position)
+                                                            )}
+                                                        </Box>
+
+                                                        {
+                                                            loanSlip?.isAgree === false &&
+                                                            <Button variant="outlined" color="error">
+                                                                <IconTrash
+                                                                    style={{ cursor: 'pointer', color: 'red' }}
+                                                                    onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
+                                                                    color="red"
+                                                                    size={20}
+                                                                    stroke={1.5}
+                                                                />
+                                                            </Button>
+                                                        }
+                                                        {
+                                                            (isCart || !loanSlip) && (
+                                                                <Button variant="outlined" color="error">
+                                                                    <IconTrash
+                                                                        style={{ cursor: 'pointer', color: 'red' }}
+                                                                        onClick={() => handleRemovePublication(index)} // Gọi hàm xóa
+                                                                        color="red"
+                                                                        size={20}
+                                                                        stroke={1.5}
+                                                                    />
+                                                                </Button>
+                                                            )
+                                                        }
+                                                    </Box>
+                                                </AccordionDetails>
+                                            </Accordion >
+                                        )}
+                                    </>
+                                ))}
+
                                 <Box sx={{ mt: 4 }}>
                                     <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                         Ghi chú
@@ -957,46 +1146,50 @@ const FormAddEditLoanSlip: FC<Props> = ({
                     }
                 </DialogContent>
 
-                <DialogActions sx={{ p: 4 }}>
-                    <Button disabled={isFetching} onClick={onClose} color="error">
-                        Đóng
-                    </Button>
-                    {
-
-                        loanSlip && ((libraryId as string) === loanSlip.libraryId) && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={handleReturnLoanSlip} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
-                            Trả sách
+                <DialogActions sx={{ p: 4, display: 'flex', flexDirection: { xs: 'column', sm: 'column', md: 'row' }, gap: 1 }}>
+                    <Box sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'row' }, gap: 2 }}>
+                        <Button disabled={isFetching} onClick={onClose} color="error">
+                            Đóng
                         </Button>
-                    }
-                    {
+                        {
 
-                        loanSlip && ((libraryId as string) === loanSlip.libraryId) && isEditMode && <Button onClick={() => handlePrint()} style={{ background: '#212121', color: 'white' }} variant="contained"  >
-                            In
-                        </Button>
-                    }
-                    {
-                        loanSlip &&
-                        isEditMode &&
-                        loanSlip.status !== "đang mượn" && loanSlip.status !== "đã trả" && // Kiểm tra status
-                        !loanSlip.isCancel && (
-                            <Button
-                                onClick={() => handleCancelLoanSlip(loanSlip)}
-                                style={{ background: '#c62828', color: 'white' }}
-                                variant="contained"
-                            >
-                                Hủy phiếu mượn
+                            loanSlip && ((libraryId as string) === loanSlip.libraryId) && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={handleReturnLoanSlip} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                                Trả sách
                             </Button>
-                        )
-                    }
-                    {
-                        !loanSlip?.isReturn && <Button
-                            disabled={isFetching}
-                            onClick={handleSubmit as () => void}
-                            variant="contained"
-                            color="primary"
-                        >
-                            {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
-                        </Button>
-                    }
+                        }
+                        {
+
+                            loanSlip && ((libraryId as string) === loanSlip.libraryId) && isEditMode && <Button onClick={() => handlePrint()} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                                In
+                            </Button>
+                        }
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'row' }, gap: 2, mt: { xs: 2, sm: 2, md: 0 } }}>
+                        {
+                            loanSlip &&
+                            isEditMode &&
+                            loanSlip.status !== "đang mượn" && loanSlip.status !== "đã trả" && // Kiểm tra status
+                            !loanSlip.isCancel && (
+                                <Button
+                                    onClick={() => handleCancelLoanSlip(loanSlip)}
+                                    style={{ background: '#c62828', color: 'white' }}
+                                    variant="contained"
+                                >
+                                    Hủy phiếu mượn
+                                </Button>
+                            )
+                        }
+                        {
+                            !loanSlip?.isReturn && <Button
+                                disabled={isFetching}
+                                onClick={handleSubmit as () => void}
+                                variant="contained"
+                                color="primary"
+                            >
+                                {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
+                            </Button>
+                        }
+                    </Box>
 
                 </DialogActions>
             </Dialog>

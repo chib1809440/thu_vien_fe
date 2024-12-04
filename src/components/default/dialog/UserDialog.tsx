@@ -285,7 +285,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={6}>
+                                        <Grid item xs={12} sm={12} md={6}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Họ và tên <span className="required_text">(*)</span>{""}
@@ -314,7 +314,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                                     )}
                                             </Box>
                                         </Grid>
-                                        <Grid item md={6}>
+                                        <Grid item xs={12} sm={12} md={6}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Số điện thoại <span className="required_text">(*)</span>{""}
@@ -345,7 +345,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                         </Grid>
                                     </Grid>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={6}>
+                                        <Grid item xs={12} sm={12} md={6}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Email <span className="required_text">(*)</span>{""}
@@ -374,7 +374,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                                     )}
                                             </Box>
                                         </Grid>
-                                        <Grid item md={6}>
+                                        <Grid item xs={12} sm={12} md={6}>
                                             <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                 Giới tính  <span className="required_text">(*)</span>{" "}
                                             </Typography>
@@ -424,7 +424,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                         </Grid>
                                     </Grid>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={12}>
+                                        <Grid item xs={12} sm={12} md={12}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Ngày sinh <span className="required_text">(*)</span>{" "}
@@ -463,7 +463,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                         </Grid>
                                     </Grid>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={2}>
+                                        <Grid item xs={12} sm={12} md={2}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Lớp
@@ -492,7 +492,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                                     )}
                                             </Box>
                                         </Grid>
-                                        <Grid item md={5}>
+                                        <Grid item xs={12} sm={12} md={5}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                     Trường
@@ -522,7 +522,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                                     )}
                                             </Box>
                                         </Grid>
-                                        <Grid item md={5}>
+                                        <Grid item xs={12} sm={12} md={5}>
                                             <Box style={{ width: "100%" }} sx={{ mb: 1.5 }}>
                                                 <Typography sx={{ display: 'flex', alignItems: 'center', mb: 1.5, fontWeight: "bold" }}>
                                                     <span style={{ marginRight: '8px' }}>Vai trò</span>
@@ -570,7 +570,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                         </Grid>
                                     </Grid>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={12}>
+                                        <Grid item xs={12} sm={12} md={12}>
                                             <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
                                                 Địa chỉ  <span className="required_text">(*)</span>
                                             </Typography>
@@ -595,7 +595,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                     </Grid>
                                     {
                                         id ? <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                            <Grid item md={12}>
+                                            <Grid item xs={12} sm={12} md={12}>
                                                 <Box style={{ width: "100%" }} sx={{ mb: 1.5 }}>
                                                     <Typography sx={{ display: 'flex', alignItems: 'center', mb: 1.5, fontWeight: "bold" }}>
                                                         <span style={{ marginRight: '8px' }}>Hình ảnh hiện tại</span>
@@ -613,7 +613,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                         </>
                                     }
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item md={12}>
+                                        <Grid item xs={12} sm={12} md={12}>
                                             {avatarPreview && (
                                                 <div style={{ position: 'relative', display: 'inline-block', marginTop: 10 }}>
                                                     <Typography sx={{ display: 'flex', alignItems: 'center', mb: 1.5, fontWeight: "bold" }}>

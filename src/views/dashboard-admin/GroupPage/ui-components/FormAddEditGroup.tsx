@@ -184,14 +184,15 @@ const FormAddEditGroup: FC<Props> = ({
                                 noOptionsText="Vui lòng thêm thư viện mới"
                                 {...(hasPermission([{ resource: "all", action: "manage" }])
                                     ? {
-                                          handleAddAccount: () => setOpenAddAccount(true),
-                                          handleAddLibAndAccount: handleAddLibrary,
-                                      }
+                                        handleAddAccount: () => setOpenAddAccount(true),
+                                        handleAddLibAndAccount: handleAddLibrary,
+                                    }
                                     : {})}
                             />
 
                             <SelectForm
                                 label="Trưởng nhóm thư viện"
+                                required
                                 options={((values.libraries as unknown as TLibrary[]) || [])?.map(
                                     (item) => ({
                                         value: item._id,
@@ -220,13 +221,13 @@ const FormAddEditGroup: FC<Props> = ({
                             size="small"
                             variant="contained"
                             onClick={handleSubmit as () => void}
-                            sx={{ paddingTop: 1.3, paddingBottom: 1.3 }}
+                            sx={{ paddingTop: 1.3, paddingBottom: 1.3, marginRight: 3 }}
                         >
                             {isFetching
                                 ? "Đang thực hiện..."
                                 : isEditMode
-                                ? "Cập nhật"
-                                : "Thêm mới"}
+                                    ? "Cập nhật"
+                                    : "Thêm mới"}
                         </StyledButton>
                     </DialogActions>
                 </Dialog>

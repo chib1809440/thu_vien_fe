@@ -1,33 +1,27 @@
-import { Button, Chip, FormControl, Grid, MenuItem, Select, Switch, useTheme } from "@mui/material";
-import { Box, Stack } from "@mui/system";
-import { IconCalendar, IconEye, IconFileExport, IconPencil, IconPlus, IconPrinter, IconTrash, IconX } from "@tabler/icons";
-import { IconClockSearch, IconTrashXFilled } from "@tabler/icons-react";
+import { Button, Chip, FormControl, Grid, MenuItem, Select, Typography, useTheme } from "@mui/material";
+import { Box } from "@mui/system";
+import { IconCalendar, IconEye, IconFileExport, IconPencil, IconTrash, IconX } from "@tabler/icons";
+import { vi } from "date-fns/locale";
+import ExcelJS from 'exceljs';
 import { useCallback, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../../../components/custom/form/ActionForm";
 import TableList from "../../../../../components/custom/table-list/TableList";
-import StyledButton from "../../../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../../../components/default/dialog/ConfirmDeleteDialog";
+import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
+import { formatDate } from "../../../../../helpers/formatDate";
 import { useAddLoanSlip, useApprovalLoanSlip, useCancelLoanSlip, useDeleteSoftLoanSlip, useDeleteSoftManyLoanSlip, useEditLoanSlip, useReturnLoanSlip } from "../../../../../hooks/services/loanSlip/loanSlip-mutation";
-import { useFetchLoanSlip, useFetchLoanSlipLink, useFetchLoanSlipRequestLink, useReFetchLoanSlip, useReFetchLoanSlipLink, useReFetchLoanSlipRequestLink } from "../../../../../hooks/services/loanSlip/loanSlip-query";
+import { useFetchLoanSlipRequestLink, useReFetchLoanSlipRequestLink } from "../../../../../hooks/services/loanSlip/loanSlip-query";
 import useQueryString from "../../../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../../../types/common/table";
 import { CreatePublication, TLoanSlip, TLoanSlipCreate } from "../../../../../types/models/loanSlip.type";
 import IBreadcrumsCustom from "../../../../../ui-component/breadcrums";
 import MainCard from "../../../../../ui-component/cards/MainCard";
-import { formatDate } from "../../../../../helpers/formatDate";
-import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
-import { useReactToPrint } from "react-to-print";
-import { vi } from "date-fns/locale";
-import Html2Pdf from 'html2pdf.js';
 import { parserParams } from "../../../../../utils/object";
-import { useFetchPublications } from "../../../../../hooks/services/publications/publications-query";
-import DatePicker from "react-datepicker";
-import ExcelJS from 'exceljs';
-import FormAddEditLibLoanSlip from "./ui-components/FormAddEditLibLoanSlip";
 import ViewDetailLoanSlip from "../../../LoanSlipPage/ui-components/ViewDetailLoanSlip";
-import { User } from "../../../../../interfaces/user";
+import FormAddEditLibLoanSlip from "./ui-components/FormAddEditLibLoanSlip";
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -123,24 +117,40 @@ const LoanSlipRequestLink = () => {
     });
     const handleApprovalLoanSlip = (row: TLoanSlip) => {
         row.status = "chờ nhận sách";
-        mutationEdit.mutate(
-            { ...row as any, _id: row._id, userId: row.userId._id, },
-            {
-                onSuccess: () => {
-                    revalidate();
-                    toast.success('Chỉnh sửa thành công.');
-                    handleClose();
-                },
-            }
-        );
-    };
+        const returnDate = new Date(row?.returnDay);
+        const currentDate = new Date();
+        returnDate.setHours(0, 0, 0, 0);
+        currentDate.setHours(0, 0, 0, 0);
+
+
+        if (isNaN(returnDate.getTime())) {
+            toast.error("Ngày trả sách không hợp lệ.");
+            return;
+        }
+
+        if (returnDate < currentDate) {
+            toast.error("Ngày trả không hợp lệ! Vui lòng cập nhật lại.")
+            return;
+        } else {
+            mutationEdit.mutate(
+                { ...row as any, _id: row._id, userId: row.userId._id },
+                {
+                    onSuccess: () => {
+                        revalidate();
+                        toast.success('Duyệt phiếu mượn thành công.');
+                        handleClose();
+                    },
+                }
+            );
+        };
+    }
     const handleDeliveryBook = (row: TLoanSlip) => {
         mutationApproval.mutate(
             row._id,
             {
                 onSuccess: () => {
                     revalidate();
-                    toast.success('Chỉnh sửa thành công.');
+                    toast.success('Giao sách thành công.');
                     handleClose();
                 },
             }
@@ -239,31 +249,33 @@ const LoanSlipRequestLink = () => {
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
-                id: "borrowedDay",
+                id: "info",
                 disablePadding: "none",
-                label: "Ngày mượn",
+                label: "Thông tin mượn",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
+                sxRow: { paddingRight: 3, maxWidth: 300 },
                 render: (row) => {
                     return (
                         <Box
                         >
-                            {formatDate(row.borrowedDay)}
-                        </Box>
-                    );
-                },
-            },
-            {
-                id: "returnDay",
-                disablePadding: "none",
-                label: "Ngày trả",
-                align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => {
-                    return (
-                        <Box
-                        >
-                            {formatDate(row.returnDay)}
+                            <Typography mt={0.5}>Ngày mượn: <strong>{formatDate(row?.borrowedDay)}</strong></Typography>
+                            <Typography mt={0.5}>Ngày trả: <strong>{formatDate(row?.returnDay)}</strong></Typography>
+                            <Typography variant="body1" sx={{ mt: 0.5 }}>
+                                Người mượn: <strong>{row?.userId?.fullname}</strong>
+                            </Typography>
+                            <Typography variant="body1" sx={{ mt: 0.5 }}>
+                                Trường: <strong>{row?.userId?.school}</strong>
+                            </Typography>
+                            {row?.publications?.length > 0 && (
+                                <Box sx={{ mt: 0.5 }}>
+                                    <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
+                                    <ul style={{ margin: 0 }}>
+                                        {row?.publications.map((publication, idx) => (
+                                            <li key={idx}>{capitalizeFirstLetter(publication?.name)} (SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
+                                        ))}
+                                    </ul>
+                                </Box>
+                            )}
                         </Box>
                     );
                 },
@@ -465,9 +477,21 @@ const LoanSlipRequestLink = () => {
             worksheet.addRow([]); // Thêm hàng trống
 
             // Thêm hàng từ ngày đến ngày
-            const startDateExcel = startDate ? formatDate(startDate) : '';
-            const endDateExcel = endDate ? formatDate(endDate) : '';
-            worksheet.addRow([`Từ ngày: ${startDateExcel} đến ngày: ${endDateExcel}`]).font = { bold: true };
+            // const startDateExcel = startDate ? formatDate(startDate) : '';
+            // const endDateExcel = endDate ? formatDate(endDate) : '';
+            // worksheet.addRow([`Từ ngày: ${startDateExcel} đến ngày: ${endDateExcel}`]).font = { bold: true };
+            const currentDateTime = new Date();
+            const formattedDateTime = currentDateTime.toLocaleString('vi-VN', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: false,
+            });
+            worksheet.addRow([`Ngày xuất file: ${formattedDateTime}`]).font = { bold: true };
+            worksheet.addRow([]);
 
             // Đặt header cho bảng
             worksheet.addRow([
@@ -478,8 +502,9 @@ const LoanSlipRequestLink = () => {
                 'Ngày mượn',
                 'Ngày trả',
                 'Trạng thái',
-                'Sách mượn'
-            ]);
+                'Ấn phẩm mượn',
+                'Trạng thái trả ấn phẩm'
+            ]).font = { bold: true };
 
             // Đặt kiểu định dạng cho các cột
             worksheet.getColumn('A').width = 15;
@@ -490,12 +515,39 @@ const LoanSlipRequestLink = () => {
             worksheet.getColumn('F').width = 20;
             worksheet.getColumn('G').width = 15;
             worksheet.getColumn('H').width = 50;
+            worksheet.getColumn('I').width = 50;
 
             // Lấy dữ liệu từ API
             const loanSlipsData = data?.data?.result?.map((loanSlip) => {
                 const bookTitles = loanSlip?.publications?.map(publication => {
-                    return `${publication.name} (${publication.quantityLoan} quyển)`;
-                }).join('\n');
+                    return `${capitalizeFirstLetter(publication.name)} (${publication.quantityLoan} quyển)`;
+                }).join(', ');
+                const returnQuantities = loanSlip?.publications?.map(publication => {
+                    let statusText = '';
+                    
+                    // Kiểm tra trạng thái và trả về thông báo tương ứng
+                    if (loanSlip?.status === 'đã hủy') {
+                        statusText = 'Đã hủy';
+                    } else if (loanSlip?.status === 'đang mượn' && publication.quantityReturn === 0) {
+                        statusText = 'Chưa trả';
+                    } else if (loanSlip?.status === 'đã trả' && publication.quantityReturn === publication.quantityLoan) {
+                        statusText = 'Đã trả xong';
+                    } else {
+                        // Calculate how many books are still needed to return
+                        const remainingQuantity = publication.quantityLoan - publication.quantityReturn;
+                        if (remainingQuantity > 0) {
+                            statusText = `Còn ${remainingQuantity} quyển cần trả`;
+                        } else {
+                            statusText = 'Đã trả xong';
+                        }
+                    }
+                    
+                    return statusText;
+                });
+                
+                const allReturned = loanSlip?.publications?.every(publication => publication.quantityReturn === publication.quantityLoan);
+                
+                const finalReturnQuantity = allReturned ? 'Đã trả xong' : returnQuantities.join(', ');
 
                 return {
                     barcode: loanSlip?.barcode,
@@ -506,6 +558,7 @@ const LoanSlipRequestLink = () => {
                     returnDate: formatDate(loanSlip?.returnDay),
                     status: capitalizeFirstLetter(loanSlip?.status),
                     bookTitle: bookTitles || '',
+                    returnQuantity: finalReturnQuantity || '0 quyển'
                 };
             });
 
@@ -522,7 +575,8 @@ const LoanSlipRequestLink = () => {
                     dataRow.borrowDate,
                     dataRow.returnDate,
                     dataRow.status,
-                    dataRow.bookTitle
+                    dataRow.bookTitle,
+                    dataRow.returnQuantity
                 ];
                 row.eachCell((cell) => {
                     cell.border = {
@@ -560,7 +614,7 @@ const LoanSlipRequestLink = () => {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'loan_slips.xlsx'; // Tên file xuất
+                a.download = 'DanhsachphieumuonLT.xlsx'; // Tên file xuất
                 a.click();
                 URL.revokeObjectURL(url);
             });
@@ -591,7 +645,7 @@ const LoanSlipRequestLink = () => {
             //     onClick: handleDeleteMultiple,
             // },
             {
-                label: "Xuất excel",
+                label: "Xuất danh sách phiếu mượn",
                 icon: <IconFileExport size={20} stroke={1.5} />,
                 onClick: handleExportLoanSlipExcel,
             },
@@ -681,10 +735,15 @@ const LoanSlipRequestLink = () => {
                 </Stack> */}
                 <ActionsForm placeholderSearch="Tìm kiếm theo barcode người mượn" actions={actionMenus} barcode={true}
                     barcodeSearch={barcodeSearch}
-                    handleBarcodeSearch={handleBarcodeSearch} placeholder="Tìm kiếm theo barcode" />
-                <Grid container pl={4} pr={4} xs={12} sm={12} md={12} lg={12} gap={2} sx={{ display: "flex", mb: 3, flexWrap: "wrap" }}>
+                    handleBarcodeSearch={handleBarcodeSearch} placeholder="Tìm kiếm theo barcode phiếu mượn" />
+                <Grid container xs={12} sm={12} md={12} lg={12} gap={2} sx={{
+                    display: "flex", mb: 3, flexWrap: "wrap",
+                    pl: { xs: 0, sm: 0, md: 4 },
+                    pr: { xs: 0, sm: 0, md: 4 },
+                    mt: { xs: 2, sm: 2, md: 0 }
+                }}>
                     <Grid item xs={12} sm={12} md={2} lg={2}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Lọc theo:
                             </span>
@@ -725,7 +784,7 @@ const LoanSlipRequestLink = () => {
                         </div>
                     </Grid>
                     <Grid item xs={12} sm={12} md={3} lg={3}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Từ ngày:
                             </span>
@@ -746,7 +805,7 @@ const LoanSlipRequestLink = () => {
                         </div>
                     </Grid>
                     <Grid item xs={12} sm={12} md={3} lg={3}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Đến ngày:
                             </span>
@@ -767,7 +826,7 @@ const LoanSlipRequestLink = () => {
                         </div>
                     </Grid>
                     <Grid item xs={12} sm={12} md={3} lg={3}>
-                        <div style={{ display: "flex", alignItems: "center" }}> {/* Sử dụng Flexbox để căn giữa */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}> {/* Sử dụng Flexbox để căn giữa */}
                             <span style={{ marginRight: "10px", whiteSpace: "nowrap", fontWeight: 'bold' }}> {/* Thêm whiteSpace để ngăn ngắt dòng */}
                                 Trạng thái:
                             </span>

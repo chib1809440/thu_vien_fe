@@ -18,9 +18,10 @@ type Props = {
     onClose: () => void;
     onSubmit?: (file: File) => void;
     isFetching?: boolean;
+    title?: string;
 };
 
-const DialogImportFile = ({ open, onClose, onSubmit }) => {
+const DialogImportFile = ({ open, onClose, onSubmit, title }) => {
     const [file, setFile] = useState<File | null>(null);
     const imageRef = useRef<HTMLInputElement | null>(null);
 
@@ -63,7 +64,7 @@ const DialogImportFile = ({ open, onClose, onSubmit }) => {
             disableEscapeKeyDown
         >
             <DialogTitle>
-                Thêm mới thông tin ấn phẩm bằng excel
+                {title}
                 <IconButton
                     aria-label="close"
                     onClick={onClose}

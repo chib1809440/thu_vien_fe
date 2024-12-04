@@ -2,20 +2,13 @@ import CloseIcon from "@mui/icons-material/Close";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ZoomInIcon from "@mui/icons-material/ZoomIn";
 import ZoomOutIcon from "@mui/icons-material/ZoomOut";
-import {
-    Box,
-    IconButton,
-    Modal,
-    Paper,
-    Tooltip,
-    Typography,
-    useTheme
-} from "@mui/material";
+import { Box, IconButton, Modal, Paper, Tooltip, Typography, useTheme } from "@mui/material";
 import { IconVolume } from "@tabler/icons-react";
 import { useCallback, useEffect, useState } from "react";
 import { TPublications } from "../../../types/models/publications.type";
 import { TVoice } from "../../../types/models/voice";
 import GradientLoading from "../../default/loading/GradientLoading/GradientLoading";
+
 interface ImageCardProps {
     id: number | string;
     photo: string;
@@ -34,7 +27,7 @@ interface ImageCardProps {
     sound_uk?: string;
     filterTypeVoiceId?: number;
     publications?: TPublications;
-    handleClickChangeMenu?: (event: React.MouseEvent<HTMLElement>) => void
+    handleClickChangeMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
 const ImageCard: React.FC<ImageCardProps> = ({
@@ -49,7 +42,7 @@ const ImageCard: React.FC<ImageCardProps> = ({
     description,
     limitDescription,
     aspectRatio = "16/9",
-    handleClickChangeMenu
+    handleClickChangeMenu,
 }) => {
     const [currentImage, setCurrentImage] = useState(0);
     const [isViewerOpen, setIsViewerOpen] = useState(false);
@@ -60,7 +53,7 @@ const ImageCard: React.FC<ImageCardProps> = ({
     const theme = useTheme();
     const [loading, setLoading] = useState<boolean>(true);
     const [typeVoiceId, setTypeVoiceId] = useState<number>(filterTypeVoiceId);
-    const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);    
+    const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
 
     const handleImageLoaded = () => {
         if (loading) {
@@ -91,7 +84,7 @@ const ImageCard: React.FC<ImageCardProps> = ({
 
     const handleMouseDown = (event: React.MouseEvent) => {
         // Kiểm tra nếu scale > 1 thì mới cho phép kéo ảnh
-        if (scale > 1) {
+        if (scale > 1) {      
             event.preventDefault();
             setIsDragging(true);
             setStartPos({ x: event.clientX - translate.x, y: event.clientY - translate.y });
@@ -183,14 +176,13 @@ const ImageCard: React.FC<ImageCardProps> = ({
         setTranslate({ x: 0, y: 0 });
     };
 
-  
     const handleChangeVoice = (id: number) => {
         setTypeVoiceId(id);
     };
     const handleClickVoice = (audioUrl: string) => {
         if (currentAudio) {
             currentAudio.pause();
-            currentAudio.currentTime = 0; 
+            currentAudio.currentTime = 0;
         }
 
         const newAudio = new Audio(process.env.REACT_APP_BASE_API_URL_FILE + audioUrl);
@@ -270,95 +262,91 @@ const ImageCard: React.FC<ImageCardProps> = ({
                     border: "5px solid black",
                 }}
             >
-                <Box
-                    onMouseDown={handleMouseDown}
-                    onMouseMove={handleMouseMove}
-                    onMouseUp={handleMouseUp}
-                    onMouseLeave={handleMouseLeave}
-                    onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
-                    onTouchEnd={handleTouchEnd}
-                    onWheel={handleWheel}
-                    sx={{
-                        position: "relative",
-                        width: "90vw",
-                        height: "90vh",
-                        backgroundColor: "black",
-                        border: "5px solid black",
-                        outline: "none",
-                        overflow: "hidden", // Đảm bảo phần tử không bị kéo ra ngoài
-                        cursor: isDragging ? "grabbing" : "grab",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
-                    <IconButton
-                        onClick={closeImageViewer}
+                <>
+                    <Box
+                        onMouseDown={handleMouseDown}
+                        onMouseMove={handleMouseMove}
+                        onMouseUp={handleMouseUp}
+                        onMouseLeave={handleMouseLeave}
+                        onTouchStart={handleTouchStart}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleTouchEnd}
+                        onWheel={handleWheel}
                         sx={{
-                            position: "fixed",
-                            top: 16,
-                            right: 16,
-                            backgroundColor: "rgba(0, 0, 0, 0.5)",
-                            color: "white",
-                            zIndex: 1,
-                            ":hover": {
-                                backgroundColor: "rgba(0, 0, 0, 0.7)",
+                            position: "absolute",
+                            top: 0,
+                            right: 0,
+                            backgroundColor: "black",
+                            border: "5px solid black",
+                            outline: "none",
+                            overflow: "hidden", // Đảm bảo phần tử không bị kéo ra ngoài
+                            cursor: isDragging ? "grabbing" : "grab",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            flexDirection: {
+                                xs: "column",
+                                sm: "column",
+                                md: "row-reverse",
                             },
                         }}
                     >
-                        <CloseIcon />
-                    </IconButton>
-                    <IconButton
-                        onClick={zoomIn}
-                        sx={{
-                            position: "fixed",
-                            top: 16,
-                            right: 105,
-                            backgroundColor: "rgba(0, 0, 0, 0.5)",
-                            color: "white",
-                            zIndex: 1,
-                            ":hover": {
-                                backgroundColor: "rgba(0, 0, 0, 0.7)",
-                            },
-                        }}
-                    >
-                        <ZoomInIcon />
-                    </IconButton>
+                        <IconButton
+                            onClick={closeImageViewer}
+                            sx={{
+                                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                color: "white",
+                                zIndex: 1,
+                                ":hover": {
+                                    backgroundColor: "rgba(0, 0, 0, 0.7)",
+                                },
+                            }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                        <IconButton
+                            onClick={zoomIn}
+                            sx={{
+                                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                color: "white",
+                                zIndex: 1,
+                                ":hover": {
+                                    backgroundColor: "rgba(0, 0, 0, 0.7)",
+                                },
+                            }}
+                        >
+                            <ZoomInIcon />
+                        </IconButton>
 
-                    <IconButton
-                        onClick={zoomOut}
-                        sx={{
-                            position: "fixed",
-                            top: 16,
-                            right: 60,
-                            backgroundColor: "rgba(0, 0, 0, 0.5)",
-                            color: "white",
-                            zIndex: 1,
-                            ":hover": {
-                                backgroundColor: "rgba(0, 0, 0, 0.7)",
-                            },
-                        }}
-                    >
-                        <ZoomOutIcon />
-                    </IconButton>
-                    <IconButton
-                        sx={{
-                            position: "fixed",
-                            top: 16,
-                            right: 150,
-                            backgroundColor: "rgba(0, 0, 0, 0.5)",
-                            color: "white",
-                            zIndex: 1,
-                            ":hover": {
-                                backgroundColor: "rgba(0, 0, 0, 0.7)",
-                            },
-                        }}
-                        onClick={handleClickChangeMenu}
-                    >
-                        <IconVolume fontSize="small" />
-                        <MoreVertIcon />
-                    </IconButton>
+                        <IconButton
+                            onClick={zoomOut}
+                            sx={{
+                                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                color: "white",
+                                zIndex: 1,
+                                ":hover": {
+                                    backgroundColor: "rgba(0, 0, 0, 0.7)",
+                                },
+                            }}
+                        >
+                            <ZoomOutIcon />
+                        </IconButton>
+                        <IconButton
+                            sx={{
+                                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                color: "white",
+                                zIndex: 1,
+                                ":hover": {
+                                    backgroundColor: "rgba(0, 0, 0, 0.7)",
+                                },
+                            }}
+                            onClick={handleClickChangeMenu}
+                        >
+                            <IconVolume fontSize="small" />
+                            <MoreVertIcon />
+                        </IconButton>
+                    </Box>
+
                     <img
                         src={isViewPhoto}
                         alt="Large view"
@@ -371,7 +359,7 @@ const ImageCard: React.FC<ImageCardProps> = ({
                             borderRadius: `${!isBorderRadius ? 0 : "8px"}`,
                         }}
                     />
-                </Box>
+                </>
             </Modal>
         </>
     );

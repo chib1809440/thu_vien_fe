@@ -13,8 +13,8 @@ export function TableColumn<T>({ columns, checkedAll, onSelectAllClick }: Props<
     const theme = useTheme();
 
     return (
-        <TableHead  >
-            <TableRow >
+        <TableHead>
+            <TableRow>
                 <StyledTableCell padding="checkbox" align="center"  >
                     <Checkbox
                         color="primary"

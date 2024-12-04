@@ -34,7 +34,7 @@ function TableList<T>({
     columns = [],
     isLoading = false,
     pagination,
-    checkedAll= false,
+    checkedAll = false,
     onChecked,
     onToggleCheckedAll,
 }: Props<T>) {
@@ -179,7 +179,6 @@ function TableList<T>({
                     </TableBody>
                 </Table>
             </TableContainer>
-
             {/* Pagination */}
             {pagination && Object.keys(pagination).length > 0 && (
                 <PaginationForm pagination={pagination} />

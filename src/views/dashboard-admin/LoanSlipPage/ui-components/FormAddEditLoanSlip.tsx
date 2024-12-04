@@ -653,7 +653,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                     <Typography sx={{ ml: 2, mt: 2, fontWeight: "bold" }}>
                                         Vai trò:
                                         <span style={{ fontWeight: "normal", marginLeft: '4px' }}>
-                                            {(getLabelFromOptions(statusRole,(userData?.data?.result?.roleId as Role)?.name)) || "Không có dữ liệu"}
+                                            {(getLabelFromOptions(statusRole, (userData?.data?.result?.roleId as Role)?.name)) || "Không có dữ liệu"}
                                         </span>
                                     </Typography>
                                 </Grid>
@@ -819,7 +819,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                                 inputRef={index === publications.length - 1 ? lastInputRef : null} // Focus on the last input
                                                             /></>
                                                         }
-
                                                     </Box>
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left">

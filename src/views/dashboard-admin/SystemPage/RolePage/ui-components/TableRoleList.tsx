@@ -345,7 +345,7 @@ function TableRoleList<T extends DataType>({
                     />
                 </CsFlexRowBetween>
             </Box>
-
+       
             {
                 isOpenDecentralizeDilog && role && <RoleDecentralizeDialog
                     title={"Phân quyền vai trò"}

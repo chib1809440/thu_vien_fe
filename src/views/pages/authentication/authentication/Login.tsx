@@ -143,6 +143,7 @@ const Login = () => {
                                                         color={"#004085"}
                                                         gutterBottom
                                                         variant={matchDownXS ? 'h3' : 'h2'}
+                                                        fontSize={23.5}
                                                     >
                                                         GD LIB! Chào mừng bạn trở lại
                                                     </Typography>
@@ -176,7 +177,8 @@ const Login = () => {
                 alignItems="center"
                 sx={{
                     minHeight: { xs: 'calc(100vh - 68px)', md: 'calc(100vh - 152px)' },
-                    display: { xs: 'block', sm: 'block', md: 'none' }
+                    display: { xs: 'block', sm: 'block', md: 'none' },
+                    px: 2
                 }}
             >
                 <Stack justifyContent="center" alignItems="center" spacing={5}>
@@ -188,7 +190,7 @@ const Login = () => {
                             <Grid item>
                                 <Stack alignItems="center" justifyContent="center" spacing={1}>
                                     <Typography
-                                        color={theme.palette.secondary.main}
+                                        color={"#004085"}
                                         gutterBottom
                                         variant={matchDownSM ? 'h3' : 'h2'}
                                     >

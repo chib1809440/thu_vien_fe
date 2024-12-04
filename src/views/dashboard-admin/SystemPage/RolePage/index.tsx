@@ -17,6 +17,12 @@ const headCells: HeadCell[] = [
         label: 'Tên vai trò',
     },
     {
+        id: 'permission',
+        numeric: false,
+        disablePadding: true,
+        label: 'Số lượng vai trò',
+    },
+    {
         id: 'action',
         numeric: false,
         disablePadding: true,

@@ -33,7 +33,6 @@ const PaginationForm: FC<Props> = ({ pagination }) => {
             if (searchParams.get("page")) {
                 searchParams.set("page", "1");
             }
-            
             searchParams.set("limit", event.target.value);
             setSearchParams(searchParams);
         },

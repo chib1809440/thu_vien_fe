@@ -825,7 +825,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                                 inputRef={index === publications.length - 1 ? lastInputRef : null} // Focus on the last input
                                                             /></>
                                                         }
-
                                                     </Box>
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left">

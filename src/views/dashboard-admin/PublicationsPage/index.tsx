@@ -1395,60 +1395,56 @@ const PublicationsPage = () => {
                                                     )}
                                                 </StyledIconButton>
 
-                                                {hasPermission([
-                                                    { resource: "publications", action: "manage" },
-                                                    { resource: "publications", action: "update" },
-                                                ]) && (
-                                                        <StyledIconButton
-                                                            disableHoverEffect
-                                                            sx={{
-                                                                position: "absolute",
-                                                                zIndex: 999,
-                                                                bottom: -90,
-                                                                right: 15,
-                                                                margin: "8px",
-                                                                background: "none",
-                                                                [theme.breakpoints.down("sm")]: {
-                                                                    width: "7%",
-                                                                },
-                                                                [theme.breakpoints.down("md")]: {
-                                                                    width: "10%",
-                                                                },
-                                                            }}
-                                                        >
-                                                            {item?.type === "ấn phẩm cứng" && (
-                                                                <Tooltip title={item?.status === "có sẵn" ? "Mượn ấn phẩm" : "Ấn phẩm không có sẵn"} arrow placement="top">
-                                                                    <Box
-                                                                        sx={{
-                                                                            background: item?.status === "có sẵn" ? "green" : "gray",
-                                                                            color: "white",
-                                                                            borderRadius: 2,
-                                                                            display: "flex",
-                                                                            alignItems: "center",
-                                                                            justifyContent: "center",
-                                                                            p: 0.5,
-                                                                            // pointerEvents: item?.status === "có sẵn" ? "auto" : "none",
-                                                                            opacity: item?.status === "có sẵn" ? 1 : 0.5,
-                                                                        }}
-                                                                    >
-                                                                        <IconFileDescription
-                                                                            size={20}
-                                                                            stroke={2}
-                                                                            onClick={() => {
-                                                                                if (item?.status === "có sẵn") {
-                                                                                    handleAddItem(item);
-                                                                                }
-                                                                            }}
-                                                                        />
-                                                                    </Box>
-                                                                </Tooltip>
-                                                            )}
-                                                        </StyledIconButton>
+
+                                                <StyledIconButton
+                                                    disableHoverEffect
+                                                    sx={{
+                                                        position: "absolute",
+                                                        zIndex: 999,
+                                                        bottom: -90,
+                                                        right: (userRole === "Super Admin" || userRole === "Student") ? -15 : 15,
+                                                        margin: "8px",
+                                                        background: "none",
+                                                        [theme.breakpoints.down("sm")]: {
+                                                            width: "7%",
+                                                        },
+                                                        [theme.breakpoints.down("md")]: {
+                                                            width: "10%",
+                                                        },
+                                                    }}
+                                                >
+                                                    {item?.type === "ấn phẩm cứng" && (
+                                                        <Tooltip title={item?.status === "có sẵn" ? "Mượn ấn phẩm" : "Ấn phẩm không có sẵn"} arrow placement="top">
+                                                            <Box
+                                                                sx={{
+                                                                    background: item?.status === "có sẵn" ? "green" : "gray",
+                                                                    color: "white",
+                                                                    borderRadius: 2,
+                                                                    display: "flex",
+                                                                    alignItems: "center",
+                                                                    justifyContent: "center",
+                                                                    p: 0.5,
+                                                                    // pointerEvents: item?.status === "có sẵn" ? "auto" : "none",
+                                                                    opacity: item?.status === "có sẵn" ? 1 : 0.5,
+                                                                }}
+                                                            >
+                                                                <IconFileDescription
+                                                                    size={20}
+                                                                    stroke={2}
+                                                                    onClick={() => {
+                                                                        if (item?.status === "có sẵn") {
+                                                                            handleAddItem(item);
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </Box>
+                                                        </Tooltip>
                                                     )}
+                                                </StyledIconButton>
 
                                                 {hasPermission([
                                                     { resource: "publications", action: "manage" },
-                                                    { resource: "publications", action: "delete" },
+                                                    { resource: "publications", action: "update" },
                                                 ]) && <StyledIconButton
                                                     disableHoverEffect
                                                     sx={{

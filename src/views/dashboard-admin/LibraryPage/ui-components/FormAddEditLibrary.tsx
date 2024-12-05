@@ -99,7 +99,7 @@ const FormAddEditLibrary: FC<Props> = ({
                             <InputForm
                                 type="number"
                                 required
-                                label="Dung lượng bộ nhớ (GB)"
+                                label={`Dung lượng bộ nhớ (${isEditMode ? 'MB' : 'GB'})`}
                                 placeholder="Dung lượng bộ nhớ"
                                 value={values.maxStorageLimit || ''}
                                 onChange={(e) => {

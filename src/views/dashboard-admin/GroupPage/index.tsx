@@ -440,12 +440,13 @@ const GroupPage = () => {
         };
     }, [selectedEdit]);
 
+    const libsGroupRemoveSuper = libsGroup?.data?.result?.filter(item => item.createBy !== null);
     useEffect(() => {
         const libraries = [
-            ...(userRole === 'Owner' ? [] : libsGroup?.data?.result || []),
+            ...(userRole === 'Owner' ? [] : libsGroupRemoveSuper || []),
             ...(initialValues?.libraries || [])
         ].filter((item): item is TLibrary => typeof item !== 'string' && item !== null);
-    
+        
         setCombinedLibraries(libraries);
     }, [libsGroup, initialValues, userRole]);
     

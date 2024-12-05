@@ -286,6 +286,7 @@ const LibraryPublicationsPage = () => {
                                                             : ""} aspectRatio={"16/9"} objectFit="contain" />
                                                 </Box>
                                                 <Button
+                                                    onClick={() => handleViewDetails(item)}
                                                     sx={{
                                                         position: "absolute",
                                                         top: 0,

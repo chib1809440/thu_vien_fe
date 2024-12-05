@@ -197,7 +197,7 @@ const LibraryPage = () => {
                                 hasPermission([
                                     { resource: "all", action: "manage" },
                                     { resource: "libraries", action: "manage" },
-                                ]) &&
+                                ]) && userRole === "Super Admin" &&
                                 <>
                                     <IconPencil
                                         onClick={() => handleEditLibrary(row)}

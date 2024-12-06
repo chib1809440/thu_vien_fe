@@ -26,6 +26,7 @@ import MainCard from "../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../utils/object";
 import FormAddEditLoanSlip from "./ui-components/FormAddEditLoanSlip";
 import ViewDetailLoanSlip from "./ui-components/ViewDetailLoanSlip";
+import { TLibrary } from "../../../types/models/library.type";
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -161,7 +162,7 @@ const LoanSlipPage = () => {
             return;
         } else {
             mutationEdit.mutate(
-                { ...row as any, _id: row._id, userId: row.userId._id },
+                { ...row as any, _id: row._id, userId: row.userId._id, libraryId: (row.libraryId as TLibrary)?._id },
                 {
                     onSuccess: () => {
                         revalidate();
@@ -197,7 +198,7 @@ const LoanSlipPage = () => {
     const handleSubmit = (values: any) => {
         if (selectedEdit) {
             mutationEdit.mutate(
-                { ...values, _id: selectedEdit._id },
+                { ...values, _id: selectedEdit._id, libraryId: (selectedEdit.libraryId as TLibrary)._id },
                 {
                     onSuccess: () => {
                         revalidate();

@@ -521,7 +521,8 @@ const FormAddEditLoanSlip: FC<Props> = ({
     // console.log("sss", loanSlip.libraryId);
     // console.log("sss", user);
     const isMd = useMediaQuery('(min-width: 900px)');
-
+    console.log('dsd',libraryId);
+    
     return (
         <FormikProvider value={formik}>
             <Dialog
@@ -1197,7 +1198,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                         </Button>
                         {
 
-                            loanSlip && ((libraryId as string) === loanSlip.libraryId) && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                            loanSlip && ((libraryId as string) !== loanSlip.libraryId) && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
                                 Trả sách
                             </Button>
                         }

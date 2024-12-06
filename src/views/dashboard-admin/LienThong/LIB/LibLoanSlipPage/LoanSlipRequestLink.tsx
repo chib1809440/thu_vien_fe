@@ -22,6 +22,7 @@ import MainCard from "../../../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../../../utils/object";
 import ViewDetailLoanSlip from "../../../LoanSlipPage/ui-components/ViewDetailLoanSlip";
 import FormAddEditLibLoanSlip from "./ui-components/FormAddEditLibLoanSlip";
+import { TLibrary } from "../../../../../types/models/library.type";
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -133,7 +134,7 @@ const LoanSlipRequestLink = () => {
             return;
         } else {
             mutationEdit.mutate(
-                { ...row as any, _id: row._id, userId: row.userId._id },
+                { ...row as any, _id: row._id, userId: row.userId._id, libraryId: (row.libraryId as TLibrary)._id },
                 {
                     onSuccess: () => {
                         revalidate();
@@ -178,7 +179,7 @@ const LoanSlipRequestLink = () => {
     const handleSubmit = (values: any) => {
         if (selectedEdit) {
             mutationEdit.mutate(
-                { ...values, _id: selectedEdit._id },
+                { ...values, _id: selectedEdit._id, libraryId: (selectedEdit.libraryId as TLibrary)._id },
                 {
                     onSuccess: () => {
                         revalidate();
@@ -654,13 +655,17 @@ const LoanSlipRequestLink = () => {
 
     const initialValues = useMemo((): TLoanSlipCreate => {
         if (selectedEdit) {
+               // Kiểm tra xem selectedEdit.libraryId có phải là đối tượng TLibrary không
+        const libraryId = typeof selectedEdit.libraryId === 'string' 
+        ? selectedEdit.libraryId // Nếu là chuỗi, sử dụng trực tiếp
+        : (selectedEdit.libraryId as TLibrary)._id; // Nếu là đối tượng, lấy _id
             return {
                 note: selectedEdit.note,
                 borrowedDay: selectedEdit.borrowedDay,
                 returnDay: selectedEdit.returnDay,
                 receiptDate: selectedEdit.receiptDate,
                 isPrint: selectedEdit.isPrint,
-                libraryId: selectedEdit.libraryId as string,
+                libraryId: libraryId,
                 status: 'đang xử lý',
                 userId: ''
             };

@@ -26,6 +26,7 @@ import ViewDetailLoanSlip from "../../../LoanSlipPage/ui-components/ViewDetailLo
 import FormAddEditLibLoanSlip from "./ui-components/FormAddEditLibLoanSlip";
 import { ExpandMore } from "@mui/icons-material";
 import PaginationForm from "../../../../../components/custom/form/PaginationForm";
+import { TLibrary } from "../../../../../types/models/library.type";
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -623,13 +624,16 @@ const LoanSlipPage = () => {
 
     const initialValues = useMemo((): TLoanSlipCreate => {
         if (selectedEdit) {
+            const libraryId = typeof selectedEdit.libraryId === 'string'
+                ? selectedEdit.libraryId // Nếu là chuỗi, sử dụng trực tiếp
+                : (selectedEdit.libraryId as TLibrary)._id; // Nếu là đối tượng, lấy _id
             return {
                 note: selectedEdit.note,
                 borrowedDay: selectedEdit.borrowedDay,
                 returnDay: selectedEdit.returnDay,
                 receiptDate: selectedEdit.receiptDate,
                 isPrint: selectedEdit.isPrint,
-                libraryId: selectedEdit.libraryId as string,
+                libraryId: libraryId,
                 status: 'đang xử lý',
                 userId: ''
             };
@@ -902,7 +906,7 @@ const LoanSlipPage = () => {
                                                                         <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
                                                                         <ul style={{ marginTop: 5 }}>
                                                                             {row?.publications.map((publication, idx) => (
-                                                                                <li key={idx}>{capitalizeFirstLetter (publication?.name)}(SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
+                                                                                <li key={idx}>{capitalizeFirstLetter(publication?.name)}(SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
                                                                             ))}
                                                                         </ul>
                                                                     </Box>

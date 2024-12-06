@@ -97,7 +97,7 @@ const ViewDetailLoanSlip: FC<Props> = ({
 
             <DialogContent sx={{ p: { xs: 3, sm: 3, md: 8 } }} >
                 <Typography variant="h3" align="center" sx={{ mt: 0 }}>
-                    Thư viện  {capitalizeFirstLetter((loanSlip?.libraryId as TLibrary)?.name)}
+                   {capitalizeFirstLetter((loanSlip?.libraryId as TLibrary)?.name)}
                 </Typography>
                 <Typography variant="body1" sx={{ mt: 1 }}>
                     <strong>Họ và tên người mượn sách:</strong> {loanSlip?.userId?.fullname}

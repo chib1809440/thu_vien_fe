@@ -282,7 +282,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
             // Chỉ gọi API khi có giá trị barcode
             const fetchUser = async () => {
                 try {
-                    const result = await getUserByBarCode(debouncedBarCodeUserId);
+                    const result = await getUserByBarCode(debouncedBarCodeUserId.trim());
                     setUserData(result); // Lưu kết quả tìm kiếm
                 } catch (error) {
                     console.error('Error fetching user data:', error);
@@ -322,7 +322,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
             const fetchPublicationByName = async () => {
                 try {
                     const parts = debouncedPublicationName.split(' '); // Tách chuỗi theo dấu cách
-                    const name = parts.slice(0, parts.length - 1).join(' '); // Lấy tất cả các phần ngoại trừ phần cuối cùng và ghép lại
+                    const name = parts.slice(0, parts.length - 1).join(' ').trim(); // Lấy tất cả các phần ngoại trừ phần cuối cùng và ghép lại
                     const index = Number(parts[parts.length - 1]); // Lấy phần cuối cùng và chuyển đổi thành số
                     console.log('dsds', name);
 
@@ -369,7 +369,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
         if (debouncedBarcode) {
             const fetchPublicationByBarCode = async () => {
                 try {
-                    const barcode = debouncedBarcode.split(' ')[0];
+                    const barcode = debouncedBarcode.split(' ')[0].trim();
                     const index = Number(debouncedBarcode.split(' ')[1]);
                     const result = await publicationsService.getByBarcode<TPublications>(barcode);
                     const publicationData = result.data.result; // Assuming result.data.result contains the publication info
@@ -1230,7 +1230,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                 <DialogActions sx={{ p: 4, display: 'flex', flexDirection: { xs: 'column', sm: 'column', md: 'row' }, gap: 1 }}>
                     <Box sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'row' }, gap: 2 }}>
                         <Button disabled={isFetching} onClick={onClose} color="error">
-                            Huỷ
+                            Đóng
                         </Button>
                         {
 

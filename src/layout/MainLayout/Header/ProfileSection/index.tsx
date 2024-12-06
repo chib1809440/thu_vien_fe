@@ -63,6 +63,7 @@ const ProfileSection = () => {
     const mutationAdd = useAddLoanSlip();
     const mutationChangePassword = useChangePasswordUser();
     const revalidate = useReFetchLoanSlipLink();
+    const dispatchRedux = useDispatch();
 
     // Lấy đường dẫn từ location.pathname
     const currentPath = location.pathname; // Ví dụ: "/len-thong/"
@@ -123,6 +124,8 @@ const ProfileSection = () => {
         try {
             await logout();
             localStorage.removeItem('serviceTokenLT');
+            dispatchRedux(clearCart())
+            dispatchRedux(clearInternalCart())
             navigate('/login');
         } catch (err) {
             console.error(err);

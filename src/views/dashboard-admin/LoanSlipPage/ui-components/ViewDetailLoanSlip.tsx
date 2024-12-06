@@ -31,6 +31,7 @@ import { Role } from "../../../../interfaces/role";
 import { useAuth } from "../../../../contexts/JWTContext";
 import { formatDate } from "../../../../helpers/formatDate";
 import Barcode from "react-barcode";
+import { TLibrary } from "../../../../types/models/library.type";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: theme.palette.common.black,
@@ -76,8 +77,7 @@ const ViewDetailLoanSlip: FC<Props> = ({
 
         return _user?.data?.libraryDetail;
     }, [user]);
-    console.log(loanSlip?.publications);
-
+    console.log('ádasdas', loanSlip);
     return (
         <Dialog
             maxWidth="xl"
@@ -97,7 +97,7 @@ const ViewDetailLoanSlip: FC<Props> = ({
 
             <DialogContent sx={{ p: { xs: 3, sm: 3, md: 8 } }} >
                 <Typography variant="h3" align="center" sx={{ mt: 0 }}>
-                    {capitalizeFirstLetter(libraryDetail?.name)}
+                    Thư viện  {capitalizeFirstLetter((loanSlip?.libraryId as TLibrary)?.name)}
                 </Typography>
                 <Typography variant="body1" sx={{ mt: 1 }}>
                     <strong>Họ và tên người mượn sách:</strong> {loanSlip?.userId?.fullname}

@@ -524,7 +524,7 @@ const LoanSlipRequestLink = () => {
                 }).join(', ');
                 const returnQuantities = loanSlip?.publications?.map(publication => {
                     let statusText = '';
-                    
+
                     // Kiểm tra trạng thái và trả về thông báo tương ứng
                     if (loanSlip?.status === 'đã hủy') {
                         statusText = 'Đã hủy';
@@ -541,12 +541,12 @@ const LoanSlipRequestLink = () => {
                             statusText = 'Đã trả xong';
                         }
                     }
-                    
+
                     return statusText;
                 });
-                
+
                 const allReturned = loanSlip?.publications?.every(publication => publication.quantityReturn === publication.quantityLoan);
-                
+
                 const finalReturnQuantity = allReturned ? 'Đã trả xong' : returnQuantities.join(', ');
 
                 return {
@@ -660,7 +660,7 @@ const LoanSlipRequestLink = () => {
                 returnDay: selectedEdit.returnDay,
                 receiptDate: selectedEdit.receiptDate,
                 isPrint: selectedEdit.isPrint,
-                libraryId: selectedEdit.libraryId,
+                libraryId: selectedEdit.libraryId as string,
                 status: 'đang xử lý',
                 userId: ''
             };

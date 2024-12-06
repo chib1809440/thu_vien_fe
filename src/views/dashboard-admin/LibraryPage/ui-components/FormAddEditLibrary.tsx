@@ -20,7 +20,10 @@ const schema = yup.object().shape({
     maxStorageLimit: yup.number().min(1, "Dung lượng bộ nhớ phải lớn hơn hoặc bằng 1").required("Vui lòng nhập dung lượng bộ nhớ"),
     facebook: yup.string(),
     email: yup.string().email("Vui lòng nhập đúng định dạng email"),
-    phoneNumber: yup.string().matches(/^[0-9]+$/, "Vui lòng nhập đúng định dạng số điện thoại"),
+    phoneNumber: yup.string().matches(
+        /^(\+84|0[3|5|7|8|9])+([0-9]{8})$/,
+        "Số điện thoại không hợp lệ, vui lòng nhập số hợp lệ"
+    ),
 });
 
 const FormAddEditLibrary: FC<Props> = ({
@@ -96,7 +99,7 @@ const FormAddEditLibrary: FC<Props> = ({
                             <InputForm
                                 type="number"
                                 required
-                                label="Dung lượng bộ nhớ (GB)"
+                                label={`Dung lượng bộ nhớ (${isEditMode ? 'MB' : 'GB'})`}
                                 placeholder="Dung lượng bộ nhớ"
                                 value={values.maxStorageLimit || ''}
                                 onChange={(e) => {

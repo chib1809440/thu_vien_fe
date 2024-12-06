@@ -39,7 +39,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
         const { user } = useAuth();
         const { data: voiceLinkData } = useFetchVoiceLink();
         const currentAudioRef = useRef<HTMLAudioElement | null>(null);
-        console.log(currentAudioRef.current);
+        // console.log(currentAudioRef.current);
 
 
         useImperativeHandle(

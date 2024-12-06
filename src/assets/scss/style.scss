@@ -294,55 +294,65 @@ img {
     scrollbar-width: none;
     /* Firefox */
 }
+
 /* Tùy chỉnh toàn bộ thanh cuộn */
 ::-webkit-scrollbar {
-  width: 8px; /* Độ rộng của thanh cuộn dọc */
-  height: 8px; /* Độ cao của thanh cuộn ngang */
+    width: 8px;
+    /* Độ rộng của thanh cuộn dọc */
+    height: 8px;
+    /* Độ cao của thanh cuộn ngang */
 }
 
 /* Tùy chỉnh phần track (nền của thanh cuộn) */
 ::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Màu nền của thanh cuộn */
+    background: #f1f1f1;
+    /* Màu nền của thanh cuộn */
 }
 
 /* Tùy chỉnh thanh kéo (thumb) */
 ::-webkit-scrollbar-thumb {
-  background: #1e88e5; /* Màu của thanh kéo */
-  border-radius: 10px; /* Bo tròn thanh kéo */
+    background: #1e88e5;
+    /* Màu của thanh kéo */
+    border-radius: 10px;
+    /* Bo tròn thanh kéo */
 }
 
 /* Tùy chỉnh thanh kéo khi hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #1e88e5; /* Màu của thanh kéo khi hover */
+    background: #1e88e5;
+    /* Màu của thanh kéo khi hover */
 }
-.required_text{
-  color:#d32f2f;
+
+.required_text {
+    color: #d32f2f;
 }
+
 .react-datepicker-wrapper,
 .react-datepicker__input-container,
 .react-datepicker__input-container input {
-  width: 100%;
+    width: 100%;
 }
 
 .react-datepicker__input-container input {
-  padding: 20px;
-  font-size: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.23);
-  border-radius: 4px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  outline: none;
-  width: 100%;
-  box-sizing: border-box;
+    padding: 20px;
+    font-size: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.23);
+    border-radius: 4px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .react-datepicker__input-container input:hover {
-  border-color: rgba(0, 0, 0, 0.87);
+    border-color: rgba(0, 0, 0, 0.87);
 }
 
 .react-datepicker__input-container input:focus {
-  border-color: #3f51b5;
-  box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.2);
+    border-color: #3f51b5;
+    box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.2);
 }
+
 select.react-datepicker__month-select {
     margin-top: 16px;
     margin-bottom: 16px;
@@ -350,6 +360,7 @@ select.react-datepicker__month-select {
     border: 1px solid #ccc;
     padding: 5px;
 }
+
 select.react-datepicker__year-select {
     margin-top: 16px;
     margin-bottom: 16px;
@@ -358,6 +369,7 @@ select.react-datepicker__year-select {
     padding: 5px;
 
 }
+
 // @media print {
 //     @page {
 //         margin:  10mm 10mm 10mm 10mm;
@@ -377,42 +389,62 @@ select.react-datepicker__year-select {
 //         page-break-after: avoid;
 //     }
 // }
-.input-group-text{
-    height:43px;
+.input-group-text {
+    height: 43px;
     cursor: pointer;
 }
+
 .input-group {
-    display: flex; /* Sử dụng Flexbox */
-    align-items: center; /* Căn giữa theo chiều dọc */
+    display: flex;
+    /* Sử dụng Flexbox */
+    align-items: center;
+    /* Căn giữa theo chiều dọc */
 }
 
 .custom-input {
-    height: 30px; /* Chiều cao input */
-    font-size: 14px; /* Kích thước font */
-    margin-right: 0; /* Đảm bảo không có khoảng cách bên phải */
+    height: 30px;
+    /* Chiều cao input */
+    font-size: 14px;
+    /* Kích thước font */
+    margin-right: 0;
+    /* Đảm bảo không có khoảng cách bên phải */
 }
 
 .input-group-text {
-    display: flex; /* Đảm bảo icon cũng là Flexbox */
-    align-items: center; /* Căn giữa icon */
+    display: flex;
+    /* Đảm bảo icon cũng là Flexbox */
+    align-items: center;
+    /* Căn giữa icon */
 }
+
 .position-relative {
-    position: relative; /* Để sử dụng position:absolute cho icon */
+    position: relative;
+    /* Để sử dụng position:absolute cho icon */
 }
 
 .icon-background {
-    position: absolute; /* Đặt vị trí icon tuyệt đối */
-    right: 1px; /* Khoảng cách từ bên phải */
-    top: 50%; /* Căn giữa theo chiều dọc */
-    transform: translateY(-50%); /* Căn giữa chính xác */
-    background-color: #3a3737; /* Nền xám cho icon */
-    padding: 0.375rem; /* Padding cho icon */
-    border-radius: 0.25rem; /* Bỏ cạnh nếu cần */
-    pointer-events: none; /* Không cho phép click vào icon */
+    position: absolute;
+    /* Đặt vị trí icon tuyệt đối */
+    right: 1px;
+    /* Khoảng cách từ bên phải */
+    top: 50%;
+    /* Căn giữa theo chiều dọc */
+    transform: translateY(-50%);
+    /* Căn giữa chính xác */
+    background-color: #3a3737;
+    /* Nền xám cho icon */
+    padding: 0.375rem;
+    /* Padding cho icon */
+    border-radius: 0.25rem;
+    /* Bỏ cạnh nếu cần */
+    pointer-events: none;
+    /* Không cho phép click vào icon */
 }
+
 .date-picker-container {
     display: flex;
-    align-items: center; /* Căn chỉnh theo chiều dọc */
+    align-items: center;
+    /* Căn chỉnh theo chiều dọc */
     position: relative;
     width: 70%;
 }
@@ -424,7 +456,20 @@ select.react-datepicker__year-select {
 }
 
 .icon-clear {
-    right: 40px; /* Khoảng cách giữa DatePicker và IconX */
-    cursor: pointer; /* Thêm hiệu ứng con trỏ */
+    right: 40px;
+    /* Khoảng cách giữa DatePicker và IconX */
+    cursor: pointer;
+    /* Thêm hiệu ứng con trỏ */
     position: absolute;
+}
+
+.css-11h7kk3.Mui-selected {
+    color: rgb(30, 136, 229) !important;
+    background-color: rgb(227, 242, 253) !important;
+}
+
+.css-wmdixu .MuiButtonBase-root.MuiListItemButton-root:hover {
+    color: rgb(48, 120, 236) !important;
+    background-color: rgb(227, 242, 253) !important;
+    padding-left: "15px";
 }

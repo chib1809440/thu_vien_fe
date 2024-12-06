@@ -257,6 +257,7 @@ function TableRoleList<T extends DataType>({
                                                             {(page - 1) * rowsPerPage + index + 1}
                                                         </StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.name}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.permissions?.length}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center">
                                                             <Box sx={{
                                                                 display: "flex",

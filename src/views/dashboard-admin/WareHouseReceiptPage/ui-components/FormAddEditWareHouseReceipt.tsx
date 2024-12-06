@@ -33,6 +33,7 @@ import * as yup from "yup";
 import publicationsService from "../../../../_apis/services/publications.service";
 import { StyledTableCell, StyledTableRow } from "../../../../components/custom/table-list/style";
 import StyledButton from "../../../../components/default/button/StyledButton";
+import { useAuth } from "../../../../contexts/JWTContext";
 import { useFetchAuthor } from "../../../../hooks/services/author/author-query";
 import { useFetchCategory } from "../../../../hooks/services/category/category-query";
 import { useFetchMaterial } from "../../../../hooks/services/material/material-query";
@@ -48,6 +49,7 @@ import {
     useReFetchSupplier,
 } from "../../../../hooks/services/supplier/supplier-query";
 import useDebounce from "../../../../hooks/useDebounce";
+import { CreatePublication } from "../../../../types/models/loanSlip.type";
 import { TPublications, TPublicationsCreate } from "../../../../types/models/publications.type";
 import { TSupplierCreate } from "../../../../types/models/supplier.type";
 import {
@@ -59,8 +61,6 @@ import usePermission from "../../../../utils/hasPermission";
 import FormAddEditPublications from "../../PublicationsPage/ui-components/FormAddEditPublications";
 import FormAddEditSupplier from "./FormAddEditSupplier";
 import PrintWareHouseReceipt from "./PrintWareHouseReceipt";
-import { CreatePublication } from "../../../../types/models/loanSlip.type";
-import { useAuth } from "../../../../contexts/JWTContext";
 
 type Props = {
     open: boolean;
@@ -399,7 +399,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
         //     },
         // });
     };
-    
+
     useEffect(() => {
         if (wareHouseReceipt) {
             let editPublications: CreatePublicationWareHouseReceipt[] = [];

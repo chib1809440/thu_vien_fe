@@ -69,7 +69,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                     <WordDetailPage onClose={handleClose} open={showWord} publications={publications} />
                 )
             }
-            <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+            <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
                 <DialogContent>
                     <IconButton
                         aria-label="close"
@@ -124,7 +124,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                             <Grid item xs={12} my={2} mt={publications?.mimetype === "application/pdf" ? 3 : 0}>
                                                 <Box display={"flex"} flexDirection={"column"} >
                                                     <Typography variant="h4" display={"flex"}>
-                                                        Tên ấn phẩm:
+                                                        Tên ấn phẩm1:
                                                         <StyledHeading ml={1} variant="h4">
                                                             {publications?.name}
                                                         </StyledHeading>

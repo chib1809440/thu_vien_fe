@@ -121,6 +121,15 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
         return _user?.data?.libraryId;
     }, [user]);
+
+    const roleName = useMemo(() => {
+        if (!user) return null;
+
+        const _user = { ...user } as any;
+
+        return _user?.data?.roleId.name;
+    }, [user]);
+
     const formik = useFormik<TLoanSlipCreate>({
         initialValues,
         validationSchema: schema,
@@ -521,8 +530,8 @@ const FormAddEditLoanSlip: FC<Props> = ({
     // console.log("sss", loanSlip.libraryId);
     // console.log("sss", user);
     const isMd = useMediaQuery('(min-width: 900px)');
-    console.log('dsd',libraryId);
-    
+    console.log('dsd', libraryId);
+
     return (
         <FormikProvider value={formik}>
             <Dialog
@@ -1176,10 +1185,10 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                                         {row?.name || "Không có dữ liệu"}
                                                     </StyledTableCell>
                                                     <StyledTableCell align="left">
-                                                        {row?.quantityReturn || "Không có dữ liệu"}
+                                                        {row?.quantityReturn || "0"}
                                                     </StyledTableCell>
                                                     <StyledTableCell align="left">
-                                                        {formatDate(row?.historyDate) || "Không có dữ liệu"}
+                                                        {formatDate(row?.historyDate) || "0"}
                                                     </StyledTableCell>
                                                 </StyledTableRow>
                                             ))}
@@ -1208,6 +1217,19 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                 In
                             </Button>
                         }
+
+                        {/* {
+
+                            (roleName === "Owner" || roleName === "Admin") && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                                Trả sách
+                            </Button>
+                        }
+                        {
+
+                            (roleName === "Owner" || roleName === "Admin") && isEditMode && <Button onClick={() => handleOpenDialog('print')} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                                In
+                            </Button>
+                        } */}
                     </Box>
                     <Box sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'row' }, gap: 2, mt: { xs: 2, sm: 2, md: 0 } }}>
                         {

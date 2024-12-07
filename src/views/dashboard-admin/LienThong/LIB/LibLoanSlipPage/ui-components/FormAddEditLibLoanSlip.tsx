@@ -35,6 +35,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { removeItem } from "../../../../../../store/slices/cartLoanSlip";
 import StyledButton from "../../../../../../components/default/button/StyledButton";
 import AlertConfirmDialog from "../../../../../../components/default/alert/confirmAlertDialog";
+import { TLibrary } from "../../../../../../types/models/library.type";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -530,7 +531,6 @@ const FormAddEditLoanSlip: FC<Props> = ({
     // console.log("sss", loanSlip.libraryId);
     // console.log("sss", user);
     const isMd = useMediaQuery('(min-width: 900px)');
-    console.log('dsd', libraryId);
 
     return (
         <FormikProvider value={formik}>
@@ -1207,13 +1207,16 @@ const FormAddEditLoanSlip: FC<Props> = ({
                         </Button>
                         {
 
-                            loanSlip && ((libraryId as string) !== loanSlip.libraryId) && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                            loanSlip && (
+                                ((typeof loanSlip.libraryId === 'string' && libraryId !== loanSlip.libraryId) ||
+                                    (typeof loanSlip.libraryId === 'object' && libraryId && (loanSlip.libraryId as TLibrary)._id !== libraryId))) && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
                                 Trả sách
                             </Button>
                         }
                         {
-
-                            loanSlip && ((libraryId as string) === loanSlip.libraryId) && isEditMode && <Button onClick={() => handleOpenDialog('print')} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                            loanSlip && (
+                                ((typeof loanSlip.libraryId === 'string' && libraryId !== loanSlip.libraryId) ||
+                                    (typeof loanSlip.libraryId === 'object' && libraryId && (libraryId as TLibrary)._id !== loanSlip.libraryId._id))) && isEditMode && <Button onClick={() => handleOpenDialog('print')} style={{ background: '#212121', color: 'white' }} variant="contained"  >
                                 In
                             </Button>
                         }

@@ -473,7 +473,8 @@ const FormAddEditLoanSlip: FC<Props> = ({
         ]);
 
     };
-    console.log('dsds', publications);
+    console.log('libraryId', libraryId);
+    console.log('libraryId object', initialValues.libraryId);
 
     const handlePublicationChange = (
         event: any,
@@ -531,7 +532,8 @@ const FormAddEditLoanSlip: FC<Props> = ({
     // console.log("sss", loanSlip.libraryId);
     // console.log("sss", user);
     const isMd = useMediaQuery('(min-width: 900px)');
-
+    console.log("ádas trả về cái gì",loanSlip);
+    
     return (
         <FormikProvider value={formik}>
             <Dialog
@@ -1207,16 +1209,12 @@ const FormAddEditLoanSlip: FC<Props> = ({
                         </Button>
                         {
 
-                            loanSlip && (
-                                ((typeof loanSlip.libraryId === 'string' && libraryId !== loanSlip.libraryId) ||
-                                    (typeof loanSlip.libraryId === 'object' && libraryId && (loanSlip.libraryId as TLibrary)._id !== libraryId))) && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                            loanSlip && (libraryId === initialValues.libraryId) && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
                                 Trả sách
                             </Button>
                         }
                         {
-                            loanSlip && (
-                                ((typeof loanSlip.libraryId === 'string' && libraryId !== loanSlip.libraryId) ||
-                                    (typeof loanSlip.libraryId === 'object' && libraryId && (libraryId as TLibrary)._id !== loanSlip.libraryId._id))) && isEditMode && <Button onClick={() => handleOpenDialog('print')} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                            loanSlip && (libraryId === initialValues.libraryId) && isEditMode && <Button onClick={() => handleOpenDialog('print')} style={{ background: '#212121', color: 'white' }} variant="contained"  >
                                 In
                             </Button>
                         }

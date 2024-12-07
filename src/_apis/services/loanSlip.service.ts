@@ -27,14 +27,22 @@ class LoanSlipService extends BaseApi {
         return response.data as TApiMultipleRecords<DynamicType>;
     }
     public async getAllLink<DynamicType>(params?: TFilter) {
+        const adjustedParams = {
+            ...params,
+            order: params?.order ?? 'DESC',  // Default to 'DESC' if order is not defined
+        };
         const response = await this.httpClient.get(`${this.endpoint}/link`, {
-            params,
+            params: adjustedParams,
         });
         return response.data as TApiMultipleRecords<DynamicType>;
     }
     public async getAllRequestLink<DynamicType>(params?: TFilter) {
+        const adjustedParams = {
+            ...params,
+            order: params?.order ?? 'DESC',  // Default to 'DESC' if order is not defined
+        };
         const response = await this.httpClient.get(`${this.endpoint}/request-link`, {
-            params,
+            params: adjustedParams,
         });
         return response.data as TApiMultipleRecords<DynamicType>;
     }

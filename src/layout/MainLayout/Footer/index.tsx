@@ -21,22 +21,21 @@ export default function Footer() {
                 justifyContent: "space-between",
                 alignItems: "center",
                 width: "100%",
-                flexDirection:{ xs: "column", sm: "column", md: "row" },
-                mt:{ xs: 2, sm: 4, md: 0 }
+                flexDirection: { xs: "column", sm: "column", md: "row" },
+                mt: { xs: 2, sm: 4, md: 0 }
             }}>
                 <Box>
                     <Typography variant="body2" sx={{ fontWeight: 600 }} textTransform={"uppercase"}>CTY CP Giải pháp Công nghệ GD Việt Nam</Typography>
                 </Box>
 
 
-                <Box justifyContent={"flex-end"} alignItems={"center"} sx={{ display: "flex", gap: 1 }}>
-                    <Button variant="text">
+                <Box justifyContent={"flex-end"} alignItems={"center"} >
+                    {/* <Box sx={{ display: "flex", gap: 1 }}>
                         <Typography variant="body2" textTransform={"uppercase"}>Điều khoản</Typography>
-                    </Button>
-                    <Typography variant="body2">|</Typography>
-                    <Button variant="text">
+                        <Typography variant="body2">|</Typography>
                         <Typography variant="body2" textTransform={"uppercase"}>Hướng dẫn</Typography>
-                    </Button>
+                    </Box> */}
+                    <Typography variant="body2" textTransform={"uppercase"}>HotLine: <strong>0939919639</strong></Typography>
                 </Box>
             </Toolbar>
         </Paper >

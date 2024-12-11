@@ -268,6 +268,20 @@ const dashboardAdmin = {
                         },
                     ],
                 },
+                {
+                    id: "phieu-nhap-tai-san",
+                    title: "Phiếu nhập thiết bị",
+                    type: "item",
+                    url: "/quan-ly-nhap-kho/phieu-nhap-tai-san",
+                    icon: icons.IconBrowser,
+                    breadcrumbs: false,
+                    // permissions: [
+                    //     {
+                    //         resource: "warehousereceiptsassets",
+                    //         action: "manage",
+                    //     },
+                    // ],
+                },
             ],
         },
         {
@@ -297,8 +311,16 @@ const dashboardAdmin = {
                     breadcrumbs: false,
                 },
                 {
-                    id: "kho",
-                    title: "Kho",
+                    id: "kho-an-pham",
+                    title: "Kho ấn phẩm",
+                    type: "item",
+                    url: "/quan-ly-kho/kho",
+                    icon: icons.IconBuildingWarehouse,
+                    breadcrumbs: false,
+                },
+                {
+                    id: "kho-tai-san",
+                    title: "Kho thiết bị",
                     type: "item",
                     url: "/quan-ly-kho/kho",
                     icon: icons.IconBuildingWarehouse,

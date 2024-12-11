@@ -165,6 +165,9 @@ const SupplierDeleteListPage = Loadable(
 const WareHouseReceiptPage = Loadable(
   lazy(() => import("../views/dashboard-admin/WareHouseReceiptPage/WareHouseReceiptPage"))
 );
+const WareHouseReceiptAssetsPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/WareHouseReceiptPage/WareHouseReceiptAssetsPage"))
+);
 const WareHouseReceiptDeleteListPage = Loadable(
   lazy(() => import("../views/dashboard-admin/WareHouseReceiptPage/WareHouseDeleteListPage"))
 );
@@ -326,6 +329,10 @@ const MainRoutes = {
     {
       path: "/quan-ly-nhap-kho/phieu-nhap-kho",
       element: <WareHouseReceiptPage />,
+    },
+    {
+      path: "/quan-ly-nhap-kho/phieu-nhap-tai-san",
+      element: <WareHouseReceiptAssetsPage />,
     },
     {
       path: "/quan-ly-nhap-kho/phieu-nhap-kho/danh-sach-xoa-phieu-nhap-kho",

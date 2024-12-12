@@ -258,10 +258,10 @@ function TableAssetList<T extends DataType>({
                                                         </StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.name}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityUsed}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityWarehouse}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityLiquidation}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityDamage}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityTotal}</StyledTableCell>
+                                                        {/* <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityWarehouse}</StyledTableCell> */}
+                                                        {/* <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityLiquidation}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityDamage}</StyledTableCell> */}
+                                                        {/* <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityTotal}</StyledTableCell> */}
                                                         <StyledTableCell padding="none" align="center">
                                                             <Box sx={{
                                                                 display: "flex",

@@ -1,4 +1,4 @@
-import { Button, Chip, useTheme } from "@mui/material";
+import { Button, Chip, Typography, useTheme } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconEye, IconFileExport, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconTrashXFilled } from "@tabler/icons-react";
@@ -23,6 +23,7 @@ import MainCard from "../../../ui-component/cards/MainCard";
 import usePermission from "../../../utils/hasPermission";
 import FormAddEditWareHouseReceipt from "./ui-components/FormAddEditWareHouseReceipt";
 import ViewDetailWareHouseReceipt from "./ui-components/ViewDetailWareHouse";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 
 const WareHouseReceiptPage = () => {
@@ -126,21 +127,35 @@ const WareHouseReceiptPage = () => {
             {
                 id: "barcode",
                 disablePadding: "none",
-                label: "Barcode",
+                label: "Mã phiếu nhập",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
+                sxRow: { paddingRight: 3, maxWidth: 120 },
             },
             {
-                id: "supplierId",
+                id: "infoWarehouse",
                 disablePadding: "none",
-                label: "Nhà cung cấp",
+                label: "Thông tin",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
+                sxRow: { paddingRight: 3, maxWidth: 250 },
                 render: (row) => {
                     return (
-                        <>
-                            {(row.supplierId as TSupplier)?.name}
-                        </>
+                        <Box
+                        >
+                            <Typography mt={0.5}>Nhà cung cấp: <strong> {capitalizeFirstLetter((row.supplierId as TSupplier)?.name)}</strong></Typography>
+                            <Typography variant="body1" sx={{ mt: 0.5 }}>
+                                Người nhập: <strong>{(row.createBy as User)?.fullname}</strong>
+                            </Typography>
+                            {row?.publications?.length > 0 && (
+                                <Box sx={{ mt: 0.5 }}>
+                                    <Typography><strong>Danh sách nhập:</strong></Typography>
+                                    <ul style={{ marginTop: 5 }}>
+                                        {row?.publications.map((publication, idx) => (
+                                            <li key={idx}>{capitalizeFirstLetter(publication?.name)} (SLN: {publication?.quantityWareHouse})</li>
+                                        ))}
+                                    </ul>
+                                </Box>
+                            )}
+                        </Box>
                     );
                 },
             },
@@ -168,20 +183,6 @@ const WareHouseReceiptPage = () => {
                     return (
                         <>
                             {formatDate(row.updatedAt)}
-                        </>
-                    );
-                },
-            },
-            {
-                id: "createBy",
-                disablePadding: "none",
-                label: "Người tạo",
-                align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => {
-                    return (
-                        <>
-                            {(row.createBy as User)?.fullname}
                         </>
                     );
                 },

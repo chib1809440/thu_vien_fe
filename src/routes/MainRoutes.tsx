@@ -105,6 +105,9 @@ const ShelvesProductPage = Loadable(
 const StockProductPage = Loadable(
   lazy(() => import("../views/dashboard-admin/WarehousePage/StockProductPage"))
 );
+const StockAssetsPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/WarehousePage/StockAssetsPage"))
+);
 const LiquidationProductPage = Loadable(
   lazy(() => import("../views/dashboard-admin/WarehousePage/LiquidationProductPage"))
 );
@@ -305,8 +308,12 @@ const MainRoutes = {
       element: <ShelvesProductPage />,
     },
     {
-      path: "/quan-ly-kho/kho",
+      path: "/quan-ly-kho/kho-an-pham",
       element: <StockProductPage />,
+    },
+    {
+      path: "/quan-ly-kho/kho-tai-san",
+      element: <StockAssetsPage />,
     },
     {
       path: "/quan-ly-kho/thanh-ly-hu-hong",

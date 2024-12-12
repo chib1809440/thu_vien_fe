@@ -223,9 +223,9 @@ const ShelvesProductPage = () => {
     return (
         <div>
             <IBreadcrumsCustom
-                profile="Quản lý kho"
+                profile="Quản lý kho ấn phẩm"
                 mainProfile="Danh sách tủ kệ"
-                link="/quan-ly-kho/kho"
+                link="/quan-ly-kho/kho-an-pham"
             />
 
             {openAddEdit && (

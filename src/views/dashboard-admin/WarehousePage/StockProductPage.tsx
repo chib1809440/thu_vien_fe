@@ -307,9 +307,9 @@ const StockProductPage = () => {
     return (
         <div>
             <IBreadcrumsCustom
-                profile="Quản lý kho"
+                profile="Quản lý kho ấn phẩm"
                 mainProfile="Danh sách kho"
-                link="/quan-ly-kho/kho"
+                link="/quan-ly-kho/kho-an-pham"
             />
 
             {openAddEdit && (

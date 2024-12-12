@@ -13,7 +13,7 @@ const PrintWareHouseReceipt = forwardRef<HTMLDivElement, { wareHouseReceipt: TWa
 
         return (
             <div ref={ref} className="invoice-content" style={{ marginTop: 0, fontSize: '9px' }}>
-                <h2 style={{ textAlign: "center", marginTop: 0 }}>Phiếu nhập sách vào thư viện</h2>
+                <h2 style={{ textAlign: "center", marginTop: 0 }}>Phiếu nhập ấn phẩm vào thư viện</h2>
                 <p>
                     <strong>Đơn vị:</strong> .........................................................................
                 </p>
@@ -32,12 +32,12 @@ const PrintWareHouseReceipt = forwardRef<HTMLDivElement, { wareHouseReceipt: TWa
                 <p>
                     <strong>Địa chỉ:</strong>  {(wareHouseReceipt?.supplierId as TSupplier).address}
                 </p>
-                <h3 style={{ textAlign: "center", marginTop: '0px' }}>Sách nhập kho</h3>
+                <h3 style={{ textAlign: "center", marginTop: '0px' }}>Ấn phẩm nhập kho</h3>
                 <table style={{ width: "100%", borderCollapse: "collapse", margin: "10px 0" }}>
                     <thead>
                         <tr>
                             <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>STT</th>
-                            <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Tên sách</th>
+                            <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Tên ấn phẩm</th>
                             <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Số lượng</th>
                         </tr>
                     </thead>

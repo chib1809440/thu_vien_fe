@@ -10,6 +10,7 @@ import { Asset } from '../../../interfaces/asset';
 import { Button, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import IBreadcrumsCustom from '../../../ui-component/breadcrums';
+import { IconBuildingWarehouse } from '@tabler/icons-react';
 const headCells: HeadCell[] = [
     {
         id: 'asset_name',
@@ -18,34 +19,10 @@ const headCells: HeadCell[] = [
         label: 'Tên tài sản',
     },
     {
-        id: 'asset_quantity_used',
+        id: 'type',
         numeric: true,
         disablePadding: true,
-        label: 'Số lượng sử dụng',
-    },
-    {
-        id: 'asset_quantity_in_stock',
-        numeric: true,
-        disablePadding: true,
-        label: 'Số lượng ở kho',
-    },
-    {
-        id: 'asset_quantity_in_stock_liquidation',
-        numeric: true,
-        disablePadding: true,
-        label: 'Số lượng thanh lý',
-    },
-    {
-        id: 'asset_quantity_of_damage',
-        numeric: true,
-        disablePadding: true,
-        label: 'Số lượng hư hỏng',
-    },
-    {
-        id: 'asset_quantity_total',
-        numeric: true,
-        disablePadding: true,
-        label: 'Số lượng tổng',
+        label: 'Phân loại',
     },
     {
         id: 'action',
@@ -63,6 +40,9 @@ export default function AssetPage() {
     const navigate = useNavigate();
     const handleClickNavigateTrash = () => {
         navigate('/tai-san-thu-vien/thung-rac');
+    };
+    const handleClickNavigateWarehouseAssets = () => {
+        navigate('/quan-ly-kho/kho-tai-san');
     };
     return (
         <>
@@ -83,6 +63,22 @@ export default function AssetPage() {
                                 onClick={() => setIsOpenAddDialog(true)}
                             >
                                 Thêm tài sản
+                            </StyledButton>
+
+                            <StyledButton
+                                sx={{
+                                    background: "#a36e21", color: "white",
+                                    //@ts-ignore
+                                    marginLeft: { xs: 0, sm: 0, md: "10px" },
+                                    //@ts-ignore
+                                    marginTop: { xs: 1, sm: 1, md: 0 }
+                                }}
+                                size="small"
+                                startIcon={<IconBuildingWarehouse stroke={2} />}
+                                variant="contained"
+                                onClick={() => handleClickNavigateWarehouseAssets()}
+                            >
+                                Quản lý kho
                             </StyledButton>
                             <StyledButton
                                 sx={{

@@ -245,9 +245,9 @@ const LiquidationProductPage = () => {
     return (
         <div>
             <IBreadcrumsCustom
-                profile="Quản lý kho"
+                profile="Quản lý kho ấn phẩm"
                 mainProfile="Danh sách thanh lý - hư hỏng"
-                link="/quan-ly-kho/kho"
+                link="/quan-ly-kho/kho-an-pham"
             />
 
             {openAddEdit && (

@@ -1,6 +1,6 @@
 import { Box } from "@mui/system";
 import { IconPencil } from "@tabler/icons";
-import { IconFileExcel } from "@tabler/icons-react";
+import { IconFileExcel, IconTransferIn } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
@@ -26,7 +26,9 @@ import { parserParams } from "../../../utils/object";
 import FormEditWarehouse from "./ui-components/FormEditWarehouse";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import usePermission from "../../../utils/hasPermission";
-import { Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
+import { Link } from "react-router-dom";
+import StyledButton from "../../../components/default/button/StyledButton";
 
 const StockAssetsPage = () => {
     const queryString = useQueryString();
@@ -272,7 +274,7 @@ const StockAssetsPage = () => {
     }, []);
 
     const initialValues = useMemo((): TPublicationsCreate => {
-        if (selectedEdit) {            
+        if (selectedEdit) {
             return {
                 name: selectedEdit.name,
                 quantity: selectedEdit.quantity,
@@ -317,6 +319,31 @@ const StockAssetsPage = () => {
             )}
 
             <MainCard>
+                <Stack
+                    spacing={2}
+                    sx={{
+                        paddingLeft: { xs: 0, sm: 0, md: 4 },
+                        paddingBottom: { xs: 2, sm: 2 },
+                        width: "100%",
+                    }}
+                >
+                    <Link
+                        to="/quan-ly-nhap-kho/phieu-nhap-tai-san"
+                        style={{ textDecoration: "none" }}
+                    >
+                        <StyledButton
+                            sx={{
+                                background: "#a36e21", color: "white",
+                            }}
+                            size="small"
+                            startIcon={<IconTransferIn stroke={2} />}
+                            variant="contained"
+                        >
+                            Quản lý nhập tài sản
+                        </StyledButton>
+                    </Link>
+                </Stack>
+
                 <ActionsForm
                     actions={actionMenus}
                     barcode={true}

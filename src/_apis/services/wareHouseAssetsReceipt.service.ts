@@ -3,7 +3,7 @@ import { TFilter } from "../../types/models/entity-common.type";
 import BaseApi from "./base-api";
 
 class WareHouseAssetsReceiptService extends BaseApi {
-    public async acceptWareHouseReceipt<DynamicType>(id: string | number, params?: TFilter) {
+    public async acceptWareHouseAssetsReceipt<DynamicType>(id: string | number, params?: TFilter) {
         const httpClientInstance = this.getHttpClient();
         const response = await httpClientInstance.get(`${this.endpoint}/accept/${id}`, { params });
         return response.data as TApiOneRecord<DynamicType>;

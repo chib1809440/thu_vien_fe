@@ -1,10 +1,14 @@
+import { Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { IconPencil } from "@tabler/icons";
-import { IconFileExcel } from "@tabler/icons-react";
+import { IconTransferIn } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
+import StyledButton from "../../../components/default/button/StyledButton";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { useAddLiquidation } from "../../../hooks/services/liquidation/liquidation-mutation";
 import {
     useUpdateShelvesQuantity,
@@ -22,11 +26,9 @@ import { TPublications, TPublicationsCreate } from "../../../types/models/public
 import { TShelves } from "../../../types/models/shelves";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
+import usePermission from "../../../utils/hasPermission";
 import { parserParams } from "../../../utils/object";
 import FormEditWarehouse from "./ui-components/FormEditWarehouse";
-import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
-import usePermission from "../../../utils/hasPermission";
-import { Typography } from "@mui/material";
 
 const StockProductPage = () => {
     const queryString = useQueryString();
@@ -279,7 +281,7 @@ const StockProductPage = () => {
     }, []);
 
     const initialValues = useMemo((): TPublicationsCreate => {
-        if (selectedEdit) {            
+        if (selectedEdit) {
             return {
                 name: selectedEdit.name,
                 quantity: selectedEdit.quantity,
@@ -308,7 +310,7 @@ const StockProductPage = () => {
         <div>
             <IBreadcrumsCustom
                 profile="Quản lý kho ấn phẩm"
-                mainProfile="Danh sách kho"
+                mainProfile="Danh sách kho ấn phẩm"
                 link="/quan-ly-kho/kho-an-pham"
             />
 
@@ -324,6 +326,31 @@ const StockProductPage = () => {
             )}
 
             <MainCard>
+                <Stack
+                    spacing={2}
+                    sx={{
+                        paddingLeft: { xs: 0, sm: 0, md: 4 },
+                        paddingBottom: { xs: 2, sm: 2 },
+                        width: "100%",
+                    }}
+                >
+                    <Link
+                        to="/quan-ly-nhap-kho/phieu-nhap-kho"
+                        style={{ textDecoration: "none" }}
+                    >
+                        <StyledButton
+                            sx={{
+                                background: "#a36e21", color: "white",
+                            }}
+                            size="small"
+                            startIcon={<IconTransferIn stroke={2} />}
+                            variant="contained"
+                        >
+                            Quản lý nhập ấn phẩm
+                        </StyledButton>
+                    </Link>
+                </Stack>
+
                 <ActionsForm
                     actions={actionMenus}
                     barcode={true}

@@ -6,7 +6,7 @@ import { TWareHouseReceiptCreate, TWareHouseReceiptEdit } from "../../../types/m
 export const useAcceptWareHouseAssetsReceipt = () => {
     return useMutation({
         mutationFn: async (id: string) => {
-            return await warehouseAssetsReceiptService.acceptWareHouseReceipt<TWareHouseAssetsReceipt>(id);
+            return await warehouseAssetsReceiptService.acceptWareHouseAssetsReceipt<TWareHouseAssetsReceipt>(id);
         },
         onError: (error: any) => {
             toast.error(error.message)

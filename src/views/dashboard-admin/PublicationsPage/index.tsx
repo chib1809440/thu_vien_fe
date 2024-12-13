@@ -14,6 +14,7 @@ import {
 import { Box, Stack } from "@mui/system";
 import { IconBook, IconFileExport, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import {
+    IconBuildingWarehouse,
     IconEye,
     IconFileDescription,
     IconFileDownload,
@@ -1095,25 +1096,49 @@ const PublicationsPage = () => {
                         >
                             {hasPermission([
                                 { resource: "publications", action: "manage" },
-                                { resource: "publications", action: "delete" },
                             ]) ? (
-                                <Link
-                                    to="/thu-vien/danh-sach-xoa-an-pham"
-                                    style={{ textDecoration: "none" }}
-                                >
-                                    <StyledButton
-                                        sx={{
-                                            background: "#de524a",
-                                            color: "white",
-                                            marginLeft: "10px",
-                                        }}
-                                        size="small"
-                                        startIcon={<IconTrash stroke={2} />}
-                                        variant="contained"
+                                <>
+                                    {hasPermission([
+                                        { resource: "warehousereceipts", action: "manage" },
+                                    ]) && <Link
+                                        to="/quan-ly-kho/kho-tai-san"
+                                        style={{ textDecoration: "none" }}
                                     >
-                                        Thùng rác
-                                    </StyledButton>
-                                </Link>
+                                            <StyledButton
+                                                sx={{
+                                                    background: "#a36e21", color: "white",
+                                                    marginLeft: "10px"
+                                                }}
+                                                size="small"
+                                                startIcon={<IconBuildingWarehouse stroke={2} />}
+                                                variant="contained"
+                                            >
+                                                Quản lý kho
+                                            </StyledButton>
+                                        </Link>
+                                    }
+                                    {hasPermission([
+                                        { resource: "publications", action: "delete" },
+                                    ]) &&
+                                        <Link
+                                            to="/thu-vien/danh-sach-xoa-an-pham"
+                                            style={{ textDecoration: "none" }}
+                                        >
+                                            <StyledButton
+                                                sx={{
+                                                    background: "#de524a",
+                                                    color: "white",
+                                                    marginLeft: "10px",
+                                                }}
+                                                size="small"
+                                                startIcon={<IconTrash stroke={2} />}
+                                                variant="contained"
+                                            >
+                                                Thùng rác
+                                            </StyledButton>
+                                        </Link>
+                                    }
+                                </>
                             ) : (
                                 <></>
                             )}

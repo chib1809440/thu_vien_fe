@@ -390,20 +390,17 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                         ].includes(publications?.mimetype) && (
                                                                 <>
                                                                     {
-                                                                        openLT === false ?
-                                                                            <StyledButton
-                                                                                color="primary"
-                                                                                size="small"
-                                                                                startIcon={<IconFileWord stroke={2} />}
-                                                                                variant="contained"
-                                                                                sx={{ marginTop: 1, width: "150px" }}
-                                                                            >
-                                                                                <a href={publications?.path} download style={{ color: "white" }}>
-                                                                                    Tải xuống
-                                                                                </a>
-                                                                            </StyledButton>
-
-                                                                            : ""
+                                                                        <StyledButton
+                                                                            color="primary"
+                                                                            size="small"
+                                                                            startIcon={<IconFileWord stroke={2} />}
+                                                                            variant="contained"
+                                                                            sx={{ marginTop: 1, width: "150px" }}
+                                                                        >
+                                                                            <a href={publications?.path} download style={{ color: "white" }}>
+                                                                                Tải xuống
+                                                                            </a>
+                                                                        </StyledButton>
                                                                     }
                                                                 </>
                                                             )}
@@ -429,19 +426,17 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                             "application/vnd.openxmlformats-officedocument.presentationml.presentation",
                                                         ].includes(publications?.mimetype) && (
                                                                 <>
-                                                                    {
-                                                                        openLT === false ? <StyledButton
-                                                                            color="primary"
-                                                                            size="small"
-                                                                            startIcon={<IconPresentation stroke={2} />}
-                                                                            variant="contained"
-                                                                            sx={{ marginTop: 1, width: "150px" }}
-                                                                        >
-                                                                            <a href={publications?.path} download style={{ color: "white" }}>
-                                                                                Tải xuống
-                                                                            </a>
-                                                                        </StyledButton>
-                                                                            : ""
+                                                                    {<StyledButton
+                                                                        color="primary"
+                                                                        size="small"
+                                                                        startIcon={<IconPresentation stroke={2} />}
+                                                                        variant="contained"
+                                                                        sx={{ marginTop: 1, width: "150px" }}
+                                                                    >
+                                                                        <a href={publications?.path} download style={{ color: "white" }}>
+                                                                            Tải xuống
+                                                                        </a>
+                                                                    </StyledButton>
                                                                     }
                                                                 </>
                                                             )}

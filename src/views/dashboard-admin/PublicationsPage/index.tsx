@@ -1402,7 +1402,7 @@ const PublicationsPage = () => {
                                                         position: "absolute",
                                                         zIndex: 999,
                                                         bottom: -90,
-                                                        right: (userRole === "Super Admin" || userRole === "Student") ? -15 : 15,
+                                                        right: (userRole === "Super Admin" || userRole === "Student" || userRole === "Teacher") ? -15 : 15,
                                                         margin: "8px",
                                                         background: "none",
                                                         [theme.breakpoints.down("sm")]: {
@@ -1442,26 +1442,72 @@ const PublicationsPage = () => {
                                                     )}
                                                 </StyledIconButton>
 
-                                                {hasPermission([
-                                                    { resource: "publications", action: "manage" },
-                                                    { resource: "publications", action: "update" },
-                                                ]) && <StyledIconButton
-                                                    disableHoverEffect
-                                                    sx={{
-                                                        position: "absolute",
-                                                        zIndex: 999,
-                                                        bottom: -90,
-                                                        right: -15,
-                                                        margin: "8px",
-                                                        background: "none",
-                                                        [theme.breakpoints.down("sm")]: {
-                                                            width: "7%",
-                                                        },
-                                                        [theme.breakpoints.down("md")]: {
-                                                            width: "10%",
-                                                        },
-                                                    }}
-                                                >
+                                                {userRole === "Teacher" &&
+                                                    item?.createBy === userId &&
+                                                    hasPermission([
+                                                        { resource: "publications", action: "manage" },
+                                                        { resource: "publications", action: "update" },
+                                                    ]) && <StyledIconButton
+                                                        disableHoverEffect
+                                                        sx={{
+                                                            position: "absolute",
+                                                            zIndex: 999,
+                                                            bottom: -90,
+                                                            right: -15,
+                                                            margin: "8px",
+                                                            background: "none",
+                                                            [theme.breakpoints.down("sm")]: {
+                                                                width: "7%",
+                                                            },
+                                                            [theme.breakpoints.down("md")]: {
+                                                                width: "10%",
+                                                            },
+                                                        }}
+                                                    >
+                                                        <Box
+                                                            bgcolor={"red"}
+                                                            sx={{
+                                                                background: "#3078ec",
+                                                                color: "white",
+                                                                borderRadius: 2,
+                                                                display: "flex",
+                                                                alignItems: "center",
+                                                                justifyContent: "center",
+                                                                p: 0.5,
+                                                            }}
+                                                        >
+                                                            <IconPencil
+                                                                onClick={() =>
+                                                                    handleEditPublications(item)
+                                                                }
+                                                                size={20}
+                                                                stroke={2}
+                                                            />
+                                                        </Box>
+                                                    </StyledIconButton>
+                                                }
+
+                                                {userRole !== "Teacher" &&
+                                                    hasPermission([
+                                                        { resource: "publications", action: "manage" },
+                                                        { resource: "publications", action: "update" },
+                                                    ]) && <StyledIconButton
+                                                        disableHoverEffect
+                                                        sx={{
+                                                            position: "absolute",
+                                                            zIndex: 999,
+                                                            bottom: -90,
+                                                            right: -15,
+                                                            margin: "8px",
+                                                            background: "none",
+                                                            [theme.breakpoints.down("sm")]: {
+                                                                width: "7%",
+                                                            },
+                                                            [theme.breakpoints.down("md")]: {
+                                                                width: "10%",
+                                                            },
+                                                        }}
+                                                    >
                                                         <Box
                                                             bgcolor={"red"}
                                                             sx={{

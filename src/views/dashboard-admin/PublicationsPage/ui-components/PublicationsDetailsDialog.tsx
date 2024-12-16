@@ -124,7 +124,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                             <Grid item xs={12} my={2} mt={publications?.mimetype === "application/pdf" ? 3 : 0}>
                                                 <Box display={"flex"} flexDirection={"column"} >
                                                     <Typography variant="h4" display={"flex"}>
-                                                        Tên ấn phẩm1:
+                                                        Tên ấn phẩm:
                                                         <StyledHeading ml={1} variant="h4">
                                                             {publications?.name}
                                                         </StyledHeading>

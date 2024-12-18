@@ -1,14 +1,18 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from "@mui/material";
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField } from "@mui/material";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Form, FormikProvider, useFormik } from "formik";
 import { FC, useCallback, useMemo, useRef, useState } from "react";
 import * as yup from "yup";
 import InputForm from "../../../../components/custom/form/InputForm";
-import { capitalizeFirstLetter } from '../../../../helpers/capitalizeFirstLetter';
-import { formatDate } from '../../../../helpers/formatDate';
-import { CreateUserModel } from "../../../../interfaces/user";
+import SelectForm from '../../../../components/custom/form/SelectForm';
 import Uploadimage, { UploadAvatarRefProps } from '../../../../components/custom/form/UploadImage';
 import StyledButton from '../../../../components/default/button/StyledButton';
+import { capitalizeFirstLetter } from '../../../../helpers/capitalizeFirstLetter';
+import { CreateUserModel } from "../../../../interfaces/user";
+import { genderOptions } from '../../../../utils/constants.utils';
 
 type Props = {
     open: boolean;
@@ -55,7 +59,10 @@ const FormProfile: FC<Props> = ({
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
             if (onSubmit) {
-
+                // Chuyển ngày thành ISO string khi submit
+                if (values.birthday) {
+                    values.birthday = new Date(values.birthday).toISOString();
+                }
                 onSubmit(values, resetForm);
             }
         },
@@ -65,8 +72,6 @@ const FormProfile: FC<Props> = ({
         () => formik,
         [formik]
     );
-
-
 
     const imageRef = useRef<UploadAvatarRefProps>(null);
     const [defaultImage, setDefaultImage] = useState<string>("");
@@ -88,6 +93,11 @@ const FormProfile: FC<Props> = ({
         },
         [initialValues, setFieldValue, defaultImage, avatarBoolean]
     );
+
+    const handleGenderChange = (e) => {
+        const selectedGender = e.target.value;
+        setFieldValue("gender", selectedGender);
+    };
 
 
     return (
@@ -185,26 +195,59 @@ const FormProfile: FC<Props> = ({
                             />
                         </Box>
 
-                        <Box sx={{ display: "flex", gap: 2 }}>
-                            <InputForm
-                                label="Giới tính"
-                                placeholder="Nhập giới tính"
-                                error={touched.gender && Boolean(errors.gender)}
-                                helperText={touched.gender && errors.gender}
-                                {...getFieldProps("gender")}
-                                value={capitalizeFirstLetter(values?.gender)}
-                            />
-                            <InputForm
-                                label="Ngày sinh"
-                                placeholder="Nhập ngày"
-                                error={touched.birthday && Boolean(errors.birthday)}
-                                helperText={touched.birthday && errors.birthday}
-                                {...getFieldProps("birthday")}
-                                value={formatDate(values?.birthday)}
-                            />
+                        <Box sx={{ display: "flex", gap: 2, flexDirection: { xs: "column", md: "row" } }}>
+                            <Box sx={{ flex: 1 }}>
+                                <InputForm
+                                    type='number'
+                                    label="Lớp"
+                                    placeholder="Nhập tên lớp"
+                                    error={touched.class && Boolean(errors.class)}
+                                    helperText={touched.class && errors.class}
+                                    {...getFieldProps("class")}
+                                    value={capitalizeFirstLetter(values?.class)}
+                                />
+                            </Box>
+                            <Box sx={{ flex: 1 }}>
+                                <SelectForm
+                                    label="Giới tính"
+                                    options={genderOptions}
+                                    {...getFieldProps("gender")}
+                                    onChange={handleGenderChange}
+                                    error={touched.gender && Boolean(errors.gender)}
+                                    helperText={touched.gender && errors.gender}
+                                />
+                            </Box>
+                            <Box sx={{ flex: 1 }}>
+                                <Box sx={{ mt: { xs: 0, md: 5 } }}>
+                                    <LocalizationProvider dateAdapter={AdapterMoment}>
+                                        <DatePicker
+                                            label="Ngày sinh"
+                                            value={values.birthday ? new Date(values.birthday) : null}
+                                            onChange={(newValue) => {
+                                                console.log("Old Birthday: ", values.birthday); // Kiểm tra giá trị cũ
+                                                if (newValue) {
+                                                    setFieldValue("birthday", newValue.toISOString());
+                                                }
+                                                console.log("New Birthday: ", newValue); // Kiểm tra giá trị mới
+                                            }}
+                                            inputFormat="DD/MM/YYYY"
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    fullWidth
+                                                    error={touched.birthday && Boolean(errors.birthday)}
+                                                    helperText={touched.birthday && errors.birthday}
+                                                />
+                                            )}
+                                        />
+                                    </LocalizationProvider>
+                                </Box>
+                            </Box>
                         </Box>
-                        <Box sx={{ display: "flex", gap: 2 }}>
-                            {/* <InputForm
+
+
+                        {/* <Box sx={{ display: "flex", gap: 2 }}>
+                            <InputForm
                                 label="Trường"
                                 placeholder="Nhập tên trường"
                                 disabled
@@ -212,8 +255,10 @@ const FormProfile: FC<Props> = ({
                                 helperText={touched.school && errors.school}
                                 {...getFieldProps("school")}
                                 value={capitalizeFirstLetter(values?.school)}
-                            /> */}
+                            /> 
+
                             <InputForm
+                                type='number'
                                 label="Lớp"
                                 placeholder="Nhập tên lớp"
                                 error={touched.class && Boolean(errors.class)}
@@ -221,7 +266,7 @@ const FormProfile: FC<Props> = ({
                                 {...getFieldProps("class")}
                                 value={capitalizeFirstLetter(values?.class)}
                             />
-                        </Box>
+                        </Box> */}
                     </Form>
                 </DialogContent>
                 <DialogActions sx={{ pr: 3, pl: 3 }}>

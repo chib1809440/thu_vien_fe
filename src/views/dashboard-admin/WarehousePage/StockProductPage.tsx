@@ -1,13 +1,13 @@
 import { Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { IconPencil } from "@tabler/icons";
-import { IconTransferIn } from "@tabler/icons-react";
+import { IconDevices, IconTransferIn } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
+import { CsFlexRowBetween } from "../../../components/default/flex";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { useAddLiquidation } from "../../../hooks/services/liquidation/liquidation-mutation";
 import {
@@ -29,6 +29,7 @@ import MainCard from "../../../ui-component/cards/MainCard";
 import usePermission from "../../../utils/hasPermission";
 import { parserParams } from "../../../utils/object";
 import FormEditWarehouse from "./ui-components/FormEditWarehouse";
+import { Link } from "react-router-dom";
 
 const StockProductPage = () => {
     const queryString = useQueryString();
@@ -328,27 +329,45 @@ const StockProductPage = () => {
             <MainCard>
                 <Stack
                     spacing={2}
-                    sx={{
-                        paddingLeft: { xs: 0, sm: 0, md: 4 },
-                        paddingBottom: { xs: 2, sm: 2 },
-                        width: "100%",
-                    }}
                 >
-                    <Link
-                        to="/quan-ly-nhap-kho/phieu-nhap-kho"
-                        style={{ textDecoration: "none" }}
-                    >
-                        <StyledButton
-                            sx={{
-                                background: "#a36e21", color: "white",
-                            }}
-                            size="small"
-                            startIcon={<IconTransferIn stroke={2} />}
-                            variant="contained"
-                        >
-                            Quản lý nhập ấn phẩm
-                        </StyledButton>
-                    </Link>
+                    <CsFlexRowBetween>
+                        <Box sx={{ ml: { xs: 0, sm: 0, md: 3 }, mb: { xs: 0, sm: 0, md: 2 } }}>
+                            <Link to="/quan-ly-nhap-kho/phieu-nhap-kho" style={{ textDecoration: 'none' }}>
+                                <StyledButton
+                                    sx={{
+                                        background: "#a36e21", color: "white",
+                                        //@ts-ignore
+                                        marginLeft: { xs: 0, sm: 0, md: "10px" },
+                                        //@ts-ignore
+                                        marginTop: { xs: 1, sm: 1, md: 0 }
+                                    }}
+                                    size="small"
+                                    startIcon={<IconTransferIn stroke={2} />}
+                                    variant="contained"
+                                >
+                                    Quản lý nhập ấn phẩm
+                                </StyledButton>
+                            </Link>
+                            <Link to="/quan-ly-kho/thanh-ly-hu-hong" style={{ textDecoration: 'none' }}>
+                                <StyledButton
+                                    sx={{
+                                        background: "#71a3c1", color: "white",
+                                        //@ts-ignore
+                                        marginLeft: { xs: 0, sm: 0, md: "10px" },
+                                        //@ts-ignore
+                                        marginTop: { xs: 1, sm: 1, md: 0 }
+                                    }}
+                                    size="small"
+                                    startIcon={<IconDevices stroke={2} />}
+                                    variant="contained"
+                                >
+                                    Quản lý Thanh lý - Hư hỏng
+                                </StyledButton>
+                            </Link>
+                        </Box>
+
+                    </CsFlexRowBetween>
+
                 </Stack>
 
                 <ActionsForm

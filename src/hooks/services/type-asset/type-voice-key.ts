@@ -1,0 +1,2 @@
+export const GET_TYPEASSET = "GET_TYPEASSET";
+export const GET_TYPEASSET_ID = "GET_TYPEASSET_ID";

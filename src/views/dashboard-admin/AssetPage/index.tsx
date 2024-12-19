@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import MainCard from '../../../ui-component/cards/MainCard';
+import { useTheme } from '@mui/material';
 import { Box, Stack } from '@mui/system';
-import { CsFlexRowBetween } from '../../../components/default/flex';
-import StyledButton from '../../../components/default/button/StyledButton';
 import { IconPlus, IconTrash } from '@tabler/icons';
-import TableAssetList from './ui-components/TableAssetList';
+import { IconBuildingWarehouse, IconDevices, IconTransferIn } from '@tabler/icons-react';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { HeadCell } from '../../../components/custom/table/type';
+import StyledButton from '../../../components/default/button/StyledButton';
+import { CsFlexRowBetween } from '../../../components/default/flex';
 import { Asset } from '../../../interfaces/asset';
-import { Button, useTheme } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import IBreadcrumsCustom from '../../../ui-component/breadcrums';
-import { IconBuildingWarehouse } from '@tabler/icons-react';
+import MainCard from '../../../ui-component/cards/MainCard';
+import TableAssetList from './ui-components/TableAssetList';
 const headCells: HeadCell[] = [
     {
         id: 'asset_name',
@@ -19,10 +19,22 @@ const headCells: HeadCell[] = [
         label: 'Tên tài sản',
     },
     {
-        id: 'type',
+        id: 'quantityTotal',
+        numeric: true,
+        disablePadding: true,
+        label: 'Số lượng tổng',
+    },
+    {
+        id: 'typeAssetId',
         numeric: true,
         disablePadding: true,
         label: 'Phân loại',
+    },
+    {
+        id: 'quantityTotal',
+        numeric: true,
+        disablePadding: true,
+        label: 'Trạng thái',
     },
     {
         id: 'action',
@@ -42,8 +54,9 @@ export default function AssetPage() {
         navigate('/tai-san-thu-vien/thung-rac');
     };
     const handleClickNavigateWarehouseAssets = () => {
-        navigate('/quan-ly-kho/kho-tai-san');
+        navigate('/quan-ly-kho/thanh-ly-hu-hong');
     };
+
     return (
         <>
             <IBreadcrumsCustom
@@ -64,21 +77,36 @@ export default function AssetPage() {
                             >
                                 Thêm tài sản
                             </StyledButton>
-
+                            <Link to="/quan-ly-nhap-kho/phieu-nhap-kho-tai-san" style={{ textDecoration: 'none' }}>
+                                <StyledButton
+                                    sx={{
+                                        background: "#a36e21", color: "white",
+                                        //@ts-ignore
+                                        marginLeft: { xs: 0, sm: 0, md: "10px" },
+                                        //@ts-ignore
+                                        marginTop: { xs: 1, sm: 1, md: 0 }
+                                    }}
+                                    size="small"
+                                    startIcon={<IconTransferIn stroke={2} />}
+                                    variant="contained"
+                                >
+                                    Quản lý nhập tài sản
+                                </StyledButton>
+                            </Link>
                             <StyledButton
                                 sx={{
-                                    background: "#a36e21", color: "white",
+                                    background: "#71a3c1", color: "white",
                                     //@ts-ignore
                                     marginLeft: { xs: 0, sm: 0, md: "10px" },
                                     //@ts-ignore
                                     marginTop: { xs: 1, sm: 1, md: 0 }
                                 }}
                                 size="small"
-                                startIcon={<IconBuildingWarehouse stroke={2} />}
+                                startIcon={<IconDevices stroke={2} />}
                                 variant="contained"
                                 onClick={() => handleClickNavigateWarehouseAssets()}
                             >
-                                Quản lý kho
+                                Quản lý Thanh lý - Hư hỏng
                             </StyledButton>
                             <StyledButton
                                 sx={{

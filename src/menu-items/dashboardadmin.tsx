@@ -318,21 +318,37 @@ const dashboardAdmin = {
                     icon: icons.IconBuildingWarehouse,
                     breadcrumbs: false,
                 },
+                // {
+                //     id: "kho-tai-san",
+                //     title: "Kho tài sản",
+                //     type: "item",
+                //     url: "/quan-ly-kho/kho-tai-san",
+                //     icon: icons.IconBuildingWarehouse,
+                //     breadcrumbs: false,
+                // },
+                
+                // {
+                //     id: "thanh-ly-hu-hong",
+                //     title: "Thanh lý - Hư hỏng",
+                //     type: "item",
+                //     url: "/quan-ly-kho/thanh-ly-hu-hong",
+                //     icon: icons.IconDevices,
+                //     breadcrumbs: false,
+                // },
+            ],
+        },
+
+        {
+            id: "tai-san-thu-vien",
+            title: "Quản lý số lượng tài sản",
+            type: "item",
+            url: "/tai-san-thu-vien",
+            icon: icons.IconBrowser,
+            breadcrumbs: false,
+            permissions: [
                 {
-                    id: "kho-tai-san",
-                    title: "Kho tài sản",
-                    type: "item",
-                    url: "/quan-ly-kho/kho-tai-san",
-                    icon: icons.IconBuildingWarehouse,
-                    breadcrumbs: false,
-                },
-                {
-                    id: "thanh-ly-hu-hong",
-                    title: "Ấn phẩm Thanh lý - Hư hỏng",
-                    type: "item",
-                    url: "/quan-ly-kho/thanh-ly-hu-hong",
-                    icon: icons.IconDevices,
-                    breadcrumbs: false,
+                    resource: "assets",
+                    action: "manage",
                 },
             ],
         },
@@ -529,20 +545,20 @@ const dashboardAdmin = {
                 },
             ],
         },
-        {
-            id: "tai-san-thu-vien",
-            title: "Quản lý tài sản",
-            type: "item",
-            url: "/tai-san-thu-vien",
-            icon: icons.IconBrowser,
-            breadcrumbs: false,
-            permissions: [
-                {
-                    resource: "assets",
-                    action: "manage",
-                },
-            ],
-        },
+        // {
+        //     id: "tai-san-thu-vien",
+        //     title: "Quản lý tài sản",
+        //     type: "item",
+        //     url: "/tai-san-thu-vien",
+        //     icon: icons.IconBrowser,
+        //     breadcrumbs: false,
+        //     permissions: [
+        //         {
+        //             resource: "assets",
+        //             action: "manage",
+        //         },
+        //     ],
+        // },
         // {
         //     id: 'ho-tro-ai',
         //     title: "Hỗ trợ AI",

@@ -24,6 +24,8 @@ import CustomInput from "../../../../components/default/input/CustomInput";
 import AlertConfirmDialog from "../../../../components/default/alert/confirmAlertDialog";
 import { useSoftDeleteAsset, useSoftDeleteAssetSelected, useAssetList } from "../../../../hooks/react-query/assetData";
 import AssetDialog from "../../../../components/default/dialog/AssetDialog";
+import { TTypeAsset } from "../../../../types/models/type-asset";
+import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -257,8 +259,10 @@ function TableAssetList<T extends DataType>({
                                                             {(page - 1) * rowsPerPage + index + 1}
                                                         </StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.name}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityUsed}</StyledTableCell>
-                                                        {/* <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityWarehouse}</StyledTableCell> */}
+                                                        <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityTotal}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{capitalizeFirstLetter((row?.typeAssetId as TTypeAsset)?.name)}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityTotal}</StyledTableCell>
+                                                        {/* <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4  }}>{row?.quantityWarehouse}</StyledTableCell> */}
                                                         {/* <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityLiquidation}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityDamage}</StyledTableCell> */}
                                                         {/* <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityTotal}</StyledTableCell> */}

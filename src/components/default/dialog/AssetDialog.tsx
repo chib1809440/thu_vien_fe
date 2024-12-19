@@ -17,10 +17,15 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import * as yup from "yup";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { useCreateAsset, useUpdateAsset } from "../../../hooks/react-query/assetData";
+import { useFetchTypeAsset } from "../../../hooks/services/type-asset/type-voice-query";
+import useQueryString from "../../../hooks/services/useQueryString";
 import { Asset, CreateAssetModel } from "../../../interfaces/asset";
 import { EntityResponse } from "../../../interfaces/entityResponse";
 import { ErrorResponse } from "../../../interfaces/errorResponse";
+import { TTypeAsset } from "../../../types/models/type-asset";
+import SelectForm from "../../custom/form/SelectForm";
 export const validationUtilizedObjectSchema = yup.object({
     name: yup.string().required("Vui lòng nhập tên tài sản"),
     note: yup.string(), // Không yêu cầu nhập
@@ -63,6 +68,11 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
     const [formData, setFormData] = useState<Asset>();
     const [loading, setLoading] = useState<boolean>(false);
     const [entityError, setEntityError] = useState<string | string[]>(null);
+    const queryString = useQueryString();
+    const order = queryString?.order ?? "ASC";
+
+    const { data: TypeAssetData } = useFetchTypeAsset({ order });
+
     const onSuccess = (data: EntityResponse<Asset>) => {
         if (data.statusCode) {
             const { statusCode, message } = data;
@@ -109,6 +119,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
             quantityWarehouse: asset?.quantityWarehouse ?? 0,
             quantityDamage: asset?.quantityDamage ?? 0,
             quantityLiquidation: asset?.quantityLiquidation ?? 0,
+            typeAssetId: asset?.typeAssetId as TTypeAsset ?? ""
         },
         validationSchema: validationUtilizedObjectSchema,
         onSubmit: async (values) => {
@@ -123,7 +134,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                         quantityWarehouse: 0,
                         quantityDamage: 0,
                         quantityLiquidation: 0,
-
+                        typeAssetId: values.typeAssetId
                     };
                     createAsset(data);
 
@@ -138,6 +149,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                         quantityWarehouse: +values.quantityWarehouse,
                         quantityDamage: +values.quantityDamage,
                         quantityLiquidation: +values.quantityLiquidation,
+                        typeAssetId: values.typeAssetId
                     };
                     updateAsset(data)
                 }
@@ -161,6 +173,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                 quantityWarehouse: asset?.quantityWarehouse ?? 0,
                 quantityDamage: asset?.quantityDamage ?? 0,
                 quantityLiquidation: asset?.quantityLiquidation ?? 0,
+                typeAssetId: asset?.typeAssetId
             });
         }
     }, [asset]);
@@ -184,7 +197,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                 aria-describedby="modal-modal-description"
             >
                 <DialogTitle sx={{ m: 0, pb: 2 }} id="customized-dialog-title">
-                    <Typography variant="h4">{title}</Typography>
+                    <Typography variant="h3">{title}</Typography>
                 </DialogTitle>
                 <IconButton
                     aria-label="close"
@@ -227,10 +240,10 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item xs={12} sm={12} md={6}>
+                                        <Grid item xs={12} sm={12} md={4}>
                                             <Box style={{ width: "100%" }}>
-                                                <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                                    Tên tài sản <span className="required_text">(*)</span>{" "}
+                                                <Typography sx={{ mb: 1.5, mt: 1, fontWeight: "bold" }}>
+                                                    Tên tài sản <span className="required_text">(*)</span>
                                                 </Typography>
                                                 <TextField
                                                     variant="outlined"
@@ -240,52 +253,58 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                                     value={formik.values.name}
                                                     onChange={formik.handleChange}
                                                     onBlur={formik.handleBlur}
-                                                    error={
-                                                        formik.touched.name &&
-                                                        Boolean(formik.errors.name)
-                                                    }
+                                                    error={formik.touched.name && Boolean(formik.errors.name)}
                                                 />
-                                                {formik.touched.name &&
-                                                    Boolean(formik.errors.name) && (
-                                                        <FormHelperText className="required_text">
-                                                            {" "}
-                                                            {formik.errors.name
-                                                                ? formik.errors.name.toString()
-                                                                : ""}
-                                                        </FormHelperText>
-                                                    )}
+                                                {formik.touched.name && Boolean(formik.errors.name) && (
+                                                    <FormHelperText className="required_text">
+                                                        {formik.errors.name ? formik.errors.name.toString() : ""}
+                                                    </FormHelperText>
+                                                )}
                                             </Box>
                                         </Grid>
-                                        <Grid item xs={12} sm={12} md={6}>
+
+                                        <Grid item xs={12} sm={12} md={4}>
                                             <Box style={{ width: "100%" }}>
-                                                <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                                    Số lượng tổng <span className="required_text">(*)</span>{" "}
+                                                <Typography sx={{ mb: 1.5, mt: 1, fontWeight: "bold" }}>
+                                                    Số lượng tổng <span className="required_text">(*)</span>
                                                 </Typography>
                                                 <TextField
                                                     variant="outlined"
+                                                    type="number"
                                                     fullWidth
                                                     id="quantityTotal"
                                                     name="quantityTotal"
                                                     value={formik.values.quantityTotal}
                                                     onChange={formik.handleChange}
                                                     onBlur={formik.handleBlur}
-                                                    error={
-                                                        formik.touched.quantityTotal &&
-                                                        Boolean(formik.errors.quantityTotal)
-                                                    }
+                                                    error={formik.touched.quantityTotal && Boolean(formik.errors.quantityTotal)}
                                                 />
-                                                {formik.touched.quantityTotal &&
-                                                    Boolean(formik.errors.quantityTotal) && (
-                                                        <FormHelperText className="required_text">
-                                                            {" "}
-                                                            {formik.errors.quantityTotal
-                                                                ? formik.errors.quantityTotal.toString()
-                                                                : ""}
-                                                        </FormHelperText>
-                                                    )}
+                                                {formik.touched.quantityTotal && Boolean(formik.errors.quantityTotal) && (
+                                                    <FormHelperText className="required_text">
+                                                        {formik.errors.quantityTotal ? formik.errors.quantityTotal.toString() : ""}
+                                                    </FormHelperText>
+                                                )}
+                                            </Box>
+                                        </Grid>
+
+                                        <Grid item xs={12} sm={12} md={4}>
+                                            <Box sx={{ width: "100%" }}>
+                                                <SelectForm
+                                                    label="Phân loại"
+                                                    required
+                                                    value={formik.values.typeAssetId as string}
+                                                    options={TypeAssetData?.data?.result?.map((item) => ({
+                                                        value: item._id,
+                                                        label: capitalizeFirstLetter(item.name),
+                                                    }))}
+                                                    onChange={(e) => formik.setFieldValue("typeAssetId", e.target.value)}
+                                                    error={formik.touched.typeAssetId && Boolean(formik.errors.typeAssetId)}
+                                                    helperText={formik.touched.typeAssetId && formik.errors.typeAssetId}
+                                                />
                                             </Box>
                                         </Grid>
                                     </Grid>
+
                                     {
                                         id ? <>
                                             <Grid container spacing={3} sx={{ mb: 1.5 }}>

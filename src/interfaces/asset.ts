@@ -1,3 +1,4 @@
+import { TTypeAsset } from "../types/models/type-asset";
 import { AbstractEntity } from "./entityResponse";
 
 export interface Asset extends AbstractEntity {
@@ -9,6 +10,7 @@ export interface Asset extends AbstractEntity {
     quantityWarehouse: number;
     quantityDamage: number;
     quantityLiquidation: number;
+    typeAssetId: TTypeAsset | string;
 }
 export interface CreateAssetModel {
     note: string;
@@ -19,5 +21,5 @@ export interface CreateAssetModel {
     quantityWarehouse: number;
     quantityDamage: number;
     quantityLiquidation: number;
-
+    typeAssetId: TTypeAsset | string;
 }

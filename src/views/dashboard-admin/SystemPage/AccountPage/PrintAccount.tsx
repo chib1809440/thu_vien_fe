@@ -15,10 +15,10 @@ const PrintAccount = forwardRef<HTMLDivElement, PrintAccountProps>(({ dataUsers 
     const usersPerPage = 8
     const totalUsers = users.length;
     const totalPages = Math.ceil(totalUsers / usersPerPage);
-    
+
     const paginatedUsers = Array.from({ length: totalPages }, (_, pageIndex) => {
         return users.slice(pageIndex * usersPerPage, (pageIndex + 1) * usersPerPage);
-      });      
+    });
 
     return (
         <div style={{ display: "none" }}>
@@ -51,10 +51,11 @@ const PrintAccount = forwardRef<HTMLDivElement, PrintAccountProps>(({ dataUsers 
                         {user?.school && (
                             <div
                                 style={{
-                                    textAlign: "left",
-                                    marginBottom: "2px",
-                                    fontSize: "10px",
+                                    textAlign: "center",
                                     textTransform: "uppercase",
+                                    margin: "0 0 2px 0",
+                                    fontSize: "14px",
+                                    color: "#fd6033",
                                 }}
                             >
                                 {user?.school}

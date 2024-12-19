@@ -286,7 +286,7 @@ const dashboardAdmin = {
         },
         {
             id: "quan-ly-kho",
-            title: "Quản lý kho",
+            title: "Quản lý số lượng ấn phẩm",
             type: "collapse",
             url: "/quan-ly-kho",
             icon: icons.IconBuildingWarehouse,
@@ -304,15 +304,15 @@ const dashboardAdmin = {
             children: [
                 {
                     id: "tu-ke",
-                    title: "Tủ - Kệ",
+                    title: "Ấn phẩm trên Tủ - Kệ",
                     type: "item",
                     url: "/quan-ly-kho/tu-ke",
                     icon: icons.IconBrandAirtable,
                     breadcrumbs: false,
                 },
                 {
-                    id: "kho-an-pham",
-                    title: "Kho ấn phẩm",
+                    id: "kho",
+                    title: "Ấn phẩm trong kho",
                     type: "item",
                     url: "/quan-ly-kho/kho-an-pham",
                     icon: icons.IconBuildingWarehouse,
@@ -328,7 +328,7 @@ const dashboardAdmin = {
                 },
                 {
                     id: "thanh-ly-hu-hong",
-                    title: "Thanh lý - Hư hỏng",
+                    title: "Ấn phẩm Thanh lý - Hư hỏng",
                     type: "item",
                     url: "/quan-ly-kho/thanh-ly-hu-hong",
                     icon: icons.IconDevices,
@@ -495,24 +495,24 @@ const dashboardAdmin = {
                         },
                     ],
                 },
-                {
-                    id: "voice",
-                    title: "Voice",
-                    type: "item",
-                    url: "/quan-ly-danh-muc/voice",
-                    icon: icons.IconMicrophone,
-                    breadcrumbs: false,
-                    permissions: [
-                        {
-                            resource: "all",
-                            action: "manage",
-                        },
-                        {
-                            resource: "voices",
-                            action: "manage",
-                        },
-                    ],
-                },
+                // {
+                //     id: "voice",
+                //     title: "Voice",
+                //     type: "item",
+                //     url: "/quan-ly-danh-muc/voice",
+                //     icon: icons.IconMicrophone,
+                //     breadcrumbs: false,
+                //     permissions: [
+                //         {
+                //             resource: "all",
+                //             action: "manage",
+                //         },
+                //         {
+                //             resource: "voices",
+                //             action: "manage",
+                //         },
+                //     ],
+                // },
             ],
         },
         {
@@ -601,14 +601,7 @@ export const dashboardAdminV2 = {
         //     icon: icons.IconHome2,
         //     breadcrumbs: false
         // },
-        {
-            id: "lien-thong",
-            title: "Chia sẻ ấn phẩm",
-            type: "item",
-            url: "/lien-thong",
-            icon: icons.IconBook,
-            breadcrumbs: false,
-        },
+        
         {
             id: "chia-se-danh-muc",
             title: "Chia sẻ danh mục",
@@ -667,6 +660,14 @@ export const dashboardAdminV2 = {
                     breadcrumbs: false,
                 },
             ],
+        },
+        {
+            id: "lien-thong",
+            title: "Chia sẻ ấn phẩm",
+            type: "item",
+            url: "/lien-thong",
+            icon: icons.IconBook,
+            breadcrumbs: false,
         },
         {
             id: "danh-sach-muon-tra-lien-thong",

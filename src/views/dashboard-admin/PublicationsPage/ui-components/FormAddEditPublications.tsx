@@ -387,15 +387,6 @@ const FormAddEditPublications: FC<Props> = ({
                                 }
                             }}
                         >
-                            <Uploadimage
-                                typeHardPublications={typeHardPublications}
-                                ref={imageRef}
-                                defaultImage={imageUrl || defaultImage}
-                                onChange={handleChangeImage}
-                                fileName={fileName}
-                                error={touched.file && errors.file}
-                            />
-
                             <Box
                                 sx={{
                                     display: "flex",
@@ -459,6 +450,14 @@ const FormAddEditPublications: FC<Props> = ({
                                     />
                                 </Box>
                             </Box>
+                            <Uploadimage
+                                typeHardPublications={typeHardPublications}
+                                ref={imageRef}
+                                defaultImage={imageUrl || defaultImage}
+                                onChange={handleChangeImage}
+                                fileName={fileName}
+                                error={touched.file && errors.file}
+                            />
                         </Box>
 
                         <Box

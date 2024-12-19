@@ -2,6 +2,10 @@ export const typeOptions = [
     { value: 'ấn phẩm cứng', label: 'Ấn phẩm truyền thống' },
     { value: 'ấn phẩm mềm', label: 'Ấn phẩm điện tử' },
 ];
+export const genderOptions = [
+    { value: 'nữ', label: 'Nữ' },
+    { value: 'nam', label: 'Nam' },
+];
 
 export const statusOptions = [
     { value: 'trên kệ', label: 'Trên kệ' },

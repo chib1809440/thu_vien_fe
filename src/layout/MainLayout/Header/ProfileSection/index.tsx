@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { CsFlexRowBetween } from '../../../../components/default/flex';
-import { useChangeInfo, useChangePasswordUser, useUser } from '../../../../hooks/react-query/userData';
+import { useChangeInfo, useChangePasswordUser, useRevalidateUser, useUser } from '../../../../hooks/react-query/userData';
 import { useAddLoanSlip } from '../../../../hooks/services/loanSlip/loanSlip-mutation';
 import { useReFetchLoanSlip, useReFetchLoanSlipLink } from '../../../../hooks/services/loanSlip/loanSlip-query';
 import useAuth from '../../../../hooks/useAuth';
@@ -97,6 +97,7 @@ const ProfileSection = () => {
         return _user?.data?.libraryDetail;
     }, [user]);
     const { data: userData } = useUser(userID);
+    const revalidateUser = useRevalidateUser(userID);
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
@@ -220,6 +221,7 @@ const ProfileSection = () => {
                 { ...values, _id: selectedEdit._id },
                 {
                     onSuccess: (data) => {
+                        revalidateUser()
                         toast.success("Chỉnh sửa thành công.");
                         const loca = localStorage.getItem('dataUser');
                         const user = JSON.parse(loca)

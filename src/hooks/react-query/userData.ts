@@ -210,6 +210,17 @@ export function useSoftDeleteUser() {
         },
     });
 }
+
+export const useRevalidateUser = (_id: string) => {
+    const queryClient = useQueryClient();
+    return () => {
+        queryClient.invalidateQueries({
+            queryKey: getQueryKeys({ key: RQ_USER, _id }),
+            exact: true,
+        });
+    };
+};
+
 export function useUserTrashList(page?: number, limit?: number, search?: string) {
 
     return useQuery({

@@ -5,9 +5,12 @@
 // import { ErrorResponse } from 'react-router-dom';
 
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createAsset, softDeleteAsset, softDeleteAssetSelected, getAllAssets, getAssetById, updateAsset, deleteAssetSelected, deleteAsset, restoreAssetSelected, getAllAssetsDeleted } from "../../_apis/asset.api";
+import { toast } from "react-toastify";
+import { createAsset, deleteAsset, deleteAssetSelected, getAllAssets, getAllAssetsDeleted, getAssetById, restoreAssetSelected, softDeleteAsset, softDeleteAssetSelected, updateAsset } from "../../_apis/asset.api";
+import { Asset, CreateAssetModel, UpdateAssetModel } from "../../interfaces/asset";
+import { TFilter } from "../../types/models/entity-common.type";
+import { getQueryKeys } from "../../utils/object";
 import { RQ_ASSET, RQ_ASSETLIST, RQ_ASSETTRASHLIST } from "./constants_react_query";
-import { CreateAssetModel, Asset } from "../../interfaces/asset";
 
 // // useAssetsData Hook
 // export const useAssetsData = (
@@ -241,4 +244,38 @@ export function useRestoreAssetSelected() {
             }
         },
     });
+}
+
+export const useAddAsset = () => {
+    return useMutation({
+        mutationFn: async (data: CreateAssetModel) => {
+            return await createAsset(data)
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+}
+
+export const useEditAsset = () => {
+    return useMutation({
+        mutationFn: async (data: UpdateAssetModel) => {
+            return await updateAsset(data._id, data);
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+}
+
+export const useReFetchAsset = ()=>{
+    const queryClient = useQueryClient();
+
+    const revalidate = (params?:TFilter)=>{
+        queryClient.invalidateQueries({
+            queryKey: getQueryKeys({ key: "GET_ASSETS", ...params }),
+        })
+    }
+
+    return revalidate;
 }

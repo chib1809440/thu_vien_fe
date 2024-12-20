@@ -18,12 +18,7 @@ const headCells: HeadCell[] = [
         disablePadding: true,
         label: 'Tên tài sản',
     },
-    {
-        id: 'quantityTotal',
-        numeric: true,
-        disablePadding: true,
-        label: 'Số lượng tổng',
-    },
+    
     {
         id: 'typeAssetId',
         numeric: true,
@@ -31,10 +26,28 @@ const headCells: HeadCell[] = [
         label: 'Phân loại',
     },
     {
-        id: 'quantityTotal',
+        id: 'status',
         numeric: true,
         disablePadding: true,
         label: 'Trạng thái',
+    },
+    {
+        id: 'quantityUsed',
+        numeric: true,
+        disablePadding: true,
+        label: 'Số lượng sử dụng',
+    },
+    {
+        id: 'quantityWarehouse',
+        numeric: true,
+        disablePadding: true,
+        label: 'Số lượng trong kho',
+    },
+    {
+        id: 'quantityTotal',
+        numeric: true,
+        disablePadding: true,
+        label: 'Số lượng tổng',
     },
     {
         id: 'action',
@@ -77,7 +90,7 @@ export default function AssetPage() {
                             >
                                 Thêm tài sản
                             </StyledButton>
-                            <Link to="/quan-ly-nhap-kho/phieu-nhap-kho-tai-san" style={{ textDecoration: 'none' }}>
+                            <Link to="/quan-ly-nhap-kho/phieu-nhap-tai-san" style={{ textDecoration: 'none' }}>
                                 <StyledButton
                                     sx={{
                                         background: "#a36e21", color: "white",

@@ -26,14 +26,16 @@ import { EntityResponse } from "../../../interfaces/entityResponse";
 import { ErrorResponse } from "../../../interfaces/errorResponse";
 import { TTypeAsset } from "../../../types/models/type-asset";
 import SelectForm from "../../custom/form/SelectForm";
+import { statusAssetOptions } from "../../../utils/constants.utils";
 export const validationUtilizedObjectSchema = yup.object({
     name: yup.string().required("Vui lòng nhập tên tài sản"),
+    status: yup.string().required("Vui lòng chọn trạng thái"),
+    typeAssetId: yup.string().required("Vui lòng chọn loại tài sản"),
     note: yup.string(), // Không yêu cầu nhập
     quantityTotal: yup
         .number()
         .typeError("Vui lòng nhập số hợp lệ cho số lượng")
-        .required("Vui lòng nhập số lượng tài sản")
-        .positive("Số lượng phải lớn hơn 0")
+        // .positive("Số lượng phải lớn hơn 0")
         .integer("Số lượng phải là một số nguyên"),
     quantityUsed: yup
         .number()
@@ -119,7 +121,8 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
             quantityWarehouse: asset?.quantityWarehouse ?? 0,
             quantityDamage: asset?.quantityDamage ?? 0,
             quantityLiquidation: asset?.quantityLiquidation ?? 0,
-            typeAssetId: asset?.typeAssetId as TTypeAsset ?? ""
+            typeAssetId: asset?.typeAssetId as TTypeAsset ?? "",
+            status: ""
         },
         validationSchema: validationUtilizedObjectSchema,
         onSubmit: async (values) => {
@@ -129,12 +132,13 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                 if (!asset) {
                     const data: CreateAssetModel = {
                         ...values,
-                        quantityTotal: +values.quantityTotal,
-                        quantityUsed: 0,
-                        quantityWarehouse: 0,
+                        quantityTotal: +(values.quantityUsed + values.quantityWarehouse),
+                        quantityUsed: +values.quantityUsed,
+                        quantityWarehouse: +values.quantityWarehouse,
                         quantityDamage: 0,
                         quantityLiquidation: 0,
-                        typeAssetId: values.typeAssetId
+                        typeAssetId: values.typeAssetId,
+                        status: values.status
                     };
                     createAsset(data);
 
@@ -144,12 +148,13 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                         name: values.name,
                         _id: asset._id,
                         description: values.description,
-                        quantityTotal: +values.quantityTotal,
+                        quantityTotal: +(values.quantityUsed + values.quantityWarehouse),
                         quantityUsed: +values.quantityUsed,
                         quantityWarehouse: +values.quantityWarehouse,
                         quantityDamage: +values.quantityDamage,
                         quantityLiquidation: +values.quantityLiquidation,
-                        typeAssetId: values.typeAssetId
+                        typeAssetId: values.typeAssetId,
+                        status: values.status
                     };
                     updateAsset(data)
                 }
@@ -173,7 +178,8 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                 quantityWarehouse: asset?.quantityWarehouse ?? 0,
                 quantityDamage: asset?.quantityDamage ?? 0,
                 quantityLiquidation: asset?.quantityLiquidation ?? 0,
-                typeAssetId: asset?.typeAssetId
+                typeAssetId: asset?.typeAssetId,
+                status: asset.status ?? ""
             });
         }
     }, [asset]);
@@ -240,7 +246,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item xs={12} sm={12} md={4}>
+                                        <Grid item xs={12} sm={12} md={6}>
                                             <Box style={{ width: "100%" }}>
                                                 <Typography sx={{ mb: 1.5, mt: 1, fontWeight: "bold" }}>
                                                     Tên tài sản <span className="required_text">(*)</span>
@@ -262,32 +268,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                                 )}
                                             </Box>
                                         </Grid>
-
-                                        <Grid item xs={12} sm={12} md={4}>
-                                            <Box style={{ width: "100%" }}>
-                                                <Typography sx={{ mb: 1.5, mt: 1, fontWeight: "bold" }}>
-                                                    Số lượng tổng <span className="required_text">(*)</span>
-                                                </Typography>
-                                                <TextField
-                                                    variant="outlined"
-                                                    type="number"
-                                                    fullWidth
-                                                    id="quantityTotal"
-                                                    name="quantityTotal"
-                                                    value={formik.values.quantityTotal}
-                                                    onChange={formik.handleChange}
-                                                    onBlur={formik.handleBlur}
-                                                    error={formik.touched.quantityTotal && Boolean(formik.errors.quantityTotal)}
-                                                />
-                                                {formik.touched.quantityTotal && Boolean(formik.errors.quantityTotal) && (
-                                                    <FormHelperText className="required_text">
-                                                        {formik.errors.quantityTotal ? formik.errors.quantityTotal.toString() : ""}
-                                                    </FormHelperText>
-                                                )}
-                                            </Box>
-                                        </Grid>
-
-                                        <Grid item xs={12} sm={12} md={4}>
+                                        <Grid item xs={12} sm={12} md={6}>
                                             <Box sx={{ width: "100%" }}>
                                                 <SelectForm
                                                     label="Phân loại"
@@ -303,7 +284,75 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                                 />
                                             </Box>
                                         </Grid>
+
                                     </Grid>
+                                    <Grid container spacing={3} sx={{ mb: 1.5 }}>
+                                        <Grid item xs={12} sm={12} md={4}>
+                                            <Box sx={{ width: "100%" }}>
+                                                <SelectForm
+                                                    label="Trạng thái"
+                                                    required
+                                                    value={formik.values.status as string}
+                                                    options={statusAssetOptions.map((item) => ({
+                                                        value: item.value,
+                                                        label: item.label,
+                                                    }))}
+                                                    onChange={(e) => formik.setFieldValue("status", e.target.value)}
+                                                    error={formik.touched.status && Boolean(formik.errors.status)}
+                                                    helperText={formik.touched.status && formik.errors.status}
+                                                />
+                                            </Box>
+                                        </Grid>
+
+                                        {/* Chỉ hiển thị trường số lượng khi trạng thái là "cũ" */}
+                                        {formik.values.status === "có sẵn" && (
+                                            <Grid item xs={12} sm={12} md={8} display={"flex"} gap={2}>
+                                                <Box sx={{ width: "100%" }}>
+                                                    <Typography sx={{ mb: 1.5, mt: 1, fontWeight: "bold" }}>
+                                                        Số lượng trong kho
+                                                    </Typography>
+                                                    <TextField
+                                                        variant="outlined"
+                                                        type="number"
+                                                        fullWidth
+                                                        id="quantityWarehouse"
+                                                        name="quantityWarehouse"
+                                                        value={formik.values.quantityWarehouse}
+                                                        onChange={formik.handleChange}
+                                                        onBlur={formik.handleBlur}
+                                                        error={formik.touched.quantityWarehouse && Boolean(formik.errors.quantityWarehouse)}
+                                                    />
+                                                    {formik.touched.quantityWarehouse && Boolean(formik.errors.quantityWarehouse) && (
+                                                        <FormHelperText className="required_text">
+                                                            {formik.errors.quantityWarehouse ? formik.errors.quantityWarehouse.toString() : ""}
+                                                        </FormHelperText>
+                                                    )}
+                                                </Box>
+                                                <Box sx={{ width: "100%" }}>
+                                                    <Typography sx={{ mb: 1.5, mt: 1, fontWeight: "bold" }}>
+                                                        Số lượng đang sử dụng
+                                                    </Typography>
+                                                    <TextField
+                                                        variant="outlined"
+                                                        type="number"
+                                                        fullWidth
+                                                        id="quantityUsed"
+                                                        name="quantityUsed"
+                                                        value={formik.values.quantityUsed}
+                                                        onChange={formik.handleChange}
+                                                        onBlur={formik.handleBlur}
+                                                        error={formik.touched.quantityUsed && Boolean(formik.errors.quantityUsed)}
+                                                    />
+                                                    {formik.touched.quantityUsed && Boolean(formik.errors.quantityUsed) && (
+                                                        <FormHelperText className="required_text">
+                                                            {formik.errors.quantityUsed ? formik.errors.quantityUsed.toString() : ""}
+                                                        </FormHelperText>
+                                                    )}
+                                                </Box>
+                                            </Grid>
+                                        )}
+                                    </Grid>
+
 
                                     {
                                         id ? <>

@@ -5,6 +5,9 @@ import * as yup from "yup";
 import InputForm from "../../../../components/custom/form/InputForm";
 import { TShelvesCreate } from "../../../../types/models/shelves";
 import StyledButton from "../../../../components/default/button/StyledButton";
+import SelectForm from "../../../../components/custom/form/SelectForm";
+import { Asset } from "../../../../interfaces/asset";
+import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 
 type Props = {
     open: boolean;
@@ -13,7 +16,7 @@ type Props = {
     isFetching?: boolean;
     initialValues: TShelvesCreate;
     isEditMode?: boolean;
-
+    assetData?: Asset[];
 };
 
 const schema = yup.object().shape({
@@ -30,9 +33,11 @@ const FormAddEditShelf: FC<Props> = ({
         name: "",
         description: "",
         note: "",
+        assetId: null
     },
     isFetching = false,
     isEditMode = false,
+    assetData,
 }) => {
     const formik = useFormik<TShelvesCreate>({
         initialValues,
@@ -77,6 +82,18 @@ const FormAddEditShelf: FC<Props> = ({
                             error={touched.name && Boolean(errors.name)}
                             helperText={touched.name && errors.name}
                             {...getFieldProps("name")}
+                        />
+                        <SelectForm
+                            label="Tài sản"
+                            required
+                            value={values.assetId as string}
+                            options={assetData.map((item) => ({
+                                value: item._id,
+                                label: capitalizeFirstLetter(item.name),
+                            }))}
+                            onChange={(e) => setFieldValue("assetId", e.target.value)}
+                            error={touched.assetId && Boolean(errors.assetId)}
+                            helperText={touched.assetId && errors.assetId}
                         />
                         <InputForm
                             label="Mô tả"

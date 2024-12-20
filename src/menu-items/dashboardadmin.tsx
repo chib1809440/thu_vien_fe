@@ -341,7 +341,7 @@ const dashboardAdmin = {
         {
             id: "tai-san-thu-vien",
             title: "Quản lý số lượng tài sản",
-            type: "item",
+            type: "collapse",
             url: "/tai-san-thu-vien",
             icon: icons.IconBrowser,
             breadcrumbs: false,
@@ -349,6 +349,42 @@ const dashboardAdmin = {
                 {
                     resource: "assets",
                     action: "manage",
+                },
+                {
+                    resource: "shelves",
+                    action: "manage",
+                },
+                {
+                    resource: "all",
+                    action: "manage",
+                },
+            ],
+            children: [
+                {
+                    id: "danh-sach-tai-san",
+                    title: "Danh sách tài sản",
+                    type: "item",
+                    url: "/tai-san-thu-vien/danh-sach",
+                    icon: icons.IconBrandAirtable,
+                    breadcrumbs: false,
+                },
+                {
+                    id: "tu-ke",
+                    title: "Quản lý Tủ - Kệ",
+                    type: "item",
+                    url: "/tai-san-thu-vien/tu-ke",
+                    icon: icons.IconHomeSearch,
+                    breadcrumbs: false,
+                    permissions: [
+                        {
+                            resource: "all",
+                            action: "manage",
+                        },
+                        {
+                            resource: "shelves",
+                            action: "manage",
+                        },
+                    ],
                 },
             ],
         },
@@ -439,24 +475,24 @@ const dashboardAdmin = {
                         },
                     ],
                 },
-                {
-                    id: "tu-ke",
-                    title: "Tủ - Kệ",
-                    type: "item",
-                    url: "/quan-ly-danh-muc/tu-ke",
-                    icon: icons.IconHomeSearch,
-                    breadcrumbs: false,
-                    permissions: [
-                        {
-                            resource: "all",
-                            action: "manage",
-                        },
-                        {
-                            resource: "shelves",
-                            action: "manage",
-                        },
-                    ],
-                },
+                // {
+                //     id: "tu-ke",
+                //     title: "Tủ - Kệ",
+                //     type: "item",
+                //     url: "/quan-ly-danh-muc/tu-ke",
+                //     icon: icons.IconHomeSearch,
+                //     breadcrumbs: false,
+                //     permissions: [
+                //         {
+                //             resource: "all",
+                //             action: "manage",
+                //         },
+                //         {
+                //             resource: "shelves",
+                //             action: "manage",
+                //         },
+                //     ],
+                // },
                 {
                     id: "tac-gia",
                     title: "Tác giả",

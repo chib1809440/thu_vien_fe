@@ -1,31 +1,27 @@
-import { FormControl, MenuItem, Box, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme, CircularProgress, Alert, IconButton } from "@mui/material"
-import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconPencil, IconTrash } from "@tabler/icons-react";
-import { useEffect, useMemo, useState } from "react";
+import { Alert, Box, FormControl, MenuItem, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme } from "@mui/material";
 import Checkbox from '@mui/material/Checkbox';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
+import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconPencil, IconTrash } from "@tabler/icons-react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { toast } from "react-toastify";
-import DeleteIcon from '@mui/icons-material/Delete';
-import CloseIcon from '@mui/icons-material/Close';
-import { EntityResponse } from "../../../../interfaces/entityResponse";
-import { Asset } from "../../../../interfaces/asset";
-import { DataType, HeadCell, Order } from "../../../../components/custom/table/type";
-import useDebounce, { searchDelay } from "../../../../hooks/useDebounce";
-import { softDeleteAsset, getAllAssets } from "../../../../_apis/asset.api";
-import { ContainerTable, StyledTableCell, StyledTableRow } from "../../../../components/custom/table/style";
-import { SearchAndFilter } from "../../../../components/custom/table/TableSearchAndFilter";
+import { StyledTableCell, StyledTableRow } from "../../../../components/custom/table/style";
 import { EnhancedTableHead } from "../../../../components/custom/table/TableHead";
-import GradientCircularProgressLoading from "../../../../components/default/loading/GradientCircularProgressLoading/GradientCircularProgressLoading";
+import { SearchAndFilter } from "../../../../components/custom/table/TableSearchAndFilter";
+import { DataType, HeadCell, Order } from "../../../../components/custom/table/type";
+import AlertConfirmDialog from "../../../../components/default/alert/confirmAlertDialog";
+import AssetDialog from "../../../../components/default/dialog/AssetDialog";
 import { CsFlexRowBetween } from "../../../../components/default/flex";
 import CustomInput from "../../../../components/default/input/CustomInput";
-import AlertConfirmDialog from "../../../../components/default/alert/confirmAlertDialog";
-import { useSoftDeleteAsset, useSoftDeleteAssetSelected, useAssetList } from "../../../../hooks/react-query/assetData";
-import AssetDialog from "../../../../components/default/dialog/AssetDialog";
-import { TTypeAsset } from "../../../../types/models/type-asset";
+import GradientCircularProgressLoading from "../../../../components/default/loading/GradientCircularProgressLoading/GradientCircularProgressLoading";
 import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
+import { useAssetList, useSoftDeleteAsset, useSoftDeleteAssetSelected } from "../../../../hooks/react-query/assetData";
+import useDebounce, { searchDelay } from "../../../../hooks/useDebounce";
+import { Asset } from "../../../../interfaces/asset";
+import { EntityResponse } from "../../../../interfaces/entityResponse";
+import { TTypeAsset } from "../../../../types/models/type-asset";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -259,13 +255,11 @@ function TableAssetList<T extends DataType>({
                                                             {(page - 1) * rowsPerPage + index + 1}
                                                         </StyledTableCell>
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.name}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityTotal}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{capitalizeFirstLetter((row?.typeAssetId as TTypeAsset)?.name)}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{capitalizeFirstLetter(row?.status)}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4  }}>{row?.quantityUsed}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityWarehouse}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityTotal}</StyledTableCell>
-                                                        {/* <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4  }}>{row?.quantityWarehouse}</StyledTableCell> */}
-                                                        {/* <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityLiquidation}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityDamage}</StyledTableCell> */}
-                                                        {/* <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityTotal}</StyledTableCell> */}
                                                         <StyledTableCell padding="none" align="center">
                                                             <Box sx={{
                                                                 display: "flex",

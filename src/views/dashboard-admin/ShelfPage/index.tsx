@@ -19,6 +19,9 @@ import FormAddEditShelf from "./ui-components/FormAddEditShelf";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import usePermission from "../../../utils/hasPermission";
 import { Typography } from "@mui/material";
+import { useAssetList } from "../../../hooks/react-query/assetData";
+import { TTypeAsset } from "../../../types/models/type-asset";
+import { Asset } from "../../../interfaces/asset";
 
 
 const ShelfPage = () => {
@@ -41,6 +44,8 @@ const ShelfPage = () => {
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
+
+    const { data: assetData } = useAssetList();
 
     const addShelf = () => {
         setOpenAddEdit(true);
@@ -119,16 +124,17 @@ const ShelfPage = () => {
                 },
             },
             {
+                id: "assetId",
+                disablePadding: "none",
+                label: "Thuộc tài sản",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => (row.assetId as Asset)?.name,
+            },
+            {
                 id: "description",
                 disablePadding: "none",
                 label: "Mô tả",
-                align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
-            },
-            {
-                id: "note",
-                disablePadding: "none",
-                label: "Ghi chú",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
@@ -237,6 +243,7 @@ const ShelfPage = () => {
                 name: selectedEdit.name,
                 description: selectedEdit.description,
                 note: selectedEdit.note,
+                assetId: (selectedEdit.assetId as Asset)?._id || null,
             };
         }
 
@@ -244,8 +251,14 @@ const ShelfPage = () => {
             name: "",
             description: "",
             note: "",
+            assetId: null,
         };
     }, [selectedEdit]);
+
+    const filteredData = assetData?.data?.result?.filter(item => (item?.typeAssetId as TTypeAsset)?.name === "tủ kệ");
+    console.log(filteredData);
+
+
 
     return (
         <div>
@@ -262,6 +275,7 @@ const ShelfPage = () => {
                     initialValues={initialValues}
                     onSubmit={handleSubmit}
                     isEditMode={selectedEdit ? true : false}
+                    assetData={filteredData}
                 />
             )}
 

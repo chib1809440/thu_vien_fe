@@ -232,8 +232,12 @@ const MainRoutes = {
       element: <RolePage />
     },
     {
-      path: "/tai-san-thu-vien",
+      path: "/tai-san-thu-vien/danh-sach",
       element: <AssetPage />,
+    },
+    {
+      path: "/tai-san-thu-vien/tu-ke",
+      element: <ShelfPage />,
     },
     {
       path: "quan-ly-danh-muc/dang-hoc-lieu",
@@ -266,10 +270,6 @@ const MainRoutes = {
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-dang-hoc-lieu",
       element: <MaterialDeleteListPage />,
-    },
-    {
-      path: "/quan-ly-danh-muc/tu-ke",
-      element: <ShelfPage />,
     },
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-tu-ke",

@@ -7,7 +7,6 @@ import { TSupplier } from "./supplier.type";
 export type TWareHouseAssetsReceipt = TEntityAbstract & {
     note: string | null;
     supplierId: string | TSupplier;
-    barcode?: string;
     createBy?: string | User;
     isAccept: boolean,
     assets: (Asset & { quantityWareHouse: number })[];
@@ -16,7 +15,6 @@ export type TWareHouseAssetsReceipt = TEntityAbstract & {
 export type CreateAssetsWareHouseReceipt = {
     assetId: string;
     name: string;
-    barcode: string;
     quantityWareHouse: number;
 };
 export type TWareHouseAssetsReceiptCreate = {

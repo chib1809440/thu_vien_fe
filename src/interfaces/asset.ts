@@ -11,6 +11,7 @@ export interface Asset extends AbstractEntity {
     quantityDamage: number;
     quantityLiquidation: number;
     typeAssetId: TTypeAsset | string;
+    status: string;
 }
 export interface CreateAssetModel {
     note: string;
@@ -22,4 +23,18 @@ export interface CreateAssetModel {
     quantityDamage: number;
     quantityLiquidation: number;
     typeAssetId: TTypeAsset | string;
+    status: string;
+}
+export interface UpdateAssetModel {
+    _id: string,
+    note: string;
+    description: string;
+    name: string;
+    quantityTotal: number;
+    quantityUsed: number;
+    quantityWarehouse: number;
+    quantityDamage: number;
+    quantityLiquidation: number;
+    typeAssetId: TTypeAsset | string;
+    status: string;
 }

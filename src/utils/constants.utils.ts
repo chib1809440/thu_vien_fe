@@ -6,6 +6,10 @@ export const genderOptions = [
     { value: 'nữ', label: 'Nữ' },
     { value: 'nam', label: 'Nam' },
 ];
+export const statusAssetOptions = [
+    { value: 'có sẵn', label: 'Có sẵn' },
+    { value: 'mới', label: 'Mới' },
+];
 
 export const statusOptions = [
     { value: 'trên kệ', label: 'Trên kệ' },

@@ -11,6 +11,6 @@ class WareHouseAssetsReceiptService extends BaseApi {
 
 }
 
-const warehouseAssetsReceiptService = new WareHouseAssetsReceiptService("/warehouse-assets-receipt");
+const warehouseAssetsReceiptService = new WareHouseAssetsReceiptService("/stock-asset");
 
 export default warehouseAssetsReceiptService;

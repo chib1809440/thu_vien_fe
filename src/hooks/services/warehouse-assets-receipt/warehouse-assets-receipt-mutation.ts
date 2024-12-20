@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import warehouseAssetsReceiptService from "../../../_apis/services/wareHouseAssetsReceipt.service";
 import { TWareHouseAssetsReceipt } from "../../../types/models/warehouse-assets-receipt";
 import { TWareHouseReceiptCreate, TWareHouseReceiptEdit } from "../../../types/models/warehouse-receipt";
+
 export const useAcceptWareHouseAssetsReceipt = () => {
     return useMutation({
         mutationFn: async (id: string) => {

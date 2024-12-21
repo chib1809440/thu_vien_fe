@@ -30,17 +30,27 @@ import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
 import * as yup from "yup";
+import { getAllAssets } from "../../../../_apis/asset.api";
 import { StyledTableCell, StyledTableRow } from "../../../../components/custom/table-list/style";
 import StyledButton from "../../../../components/default/button/StyledButton";
-import { useAddAsset, useEditAsset, useReFetchAsset } from "../../../../hooks/react-query/assetData";
+import {
+    useAddAsset,
+    useEditAsset,
+    useReFetchAsset,
+} from "../../../../hooks/react-query/assetData";
 import { useAddSupplier } from "../../../../hooks/services/supplier/supplier-mutation";
 import {
     useFetchSupplier,
     useReFetchSupplier,
 } from "../../../../hooks/services/supplier/supplier-query";
+import useDebounce from "../../../../hooks/useDebounce";
 import { Asset, CreateAssetModel, UpdateAssetModel } from "../../../../interfaces/asset";
 import { TSupplierCreate } from "../../../../types/models/supplier.type";
-import { CreateAssetsWareHouseReceipt, TWareHouseAssetsReceipt, TWareHouseAssetsReceiptCreate } from "../../../../types/models/warehouse-assets-receipt";
+import {
+    CreateAssetsWareHouseReceipt,
+    TWareHouseAssetsReceipt,
+    TWareHouseAssetsReceiptCreate,
+} from "../../../../types/models/warehouse-assets-receipt";
 import usePermission from "../../../../utils/hasPermission";
 import FormAddEditAsset from "../../AssetPage/ui-components/FormAddEditAsset";
 import FormAddEditSupplier from "./FormAddEditSupplier";
@@ -74,14 +84,23 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
     isEditMode = false,
     wareHouseAssetsReceipt,
 }) => {
+    const [assets, setAssets] = useState<CreateAssetsWareHouseReceipt[]>([
+        {
+            assetId: "",
+            quantity: 0,
+            name: "",
+            price: 0,
+        },
+    ]);
+
     const formik = useFormik<TWareHouseAssetsReceiptCreate>({
         initialValues,
         validationSchema: schema,
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
-            const filteredAssets = assets.filter(
-                (asset) => asset.assetId !== ""
-            );
+            const filteredAssets = assets.filter((asset) => asset.assetId !== "");
+            console.log(filteredAssets);
+            
             if (onSubmit) {
                 const createLoanSlip: TWareHouseAssetsReceiptCreate = {
                     note: values.note,
@@ -104,22 +123,44 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
     const [openAddAsset, setOpenAddAsset] = useState(false);
     const { hasPermission } = usePermission();
 
-    const [AssetsOptions, setAssetsOptions] = useState<CreateAssetModel[]>([]);
-    const [selectedAsset, setSelectedAsset] = useState<UpdateAssetModel | null>(null);
+    const [assetsOptions, setAssetsOptions] = useState<Asset[]>([]);
+    const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
     const [loadingSearching, setLoadingSearching] = useState(false);
     const [valueSearch, setValueSearch] = useState<string>("");
+
+    const valueSearchDebounce = useDebounce(valueSearch, 500);
+
+    useEffect(() => {
+        if (!valueSearchDebounce) return;
+
+        console.log(`searching...`, valueSearchDebounce);
+
+        const fetchSearchingData = async () => {
+            try {
+                setLoadingSearching(true);
+
+                const response = await getAllAssets(undefined, undefined, valueSearchDebounce);
+
+                if (!response.data || response?.data?.result?.length === 0) {
+                    setAssetsOptions([]);
+                    return;
+                }
+
+                setAssetsOptions(response.data.result);
+            } catch (error) {
+                console.error("Error fetching publication data:", error);
+            } finally {
+                setLoadingSearching(false);
+            }
+        };
+
+        fetchSearchingData();
+    }, [valueSearchDebounce]);
 
     const handleAdd = () => {
         setOpenAddAsset(true);
     };
 
-    const [assets, setAssets] = useState<CreateAssetsWareHouseReceipt[]>([
-        {
-            assetId: "",
-            quantityWareHouse: 0,
-            name: "",
-        },
-    ]);
     const mutationAdd = useAddAsset();
     const mutationEdit = useEditAsset();
     const mutationAddSupplier = useAddSupplier();
@@ -135,7 +176,8 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
         const newAsset: CreateAssetsWareHouseReceipt = {
             name: "",
             assetId: "",
-            quantityWareHouse: 1,
+            quantity: 1,
+            price: 0,
         };
         setAssets([...assets, newAsset]);
     };
@@ -174,12 +216,11 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
             quantityDamage: 0,
             quantityLiquidation: 0,
             status: "mới",
-            typeAssetId: null
+            typeAssetId: null,
         };
     }, [selectedEdit]);
 
     const handleSubmitAsset = (values: UpdateAssetModel) => {
-
         if (selectedEdit) {
             console.log(selectedEdit);
 
@@ -215,7 +256,8 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
                 const newAsset: CreateAssetsWareHouseReceipt = {
                     assetId: asset._id,
                     name: asset.name,
-                    quantityWareHouse: asset.quantityWareHouse,
+                    quantity: asset.quantity,
+                    price: asset.priceInput,
                 };
                 // Đẩy object vào mảng editAssets
                 editAssets.push(newAsset);
@@ -225,36 +267,37 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
     }, [wareHouseAssetsReceipt]);
     const componentRef = useRef();
 
-    const handleSelectAssetOption = (value: UpdateAssetModel | null, index: number) => {
-        const updatedAssets = [...assets];
+    const handleSelectAssetOption = (value: Asset | null, index: number) => {
+        // clone assets => prevAssets
+        const prevAssets = [...assets];
         if (!value) return;
 
-        const existingIndex = updatedAssets.findIndex(
-            (pub) => pub.assetId === value._id
-        );
+        const existingIndex = prevAssets.findIndex((pub) => pub.assetId === value._id);
 
         if (existingIndex !== -1) {
-            updatedAssets[existingIndex].quantityWareHouse += 1;
+            prevAssets[existingIndex].quantity += 1;
         } else {
             const newValue: CreateAssetsWareHouseReceipt = {
                 name: value.name,
                 assetId: value._id,
-                quantityWareHouse: 1,
+                quantity: 1,
+                price: 0,
             };
 
-            updatedAssets[index] = newValue;
+            prevAssets[index] = newValue;
 
             // Chỉ thêm một mục mới trống nếu không có mục nào khác đang chờ
-            if (index === updatedAssets.length - 1) {
-                updatedAssets.push({
+            if (index === prevAssets.length - 1) {
+                prevAssets.push({
                     name: "",
                     assetId: "",
-                    quantityWareHouse: 1,
+                    quantity: 1,
+                    price: 0,
                 });
             }
         }
 
-        setAssets(updatedAssets);
+        setAssets(prevAssets);
         setAssetsOptions([]);
         setSelectedAsset(null);
     };
@@ -434,18 +477,18 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
                                 </Grid>
                                 <Grid item xs={8} md={2}>
                                     {hasPermission([
-                                        { resource: "assets", action: "manage" },
-                                        { resource: "assets", action: "create" },
+                                        { resource: "publications", action: "manage" },
+                                        { resource: "publications", action: "create" },
                                     ]) && (
                                             <StyledButton
                                                 color="primary"
                                                 size="small"
-                                                variant="contained"
                                                 type="button"
-                                                startIcon={<IconPlus stroke={2} size={20} />}
+                                                startIcon={<IconPlus stroke={2} />}
+                                                variant="contained"
                                                 onClick={handleAdd}
                                             >
-                                                Thêm tài sản
+                                                Thêm tài sản mới
                                             </StyledButton>
                                         )}
                                 </Grid>
@@ -462,7 +505,6 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
                                         stroke={1.5}
                                     />
                                 </Grid>
-                                {/* </Box> */}
                                 <Grid item xs={12}>
                                     <TableContainer
                                         component={Paper}
@@ -471,14 +513,17 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
                                         <Table sx={{ minWidth: 700 }} aria-label="customized table">
                                             <TableHead>
                                                 <TableRow>
-                                                    <StyledTableCell align="left" width="20%">
-                                                        Mã tài sản
-                                                    </StyledTableCell>
                                                     <StyledTableCell align="left" width="40%">
                                                         Tên tài sản
                                                     </StyledTableCell>
                                                     <StyledTableCell align="center" width="15%">
                                                         Số lượng
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="center" width="15%">
+                                                        Giá nhập
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="center" width="15%">
+                                                        Tổng giá
                                                     </StyledTableCell>
                                                     <StyledTableCell align="center" width="15%">
                                                         Hành động
@@ -491,33 +536,37 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
                                                         <StyledTableCell align="left">
                                                             <Box style={{ width: "100%" }}>
                                                                 {row.assetId !== "" ? (
-                                                                    <>{row.assetId}</>
-                                                                ) : "Chưa có dữ liệu"}
-                                                            </Box>
-                                                        </StyledTableCell>
-
-                                                        <StyledTableCell align="left">
-                                                            <Box style={{ width: "100%" }}>
-                                                                {row.assetId !== "" ? (
                                                                     <>{row.name}</>
                                                                 ) : (
                                                                     <Autocomplete
-                                                                        getOptionLabel={(option) => option?.name}
+                                                                        getOptionLabel={(option) =>
+                                                                            option?.name
+                                                                        }
                                                                         loading={loadingSearching}
-                                                                        // onChange={(event, value) =>
-                                                                        //     handleSelectAssetOption(value, index)
-                                                                        // }
-                                                                        options={AssetsOptions}
+                                                                        onChange={(event, value) =>
+                                                                            handleSelectAssetOption(
+                                                                                value,
+                                                                                index
+                                                                            )
+                                                                        }
+                                                                        options={assetsOptions}
                                                                         disablePortal
                                                                         value={selectedAsset}
-                                                                        onInputChange={(event, newInputValue, reason
+                                                                        onInputChange={(
+                                                                            event,
+                                                                            newInputValue,
+                                                                            reason
                                                                         ) => {
-                                                                            setValueSearch(newInputValue);
+                                                                            setValueSearch(
+                                                                                newInputValue
+                                                                            );
 
                                                                             if (
                                                                                 reason === "reset"
                                                                             ) {
-                                                                                setAssetsOptions([]);
+                                                                                setAssetsOptions(
+                                                                                    []
+                                                                                );
                                                                                 return;
                                                                             }
                                                                         }}
@@ -537,23 +586,62 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
                                                                     variant="outlined"
                                                                     fullWidth
                                                                     placeholder="Số lượng"
-                                                                    value={row.quantityWareHouse}
+                                                                    value={row.quantity}
                                                                     onChange={(e) => {
-                                                                        const updatedAssets =
-                                                                            [...assets];
+                                                                        const updatedAssets = [
+                                                                            ...assets,
+                                                                        ];
                                                                         updatedAssets[
                                                                             index
-                                                                        ].quantityWareHouse =
+                                                                        ].quantity =
                                                                             Number(e.target.value);
-                                                                        setAssets(
-                                                                            updatedAssets
-                                                                        );
+                                                                        setAssets(updatedAssets);
                                                                     }}
                                                                     onKeyDown={(e) => {
                                                                         if (e.key === "Enter") {
                                                                             e.preventDefault(); // Ngăn hành động mặc định khi nhấn Enter
                                                                         }
                                                                     }}
+                                                                />
+                                                            </Box>
+                                                        </StyledTableCell>
+                                                        <StyledTableCell align="center">
+                                                            <Box style={{ width: "100%" }}>
+                                                                <TextField
+                                                                    variant="outlined"
+                                                                    fullWidth
+                                                                    placeholder="Giá nhập"
+                                                                    value={row.price}
+                                                                    onChange={(e) => {
+                                                                        const updatedAssets = [
+                                                                            ...assets,
+                                                                        ];
+                                                                        updatedAssets[
+                                                                            index
+                                                                        ].price = Number(
+                                                                            e.target.value
+                                                                        );
+                                                                        setAssets(updatedAssets);
+                                                                    }}
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === "Enter") {
+                                                                            e.preventDefault(); // Ngăn hành động mặc định khi nhấn Enter
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </Box>
+                                                        </StyledTableCell>
+                                                        <StyledTableCell align="center">
+                                                            <Box style={{ width: "100%" }}>
+                                                                <TextField
+                                                                    variant="outlined"
+                                                                    fullWidth
+                                                                    placeholder="Tổng giá"
+                                                                    value={
+                                                                        row.price *
+                                                                        row.quantity
+                                                                    }
+                                                                    InputProps={{ readOnly: true }}
                                                                 />
                                                             </Box>
                                                         </StyledTableCell>

@@ -1,9 +1,9 @@
 import { Button, Chip, Typography, useTheme } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconEye, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
-import { IconTrashXFilled } from "@tabler/icons-react";
+import { IconFileExport, IconTrashXFilled } from "@tabler/icons-react";
+import ExcelJS from 'exceljs';
 import { useCallback, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
@@ -12,18 +12,27 @@ import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDelet
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { formatDate } from "../../../helpers/formatDate";
 import useQueryString from "../../../hooks/services/useQueryString";
-import { useAcceptWareHouseAssetsReceipt, useAddWareHouseAssetsReceipt, useDeleteSoftManyWareHouseAssetsReceipt, useDeleteSoftWareHouseAssetsReceipt, useEditWareHouseAssetsReceipt } from "../../../hooks/services/warehouse-assets-receipt/warehouse-assets-receipt-mutation";
-import { useFetchWareHouseAssetsReceipt } from "../../../hooks/services/warehouse-assets-receipt/warehouse-assets-receipt-query";
-import { useReFetchWareHouseReceipt } from "../../../hooks/services/warehouseReceipt/warehousereceipt-query";
+import {
+    useAcceptWareHouseAssetsReceipt,
+    useAddWareHouseAssetsReceipt,
+    useDeleteSoftManyWareHouseAssetsReceipt,
+    useDeleteSoftWareHouseAssetsReceipt,
+    useEditWareHouseAssetsReceipt,
+} from "../../../hooks/services/warehouse-assets-receipt/warehouse-assets-receipt-mutation";
+import { useFetchWareHouseAssetsReceipt, useReFetchWareHouseAssetsReceipt } from "../../../hooks/services/warehouse-assets-receipt/warehouse-assets-receipt-query";
 import { User } from "../../../interfaces/user";
 import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TSupplier } from "../../../types/models/supplier.type";
-import { TWareHouseAssetsReceipt, TWareHouseAssetsReceiptCreate } from "../../../types/models/warehouse-assets-receipt";
+import {
+    TWareHouseAssetsReceipt,
+    TWareHouseAssetsReceiptCreate,
+} from "../../../types/models/warehouse-assets-receipt";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import usePermission from "../../../utils/hasPermission";
 import FormAddEditWareHouseAssetsReceipt from "./ui-components/FormAddEditWareHouseAssetsReceipt";
 import ViewDetailWareHouseAssetsReceipt from "./ui-components/ViewDetailWareHouseAssets";
+import { Link } from "react-router-dom";
 
 const WareHouseReceiptAssetsPage = () => {
     const queryString = useQueryString();
@@ -37,16 +46,18 @@ const WareHouseReceiptAssetsPage = () => {
     const mutationEdit = useEditWareHouseAssetsReceipt();
     const mutationSoftDelete = useDeleteSoftWareHouseAssetsReceipt();
     const mutationSoftDeleteMany = useDeleteSoftManyWareHouseAssetsReceipt();
-    const revalidate = useReFetchWareHouseReceipt();
+    const revalidate = useReFetchWareHouseAssetsReceipt();
     const mutationAccept = useAcceptWareHouseAssetsReceipt();
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TWareHouseAssetsReceipt | null>(null);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-    const [wareHouseAssetsReceiptToDelete, setWareHouseAssetsReceiptToDelete] = useState<TWareHouseAssetsReceipt | null>(null);
+    const [wareHouseAssetsReceiptToDelete, setWareHouseAssetsReceiptToDelete] =
+        useState<TWareHouseAssetsReceipt | null>(null);
     const { hasPermission } = usePermission();
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
-    const [wareHouseAssetsReceiptsDetails, setWareHouseAssetsReceiptDetails] = useState<TWareHouseAssetsReceipt | null>(null);
+    const [wareHouseAssetsReceiptsDetails, setWareHouseAssetsReceiptDetails] =
+        useState<TWareHouseAssetsReceipt | null>(null);
     const [openViewDetail, setOpenViewDetail] = useState(false);
 
     const addWareHouseReceipt = () => {
@@ -56,7 +67,7 @@ const WareHouseReceiptAssetsPage = () => {
         mutationAccept.mutate(row._id, {
             onSuccess: () => {
                 revalidate();
-                toast.success('Duyệt phiếu nhập kho thành công.');
+                toast.success("Duyệt phiếu nhập tài sản thành công.");
             },
         });
     };
@@ -76,11 +87,15 @@ const WareHouseReceiptAssetsPage = () => {
     const handleSubmit = (values: TWareHouseAssetsReceiptCreate) => {
         if (selectedEdit) {
             mutationEdit.mutate(
-                { ...values, _id: selectedEdit._id, supplierId: (selectedEdit.supplierId as TSupplier)._id },
+                {
+                    ...values,
+                    _id: selectedEdit._id,
+                    supplierId: (selectedEdit.supplierId as TSupplier)._id,
+                },
                 {
                     onSuccess: () => {
                         revalidate();
-                        toast.success('Chỉnh sửa thành công.');
+                        toast.success("Chỉnh sửa thành công.");
                         handleClose();
                     },
                 }
@@ -91,7 +106,7 @@ const WareHouseReceiptAssetsPage = () => {
         mutationAdd.mutate(values, {
             onSuccess: (data) => {
                 revalidate();
-                toast.success('Thêm thành công.');
+                toast.success("Thêm thành công.");
                 setOpenAddEdit(false);
             },
         });
@@ -107,7 +122,7 @@ const WareHouseReceiptAssetsPage = () => {
             mutationSoftDelete.mutate(wareHouseAssetsReceiptToDelete._id, {
                 onSuccess: () => {
                     revalidate();
-                    toast.success('Xóa phiếu nhập kho thành công.');
+                    toast.success("Xóa phiếu nhập kho thành công.");
                     setOpenConfirmDialog(false);
                 },
             });
@@ -124,32 +139,42 @@ const WareHouseReceiptAssetsPage = () => {
     const columns: TColumn<TWareHouseAssetsReceipt>[] = useMemo(
         () => [
             {
-                id: "_id",
+                id: "barcode",
                 disablePadding: "none",
                 label: "Mã phiếu nhập",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 120 },
             },
             {
-                id: "infoWarehouse",
+                id: "infoWarehouseAsset",
                 disablePadding: "none",
                 label: "Thông tin",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 250 },
                 render: (row) => {
                     return (
-                        <Box
-                        >
-                            <Typography mt={0.5}>Nhà cung cấp: <strong> {capitalizeFirstLetter((row.supplierId as TSupplier)?.name)}</strong></Typography>
+                        <Box sx={{ py: 2 }}>
+                            <Typography mt={0.5}>
+                                Nhà cung cấp:{" "}
+                                <strong>
+                                    {" "}
+                                    {capitalizeFirstLetter((row.supplierId as TSupplier)?.name)}
+                                </strong>
+                            </Typography>
                             <Typography variant="body1" sx={{ mt: 0.5 }}>
                                 Người nhập: <strong>{(row.createBy as User)?.fullname}</strong>
                             </Typography>
                             {row?.assets?.length > 0 && (
                                 <Box sx={{ mt: 0.5 }}>
-                                    <Typography><strong>Danh sách nhập:</strong></Typography>
+                                    <Typography>
+                                        <strong>Danh sách nhập:</strong>
+                                    </Typography>
                                     <ul style={{ marginTop: 5 }}>
                                         {row?.assets.map((asset, idx) => (
-                                            <li key={idx}>{capitalizeFirstLetter(asset?.name)} (SLN: {asset?.quantityWarehouse})</li>
+                                            <li key={idx}>
+                                                {capitalizeFirstLetter(asset?.name)} (SLN:
+                                                <strong>{asset?.quantity}</strong> - Tổng giá: <strong>{asset?.priceInput * asset?.quantity}</strong>)
+                                            </li>
                                         ))}
                                     </ul>
                                 </Box>
@@ -165,11 +190,7 @@ const WareHouseReceiptAssetsPage = () => {
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
                 render: (row) => {
-                    return (
-                        <>
-                            {formatDate(row.createdAt)}
-                        </>
-                    );
+                    return <>{formatDate(row.createdAt)}</>;
                 },
             },
             {
@@ -179,11 +200,7 @@ const WareHouseReceiptAssetsPage = () => {
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
                 render: (row) => {
-                    return (
-                        <>
-                            {formatDate(row.updatedAt)}
-                        </>
-                    );
+                    return <>{formatDate(row.updatedAt)}</>;
                 },
             },
             {
@@ -195,27 +212,36 @@ const WareHouseReceiptAssetsPage = () => {
                 render: (row) => {
                     return (
                         <>
-                            {
-                                hasPermission([
-                                    { resource: "warehousereceipts", action: "manage" },
-                                    { resource: "warehousereceipts", action: "update" },
-                                ]) && row.isAccept === true ? <>
+                            {hasPermission([
+                                { resource: "stockassets", action: "manage" },
+                                { resource: "stockassets", action: "update" },
+                            ]) && row.isAccept === true ? (
+                                <>
                                     <Chip
-                                        style={{ color: 'white', background: '#096A5E' }}
+                                        style={{ color: "white", background: "#096A5E" }}
                                         label="Đã duyệt"
                                         variant="filled"
                                     />
-                                </> : <>
-                                    {
-                                        hasPermission([
-                                            { resource: "warehousereceipts", action: "manage" },
-                                            { resource: "warehousereceipts", action: "update" },
-                                        ]) &&
-                                        <Button variant="contained" sx={{ color: theme.palette.common.white, background: theme.palette.error.dark }} onClick={() => handleAcceptWareHouseAssetsReceipt(row)}>Chưa duyệt</Button>
-
-                                    }
                                 </>
-                            }
+                            ) : (
+                                <>
+                                    {hasPermission([
+                                        { resource: "stockassets", action: "manage" },
+                                        { resource: "stockassets", action: "update" },
+                                    ]) && (
+                                            <Button
+                                                variant="contained"
+                                                sx={{
+                                                    color: theme.palette.common.white,
+                                                    background: theme.palette.error.dark,
+                                                }}
+                                                onClick={() => handleAcceptWareHouseAssetsReceipt(row)}
+                                            >
+                                                Chưa duyệt
+                                            </Button>
+                                        )}
+                                </>
+                            )}
                         </>
                     );
                 },
@@ -241,30 +267,29 @@ const WareHouseReceiptAssetsPage = () => {
                                 stroke={1.5}
                                 onClick={() => handleViewDetails(row)}
                             />
-                            {
-                                hasPermission([
-                                    { resource: "warehousereceipts", action: "manage" },
-                                    { resource: "warehousereceipts", action: "update" },
-                                ]) && !row.isAccept &&
+                            {hasPermission([
+                                { resource: "stockassets", action: "manage" },
+                                { resource: "stockassets", action: "update" },
+                            ]) &&
+                                !row.isAccept && (
+                                    <IconPencil
+                                        onClick={() => handleEditWareHouseAssetsReceipt(row)}
+                                        size={20}
+                                        stroke={1.5}
+                                    />
+                                )}
 
-                                <IconPencil
-                                    onClick={() => handleEditWareHouseAssetsReceipt(row)}
-                                    size={20}
-                                    stroke={1.5}
-                                />
-                            }
-
-                            {
-                                hasPermission([
-                                    { resource: "warehousereceipts", action: "manage" },
-                                    { resource: "warehousereceipts", action: "delete" },
-                                ]) && !row.isAccept && <IconTrash
-                                    size={20}
-                                    stroke={1.5}
-                                    onClick={() => handleOpenConfirmDialog(row)}
-                                />
-                            }
-
+                            {hasPermission([
+                                { resource: "stockassets", action: "manage" },
+                                { resource: "stockassets", action: "delete" },
+                            ]) &&
+                                !row.isAccept && (
+                                    <IconTrash
+                                        size={20}
+                                        stroke={1.5}
+                                        onClick={() => handleOpenConfirmDialog(row)}
+                                    />
+                                )}
                         </Box>
                     );
                 },
@@ -315,180 +340,175 @@ const WareHouseReceiptAssetsPage = () => {
         });
     }, [checkedDelete]);
 
-    // const handleExportWareHouseReceiptExcel = () => {
-    //     // Tạo một workbook mới
-    //     console.log(data);
-    //     if (data) {
-    //         const workbook = new ExcelJS.Workbook();
-    //         const worksheet = workbook.addWorksheet('Publications');
+    const handleExportWareHouseReceiptExcel = () => {
+        // Tạo một workbook mới
+        console.log(data);
+        if (data) {
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Publications');
 
-    //         // Thêm hàng tiêu đề chính
-    //         worksheet.addRow(['Danh sách nhập ấn phẩm']).font = { bold: true, size: 14 };
-    //         worksheet.addRow([]);
+            // Thêm hàng tiêu đề chính
+            worksheet.addRow(['Danh sách nhập ấn phẩm']).font = { bold: true, size: 14 };
+            worksheet.addRow([]);
 
-    //         const currentDateTime = new Date();
-    //         const formattedDateTime = currentDateTime.toLocaleString('vi-VN', {
-    //             year: 'numeric',
-    //             month: 'numeric',
-    //             day: 'numeric',
-    //             hour: 'numeric',
-    //             minute: 'numeric',
-    //             second: 'numeric',
-    //             hour12: false,
-    //         });
+            const currentDateTime = new Date();
+            const formattedDateTime = currentDateTime.toLocaleString('vi-VN', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: false,
+            });
 
-    //         worksheet.addRow([`Ngày xuất file: ${formattedDateTime}`]).font = { bold: true };
-    //         worksheet.addRow([]);
+            worksheet.addRow([`Ngày xuất file: ${formattedDateTime}`]).font = { bold: true };
+            worksheet.addRow([]);
 
-    //         worksheet.addRow([
-    //             'Mã nhập',
-    //             'Mã ấn phẩm',
-    //             'Tên ấn phẩm',
-    //             'Ngày tạo',
-    //             'Ngày cập nhật',
-    //             'Nhà cung cấp',
-    //             'Người tạo',
-    //             'Số lượng nhập',
-    //             'Trạng thái',
-    //             'Ghi chú'
-    //         ]).font = { bold: true };
+            worksheet.addRow([
+                'Tên tài sản',
+                'Ngày tạo',
+                'Ngày cập nhật',
+                'Nhà cung cấp',
+                'Người tạo',
+                'Số lượng nhập',
+                'Giá nhập',
+                'Tổng giá',
+                'Trạng thái'
+            ]).font = { bold: true };
 
-    //         worksheet.getColumn('A').width = 15;
-    //         worksheet.getColumn('B').width = 30;
-    //         worksheet.getColumn('C').width = 30;
-    //         worksheet.getColumn('D').width = 30;
-    //         worksheet.getColumn('E').width = 30;
-    //         worksheet.getColumn('F').width = 30;
-    //         worksheet.getColumn('G').width = 20;
-    //         worksheet.getColumn('H').width = 15;
-    //         worksheet.getColumn('I').width = 15;
-    //         worksheet.getColumn('J').width = 20;
+            worksheet.getColumn('A').width = 15;
+            worksheet.getColumn('B').width = 30;
+            worksheet.getColumn('C').width = 30;
+            worksheet.getColumn('D').width = 30;
+            worksheet.getColumn('E').width = 30;
+            worksheet.getColumn('F').width = 30;
+            worksheet.getColumn('G').width = 20;
+            worksheet.getColumn('H').width = 15;
+            worksheet.getColumn('I').width = 15;
 
-    //         const warehouseReceiptsData = data?.data?.result?.map((receipt) => {
-    //             const supplierName = (receipt?.supplierId as TSupplier)?.name || '';
-    //             const creatorName = (receipt?.createBy as User)?.fullname || '';
-    //             const isAccepted = receipt?.isAccept ? 'Đã duyệt' : 'Chưa duyệt';
+            const warehouseReceiptsData = data?.data?.result?.map((receipt) => {
+                const supplierName = (receipt?.supplierId as TSupplier)?.name || '';
+                const creatorName = (receipt?.createBy as User)?.fullname || '';
+                const isAccepted = receipt?.isAccept ? 'Đã duyệt' : 'Chưa duyệt';
 
-    //             const publicationsData = receipt?.publications?.map((publication) => {
-    //                 return {
-    //                     receiptBarcode: receipt?.barcode || '',
-    //                     publicationBarcode: publication?.barcode || '',
-    //                     publicationName: publication?.name || '',
-    //                     // createdAt: formatDate(receipt?.createdAt) || '', 
-    //                     // updatedAt: formatDate(receipt?.updatedAt) || '', 
-    //                     createdAt: receipt?.createdAt ? new Date(receipt?.createdAt) : null, 
-    //                     updatedAt: receipt?.updatedAt ? new Date(receipt?.updatedAt) : null,
-    //                     supplierName: supplierName,
-    //                     creatorName: creatorName,
-    //                     quantityWareHouse: publication?.quantityWareHouse || 0,
-    //                     status: isAccepted,
-    //                     note: receipt?.note || '',
-    //                 };
-    //             });
+                const AssetsData = receipt?.assets?.map((asset) => {
+                    return {
+                        assetName: asset?.name || '',
+                        createdAt: receipt?.createdAt ? new Date(receipt?.createdAt) : null,
+                        updatedAt: receipt?.updatedAt ? new Date(receipt?.updatedAt) : null,
+                        supplierName: supplierName,
+                        creatorName: creatorName,
+                        quantityWareHouse: asset?.quantity || 0,
+                        price: asset?.priceInput || 0,
+                        priceTotal: (asset?.priceInput * asset?.quantity) || 0,
+                        approve: isAccepted,
+                    };
+                });
 
-    //             return publicationsData;
-    //         }).flat();
+                return AssetsData;
+            }).flat();
 
-    //         warehouseReceiptsData.sort((a: any, b: any) => {
-    //             if (a.createdAt && b.createdAt) {
-    //                 return a.createdAt.getTime() - b.createdAt.getTime(); 
-    //             }
-    //             return 0;
-    //         });
+            warehouseReceiptsData.sort((a: any, b: any) => {
+                if (a.createdAt && b.createdAt) {
+                    return a.createdAt.getTime() - b.createdAt.getTime();
+                }
+                return 0;
+            });
 
 
-    //         // Add the data to the worksheet
-    //         warehouseReceiptsData.forEach((dataRow) => {
-    //             const row = worksheet.addRow([]);
-    //             row.values = [
-    //                 dataRow.receiptBarcode,
-    //                 dataRow.publicationBarcode,
-    //                 dataRow.publicationName,
-    //                 dataRow.createdAt,
-    //                 dataRow.updatedAt,
-    //                 dataRow.supplierName,
-    //                 dataRow.creatorName,
-    //                 dataRow.quantityWareHouse,
-    //                 dataRow.status,
-    //                 dataRow.note,
-    //             ];
-    //             row.eachCell((cell) => {
-    //                 cell.border = {
-    //                     top: { style: 'thin' },
-    //                     left: { style: 'thin' },
-    //                     bottom: { style: 'thin' },
-    //                     right: { style: 'thin' }
-    //                 };
-    //             });
-    //         });
+            // Add the data to the worksheet
+            warehouseReceiptsData.forEach((dataRow) => {
+                const row = worksheet.addRow([]);
+                row.values = [
+                    dataRow.assetName,
+                    dataRow.createdAt,
+                    dataRow.updatedAt,
+                    dataRow.supplierName,
+                    dataRow.creatorName,
+                    dataRow.quantityWareHouse,
+                    dataRow.price,
+                    dataRow.priceTotal,
+                    dataRow.approve
+                ];
+                row.eachCell((cell) => {
+                    cell.border = {
+                        top: { style: 'thin' },
+                        left: { style: 'thin' },
+                        bottom: { style: 'thin' },
+                        right: { style: 'thin' }
+                    };
+                });
+            });
 
-    //         // Style the header row
-    //         const headerRow = worksheet.getRow(4); // Header starts at row 4
-    //         headerRow.eachCell((cell) => {
-    //             cell.border = {
-    //                 top: { style: 'thin' },
-    //                 left: { style: 'thin' },
-    //                 bottom: { style: 'thin' },
-    //                 right: { style: 'thin' }
-    //             };
-    //             cell.fill = {
-    //                 type: 'pattern',
-    //                 pattern: 'solid',
-    //                 fgColor: { argb: 'FFCCCCCC' }
-    //             };
-    //             cell.font = {
-    //                 bold: true,
-    //                 color: { argb: 'FF000000' }
-    //             };
-    //         });
+            // Style the header row
+            const headerRow = worksheet.getRow(4); // Header starts at row 4
+            headerRow.eachCell((cell) => {
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' }
+                };
+                cell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FFCCCCCC' }
+                };
+                cell.font = {
+                    bold: true,
+                    color: { argb: 'FF000000' }
+                };
+            });
 
-    //         // Tạo file Excel và lưu
-    //         const currentDateTimeForFileName = currentDateTime.toISOString().replace(/[-:.]/g, "");
-    //         const fileName = `warehouse_receipt_${currentDateTimeForFileName}.xlsx`;
+            // Tạo file Excel và lưu
+            const formattedDate = currentDateTime.toLocaleDateString('vi-VN');
+            const fileName = `PhieuNhap_TaiSanThuVien_${formattedDate}.xlsx`;
 
-    //         workbook.xlsx.writeBuffer().then((buffer) => {
-    //             const blob = new Blob([buffer], { type: 'application/octet-stream' });
-    //             const url = URL.createObjectURL(blob);
-    //             const a = document.createElement('a');
-    //             a.href = url;
-    //             a.download = fileName;
-    //             a.click();
-    //             URL.revokeObjectURL(url);
-    //         });
-    //     } else {
-    //         toast.error("Không có dữ liệu để xuất excel");
-    //     }
-    // };
+            workbook.xlsx.writeBuffer().then((buffer) => {
+                const blob = new Blob([buffer], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        } else {
+            toast.error("Không có dữ liệu để xuất excel");
+        }
+    };
 
     const actionMenus = useMemo((): TMenuOption[] => {
         return hasPermission([
-            { resource: "warehousereceipts", action: "manage" },
-            { resource: "warehousereceipts", action: "delete" },
-        ]) ? [
-            {
-                label: "Xóa các dữ liệu vào thùng rác",
-                icon: <IconTrashXFilled size={20} stroke={1.5} />,
-                onClick: handleDeleteMultiple,
-            },
-            // {
-            //     label: "Xuất danh sách nhập kho",
-            //     icon: <IconFileExport size={20} stroke={1.5} />,
-            //     onClick: handleExportWareHouseReceiptExcel,
-            // },
-        ] : [];
-    }, [handleDeleteMultiple]);
+            { resource: "stockassets", action: "manage" },
+            { resource: "stockassets", action: "delete" },
+        ])
+            ? [
+                {
+                    label: "Xóa các dữ liệu vào thùng rác",
+                    icon: <IconTrashXFilled size={20} stroke={1.5} />,
+                    onClick: handleDeleteMultiple,
+                },
+                {
+                    label: "Xuất danh sách nhập kho",
+                    icon: <IconFileExport size={20} stroke={1.5} />,
+                    onClick: handleExportWareHouseReceiptExcel,
+                },
+            ]
+            : [];
+    }, [handleDeleteMultiple, handleExportWareHouseReceiptExcel]);
 
     const initialValues = useMemo((): TWareHouseAssetsReceiptCreate => {
         if (selectedEdit) {
             return {
                 note: selectedEdit.note,
-                supplierId: (selectedEdit.supplierId as TSupplier)._id
+                supplierId: (selectedEdit.supplierId as TSupplier)._id,
             };
         }
         return {
             note: "",
-            supplierId: "0"
-
+            supplierId: "0",
         };
     }, [selectedEdit]);
 
@@ -496,8 +516,8 @@ const WareHouseReceiptAssetsPage = () => {
         <div>
             <IBreadcrumsCustom
                 profile="Quản lý phiếu nhập kho"
-                mainProfile="Danh sách phiếu nhập kho"
-                link="/quan-ly-nhap-kho/phieu-nhap-kho"
+                mainProfile="Danh sách phiếu nhập tài sản"
+                link="/quan-ly-nhap-kho/phieu-nhap-tai-san"
             />
 
             {openAddEdit && (
@@ -512,48 +532,49 @@ const WareHouseReceiptAssetsPage = () => {
             )}
 
             <MainCard>
-                <Stack spacing={2} sx={{
-                    paddingLeft: { xs: 0, sm: 0, md: 4 },
-                    paddingBottom: { xs: 2, sm: 2 },
-                    width: '100%'
-                }}>
+                <Stack
+                    spacing={2}
+                    sx={{
+                        paddingLeft: { xs: 0, sm: 0, md: 4 },
+                        paddingBottom: { xs: 2, sm: 2 },
+                        width: "100%",
+                    }}
+                >
                     <Box display="flex" flexWrap="wrap">
-                        {/* {
+                        {
                             hasPermission([
                                 { resource: "stockassets", action: "manage" },
                                 { resource: "stockassets", action: "create" },
-                            ]) && */}
+                            ]) &&
+                            <Box>
+                                <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<IconPlus stroke={2} />}
+                                    variant="contained"
+                                    onClick={addWareHouseReceipt}
+                                >
+                                    Thêm mới
+                                </StyledButton>
+                            </Box>
+                        }
                         <Box>
-                            <StyledButton
-                                color="primary"
-                                size="small"
-                                startIcon={<IconPlus stroke={2} />}
-                                variant="contained"
-                                onClick={addWareHouseReceipt}
-                            >
-                                Thêm mới
-                            </StyledButton>
-                        </Box>
-                        {/* } */}
-
-
-                        <Box>
-                            {/* {
+                            {
                                 hasPermission([
                                     { resource: "stockassets", action: "manage" },
                                     { resource: "stockassets", action: "delete" },
-                                ]) && */}
-                            <Link to="/quan-ly-nhap-kho/phieu-nhap-kho/danh-sach-xoa-phieu-nhap-kho" style={{ textDecoration: 'none' }}>
-                                <StyledButton
-                                    sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
-                                    size="small"
-                                    startIcon={<IconTrash stroke={2} />}
-                                    variant="contained"
-                                >
-                                    Thùng rác
-                                </StyledButton>
-                            </Link>
-                            {/* } */}
+                                ]) &&
+                                <Link to="/quan-ly-nhap-kho/phieu-nhap-tai-san/danh-sach-xoa-phieu-nhap-kho-tai-san" style={{ textDecoration: 'none' }}>
+                                    <StyledButton
+                                        sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
+                                        size="small"
+                                        startIcon={<IconTrash stroke={2} />}
+                                        variant="contained"
+                                    >
+                                        Thùng rác
+                                    </StyledButton>
+                                </Link>
+                            }
                         </Box>
                     </Box>
                 </Stack>

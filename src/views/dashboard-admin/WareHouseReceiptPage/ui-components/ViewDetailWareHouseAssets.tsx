@@ -3,9 +3,9 @@ import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import { FC, useMemo, useRef } from "react";
+import { FC, useRef } from "react";
+import Barcode from "react-barcode";
 import { useReactToPrint } from "react-to-print";
-import * as yup from "yup";
 import { useAuth } from "../../../../contexts/JWTContext";
 import { formatDate } from "../../../../helpers/formatDate";
 import { TSupplier } from "../../../../types/models/supplier.type";
@@ -38,11 +38,6 @@ type Props = {
     wareHouseAssetsReceipt?: TWareHouseAssetsReceipt;
 };
 
-const schema = yup.object().shape({
-    note: yup
-        .string(),
-});
-
 const ViewDetailWareHouseAssetsReceipt: FC<Props> = ({
     open,
     onClose,
@@ -61,15 +56,7 @@ const ViewDetailWareHouseAssetsReceipt: FC<Props> = ({
             }
         `,
     });
-    const { user } = useAuth();
-    const libraryDetail = useMemo(() => {
-        if (!user) return null;
-
-        const _user = { ...user } as any;
-
-        return _user?.data?.libraryDetail;
-    }, [user]);
-    console.log(wareHouseAssetsReceipt);
+    const { user: userData } = useAuth()
 
     return (
         <Dialog
@@ -85,7 +72,7 @@ const ViewDetailWareHouseAssetsReceipt: FC<Props> = ({
             disableEscapeKeyDown
         >
             <DialogTitle sx={{ p: 4 }}>
-                Chi tiết phiếu nhập kho
+                Chi tiết phiếu nhập tài sản
             </DialogTitle>
 
             <DialogContent sx={{ p: { xs: 3, sm: 3, md: 8 } }} >
@@ -112,7 +99,7 @@ const ViewDetailWareHouseAssetsReceipt: FC<Props> = ({
                             <Box sx={{ mt: 4, display: 'flex', alignItems: 'center' }}>
                                 <Chip
                                     color='primary'
-                                    label="Thông tin nhập sách"
+                                    label="Thông tin nhập tài sản"
                                     variant="filled"
                                 />
                             </Box>
@@ -123,6 +110,8 @@ const ViewDetailWareHouseAssetsReceipt: FC<Props> = ({
                                             <StyledTableCell align="left" width='20%'>Mã tài sản</StyledTableCell>
                                             <StyledTableCell align="left" width='40%'>Tên tài sản</StyledTableCell>
                                             <StyledTableCell align="left" width='15%'>Số lượng nhập</StyledTableCell>
+                                            <StyledTableCell align="left" width='15%'>Giá nhập</StyledTableCell>
+                                            <StyledTableCell align="left" width='15%'>Tổng giá</StyledTableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -137,7 +126,13 @@ const ViewDetailWareHouseAssetsReceipt: FC<Props> = ({
                                                     {row?.name || "Không có dữ liệu"}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left">
-                                                    {row?.quantityWareHouse || "Không có dữ liệu"}
+                                                    {row?.quantity || "0"}
+                                                </StyledTableCell>
+                                                <StyledTableCell align="left">
+                                                    {row?.priceInput || "0"}
+                                                </StyledTableCell>
+                                                <StyledTableCell align="left">
+                                                    {row?.quantity * row?.priceInput || "0"}
                                                 </StyledTableCell>
                                             </StyledTableRow>
                                         ))}
@@ -147,6 +142,15 @@ const ViewDetailWareHouseAssetsReceipt: FC<Props> = ({
                         </Grid>
                     </Grid>
                 }
+
+                <Box sx={{ textAlign: "center", mt: 2 }}>
+                    <Barcode
+                        value={wareHouseAssetsReceipt?.barcode} // Đảm bảo rằng barcode không phải là undefined
+                        width={1} // Kích thước chiều rộng
+                        height={50} // Kích thước chiều cao
+                        fontSize={10}
+                    />
+                </Box>
             </DialogContent>
 
             <DialogActions sx={{ p: 4 }}>

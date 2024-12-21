@@ -919,8 +919,8 @@ const PublicationsPage = () => {
             });
 
             // Tạo file Excel và lưu
-            const currentDateTimeForFileName = currentDateTime.toISOString().replace(/[-:.]/g, "");
-            const fileName = `DSAP_${currentDateTimeForFileName}.xlsx`;
+            const formattedDate = currentDateTime.toLocaleDateString('vi-VN');
+            const fileName = `DanhSach_AnPhamTruyenThong_${formattedDate}.xlsx`;
 
             workbook.xlsx.writeBuffer().then((buffer) => {
                 const blob = new Blob([buffer], { type: 'application/octet-stream' });

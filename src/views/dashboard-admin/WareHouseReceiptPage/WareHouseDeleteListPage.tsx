@@ -272,16 +272,16 @@ const WareHouseReceiptDeleteListPage = () => {
     return (
         <div>
             <IBreadcrumsCustom
-                profile="Quản lý phiếu nhập kho"
+                profile="Phiếu nhập ấn phẩm"
                 mainProfile="Danh sách đã xóa"
-                link="/quan-ly-nhap-kho/phieu-nhap-kho/danh-sach-xoa-phieu-nhap-kho"
+                link="/quan-ly-nhap-kho/phieu-nhap-an-pham"
             />
 
             <MainCard>
                 <Stack spacing={2}>
                     <CsFlexRowBetween>
                         <Box sx={{ ml: { xs: 0, sm: 0, md: 4 }, mb: 2 }}>
-                            <Link to="/quan-ly-nhap-kho/phieu-nhap-kho" style={{ textDecoration: 'none' }}>
+                            <Link to="/quan-ly-nhap-kho/phieu-nhap-an-pham" style={{ textDecoration: 'none' }}>
                                 <StyledButton
                                     color="primary"
                                     size="small"

@@ -174,6 +174,9 @@ const WareHouseReceiptAssetsPage = Loadable(
 const WareHouseReceiptDeleteListPage = Loadable(
   lazy(() => import("../views/dashboard-admin/WareHouseReceiptPage/WareHouseDeleteListPage"))
 );
+const WareHouseAssetReceiptDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/WareHouseReceiptPage/WareHouseAssetDeleteListPage"))
+);
 //Error Page
 const ForbiddenPage = Loadable(
   lazy(() => import("../views/ErrorPage/ForbiddenPage"))
@@ -334,7 +337,7 @@ const MainRoutes = {
       element: <SupplierDeleteListPage />,
     },
     {
-      path: "/quan-ly-nhap-kho/phieu-nhap-kho",
+      path: "/quan-ly-nhap-kho/phieu-nhap-an-pham",
       element: <WareHouseReceiptPage />,
     },
     {
@@ -342,8 +345,12 @@ const MainRoutes = {
       element: <WareHouseReceiptAssetsPage />,
     },
     {
-      path: "/quan-ly-nhap-kho/phieu-nhap-kho/danh-sach-xoa-phieu-nhap-kho",
+      path: "/quan-ly-nhap-kho/phieu-nhap-an-pham/danh-sach-xoa-phieu-nhap-kho-an-pham",
       element: <WareHouseReceiptDeleteListPage />,
+    },
+    {
+      path: "/quan-ly-nhap-kho/phieu-nhap-tai-san/danh-sach-xoa-phieu-nhap-kho-tai-san",
+      element: <WareHouseAssetReceiptDeleteListPage />,
     },
     {
       path: "/quan-ly-muon-tra/phieu-muon",

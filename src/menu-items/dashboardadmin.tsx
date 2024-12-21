@@ -255,10 +255,10 @@ const dashboardAdmin = {
                     ],
                 },
                 {
-                    id: "phieu-nhap-kho",
-                    title: "Phiếu nhập kho",
+                    id: "phieu-nhap-an-pham",
+                    title: "Phiếu nhập ấn phẩm",
                     type: "item",
-                    url: "/quan-ly-nhap-kho/phieu-nhap-kho",
+                    url: "/quan-ly-nhap-kho/phieu-nhap-an-pham",
                     icon: icons.IconReceipt2,
                     breadcrumbs: false,
                     permissions: [

@@ -12,6 +12,7 @@ export interface Asset extends AbstractEntity {
     quantityLiquidation: number;
     typeAssetId: TTypeAsset | string;
     status: string;
+    priceInput?: number;
 }
 export interface CreateAssetModel {
     note: string;

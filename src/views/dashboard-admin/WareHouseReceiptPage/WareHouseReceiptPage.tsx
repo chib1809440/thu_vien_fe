@@ -377,7 +377,7 @@ const WareHouseReceiptPage = () => {
                         publicationName: publication?.name || '',
                         // createdAt: formatDate(receipt?.createdAt) || '', 
                         // updatedAt: formatDate(receipt?.updatedAt) || '', 
-                        createdAt: receipt?.createdAt ? new Date(receipt?.createdAt) : null, 
+                        createdAt: receipt?.createdAt ? new Date(receipt?.createdAt) : null,
                         updatedAt: receipt?.updatedAt ? new Date(receipt?.updatedAt) : null,
                         supplierName: supplierName,
                         creatorName: creatorName,
@@ -392,7 +392,7 @@ const WareHouseReceiptPage = () => {
 
             warehouseReceiptsData.sort((a: any, b: any) => {
                 if (a.createdAt && b.createdAt) {
-                    return a.createdAt.getTime() - b.createdAt.getTime(); 
+                    return a.createdAt.getTime() - b.createdAt.getTime();
                 }
                 return 0;
             });
@@ -444,8 +444,8 @@ const WareHouseReceiptPage = () => {
             });
 
             // Tạo file Excel và lưu
-            const currentDateTimeForFileName = currentDateTime.toISOString().replace(/[-:.]/g, "");
-            const fileName = `warehouse_receipt_${currentDateTimeForFileName}.xlsx`;
+            const formattedDate = currentDateTime.toLocaleDateString('vi-VN');
+            const fileName = `PhieuNhap_AnPhamTruyenThong_${formattedDate}.xlsx`;
 
             workbook.xlsx.writeBuffer().then((buffer) => {
                 const blob = new Blob([buffer], { type: 'application/octet-stream' });
@@ -497,8 +497,8 @@ const WareHouseReceiptPage = () => {
         <div>
             <IBreadcrumsCustom
                 profile="Quản lý phiếu nhập kho"
-                mainProfile="Danh sách phiếu nhập kho"
-                link="/quan-ly-nhap-kho/phieu-nhap-kho"
+                mainProfile="Danh sách phiếu nhập ấn phẩm"
+                link="/quan-ly-nhap-kho/phieu-nhap-an-pham"
             />
 
             {openAddEdit && (
@@ -544,7 +544,7 @@ const WareHouseReceiptPage = () => {
                                     { resource: "warehousereceipts", action: "manage" },
                                     { resource: "warehousereceipts", action: "delete" },
                                 ]) &&
-                                <Link to="/quan-ly-nhap-kho/phieu-nhap-kho/danh-sach-xoa-phieu-nhap-kho" style={{ textDecoration: 'none' }}>
+                                <Link to="/quan-ly-nhap-kho/phieu-nhap-an-pham/danh-sach-xoa-phieu-nhap-kho-an-pham" style={{ textDecoration: 'none' }}>
                                     <StyledButton
                                         sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
                                         size="small"

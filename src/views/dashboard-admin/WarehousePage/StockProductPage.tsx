@@ -332,7 +332,7 @@ const StockProductPage = () => {
                 >
                     <CsFlexRowBetween>
                         <Box sx={{ ml: { xs: 0, sm: 0, md: 3 }, mb: { xs: 0, sm: 0, md: 2 } }}>
-                            <Link to="/quan-ly-nhap-kho/phieu-nhap-kho" style={{ textDecoration: 'none' }}>
+                            <Link to="/quan-ly-nhap-kho/phieu-nhap-an-pham" style={{ textDecoration: 'none' }}>
                                 <StyledButton
                                     sx={{
                                         background: "#a36e21", color: "white",

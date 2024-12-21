@@ -602,12 +602,13 @@ const LoanSlipPage = () => {
             });
 
             // Tạo file Excel và lưu
+            const formattedDate = currentDateTime.toLocaleDateString('vi-VN');
             workbook.xlsx.writeBuffer().then((buffer) => {
                 const blob = new Blob([buffer], { type: 'application/octet-stream' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'DSPMLienThong.xlsx'; // Tên file xuất
+                a.download = `DSPMLienThong_${formattedDate}.xlsx`; // Tên file xuất
                 a.click();
                 URL.revokeObjectURL(url);
             });

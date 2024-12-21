@@ -1,7 +1,7 @@
 import { useTheme } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { IconPlus, IconTrash } from '@tabler/icons';
-import { IconBuildingWarehouse, IconDevices, IconTransferIn } from '@tabler/icons-react';
+import { IconDevices, IconTransferIn } from '@tabler/icons-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { HeadCell } from '../../../components/custom/table/type';
@@ -11,6 +11,7 @@ import { Asset } from '../../../interfaces/asset';
 import IBreadcrumsCustom from '../../../ui-component/breadcrums';
 import MainCard from '../../../ui-component/cards/MainCard';
 import TableAssetList from './ui-components/TableAssetList';
+
 const headCells: HeadCell[] = [
     {
         id: 'asset_name',
@@ -18,7 +19,7 @@ const headCells: HeadCell[] = [
         disablePadding: true,
         label: 'Tên tài sản',
     },
-    
+
     {
         id: 'typeAssetId',
         numeric: true,
@@ -69,6 +70,7 @@ export default function AssetPage() {
     const handleClickNavigateWarehouseAssets = () => {
         navigate('/quan-ly-kho/thanh-ly-hu-hong');
     };
+   
 
     return (
         <>

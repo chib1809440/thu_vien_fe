@@ -2,6 +2,7 @@ import React, { forwardRef } from "react";
 import { TWareHouseReceipt } from "../../../../types/models/warehouse-receipt";
 import Barcode from 'react-barcode';
 import { TSupplier } from "../../../../types/models/supplier.type";
+import { User } from "../../../../interfaces/user";
 
 // Đảm bảo xuất component theo cách đúng
 const PrintWareHouseReceipt = forwardRef<HTMLDivElement, { wareHouseReceipt: TWareHouseReceipt }>(
@@ -15,10 +16,7 @@ const PrintWareHouseReceipt = forwardRef<HTMLDivElement, { wareHouseReceipt: TWa
             <div ref={ref} className="invoice-content" style={{ marginTop: 0, fontSize: '9px' }}>
                 <h2 style={{ textAlign: "center", marginTop: 0 }}>Phiếu nhập ấn phẩm vào thư viện</h2>
                 <p>
-                    <strong>Đơn vị:</strong> .........................................................................
-                </p>
-                <p>
-                    <strong>Bộ phận:</strong> .....................................................................
+                    <strong>Thư viện:</strong> {(wareHouseReceipt?.createBy as User)?.school}
                 </p>
                 <p>
                     <strong>Nhà cung cấp:</strong> {(wareHouseReceipt?.supplierId as TSupplier).name}
@@ -65,9 +63,17 @@ const PrintWareHouseReceipt = forwardRef<HTMLDivElement, { wareHouseReceipt: TWa
                 </div>
                 {/* Phần ký tên */}
                 <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                    <p style={{ marginBottom: '0', marginLeft: '40px' }}>Hiệu trưởng</p>
-                    <p style={{ marginBottom: '0', marginLeft: '40px' }}>Thủ thư</p>
-                    <p style={{ marginBottom: '0', marginRight: '40px' }}>Các bộ nhập sách</p>
+                    <div style={{ marginBottom: '0', marginLeft: '40px', marginRight: "40px" }}>
+                        <br />
+                        <p style={{ fontWeight: "bold" }}>Hiệu trưởng</p>
+                    </div>
+                    <div style={{ textAlign: "center" }}>
+                        <p >.............., ngày ........tháng........năm {new Date().getFullYear()}</p>
+                        <p style={{ fontWeight: "bold" }}>Thủ thư</p>
+                        <p ><i>(Ký tên)</i></p>
+                        <br />
+                        <p >{(wareHouseReceipt?.createBy as User)?.fullname}</p>
+                    </div>
                 </div>
             </div>
         );

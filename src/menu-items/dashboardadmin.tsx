@@ -304,7 +304,7 @@ const dashboardAdmin = {
             children: [
                 {
                     id: "tu-ke",
-                    title: "Ấn phẩm trên Tủ - Kệ",
+                    title: "Ấn phẩm trên tủ - kệ",
                     type: "item",
                     url: "/quan-ly-kho/tu-ke",
                     icon: icons.IconBrandAirtable,
@@ -370,7 +370,7 @@ const dashboardAdmin = {
                 },
                 {
                     id: "tu-ke",
-                    title: "Quản lý Tủ - Kệ",
+                    title: "Quản lý tủ - kệ",
                     type: "item",
                     url: "/tai-san-thu-vien/tu-ke",
                     icon: icons.IconHomeSearch,
@@ -389,6 +389,14 @@ const dashboardAdmin = {
             ],
         },
 
+        {
+            id: "thanh-ly-tai-san-an-pham",
+            title: "Thanh lý tài sản & ấn phẩm",
+            type: "item",
+            url: "/thanh-ly-tai-san-an-pham",
+            icon: icons.IconDevices,
+            breadcrumbs: false
+        },
         {
             id: "phieu-muon",
             title: "Thông tin phiếu mượn",

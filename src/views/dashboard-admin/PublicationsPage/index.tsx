@@ -741,31 +741,43 @@ const PublicationsPage = () => {
             const response = await publicationsService.importExcel(file);
             revalidate();
             const duplicateBarcodeErrors = response?.data?.errors.filter(
-                (error) => error.error === "Barcode đã tồn tại!"
+                (error) => error.error === "Barcode đã tồn tại!" || error.error === "tên ấn phẩm đã tồn tại!"
             );
 
             if (duplicateBarcodeErrors.length > 0) {
-                const rows = duplicateBarcodeErrors.map(({ row }) => row);
-                const uniqueRows = Array.from(new Set(rows));
-                const rowList = uniqueRows.join(", ");
+                const barcodeErrors = duplicateBarcodeErrors.filter(
+                    (error) => error.error === "Barcode đã tồn tại!"
+                );
+                const nameErrors = duplicateBarcodeErrors.filter(
+                    (error) => error.error === "tên ấn phẩm đã tồn tại!"
+                );
 
-                if (response?.data?.publications?.length === 0) {
-                    // Nếu không có publications nào và có lỗi
+                // Lấy các dòng bị lỗi
+                const barcodeRows = barcodeErrors.map(({ row }) => row);
+                const nameRows = nameErrors.map(({ row }) => row);
+
+                const uniqueBarcodeRows = Array.from(new Set(barcodeRows)); // Loại bỏ dòng trùng lặp
+                const uniqueNameRows = Array.from(new Set(nameRows)); // Loại bỏ dòng trùng lặp
+
+                const barcodeRowList = uniqueBarcodeRows.join(", ");
+                const nameRowList = uniqueNameRows.join(", ");
+
+                if (barcodeErrors.length > 0) {
                     toast.error(
                         <span>
                             Barcode đã tồn tại ở dòng:{" "}
-                            <strong style={{ color: "red" }}>[ {rowList} ]</strong>.
+                            <strong style={{ color: "red" }}>[ {barcodeRowList} ]</strong>.
                         </span>
                     );
-                } else {
-                    // Nếu có publications nhưng vẫn có lỗi
-                    toast.success("Import file excel thành công");
+                }
+        
+                // Hiển thị lỗi Tên ấn phẩm nếu có
+                if (nameErrors.length > 0) {
                     toast.error(
                         <span>
-                            Barcode đã tồn tại ở dòng:{" "}
-                            <strong style={{ color: "red" }}>[ {rowList} ]</strong>.
-                        </span>,
-                        { autoClose: 4000 }
+                            Tên ấn phẩm đã tồn tại ở dòng:{" "}
+                            <strong style={{ color: "red" }}>[ {nameRowList} ]</strong>.
+                        </span>
                     );
                 }
             } else {
@@ -947,7 +959,7 @@ const PublicationsPage = () => {
                     icon: <IconFileDownload size={20} stroke={1.5} />,
                     component: (
                         <a
-                            href={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/template-publication.xlsx`}
+                            href={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/mau_them_nhieu_an_pham.xlsx`}
                             style={{
                                 textDecoration: "none",
                                 display: "inline-flex",

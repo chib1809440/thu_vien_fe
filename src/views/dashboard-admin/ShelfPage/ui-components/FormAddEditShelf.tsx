@@ -17,6 +17,7 @@ type Props = {
     initialValues: TShelvesCreate;
     isEditMode?: boolean;
     assetData?: Asset[];
+    selectedAsset?: Asset;
 };
 
 const schema = yup.object().shape({
@@ -38,6 +39,7 @@ const FormAddEditShelf: FC<Props> = ({
     isFetching = false,
     isEditMode = false,
     assetData,
+    selectedAsset
 }) => {
     const formik = useFormik<TShelvesCreate>({
         initialValues,
@@ -70,7 +72,7 @@ const FormAddEditShelf: FC<Props> = ({
                 disableEscapeKeyDown
             >
                 <DialogTitle>
-                    {isEditMode ? "Sửa thông tin tủ kệ" : "Thêm thông tin tủ kệ mới"}
+                    {isEditMode ? "Sửa thông tin tủ kệ" : "Tạo thông tin tủ kệ mới"}
                 </DialogTitle>
 
                 <DialogContent>
@@ -83,17 +85,23 @@ const FormAddEditShelf: FC<Props> = ({
                             helperText={touched.name && errors.name}
                             {...getFieldProps("name")}
                         />
+                        
                         <SelectForm
                             label="Tài sản"
-                            required
-                            value={values.assetId as string}
-                            options={assetData.map((item) => ({
+                            value={(values.assetId as Asset)?._id}
+                            options={selectedAsset ? [
+                                {
+                                    value: selectedAsset?._id,
+                                    label: capitalizeFirstLetter(selectedAsset?.name),
+                                },
+                            ] : assetData.map((item) => ({
                                 value: item._id,
                                 label: capitalizeFirstLetter(item.name),
                             }))}
-                            onChange={(e) => setFieldValue("assetId", e.target.value)}
                             error={touched.assetId && Boolean(errors.assetId)}
+                            {...getFieldProps("assetId")}
                             helperText={touched.assetId && errors.assetId}
+                            disabled={isEditMode || !!selectedAsset}
                         />
                         <InputForm
                             label="Mô tả"

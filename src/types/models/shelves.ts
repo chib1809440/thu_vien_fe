@@ -12,9 +12,9 @@ export type TShelves = TEntityAbstract & {
 };
 
 export type TShelvesCreate = Partial<Pick<TShelves, "name" | "description" | "note">> & {
-    assetId?: string | null;
+    assetId?: Asset | string | null;
 };
 export type TShelvesEdit = Partial<Pick<TShelves, "name" | "description" | "note">> & {
     _id: string,
-    assetId?: string | Asset;
+    assetId?: Asset | string | Asset;
 };

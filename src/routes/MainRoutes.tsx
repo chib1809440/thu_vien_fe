@@ -319,7 +319,7 @@ const MainRoutes = {
       element: <StockAssetsPage />,
     },
     {
-      path: "/quan-ly-kho/thanh-ly-hu-hong",
+      path: "/thanh-ly-tai-san-an-pham",
       element: <LiquidationProductPage />,
     },
 

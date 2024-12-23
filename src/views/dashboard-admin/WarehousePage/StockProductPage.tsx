@@ -348,22 +348,6 @@ const StockProductPage = () => {
                                     Quản lý nhập ấn phẩm
                                 </StyledButton>
                             </Link>
-                            <Link to="/quan-ly-kho/thanh-ly-hu-hong" style={{ textDecoration: 'none' }}>
-                                <StyledButton
-                                    sx={{
-                                        background: "#71a3c1", color: "white",
-                                        //@ts-ignore
-                                        marginLeft: { xs: 0, sm: 0, md: "10px" },
-                                        //@ts-ignore
-                                        marginTop: { xs: 1, sm: 1, md: 0 }
-                                    }}
-                                    size="small"
-                                    startIcon={<IconDevices stroke={2} />}
-                                    variant="contained"
-                                >
-                                    Quản lý Thanh lý - Hư hỏng
-                                </StyledButton>
-                            </Link>
                         </Box>
 
                     </CsFlexRowBetween>

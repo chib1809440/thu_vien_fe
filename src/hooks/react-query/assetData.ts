@@ -6,8 +6,8 @@
 
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { createAsset, deleteAsset, deleteAssetSelected, getAllAssets, getAllAssetsDeleted, getAssetById, restoreAssetSelected, softDeleteAsset, softDeleteAssetSelected, updateAsset } from "../../_apis/asset.api";
-import { Asset, CreateAssetModel, UpdateAssetModel } from "../../interfaces/asset";
+import { createAsset, deleteAsset, deleteAssetSelected, getAllAssets, getAllAssetsDeleted, getAllListAsset, getAssetById, restoreAssetSelected, softDeleteAsset, softDeleteAssetSelected, updateAsset } from "../../_apis/asset.api";
+import { Asset, CreateAssetModel, TAsset, UpdateAssetModel } from "../../interfaces/asset";
 import { TFilter } from "../../types/models/entity-common.type";
 import { getQueryKeys } from "../../utils/object";
 import { RQ_ASSET, RQ_ASSETLIST, RQ_ASSETTRASHLIST } from "./constants_react_query";
@@ -96,11 +96,11 @@ import { RQ_ASSET, RQ_ASSETLIST, RQ_ASSETTRASHLIST } from "./constants_react_que
 //         }
 //     );
 // };
-export function useAssetList(page?: number, limit?: number, search?: string) {
+export function useAssetList(page?: number, limit?: number, search?: string, typeAssetId?: string | number) {
 
     return useQuery({
         queryKey: [RQ_ASSETLIST, { page, limit, search }],
-        queryFn: () => getAllAssets(page, limit, search),
+        queryFn: () => getAllAssets(page, limit, search, typeAssetId.toString()),
         placeholderData: keepPreviousData,  // Sử dụng dữ liệu trước đó để tránh loading
     });
 }
@@ -268,10 +268,20 @@ export const useEditAsset = () => {
     })
 }
 
-export const useReFetchAsset = ()=>{
+export const useFetchAsset = (params?:TFilter)=>{
+    return useQuery({
+        queryKey: getQueryKeys({ key: "GET_ASSETS", ...params }),
+        queryFn: async()=>{
+            return await getAllListAsset<TAsset>(params);
+        },
+        placeholderData: keepPreviousData,
+    })
+}
+
+export const useReFetchAsset = () => {
     const queryClient = useQueryClient();
 
-    const revalidate = (params?:TFilter)=>{
+    const revalidate = (params?: TFilter) => {
         queryClient.invalidateQueries({
             queryKey: getQueryKeys({ key: "GET_ASSETS", ...params }),
         })

@@ -25,10 +25,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
     const [showWord, setShowWord] = useState(false);
     const numberPage = publications?.images?.length;
     const theme = useTheme();
-    const isSM = useMediaQuery('(min-width: 850px)');
-
-    console.log("publications", publications?.path);
-    
+    const isSM = useMediaQuery('(min-width: 850px)');    
 
     const handleOpenView = () => {
         setShowBook(true);

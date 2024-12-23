@@ -153,11 +153,10 @@ const WareHouseReceiptAssetsPage = () => {
                 sxRow: { paddingRight: 3, maxWidth: 250 },
                 render: (row) => {
                     return (
-                        <Box sx={{ py: 2 }}>
+                        <Box>
                             <Typography mt={0.5}>
-                                Nhà cung cấp:{" "}
+                                Nhà cung cấp:
                                 <strong>
-                                    {" "}
                                     {capitalizeFirstLetter((row.supplierId as TSupplier)?.name)}
                                 </strong>
                             </Typography>

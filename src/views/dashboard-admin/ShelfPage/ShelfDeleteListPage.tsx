@@ -239,14 +239,14 @@ const ShelfDeleteListPage = () => {
             <IBreadcrumsCustom
                 profile="Quản lý tủ kệ"
                 mainProfile="Danh sách đã xóa"
-                link="/quan-ly-danh-muc/tu-ke"
+                link="/tai-san-thu-vien/tu-ke"
             />
 
             <MainCard>
                 <Stack spacing={2}>
                     <CsFlexRowBetween>
                         <Box sx={{ ml: { xs: 0, sm: 0, md: 4 }, mb: 2 }}>
-                            <Link to="/quan-ly-danh-muc/tu-ke" style={{ textDecoration: 'none' }}>
+                            <Link to="/tai-san-thu-vien/tu-ke" style={{ textDecoration: 'none' }}>
                                 <StyledButton
                                     color="primary"
                                     size="small"

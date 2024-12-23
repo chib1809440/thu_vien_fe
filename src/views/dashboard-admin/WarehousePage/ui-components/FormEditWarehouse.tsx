@@ -59,7 +59,7 @@ const FormEditWarehouse: FC<Props> = ({
     isEditMode = false,
 }) => {
     const [openAdd, setOpenAdd] = useState(false);
-    const [statusWarehouse, setStatusWarehouse] = useState("");
+    const [statusWarehouse, setStatusWarehouse] = useState("trên kệ");
     const [positionLD, setPositionLD] = useState("trong kho");
     const [reasonLD, setReasonLD] = useState("");
     const [touchedMount, setTouchedMount] = useState({ additionalQuantity: false });
@@ -288,9 +288,9 @@ const FormEditWarehouse: FC<Props> = ({
                                     value={statusWarehouse}
                                     onChange={(event) => {
                                         setStatusWarehouse(event?.target?.value);
-                                        console.log(event?.target?.value);
-
+                                        // console.log(event?.target?.value);
                                     }}
+                                    disabled
                                 />
                             </Box>
 

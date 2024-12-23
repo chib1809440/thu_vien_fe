@@ -45,14 +45,6 @@ export const validationUtilizedObjectSchema = yup.object({
         .number()
         .typeError("Vui lòng nhập số hợp lệ cho số lượng")
         .integer("Số lượng phải là một số nguyên"),
-    quantityDamage: yup
-        .number()
-        .typeError("Vui lòng nhập số hợp lệ cho số lượng")
-        .integer("Số lượng phải là một số nguyên"),
-    quantityLiquidation: yup
-        .number()
-        .typeError("Vui lòng nhập số hợp lệ cho số lượng")
-        .integer("Số lượng phải là một số nguyên"),
     description: yup.string(),
 });
 interface DialogProps {
@@ -273,7 +265,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                                 <SelectForm
                                                     label="Phân loại"
                                                     required
-                                                    value={formik.values.typeAssetId as string}
+                                                    value={(formik.values.typeAssetId as TTypeAsset)?._id}
                                                     options={TypeAssetData?.data?.result?.map((item) => ({
                                                         value: item._id,
                                                         label: capitalizeFirstLetter(item.name),
@@ -287,7 +279,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
 
                                     </Grid>
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                        <Grid item xs={12} sm={12} md={4}>
+                                        <Grid item xs={12} sm={12} md={formik.values.status === "có sẵn" ? 4 : 12}>
                                             <Box sx={{ width: "100%" }}>
                                                 <SelectForm
                                                     label="Trạng thái"
@@ -352,132 +344,6 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                             </Grid>
                                         )}
                                     </Grid>
-
-
-                                    {
-                                        id ? <>
-                                            <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                                <Grid item xs={12} sm={12} md={6}>
-                                                    <Box style={{ width: "100%" }}>
-                                                        <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                                            Số lượng sử dụng
-                                                        </Typography>
-                                                        <TextField
-                                                            variant="outlined"
-                                                            fullWidth
-                                                            id="quantityUsed"
-                                                            name="quantityUsed"
-                                                            value={formik.values.quantityUsed}
-                                                            onChange={formik.handleChange}
-                                                            onBlur={formik.handleBlur}
-                                                            error={
-                                                                formik.touched.quantityUsed &&
-                                                                Boolean(formik.errors.quantityUsed)
-                                                            }
-                                                        />
-                                                        {formik.touched.quantityUsed &&
-                                                            Boolean(formik.errors.quantityUsed) && (
-                                                                <FormHelperText className="required_text">
-                                                                    {" "}
-                                                                    {formik.errors.quantityUsed
-                                                                        ? formik.errors.quantityUsed.toString()
-                                                                        : ""}
-                                                                </FormHelperText>
-                                                            )}
-                                                    </Box>
-                                                </Grid>
-                                                <Grid item xs={12} sm={12} md={6}>
-                                                    <Box style={{ width: "100%" }}>
-                                                        <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                                            Số lượng trong kho
-                                                        </Typography>
-                                                        <TextField
-                                                            variant="outlined"
-                                                            fullWidth
-                                                            id="quantityWarehouse"
-                                                            name="quantityWarehouse"
-                                                            value={formik.values.quantityWarehouse}
-                                                            onChange={formik.handleChange}
-                                                            onBlur={formik.handleBlur}
-                                                            error={
-                                                                formik.touched.quantityWarehouse &&
-                                                                Boolean(formik.errors.quantityWarehouse)
-                                                            }
-                                                        />
-                                                        {formik.touched.quantityWarehouse &&
-                                                            Boolean(formik.errors.quantityWarehouse) && (
-                                                                <FormHelperText className="required_text">
-                                                                    {" "}
-                                                                    {formik.errors.quantityWarehouse
-                                                                        ? formik.errors.quantityWarehouse.toString()
-                                                                        : ""}
-                                                                </FormHelperText>
-                                                            )}
-                                                    </Box>
-                                                </Grid>
-                                            </Grid>
-                                            <Grid container spacing={3} sx={{ mb: 1.5 }}>
-                                                <Grid item xs={12} sm={12} md={6}>
-                                                    <Box style={{ width: "100%" }}>
-                                                        <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                                            Số lượng thanh lý
-                                                        </Typography>
-                                                        <TextField
-                                                            variant="outlined"
-                                                            fullWidth
-                                                            id="quantityLiquidation"
-                                                            name="quantityLiquidation"
-                                                            value={formik.values.quantityLiquidation}
-                                                            onChange={formik.handleChange}
-                                                            onBlur={formik.handleBlur}
-                                                            error={
-                                                                formik.touched.quantityLiquidation &&
-                                                                Boolean(formik.errors.quantityLiquidation)
-                                                            }
-                                                        />
-                                                        {formik.touched.quantityLiquidation &&
-                                                            Boolean(formik.errors.quantityLiquidation) && (
-                                                                <FormHelperText className="required_text">
-                                                                    {" "}
-                                                                    {formik.errors.quantityLiquidation
-                                                                        ? formik.errors.quantityLiquidation.toString()
-                                                                        : ""}
-                                                                </FormHelperText>
-                                                            )}
-                                                    </Box>
-                                                </Grid>
-                                                <Grid item xs={12} sm={12} md={6}>
-                                                    <Box style={{ width: "100%" }}>
-                                                        <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                                            Số lượng hư hỏng
-                                                        </Typography>
-                                                        <TextField
-                                                            variant="outlined"
-                                                            fullWidth
-                                                            id="quantityDamage"
-                                                            name="quantityDamage"
-                                                            value={formik.values.quantityDamage}
-                                                            onChange={formik.handleChange}
-                                                            onBlur={formik.handleBlur}
-                                                            error={
-                                                                formik.touched.quantityDamage &&
-                                                                Boolean(formik.errors.quantityDamage)
-                                                            }
-                                                        />
-                                                        {formik.touched.quantityDamage &&
-                                                            Boolean(formik.errors.quantityDamage) && (
-                                                                <FormHelperText className="required_text">
-                                                                    {" "}
-                                                                    {formik.errors.quantityDamage
-                                                                        ? formik.errors.quantityDamage.toString()
-                                                                        : ""}
-                                                                </FormHelperText>
-                                                            )}
-                                                    </Box>
-                                                </Grid>
-                                            </Grid>
-                                        </> : <></>
-                                    }
 
                                     <Grid container spacing={3} sx={{ mb: 1.5 }}>
                                         <Grid item xs={12} sm={12} md={12}>

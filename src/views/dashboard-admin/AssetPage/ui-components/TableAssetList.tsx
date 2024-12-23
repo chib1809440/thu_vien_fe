@@ -1,4 +1,4 @@
-import { Alert, Box, FormControl, MenuItem, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme } from "@mui/material";
+import { Alert, Box, FormControl, Grid, MenuItem, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme } from "@mui/material";
 import Checkbox from '@mui/material/Checkbox';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -18,10 +18,15 @@ import CustomInput from "../../../../components/default/input/CustomInput";
 import GradientCircularProgressLoading from "../../../../components/default/loading/GradientCircularProgressLoading/GradientCircularProgressLoading";
 import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 import { useAssetList, useSoftDeleteAsset, useSoftDeleteAssetSelected } from "../../../../hooks/react-query/assetData";
+import { useAddShelf } from "../../../../hooks/services/shelf/shelf-mutation";
+import { useReFetchShelf } from "../../../../hooks/services/shelf/shelf-query";
+import { useFetchTypeAsset } from "../../../../hooks/services/type-asset/type-voice-query";
 import useDebounce, { searchDelay } from "../../../../hooks/useDebounce";
 import { Asset } from "../../../../interfaces/asset";
 import { EntityResponse } from "../../../../interfaces/entityResponse";
+import { TShelvesCreate } from "../../../../types/models/shelves";
 import { TTypeAsset } from "../../../../types/models/type-asset";
+import FormAddEditShelf from "../../ShelfPage/ui-components/FormAddEditShelf";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -56,12 +61,25 @@ function TableAssetList<T extends DataType>({
     const debouncedSearch = useDebounce<string>(contentSearch, searchDelay);
     const [checked, setChecked] = useState<string[]>([]);
     const [checkedAll, setCheckedAll] = useState<boolean>(false);
-    const { data: assets, isPending, error, isError, isPlaceholderData, isFetching, refetch } =
-        useAssetList(page, rowsPerPage, debouncedSearch);
 
+    const [filterTypeAssetId, setFilterTypeAssetId] = useState<string | number>(0);
+    const { data: typeAssetData } = useFetchTypeAsset({ order: "ASC" });
+
+    const { data: assets, isPending, error, isError, isPlaceholderData, isFetching, refetch } =
+        useAssetList(page, rowsPerPage, debouncedSearch, filterTypeAssetId);
+    useEffect(() => {
+        refetch()
+    }, [filterTypeAssetId]);
 
     const { mutate: deleteAsset, isPending: isPendingUpdate } = useSoftDeleteAsset();
     const { mutate: deleteAssetSelected } = useSoftDeleteAssetSelected();
+
+    const mutationAdd = useAddShelf();
+    const revalidate = useReFetchShelf();
+    const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
+    const handleClose = () => {
+        setIsOpenUpdateDialog(false);
+    };
 
     const handleCheckedAll = async () => {
         const newCheckedAll = !checkedAll;
@@ -116,7 +134,6 @@ function TableAssetList<T extends DataType>({
         setOrderBy(property);
     };
 
-
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
     };
@@ -132,11 +149,11 @@ function TableAssetList<T extends DataType>({
         setRowsPerPage(Number(event.target.value));
         setPage(1)
     };
-    const handleClickUpdate = (id: string) => {
-        let asset: Asset = assets.data.result.find(x => x._id === id)
-        console.log(id);
+    const handleClickUpdate = (row: Asset) => {
+        let asset: Asset = assets.data.result.find(x => x._id === row?._id);
         setAsset(asset)
-        setIsOpenUpdateDialog(true)
+        setIsOpenUpdateDialog(true);
+        setSelectedAsset(row)
     }
     const [asset, setAsset] = useState<Asset>();
     const pageCount = useMemo(() => {
@@ -190,9 +207,58 @@ function TableAssetList<T extends DataType>({
             toast.error(error.message);
         }
     };
+
+    const handleSubmit = (values: TShelvesCreate) => {
+        mutationAdd.mutate(values, {
+            onSuccess: (data) => {
+                revalidate();
+                refetch();
+                toast.success('Thêm thành công.');
+                setIsOpenUpdateDialog(false);
+            },
+        });
+    };
+
+    const initialValues = useMemo((): TShelvesCreate => {
+
+        return {
+            name: "",
+            description: "",
+            note: "",
+            assetId: selectedAsset ? selectedAsset?._id : null,
+        };
+    }, [selectedAsset]);
+
+    const filteredData = assets?.data?.result?.filter(item => (item?.typeAssetId as TTypeAsset)?.name === "tủ kệ");
     return (
         <>
             <SearchAndFilter onHandleDeleteSelectedItem={handleDeleteItemSelected} actionDeleteSelectedItem={true} contentSearch={contentSearch} handleContentSearch={setContentSearch} />
+            <Grid container xs={12} sm={12} md={12} lg={12} gap={2} sx={{
+                display: "flex", mb: 1, flexWrap: "wrap",
+                pl: { xs: 0, sm: 0, md: 4 },
+                mt: { xs: 0, sm: 0, md: 1 },
+                pr: { xs: 0, sm: 0, md: 4 }
+            }}>
+                <Grid item xs={12} sm={12} md={4} lg={4}>
+                    <Select
+                        labelId="assets-select"
+                        label="Phân loại"
+                        value={filterTypeAssetId}
+                        onChange={(event) => {
+                            setFilterTypeAssetId(event.target.value)
+                        }}
+                        input={<CustomInput size="small" label="Phân loại" />}
+                    >
+                        <MenuItem value={0}>Phân loại tài sản </MenuItem>
+                        {typeAssetData?.data.result.map((item, index) => (
+                            <MenuItem key={index} value={item._id}>
+                                {capitalizeFirstLetter(item.name)}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </Grid>
+            </Grid>
+
             {/* Table */}
             <Box sx={{ px: { xs: 0, sm: 0, md: 4 }, pt: { xs: 0, sm: 0, md: 2 } }}>
                 {
@@ -257,7 +323,7 @@ function TableAssetList<T extends DataType>({
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{row?.name}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{capitalizeFirstLetter((row?.typeAssetId as TTypeAsset)?.name)}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{capitalizeFirstLetter(row?.status)}</StyledTableCell>
-                                                        <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4  }}>{row?.quantityUsed}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityUsed}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityWarehouse}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityTotal}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center">
@@ -267,7 +333,7 @@ function TableAssetList<T extends DataType>({
                                                                 alignItems: "center",
                                                                 gap: 1
                                                             }}>
-                                                                <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
+                                                                {(row?.typeAssetId as TTypeAsset)?.name === "tủ kệ" && <IconPencil onClick={() => handleClickUpdate(row)} size={20} stroke={1.5} />}
                                                                 <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
                                                             </Box>
                                                         </StyledTableCell>
@@ -361,7 +427,7 @@ function TableAssetList<T extends DataType>({
                 }
             </Box>
 
-            {
+            {/* {
                 isOpenUpdateDilog && asset && <AssetDialog
                     id={asset._id}
                     title={"Cập nhật tài sản"}
@@ -369,7 +435,20 @@ function TableAssetList<T extends DataType>({
                     asset={asset}
                     handleOpen={setIsOpenUpdateDialog}
                 />
-            }
+            } */}
+
+            {isOpenUpdateDilog && (
+                <FormAddEditShelf
+                    open={isOpenUpdateDilog}
+                    onClose={handleClose}
+                    initialValues={initialValues}
+                    onSubmit={handleSubmit}
+                    isEditMode={false}
+                    assetData={filteredData}
+                    selectedAsset={selectedAsset}
+                />
+            )}
+
             {
                 isOpenConfirmDialog && <AlertConfirmDialog title="Xác nhận xóa dữ liệu?" message="Dữ liệu đã xóa thì không khôi khục được" onHandleConfirm={handleConfirmDeleteItem} openConfirm={isOpenConfirmDialog} handleOpenConfirmDialog={setIsOpenConfirmDialog} />
             }

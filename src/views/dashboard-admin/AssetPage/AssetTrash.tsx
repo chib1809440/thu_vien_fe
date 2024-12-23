@@ -62,7 +62,7 @@ export default function AssetTrashPage() {
     const theme = useTheme()
     const navigate = useNavigate();
     const handleClickNavigateAssetList = () => {
-        navigate('/tai-san-thu-vien');
+        navigate('/tai-san-thu-vien/danh-sach');
     };
     return (
         <>

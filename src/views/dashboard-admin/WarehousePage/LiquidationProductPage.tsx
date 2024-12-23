@@ -1,10 +1,12 @@
+import { Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { IconPencil } from "@tabler/icons";
-import { IconFileExcel } from "@tabler/icons-react";
+import { IconPlus } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
-import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
+import StyledButton from "../../../components/default/button/StyledButton";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { useEditLiquidation } from "../../../hooks/services/liquidation/liquidation-mutation";
 import {
     useFetchLiquidation,
@@ -16,11 +18,9 @@ import { TLiquidation, TLiquidationCreate, TPositionLiquidation } from "../../..
 import { TPublications } from "../../../types/models/publications.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
+import usePermission from "../../../utils/hasPermission";
 import { parserParams } from "../../../utils/object";
 import FormEditLiquidation from "./ui-components/FormEditLiquidation";
-import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
-import usePermission from "../../../utils/hasPermission";
-import { Typography } from "@mui/material";
 
 const LiquidationProductPage = () => {
     const queryString = useQueryString();
@@ -260,6 +260,35 @@ const LiquidationProductPage = () => {
             )}
 
             <MainCard>
+            <Stack
+                    spacing={2}
+                    sx={{
+                        paddingLeft: { xs: 0, sm: 0, md: 4 },
+                        paddingBottom: { xs: 2, sm: 2 },
+                        width: "100%",
+                    }}
+                >
+                    <Box display="flex" flexWrap="wrap">
+                        {
+                            hasPermission([
+                                { resource: "stockassets", action: "manage" },
+                                { resource: "stockassets", action: "create" },
+                            ]) &&
+                            <Box>
+                                <StyledButton
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<IconPlus stroke={2} />}
+                                    variant="contained"
+                                    // onClick={addWareHouseReceipt}
+                                >
+                                    Tạo phiếu thanh lý hư hỏng
+                                </StyledButton>
+                            </Box>
+                        }
+                    </Box>
+                </Stack>
+
                 {/* <ActionsForm
                     actions={actionMenus}
                     barcode={true}

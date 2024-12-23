@@ -66,18 +66,14 @@ export default function AssetPage() {
     const navigate = useNavigate();
     const handleClickNavigateTrash = () => {
         navigate('/tai-san-thu-vien/thung-rac');
-    };
-    const handleClickNavigateWarehouseAssets = () => {
-        navigate('/quan-ly-kho/thanh-ly-hu-hong');
-    };
-   
+    };   
 
     return (
         <>
             <IBreadcrumsCustom
                 profile="Quản lý tài sản"
                 mainProfile="Danh sách tài sản"
-                link="/tai-san-thu-vien"
+                link="/tai-san-thu-vien/danh-sach"
             />
             <MainCard>
                 <Stack spacing={2}>
@@ -108,21 +104,6 @@ export default function AssetPage() {
                                     Quản lý nhập tài sản
                                 </StyledButton>
                             </Link>
-                            <StyledButton
-                                sx={{
-                                    background: "#71a3c1", color: "white",
-                                    //@ts-ignore
-                                    marginLeft: { xs: 0, sm: 0, md: "10px" },
-                                    //@ts-ignore
-                                    marginTop: { xs: 1, sm: 1, md: 0 }
-                                }}
-                                size="small"
-                                startIcon={<IconDevices stroke={2} />}
-                                variant="contained"
-                                onClick={() => handleClickNavigateWarehouseAssets()}
-                            >
-                                Quản lý Thanh lý - Hư hỏng
-                            </StyledButton>
                             <StyledButton
                                 sx={{
                                     background: "#de524a", color: "white",

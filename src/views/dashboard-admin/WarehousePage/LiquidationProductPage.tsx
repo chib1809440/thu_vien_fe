@@ -1,21 +1,22 @@
-import { Stack, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Divider, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { IconPencil } from "@tabler/icons";
-import { IconPlus } from "@tabler/icons-react";
+import { GridExpandMoreIcon } from "@mui/x-data-grid";
+import { IconEye, IconPencil } from "@tabler/icons";
+import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
+import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
-import { useEditLiquidation } from "../../../hooks/services/liquidation/liquidation-mutation";
+import { useDeleteLiquidation, useDeleteManyLiquidation, useEditLiquidation } from "../../../hooks/services/liquidation/liquidation-mutation";
 import {
     useFetchLiquidation,
     useReFetchLiquidation,
 } from "../../../hooks/services/liquidation/liquidation-query";
 import useQueryString from "../../../hooks/services/useQueryString";
-import { TColumn, TMenuOption } from "../../../types/common/table";
-import { TLiquidation, TLiquidationCreate, TPositionLiquidation } from "../../../types/models/liquidation.type";
-import { TPublications } from "../../../types/models/publications.type";
+import { TColumn } from "../../../types/common/table";
+import { TLiquidation, TLiquidationCreate } from "../../../types/models/liquidation.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import usePermission from "../../../utils/hasPermission";
@@ -27,18 +28,13 @@ const LiquidationProductPage = () => {
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
-    const type = "";
-    const status = "";
-
-    const [barcodeSearch, setBarcodeSearch] = useState("");
 
     const filter = useMemo(
         () =>
             parserParams([
                 { compare: "", target: { search } },
-                { compare: "", target: { barcode: barcodeSearch } },
             ]),
-        [barcodeSearch, search, type, status]
+        [search]
     );
 
     const { data, isLoading, isFetching } = useFetchLiquidation({
@@ -50,10 +46,15 @@ const LiquidationProductPage = () => {
     const mutationUpdateLiquidation = useEditLiquidation();
     const revalidate = useReFetchLiquidation();
     const { hasPermission } = usePermission();
+    const mutationDelete = useDeleteLiquidation();
+    const mutationDeleteMany = useDeleteManyLiquidation();
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [openAddEdit, setOpenAddEdit] = useState(false);
     const [selectedEdit, setSelectedEdit] = useState<TLiquidation | null>(null);
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
+    const [openConfirmDeleteMultiple, setOpenConfirmDeleteMultiple] = useState(false);
+    const [liquidationToDelete, setLiquidationToDelete] = useState<TLiquidation | null>(null);
 
     const handleEditLiquidation = (row: TLiquidation) => {
         setSelectedEdit(row);
@@ -65,92 +66,166 @@ const LiquidationProductPage = () => {
         setSelectedEdit(null);
     };
 
-    const handleSubmit = (values: TLiquidationCreate & { liquidationQuantity?: number }) => {
+    const handleSubmit = (values: TLiquidationCreate) => {
 
-        if (selectedEdit) {
+        console.log("value", values);
+    };
 
-            mutationUpdateLiquidation.mutate(
-                {
-                    position: values.position as TPositionLiquidation,
-                    publicationId: (values.publicationId as TPublications)?._id,
-                    quantity: values.liquidationQuantity,
-                    status: "thanh lý",
-                    reason: values.reason,
-                    _id: selectedEdit._id
+    const handleOpenConfirmDialog = (row: TLiquidation) => {
+        setLiquidationToDelete(row);
+        setOpenConfirmDialog(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (liquidationToDelete) {
+            mutationDelete.mutate(liquidationToDelete._id, {
+                onSuccess: () => {
+                    revalidate();
+                    toast.success('Xóa phiếu nhập kho thành công.');
+                    setOpenConfirmDialog(false);
                 },
-                {
-                    onSuccess: () => {
-                        revalidate();
-                        toast.success("Chuyển số lượng sách thanh lý thành công");
-                        handleClose();
-                    },
-                }
-            );
-            return;
+            });
         }
     };
 
-    const handleBarcodeSearch = (value) => {
-        setBarcodeSearch(value);
+    const handleCloseConfirmDialog = () => {
+        setOpenConfirmDialog(false);
     };
+    const handleViewDetails = (row: TLiquidationCreate) => { }
 
     const columns: TColumn<TLiquidation>[] = useMemo(
         () => [
             {
-                id: "barcode",
+                id: "info",
                 disablePadding: "none",
-                label: "Mã ấn phẩm",
-                align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => (row.publicationId as TPublications)?.barcode,
-            },
-            {
-                id: "name",
-                disablePadding: "none",
-                label: "Thông tin ấn phẩm",
+                label: "Thông tin thanh lý",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
                 render: (row) => {
+                    const liquidations = row?.liquidations || [];
                     return (
-                        <Box>
-                            <Box sx={{ pt: 1 }}>
-                                <Typography>Tên: <strong>{capitalizeFirstLetter((row.publicationId as TPublications)?.name)}</strong></Typography>
-                            </Box>
-                            <Box sx={{ pt: 1 }}>
-                                <Typography>Vị trí: <strong>{row?.position}</strong></Typography>
-                            </Box>
-                            <Box sx={{ pt: 1 }}>
-                                <Typography>Lý do thanh lý: <strong>{row?.reason}</strong></Typography>
-                            </Box>
-                        </Box>
+                        <Accordion sx={{ mt: 2 }}>
+                            <AccordionSummary expandIcon={<GridExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+                                <Typography>Chi tiết thanh lý</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Box>
+                                    {/* Lặp qua từng phần tử trong liquidations */}
+                                    {liquidations.map((liquidation, index) => (
+                                        <Box key={index}>
+                                            {/* Kiểm tra liquidation.type để hiển thị tên tài sản hoặc tên ấn phẩm */}
+                                            {liquidation.type === "Asset" ? (
+                                                <Box>
+                                                    <Typography sx={{ mt: 0.5 }}>
+                                                        Tên tài sản: <strong>{liquidation?.name || "Không có tên tài sản"}</strong>
+                                                    </Typography>
+                                                </Box>
+                                            ) : liquidation.type === "Publication" ? (
+                                                <Box>
+                                                    <Typography sx={{ mt: 0.5 }}>
+                                                        Tên ấn phẩm: <strong>{liquidation?.name || "Không có tên ấn phẩm"}</strong>
+                                                    </Typography>
+                                                </Box>
+                                            ) : null}
+
+                                            {/* Hiển thị số lượng thanh lý */}
+                                            <Typography sx={{ mt: 0.5 }}>
+                                                SL thanh lý: <strong>{liquidation?.quantityLiquidation || "Không có số lượng"}</strong>
+                                            </Typography>
+
+                                            {/* Định dạng giá */}
+                                            <Typography sx={{ mt: 0.5 }}>
+                                                Giá: <strong>
+                                                    {liquidation?.priceLiquidation
+                                                        ? new Intl.NumberFormat('vi-VN', {
+                                                            style: 'currency',
+                                                            currency: 'VND',
+                                                        }).format(liquidation.priceLiquidation)
+                                                        : "Không có giá"
+                                                    }
+                                                </strong>
+                                            </Typography>
+
+                                            {/* Đường gạch ngang giữa các phần tử, trừ phần tử cuối */}
+                                            {index < liquidations.length - 1 && (
+                                                <Divider sx={{ my: 1 }} />
+                                            )}
+                                        </Box>
+                                    ))}
+                                </Box>
+                            </AccordionDetails>
+                        </Accordion>
+                    );
+                }
+            },
+            {
+                id: "reason",
+                disablePadding: "none",
+                label: "Lý do thanh lý",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => { return capitalizeFirstLetter(row?.reason) }
+                ,
+            },
+            {
+                id: "quantity",
+                disablePadding: "none",
+                label: "Tổng SL",
+                align: "left",
+                render: (row) => {
+                    const totalQuantity = row?.liquidations?.reduce((total, liquidation) => {
+                        return total + (liquidation?.quantityLiquidation || 0);
+                    }, 0);
+                    return (
+                        <Typography sx={{ mt: 0.5 }}>{totalQuantity}</Typography>
                     )
                 },
             },
             {
                 id: "quantity",
                 disablePadding: "none",
-                label: "SL sách hư hỏng",
+                label: "Tổng giá",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 120 },
                 render: (row) => {
-                    return row.status === 'thanh lý' ? 0 : row.quantity || 0;
+                    const totalPrice = row?.liquidations?.reduce((total, liquidation) => {
+                        return total + (liquidation?.priceLiquidation * liquidation?.quantityLiquidation || 0);
+                    }, 0);
+
+                    // Định dạng giá trị tiền tệ
+                    const formattedPrice = totalPrice ? new Intl.NumberFormat('vi-VN', {
+                        style: 'currency',
+                        currency: 'VND',
+                    }).format(totalPrice) : "0 VND";
+
+                    return (
+                        <Typography sx={{ mt: 0.5 }}>{formattedPrice}</Typography>
+                    );
                 },
             },
             {
-                id: "quantity",
+                id: "signatures",
                 disablePadding: "none",
-                label: "SL sách thanh lý",
+                label: "Trạng thái ký",
                 align: "left",
                 render: (row) => {
-                    return row.status === 'hư hỏng' ? 0 : row.quantity || 0;
+                    const signatures = row?.signatures || [];
+                    let signatureText = '';
+
+                    if (signatures.length === 2) {
+                        signatureText = `Hiệu trưởng đã ký`;
+                    } else if (signatures.includes('thủ thư')) {
+                        signatureText = 'Thủ thư ký';
+                    } else {
+                        signatureText = 'Chưa ký';
+                    }
+
+                    return (
+                        <Typography sx={{ mt: 0.5 }}>
+                            {signatureText}
+                        </Typography>
+                    );
                 },
-            },
-            {
-                id: "quantity",
-                disablePadding: "none",
-                label: "SL tổng",
-                align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 120 },
             },
             {
                 id: "action",
@@ -158,9 +233,8 @@ const LiquidationProductPage = () => {
                 align: "center",
                 label: "Hành động",
                 render: (row) => {
-                    if (row.status === 'thanh lý') {
-                        return null;
-                    }
+                    const canDelete = row?.signatures?.length <= 1;
+                    const canEdit = row?.signatures?.length < 1;
 
                     return (
                         <Box
@@ -171,26 +245,33 @@ const LiquidationProductPage = () => {
                                 gap: 1,
                             }}
                         >
-                            {
+                            <IconEye
+                                size={20}
+                                stroke={1.5}
+                                onClick={() => handleViewDetails(row)}
+                            />
 
-                                hasPermission([
-                                    { resource: "publications", action: "manage" },
-                                    { resource: "publications", action: "create" },
-                                    { resource: "publications", action: "update" },
-                                    { resource: "publications", action: "delete" },
-                                ]) &&
+                            {canEdit && (
                                 <IconPencil
                                     onClick={() => handleEditLiquidation(row)}
                                     size={20}
                                     stroke={1.5}
                                 />
-                            }
+                            )}
+
+                            {canDelete && (
+                                <IconTrash
+                                    size={20}
+                                    stroke={1.5}
+                                    onClick={() => handleOpenConfirmDialog(row)}
+                                />
+                            )}
                         </Box>
                     );
                 },
             },
         ],
-        [handleEditLiquidation]
+        [handleEditLiquidation, handleViewDetails, handleOpenConfirmDialog]
     );
 
     const handleCheckedDelete = useCallback((row: TLiquidation, checked: boolean) => {
@@ -215,38 +296,52 @@ const LiquidationProductPage = () => {
         return data?.data?.result?.every((t) => checkedDelete.includes(t._id));
     }, [checkedDelete, data]);
 
-    const actionMenus = useMemo((): TMenuOption[] => {
-        return [];
-    }, []);
+    const handleDeleteMultiple = useCallback(() => {
+        if (checkedDelete.length === 0) {
+            toast.error("Vui lòng chọn dữ liệu để xóa");
+            return;
+        }
+        setOpenConfirmDeleteMultiple(true);
+    }, [checkedDelete]);
 
-    const initialValues = useMemo((): TLiquidationCreate => {
+    const handleConfirmDeleteMultiple = useCallback(() => {
+        if (checkedDelete.length === 0) return;
+        mutationDeleteMany.mutate(checkedDelete, {
+            onSuccess: () => {
+                revalidate();
+                toast.success("Xóa các mục đã chọn thành công.");
+                setOpenConfirmDeleteMultiple(false);
+                setCheckedDelete([]);
+            },
+        });
+    }, [checkedDelete]);
+
+    const initialValues = useMemo(() => {
         if (selectedEdit) {
 
             return {
                 note: selectedEdit.note,
-                quantity: selectedEdit.quantity,
                 reason: selectedEdit.reason,
                 status: selectedEdit.status,
-                position: selectedEdit.position,
-                publicationId: (selectedEdit.publicationId as string),
             };
         }
 
         return {
             note: "",
-            quantity: 0,
-            status: "hư hỏng",
             reason: "",
-            position: "trong kho",
-            publicationId: "",
+            status: ""
         };
     }, [selectedEdit]);
+
+    const addLiquidation = () => {
+        setOpenAddEdit(true);
+    };
 
     return (
         <div>
             <IBreadcrumsCustom
                 profile="Quản lý kho ấn phẩm"
-                mainProfile="Danh sách thanh lý - hư hỏng"
+                mainProfile="Danh sách thanh lý"
                 link="/quan-ly-kho/kho-an-pham"
             />
 
@@ -256,11 +351,12 @@ const LiquidationProductPage = () => {
                     onClose={handleClose}
                     initialValues={initialValues}
                     onSubmit={handleSubmit}
+                    isEditMode={selectedEdit ? true : false}
                 />
             )}
 
             <MainCard>
-            <Stack
+                <Stack
                     spacing={2}
                     sx={{
                         paddingLeft: { xs: 0, sm: 0, md: 4 },
@@ -280,21 +376,14 @@ const LiquidationProductPage = () => {
                                     size="small"
                                     startIcon={<IconPlus stroke={2} />}
                                     variant="contained"
-                                    // onClick={addWareHouseReceipt}
+                                    onClick={addLiquidation}
                                 >
-                                    Tạo phiếu thanh lý hư hỏng
+                                    Tạo phiếu thanh lý
                                 </StyledButton>
                             </Box>
                         }
                     </Box>
                 </Stack>
-
-                {/* <ActionsForm
-                    actions={actionMenus}
-                    barcode={true}
-                    barcodeSearch={barcodeSearch}
-                    handleBarcodeSearch={handleBarcodeSearch}
-                /> */}
 
                 <TableList
                     checked={checkedDelete}
@@ -306,6 +395,23 @@ const LiquidationProductPage = () => {
                     isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={data?.data?.meta}
+                />
+
+                <ConfirmDeleteDialog
+                    key={"delete"}
+                    open={openConfirmDialog}
+                    onClose={handleCloseConfirmDialog}
+                    onConfirm={handleConfirmDelete}
+                    title="Xác nhận xóa?"
+                    description={`Bạn có chắc chắn muốn xóa "${liquidationToDelete?._id}" ?`}
+                />
+                <ConfirmDeleteDialog
+                    key={"deleteMultiple"}
+                    open={openConfirmDeleteMultiple}
+                    onClose={() => setOpenConfirmDeleteMultiple(false)}
+                    onConfirm={handleConfirmDeleteMultiple}
+                    title="Xác nhận xóa các mục đã chọn?"
+                    description={`Bạn có chắc chắn muốn xóa?`}
                 />
             </MainCard>
         </div>

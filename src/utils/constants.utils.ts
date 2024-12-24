@@ -2,6 +2,10 @@ export const typeOptions = [
     { value: 'ấn phẩm cứng', label: 'Ấn phẩm truyền thống' },
     { value: 'ấn phẩm mềm', label: 'Ấn phẩm điện tử' },
 ];
+export const typeLiquidationOptions = [
+    { value: 'Publication', label: 'Ấn phẩm truyền thống' },
+    { value: 'Asset', label: 'Tài sản' },
+];
 export const genderOptions = [
     { value: 'nữ', label: 'Nữ' },
     { value: 'nam', label: 'Nam' },

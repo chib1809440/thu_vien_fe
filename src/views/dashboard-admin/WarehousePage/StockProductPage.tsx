@@ -1,15 +1,15 @@
 import { Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { IconPencil } from "@tabler/icons";
-import { IconDevices, IconTransferIn } from "@tabler/icons-react";
+import { IconTransferIn } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import { CsFlexRowBetween } from "../../../components/default/flex";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
-import { useAddLiquidation } from "../../../hooks/services/liquidation/liquidation-mutation";
 import {
     useUpdateShelvesQuantity,
     useUpdateStockQuantity
@@ -29,7 +29,6 @@ import MainCard from "../../../ui-component/cards/MainCard";
 import usePermission from "../../../utils/hasPermission";
 import { parserParams } from "../../../utils/object";
 import FormEditWarehouse from "./ui-components/FormEditWarehouse";
-import { Link } from "react-router-dom";
 
 const StockProductPage = () => {
     const queryString = useQueryString();
@@ -66,7 +65,7 @@ const StockProductPage = () => {
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const mutationUpdateShelvesQty = useUpdateShelvesQuantity();
     const mutationUpdateStockQty = useUpdateStockQuantity();
-    const mutationCreateLiquidation = useAddLiquidation();
+    // const mutationCreateLiquidation = useAddLiquidation();
 
     const handleEditWarehouse = (row: TPublications) => {
         setSelectedEdit(row);
@@ -116,41 +115,42 @@ const StockProductPage = () => {
                     }
                 );
             }
-        } else if (values.statusWarehouse === "thanh lý") {
-            mutationCreateLiquidation.mutate(
-                {
-                    position: payload.position as TPositionLiquidation,
-                    publicationId: payload.id,
-                    quantity: payload.quantityLiquidation,
-                    status: "thanh lý",
-                    reason: payload.reason
-                },
-                {
-                    onSuccess: () => {
-                        revalidate();
-                        toast.success("Chuyển số lượng sách thanh lý thành công");
-                        handleClose();
-                    },
-                }
-            );
-        } else if (values.statusWarehouse === "hư hỏng") {
-            mutationCreateLiquidation.mutate(
-                {
-                    position: payload.position as TPositionLiquidation,
-                    publicationId: payload.id,
-                    quantity: payload.quantityLiquidation,
-                    status: "hư hỏng",
-                    reason: payload.reason
-                },
-                {
-                    onSuccess: () => {
-                        revalidate();
-                        toast.success("Chuyển số lượng sách hư hỏng thành công");
-                        handleClose();
-                    },
-                }
-            );
-        }
+        } 
+        // else if (values.statusWarehouse === "thanh lý") {
+        //     mutationCreateLiquidation.mutate(
+        //         {
+        //             position: payload.position as TPositionLiquidation,
+        //             publicationId: payload.id,
+        //             quantity: payload.quantityLiquidation,
+        //             status: "thanh lý",
+        //             reason: payload.reason
+        //         },
+        //         {
+        //             onSuccess: () => {
+        //                 revalidate();
+        //                 toast.success("Chuyển số lượng sách thanh lý thành công");
+        //                 handleClose();
+        //             },
+        //         }
+        //     );
+        // } else if (values.statusWarehouse === "hư hỏng") {
+        //     mutationCreateLiquidation.mutate(
+        //         {
+        //             position: payload.position as TPositionLiquidation,
+        //             publicationId: payload.id,
+        //             quantity: payload.quantityLiquidation,
+        //             status: "hư hỏng",
+        //             reason: payload.reason
+        //         },
+        //         {
+        //             onSuccess: () => {
+        //                 revalidate();
+        //                 toast.success("Chuyển số lượng sách hư hỏng thành công");
+        //                 handleClose();
+        //             },
+        //         }
+        //     );
+        // }
         return;
     };
 
@@ -236,9 +236,6 @@ const StockProductPage = () => {
                             {
                                 hasPermission([
                                     { resource: "publications", action: "manage" },
-                                    { resource: "publications", action: "create" },
-                                    { resource: "publications", action: "update" },
-                                    { resource: "publications", action: "delete" },
                                 ]) &&
                                 <IconPencil
                                     onClick={() => handleEditWarehouse(row)}

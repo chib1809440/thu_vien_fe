@@ -6,6 +6,10 @@ export const typeLiquidationOptions = [
     { value: 'Publication', label: 'Ấn phẩm truyền thống' },
     { value: 'Asset', label: 'Tài sản' },
 ];
+export const typeLiquidationPosition = [
+    { value: 'trong kho', label: 'Trong kho' },
+    { value: 'trưng bày', label: 'Trưng bày' },
+];
 export const genderOptions = [
     { value: 'nữ', label: 'Nữ' },
     { value: 'nam', label: 'Nam' },

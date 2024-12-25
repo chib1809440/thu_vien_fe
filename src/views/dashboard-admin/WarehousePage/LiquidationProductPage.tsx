@@ -21,7 +21,8 @@ import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import usePermission from "../../../utils/hasPermission";
 import { parserParams } from "../../../utils/object";
-import FormEditLiquidation from "./ui-components/FormEditLiquidation";
+import FormAddEditLiquidation from "./ui-components/FormAddEditLiquidation";
+import ViewDetailLiquidation from "./ui-components/ViewDetailLiquidation";
 
 const LiquidationProductPage = () => {
     const queryString = useQueryString();
@@ -55,6 +56,8 @@ const LiquidationProductPage = () => {
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmDeleteMultiple, setOpenConfirmDeleteMultiple] = useState(false);
     const [liquidationToDelete, setLiquidationToDelete] = useState<TLiquidation | null>(null);
+    const [openViewDetail, setOpenViewDetail] = useState(false);
+    const [liquidationDetails, setLiquidationDetails] = useState<TLiquidation | null>(null);
 
     const handleEditLiquidation = (row: TLiquidation) => {
         setSelectedEdit(row);
@@ -91,7 +94,14 @@ const LiquidationProductPage = () => {
     const handleCloseConfirmDialog = () => {
         setOpenConfirmDialog(false);
     };
-    const handleViewDetails = (row: TLiquidationCreate) => { }
+    const handleCloseViewDetail = () => {
+        setOpenViewDetail(false);
+        setLiquidationToDelete(null);
+    };
+    const handleViewDetails = (row: TLiquidation) => {
+        setLiquidationDetails(row);
+        setOpenViewDetail(true);
+    };
 
     const columns: TColumn<TLiquidation>[] = useMemo(
         () => [
@@ -100,7 +110,7 @@ const LiquidationProductPage = () => {
                 disablePadding: "none",
                 label: "Thông tin thanh lý",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
+                sxRow: { paddingRight: 3, maxWidth: 250 },
                 render: (row) => {
                     const liquidations = row?.liquidations || [];
                     return (
@@ -145,6 +155,11 @@ const LiquidationProductPage = () => {
                                                     }
                                                 </strong>
                                             </Typography>
+                                            <Typography sx={{ mt: 0.5 }}>
+                                                Vị trí: <strong>
+                                                    {capitalizeFirstLetter(liquidation?.position)}
+                                                </strong>
+                                            </Typography>
 
                                             {/* Đường gạch ngang giữa các phần tử, trừ phần tử cuối */}
                                             {index < liquidations.length - 1 && (
@@ -163,7 +178,7 @@ const LiquidationProductPage = () => {
                 disablePadding: "none",
                 label: "Lý do thanh lý",
                 align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
+                sxRow: { paddingRight: 3, maxWidth: 150 },
                 render: (row) => { return capitalizeFirstLetter(row?.reason) }
                 ,
             },
@@ -346,7 +361,7 @@ const LiquidationProductPage = () => {
             />
 
             {openAddEdit && (
-                <FormEditLiquidation
+                <FormAddEditLiquidation
                     open={openAddEdit}
                     onClose={handleClose}
                     initialValues={initialValues}
@@ -413,6 +428,14 @@ const LiquidationProductPage = () => {
                     title="Xác nhận xóa các mục đã chọn?"
                     description={`Bạn có chắc chắn muốn xóa?`}
                 />
+
+                {openViewDetail && (
+                    <ViewDetailLiquidation
+                        open={openViewDetail}
+                        onClose={handleCloseViewDetail}
+                        liquidationData={liquidationDetails}
+                    />
+                )}
             </MainCard>
         </div>
     );

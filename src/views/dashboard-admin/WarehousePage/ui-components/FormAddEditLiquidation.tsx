@@ -6,56 +6,40 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    FormControl,
     FormHelperText,
     Grid,
-    MenuItem,
     Paper,
-    Select,
     Table,
     TableBody,
     TableContainer,
     TableHead,
     TableRow,
     TextField,
-    Tooltip,
     Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Box } from "@mui/system";
-import { IconPlus, IconTrash } from "@tabler/icons";
+import { IconTrash } from "@tabler/icons";
 import { IconCirclePlusFilled } from "@tabler/icons-react";
 import { Form, FormikProvider, useFormik } from "formik";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
-import { toast } from "react-toastify";
 import * as yup from "yup";
 import { getAllAssets } from "../../../../_apis/asset.api";
+import SelectForm from "../../../../components/custom/form/SelectForm";
 import { StyledTableCell, StyledTableRow } from "../../../../components/custom/table-list/style";
 import StyledButton from "../../../../components/default/button/StyledButton";
-import {
-    useAddAsset,
-    useEditAsset,
-    useReFetchAsset,
-} from "../../../../hooks/react-query/assetData";
-import { useAddSupplier } from "../../../../hooks/services/supplier/supplier-mutation";
-import {
-    useFetchSupplier,
-    useReFetchSupplier,
-} from "../../../../hooks/services/supplier/supplier-query";
 import useDebounce from "../../../../hooks/useDebounce";
-import { Asset, CreateAssetModel, UpdateAssetModel } from "../../../../interfaces/asset";
-import { TSupplierCreate } from "../../../../types/models/supplier.type";
+import { Asset } from "../../../../interfaces/asset";
 import {
-    CreateAssetsWareHouseReceipt,
-    TWareHouseAssetsReceipt,
-    TWareHouseAssetsReceiptCreate,
-} from "../../../../types/models/warehouse-assets-receipt";
-import usePermission from "../../../../utils/hasPermission";
-import FormAddEditAsset from "../../AssetPage/ui-components/FormAddEditAsset";
-import { TLiquidationCreate } from "../../../../types/models/liquidation.type";
-import SelectForm from "../../../../components/custom/form/SelectForm";
-import { typeLiquidationOptions } from "../../../../utils/constants.utils";
+    TLiquidationCreate,
+    TLiquidationDefaultWithType,
+    TLiquidationType,
+} from "../../../../types/models/liquidation.type";
+import { CreateAssetsWareHouseReceipt } from "../../../../types/models/warehouse-assets-receipt";
+import { typeLiquidationOptions, typeLiquidationPosition } from "../../../../utils/constants.utils";
+import publicationsService from "../../../../_apis/services/publications.service";
+import { TPublications } from "../../../../types/models/publications.type";
 
 type Props = {
     open: boolean;
@@ -66,12 +50,16 @@ type Props = {
     isEditMode?: boolean;
 };
 
+type TOptions = {
+    label: string;
+    value: string;
+};
+
 const schema = yup.object().shape({
-    supplierId: yup
-        .string()
+    supplierId: yup.string(),
 });
 
-const FormEditLiquidation: FC<Props> = ({
+const FormAddEditLiquidation: FC<Props> = ({
     open,
     onClose,
     onSubmit,
@@ -79,17 +67,17 @@ const FormEditLiquidation: FC<Props> = ({
         note: "",
         reason: "",
         status: "",
-
     },
     isFetching = false,
     isEditMode = false,
 }) => {
-    const [assets, setAssets] = useState<CreateAssetsWareHouseReceipt[]>([
+    const [selectedData, setSelectedData] = useState<TLiquidationDefaultWithType[]>([
         {
-            assetId: "",
-            quantity: 0,
-            name: "",
-            price: 0,
+            itemId: "",
+            quantityLiquidation: 0,
+            priceLiquidation: 0,
+            position: "trong kho",
+            type: "Asset",
         },
     ]);
 
@@ -103,13 +91,11 @@ const FormEditLiquidation: FC<Props> = ({
             }
         },
     });
-    const { errors, touched, values, setFieldValue, handleSubmit, getFieldProps } = useMemo(
-        () => formik,
-        [formik]
-    );
+    const { errors, touched, values, setFieldValue, handleSubmit, getFieldProps } = useMemo(() => formik, [formik]);
 
-    const [assetsOptions, setAssetsOptions] = useState<Asset[]>([]);
-    const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
+    const [selectedType, setSelectedType] = useState<TLiquidationType>("Asset");
+    const [optionsAutocomplete, setOptionsAutocomplete] = useState<TOptions[]>([]);
+    const [selectedOptAutocomplete, setSelectedOptAutocomplete] = useState<TOptions | null>(null);
     const [loadingSearching, setLoadingSearching] = useState(false);
     const [valueSearch, setValueSearch] = useState<string>("");
 
@@ -124,14 +110,29 @@ const FormEditLiquidation: FC<Props> = ({
             try {
                 setLoadingSearching(true);
 
-                const response = await getAllAssets(undefined, undefined, valueSearchDebounce);
+                let data: TOptions[] = [];
 
-                if (!response.data || response?.data?.result?.length === 0) {
-                    setAssetsOptions([]);
-                    return;
+                if (selectedType === "Asset") {
+                    // call api for asset
+                    const response = await getAllAssets(undefined, undefined, valueSearchDebounce);
+                    data = response.data.result.map((item) => ({
+                        label: item.name,
+                        value: item._id,
+                    }));
+                } else {
+                    // call api for publication
+                    const response = await publicationsService.getAll<TPublications>({
+                        search: valueSearchDebounce,
+                    });
+                    data = response.data.result.map((item) => ({
+                        label: item.name,
+                        value: item._id,
+                    }));
                 }
 
-                setAssetsOptions(response.data.result);
+                setOptionsAutocomplete(data);
+
+                setValueSearch("");
             } catch (error) {
                 console.error("Error fetching publication data:", error);
             } finally {
@@ -143,56 +144,61 @@ const FormEditLiquidation: FC<Props> = ({
     }, [valueSearchDebounce]);
 
     const handleRemoveAsset = (index: number) => {
-        const updatedAssets = [...assets];
-        updatedAssets.splice(index, 1);
-        setAssets(updatedAssets);
+        setSelectedData((prev) => prev.filter((item, i) => i !== index));
     };
 
     const handleAddAsset = () => {
-        const newAsset: CreateAssetsWareHouseReceipt = {
-            name: "",
-            assetId: "",
-            quantity: 1,
-            price: 0,
+        const newAsset: TLiquidationDefaultWithType = {
+            label: "",
+            itemId: "",
+            position: "trong kho",
+            priceLiquidation: 0,
+            quantityLiquidation: 0,
+            type: "Asset",
         };
-        setAssets([...assets, newAsset]);
+
+        setSelectedData((prev) => [...prev, newAsset]);
     };
 
     const componentRef = useRef();
 
-    const handleSelectAssetOption = (value: Asset | null, index: number) => {
-        // clone assets => prevAssets
-        const prevAssets = [...assets];
+    const handleSelectAssetOption = (value: TOptions | null, index: number) => {
+        const prevSelectedData = [...selectedData];
+
         if (!value) return;
 
-        const existingIndex = prevAssets.findIndex((pub) => pub.assetId === value._id);
+        const existingIndex = prevSelectedData.findIndex((pub) => pub.itemId === value.value);
 
         if (existingIndex !== -1) {
-            prevAssets[existingIndex].quantity += 1;
+            prevSelectedData[existingIndex].quantityLiquidation += 1;
         } else {
-            const newValue: CreateAssetsWareHouseReceipt = {
-                name: value.name,
-                assetId: value._id,
-                quantity: 1,
-                price: 0,
+            const newValue: TLiquidationDefaultWithType = {
+                itemId: value.value,
+                label: value.label,
+                position: "trong kho",
+                priceLiquidation: 0,
+                quantityLiquidation: 1,
+                type: selectedType,
             };
 
-            prevAssets[index] = newValue;
+            prevSelectedData[index] = newValue;
 
             // Chỉ thêm một mục mới trống nếu không có mục nào khác đang chờ
-            if (index === prevAssets.length - 1) {
-                prevAssets.push({
-                    name: "",
-                    assetId: "",
-                    quantity: 1,
-                    price: 0,
+            if (index === prevSelectedData.length - 1) {
+                prevSelectedData.push({
+                    itemId: "",
+                    quantityLiquidation: 0,
+                    priceLiquidation: 0,
+                    position: "trong kho",
+                    type: "Asset",
                 });
             }
         }
 
-        setAssets(prevAssets);
-        setAssetsOptions([]);
-        setSelectedAsset(null);
+        setSelectedData(prevSelectedData);
+        setOptionsAutocomplete([]);
+        setSelectedOptAutocomplete(null);
+        setSelectedType("Asset");
     };
 
     const handlePrint = useReactToPrint({
@@ -208,15 +214,8 @@ const FormEditLiquidation: FC<Props> = ({
         `,
     });
 
-    const handleTypeLiquidationChange = (e) => {
-        const selectedTypeLiquidation = e.target.value;
-        setFieldValue("type", selectedTypeLiquidation);
-    };
-
-
     return (
         <>
-
             <FormikProvider value={formik}>
                 <Dialog
                     maxWidth="lg"
@@ -231,14 +230,10 @@ const FormEditLiquidation: FC<Props> = ({
                     disableEscapeKeyDown
                 >
                     <DialogTitle sx={{ p: { xs: 2, sm: 2, md: 4 } }}>
-                        {isEditMode
-                            ? "Sửa thông tin phiếu nhập tài sản"
-                            : "Thêm thông tin phiếu nhập tài sản mới"}
+                        {isEditMode ? "Sửa thông tin phiếu nhập tài sản" : "Thêm thông tin phiếu nhập tài sản mới"}
                     </DialogTitle>
                     <DialogContent sx={{ p: { xs: 3, sm: 3, md: 8 } }}>
-
                         <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
-
                             <Grid container spacing={2} sx={{ mt: { xs: 0, sm: 0, md: 0.5 } }}>
                                 <Grid item xs={12} md={2}>
                                     <StyledButton
@@ -252,111 +247,128 @@ const FormEditLiquidation: FC<Props> = ({
                                     </StyledButton>
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <TableContainer
-                                        component={Paper}
-                                        sx={{ mt: { xs: 0, sm: 0, md: 1 } }}
-                                    >
+                                    <TableContainer component={Paper} sx={{ mt: { xs: 0, sm: 0, md: 1 } }}>
                                         <Table sx={{ minWidth: 700 }} aria-label="customized table">
                                             <TableHead>
                                                 <TableRow>
                                                     <StyledTableCell align="left" width="20%">
                                                         Phân loại
                                                     </StyledTableCell>
-                                                    <StyledTableCell align="left" width="40%">
+                                                    <StyledTableCell align="left" width="30%">
                                                         Thông tin thanh lý
                                                     </StyledTableCell>
-                                                    <StyledTableCell align="center" width="15%">
+                                                    <StyledTableCell align="center" width="10%">
+                                                        Vị trí
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="center" width="10%">
                                                         Số lượng
                                                     </StyledTableCell>
-                                                    <StyledTableCell align="center" width="15%">
-                                                        Giá thanh lý
+                                                    <StyledTableCell align="center" width="10%">
+                                                        Giá
                                                     </StyledTableCell>
-                                                    <StyledTableCell align="center" width="15%">
+                                                    <StyledTableCell align="center" width="10%">
                                                         Tổng giá
                                                     </StyledTableCell>
-                                                    <StyledTableCell align="center" width="15%">
+                                                    <StyledTableCell align="center" width="10%">
                                                         Hành động
                                                     </StyledTableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {assets?.map((row, index) => (
+                                                {selectedData?.map((row, index) => (
                                                     <StyledTableRow key={index}>
                                                         <StyledTableCell align="left">
                                                             <Box style={{ width: "100%" }}>
                                                                 <SelectForm
                                                                     options={typeLiquidationOptions}
-                                                                    {...getFieldProps("type")}
-                                                                    onChange={handleTypeLiquidationChange}
+                                                                    value={row.type}
+                                                                    onChange={(e) => {
+                                                                        const newValue = e.target
+                                                                            .value as TLiquidationType;
+
+                                                                        setSelectedType(newValue);
+                                                                        const updatedAssets = [...selectedData];
+
+                                                                        updatedAssets[index].type = newValue;
+                                                                        setSelectedData(updatedAssets);
+                                                                    }}
                                                                     sx={{ mt: 0, mb: "11px" }}
-                                                                // error={touched.type && Boolean(errors.type)}
-                                                                //     helperText={touched.type && errors.type}
                                                                 />
                                                             </Box>
                                                         </StyledTableCell>
                                                         <StyledTableCell align="left">
                                                             <Box style={{ width: "100%" }}>
-                                                                {row.assetId !== "" ? (
-                                                                    <>{row.name}</>
+                                                                {row.itemId !== "" ? (
+                                                                    <Box>
+                                                                        <Typography>{row.label}</Typography>
+                                                                        {
+                                                                            row?.quantity &&
+                                                                            <Typography>{row?.quantity}</Typography>
+                                                                        }
+                                                                        {
+                                                                            row?.shelvesQuantity &&
+                                                                            <Typography>{row?.shelvesQuantity}</Typography>
+                                                                        }
+                                                                        {
+                                                                            row?.quantityTotal &&
+                                                                            <Typography>{row?.quantityTotal}</Typography>
+                                                                        }
+                                                                        {
+                                                                            row?.quantityUsed &&
+                                                                            <Typography>{row?.quantityUsed}</Typography>
+                                                                        }
+                                                                    </Box>
                                                                 ) : (
                                                                     <Autocomplete
-                                                                        getOptionLabel={(option) =>
-                                                                            option?.name
-                                                                        }
+                                                                        getOptionLabel={(option) => option?.label}
                                                                         loading={loadingSearching}
                                                                         onChange={(event, value) =>
-                                                                            handleSelectAssetOption(
-                                                                                value,
-                                                                                index
-                                                                            )
+                                                                            handleSelectAssetOption(value, index)
                                                                         }
-                                                                        options={assetsOptions}
+                                                                        options={optionsAutocomplete}
                                                                         disablePortal
-                                                                        value={selectedAsset}
+                                                                        value={selectedOptAutocomplete}
                                                                         onInputChange={(
                                                                             event,
                                                                             newInputValue,
                                                                             reason
                                                                         ) => {
-                                                                            setValueSearch(
-                                                                                newInputValue
-                                                                            );
+                                                                            setValueSearch(newInputValue);
 
-                                                                            if (
-                                                                                reason === "reset"
-                                                                            ) {
-                                                                                setAssetsOptions(
-                                                                                    []
-                                                                                );
+                                                                            if (reason === "reset") {
+                                                                                setOptionsAutocomplete([]);
                                                                                 return;
                                                                             }
                                                                         }}
                                                                         renderInput={(params) => (
-                                                                            <TextField
-                                                                                {...params}
-                                                                            />
+                                                                            <TextField {...params} />
                                                                         )}
                                                                     />
                                                                 )}
                                                             </Box>
                                                         </StyledTableCell>
-
+                                                        <StyledTableCell align="left">
+                                                            <Box>
+                                                                <SelectForm
+                                                                    options={typeLiquidationPosition}
+                                                                    value={row.position}
+                                                                    onChange={(e) => e.target.value}
+                                                                    sx={{ mt: 0, mb: "11px" }}
+                                                                />
+                                                            </Box>
+                                                        </StyledTableCell>
                                                         <StyledTableCell align="center">
                                                             <Box style={{ width: "100%" }}>
                                                                 <TextField
                                                                     variant="outlined"
                                                                     fullWidth
                                                                     placeholder="Số lượng"
-                                                                    value={row.quantity}
+                                                                    value={row.quantityLiquidation}
                                                                     onChange={(e) => {
-                                                                        const updatedAssets = [
-                                                                            ...assets,
-                                                                        ];
-                                                                        updatedAssets[
-                                                                            index
-                                                                        ].quantity =
+                                                                        const updatedAssets = [...selectedData];
+                                                                        updatedAssets[index].quantityLiquidation =
                                                                             Number(e.target.value);
-                                                                        setAssets(updatedAssets);
+                                                                        setSelectedData(updatedAssets);
                                                                     }}
                                                                     onKeyDown={(e) => {
                                                                         if (e.key === "Enter") {
@@ -372,17 +384,13 @@ const FormEditLiquidation: FC<Props> = ({
                                                                     variant="outlined"
                                                                     fullWidth
                                                                     placeholder="Giá nhập"
-                                                                    value={row.price}
+                                                                    value={row.priceLiquidation}
                                                                     onChange={(e) => {
-                                                                        const updatedAssets = [
-                                                                            ...assets,
-                                                                        ];
-                                                                        updatedAssets[
-                                                                            index
-                                                                        ].price = Number(
+                                                                        const updatedAssets = [...selectedData];
+                                                                        updatedAssets[index].priceLiquidation = Number(
                                                                             e.target.value
                                                                         );
-                                                                        setAssets(updatedAssets);
+                                                                        setSelectedData(updatedAssets);
                                                                     }}
                                                                     onKeyDown={(e) => {
                                                                         if (e.key === "Enter") {
@@ -399,22 +407,20 @@ const FormEditLiquidation: FC<Props> = ({
                                                                     fullWidth
                                                                     placeholder="Tổng giá"
                                                                     value={
-                                                                        row.price *
-                                                                        row.quantity
+                                                                        row.priceLiquidation * row.quantityLiquidation
                                                                     }
                                                                     InputProps={{ readOnly: true }}
                                                                 />
                                                             </Box>
                                                         </StyledTableCell>
+
                                                         <StyledTableCell align="center">
                                                             <IconTrash
                                                                 style={{
                                                                     cursor: "pointer",
                                                                     color: "red",
                                                                 }}
-                                                                onClick={() =>
-                                                                    handleRemoveAsset(index)
-                                                                } // Gọi hàm xóa
+                                                                onClick={() => handleRemoveAsset(index)} // Gọi hàm xóa
                                                                 color="red"
                                                                 size={20}
                                                                 stroke={1.5}
@@ -426,9 +432,7 @@ const FormEditLiquidation: FC<Props> = ({
                                         </Table>
                                     </TableContainer>
                                     <Box sx={{ mt: 4 }}>
-                                        <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                            Lý do thanh lý
-                                        </Typography>
+                                        <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>Lý do thanh lý</Typography>
                                         <TextareaAutosize
                                             id="reason"
                                             name="reason"
@@ -440,9 +444,7 @@ const FormEditLiquidation: FC<Props> = ({
                                         {formik.touched.reason && Boolean(formik.errors.reason) && (
                                             <FormHelperText className="required_text">
                                                 {" "}
-                                                {formik.errors.reason
-                                                    ? formik.errors.reason.toString()
-                                                    : ""}
+                                                {formik.errors.reason ? formik.errors.reason.toString() : ""}
                                             </FormHelperText>
                                         )}
                                     </Box>
@@ -473,11 +475,7 @@ const FormEditLiquidation: FC<Props> = ({
                             onClick={handleSubmit as () => void}
                             sx={{ paddingTop: 1.3, paddingBottom: 1.3 }}
                         >
-                            {isFetching
-                                ? "Đang thực hiện..."
-                                : isEditMode
-                                    ? "Cập nhật"
-                                    : "Thêm mới"}
+                            {isFetching ? "Đang thực hiện..." : isEditMode ? "Cập nhật" : "Thêm mới"}
                         </StyledButton>
                     </DialogActions>
                 </Dialog>
@@ -486,7 +484,7 @@ const FormEditLiquidation: FC<Props> = ({
     );
 };
 
-export default FormEditLiquidation;
+export default FormAddEditLiquidation;
 const blue = {
     100: "#DAECFF",
     200: "#b6daff",

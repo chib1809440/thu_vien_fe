@@ -89,3 +89,15 @@ export const useRestoreManyLiquidation = () => {
         },
     })
 };
+
+//xác nhận ký
+export const useSignature = () => {
+    return useMutation({
+        mutationFn: async (_id: string) => {
+            return await liquidationService.confirmSignature<TLiquidation>(_id)
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+};

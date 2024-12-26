@@ -39,7 +39,7 @@ export type TLiquidation = TEntityAbstract & {
     note?: string;
     liquidations: TLiquidationBase[];
     reason?: string;
-    status: string;
+    status?: string;
     isAccept?: boolean;
     isActive?: string;
     isCancel?: string;
@@ -53,7 +53,15 @@ export type TLiquidationCreate = Partial<TLiquidationPick> & {
 };
 
 export type CreateLiquidation = {
-    liquidations: Object[];
+    liquidations?: TLiquidationDefaultWithType[];
+    note?: string;
+    reason?: string;
+    status?: string;
+};
+
+export type EditLiquidation = {
+    _id?: string;
+    liquidations?: TLiquidationDefaultWithType[];
     note?: string;
     reason?: string;
     status?: string;

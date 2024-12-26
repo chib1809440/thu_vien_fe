@@ -13,6 +13,10 @@ import { useSignature } from "../../../../hooks/services/liquidation/liquidation
 import { useReFetchLiquidation } from "../../../../hooks/services/liquidation/liquidation-query";
 import { TLiquidation } from "../../../../types/models/liquidation.type";
 import PrintLiquidation from "./PrintLiquidation";
+import { getLabelFromOptions } from "../../../../utils/object";
+import { typeLiquidationOptions } from "../../../../utils/constants.utils";
+import DialogImportFile from "../../PublicationsPage/ui-components/DialogImportFile ";
+import liquidationService from "../../../../_apis/services/liquidation.service";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: theme.palette.common.black,
@@ -81,6 +85,27 @@ const ViewDetailLiquidation: FC<Props> = ({
             });
         }
     };
+    const [openImportFile, setOpenImportFile] = useState(false);
+    const handleImportFile = () => {
+        setOpenImportFile(true);
+    };
+    const handleCloseImportExcel = () => {
+        setOpenImportFile(false);
+    };
+
+    const handleSubmitImportFile = async (file: File) => {
+        try {
+            await liquidationService.upLoadFile(file, liquidationData?._id);
+            revalidate();
+            toast.success("Tải file thành công.")
+            setOpenImportFile(false);
+        } catch (error) {
+            toast.error(error?.message);
+        }
+    };
+
+    console.log("liquidationData", liquidationData);
+    
 
     return (
         <>
@@ -92,6 +117,15 @@ const ViewDetailLiquidation: FC<Props> = ({
                 title="Xác nhận ký?"
                 description={`Bạn có chắc chắn muốn xác nhận ký"?`}
             />
+
+            {openImportFile && (
+                <DialogImportFile
+                    open={openImportFile}
+                    onClose={handleCloseImportExcel}
+                    onSubmit={handleSubmitImportFile}
+                    title={"Tải file biên bản thanh lý"}
+                />
+            )}
 
             <Dialog
                 maxWidth="xl"
@@ -157,6 +191,22 @@ const ViewDetailLiquidation: FC<Props> = ({
                                                         <Box>
                                                             <Typography>{row?.name || "Không có dữ liệu"}</Typography>
                                                             <Typography sx={{ mt: 0.5 }}>Vị trí: <strong>{capitalizeFirstLetter(row?.position) || "Không có dữ liệu"}</strong></Typography>
+                                                            <Typography sx={{ mt: 0.5 }}>Loại: <strong>{getLabelFromOptions(typeLiquidationOptions, row?.type) || "Không có dữ liệu"}</strong></Typography>
+                                                            {
+                                                                row?.type === "Asset" &&
+                                                                <>
+                                                                    <Typography sx={{ mt: 0.5 }}>SL trong kho: <strong>{row?.quantityTotal !== undefined ? row?.quantityTotal : "0"}</strong></Typography>
+                                                                    <Typography sx={{ mt: 0.5 }}>SL sử dụng: <strong>{row?.quantityUsed !== undefined ? row?.quantityUsed : "0"}</strong></Typography>
+                                                                </>
+                                                            }
+                                                            {
+                                                                row?.type === "Publication" &&
+                                                                <>
+                                                                    <Typography sx={{ mt: 0.5 }}>SL trong kho: <strong>{row?.quantity !== undefined ? row?.quantity : "0"}</strong></Typography>
+                                                                    <Typography sx={{ mt: 0.5 }}>SL trên kệ: <strong>{row?.shelvesQuantity !== undefined ? row?.shelvesQuantity : "0"}</strong></Typography>
+                                                                </>
+                                                            }
+
                                                         </Box>
                                                     </StyledTableCell>
                                                     <StyledTableCell align="left">
@@ -169,7 +219,25 @@ const ViewDetailLiquidation: FC<Props> = ({
                                                         {row?.priceLiquidation * row?.quantityLiquidation || "0"}
                                                     </StyledTableCell>
                                                 </StyledTableRow>
+
                                             ))}
+                                            <StyledTableRow>
+                                                <StyledTableCell colSpan={2} align="center"><strong>Tổng cộng:</strong></StyledTableCell>
+                                                <StyledTableCell align="left" colSpan={2}>
+                                                    <strong style={{ marginLeft: 1 }}>
+                                                        {liquidationData?.liquidations?.reduce((total, row) => {
+                                                            return total + (row?.quantityLiquidation || 0);
+                                                        }, 0).toLocaleString() || "0"}
+                                                    </strong>
+                                                </StyledTableCell>
+                                                <StyledTableCell>
+                                                    <strong>
+                                                        {liquidationData?.liquidations?.reduce((total, row) => {
+                                                            return total + (row?.priceLiquidation * row?.quantityLiquidation || 0);
+                                                        }, 0).toLocaleString() || "0"}
+                                                    </strong>
+                                                </StyledTableCell>
+                                            </StyledTableRow>
                                         </TableBody>
                                     </Table>
                                 </TableContainer>
@@ -194,7 +262,22 @@ const ViewDetailLiquidation: FC<Props> = ({
                         disabled={liquidationData?.isAccept}
                         sx={{ textTransform: "inherit" }}
                     >
-                        Xác nhận ký
+                        {
+                            (() => {
+                                const signatures = liquidationData?.signatures || [];
+                                let signatureText = '';
+
+                                if (signatures.length === 2) {
+                                    signatureText = 'Hiệu trưởng ký';
+                                } else if (signatures.includes('thủ thư')) {
+                                    signatureText = 'Thủ thư ký';
+                                } else {
+                                    signatureText = 'Xác nhận ký';
+                                }
+
+                                return signatureText;
+                            })()
+                        }
                     </Button>
                     {
                         liquidationData?.isAccept &&
@@ -202,6 +285,7 @@ const ViewDetailLiquidation: FC<Props> = ({
                             variant="contained"
                             color="primary"
                             sx={{ textTransform: "inherit" }}
+                            onClick={handleImportFile}
                         >
                             Tải phiếu biên bản
                         </Button>

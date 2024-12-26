@@ -1,12 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import liquidationService from "../../../_apis/services/liquidation.service";
-import { TLiquidation, TLiquidationCreate, TLiquidationEdit } from "../../../types/models/liquidation.type";
+import { CreateLiquidation, EditLiquidation, TLiquidation } from "../../../types/models/liquidation.type";
 
 export const useAddLiquidation = () => {
     return useMutation({
-        mutationFn: async (data: TLiquidationCreate) => {
-            return await liquidationService.create<TLiquidationCreate, TLiquidation>(data)
+        mutationFn: async (data: CreateLiquidation) => {
+            return await liquidationService.create<CreateLiquidation, TLiquidation>(data)
         },
         onError: (error: any) => {
             if (error.message === "name already exists") {
@@ -20,8 +20,8 @@ export const useAddLiquidation = () => {
 
 export const useEditLiquidation = () => {
     return useMutation({
-        mutationFn: async (data: TLiquidationEdit) => {
-            return await liquidationService.update<TLiquidationEdit, TLiquidation>(data, data._id);
+        mutationFn: async (data: EditLiquidation) => {
+            return await liquidationService.update<EditLiquidation, TLiquidation>(data, data._id);
         },
         onError: (error: any) => {
             if (error.message === "name already exists") {

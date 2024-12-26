@@ -22,32 +22,33 @@ import { Box } from "@mui/system";
 import { IconTrash } from "@tabler/icons";
 import { IconCirclePlusFilled } from "@tabler/icons-react";
 import { Form, FormikProvider, useFormik } from "formik";
-import { FC, useEffect, useMemo, useRef, useState } from "react";
-import { useReactToPrint } from "react-to-print";
+import { FC, useEffect, useMemo, useState } from "react";
 import * as yup from "yup";
 import { getAllAssets } from "../../../../_apis/asset.api";
+import publicationsService from "../../../../_apis/services/publications.service";
 import SelectForm from "../../../../components/custom/form/SelectForm";
 import { StyledTableCell, StyledTableRow } from "../../../../components/custom/table-list/style";
 import StyledButton from "../../../../components/default/button/StyledButton";
 import useDebounce from "../../../../hooks/useDebounce";
-import { Asset } from "../../../../interfaces/asset";
 import {
-    TLiquidationCreate,
+    CreateLiquidation,
+    TLiquidation,
     TLiquidationDefaultWithType,
     TLiquidationType,
+    TPosition
 } from "../../../../types/models/liquidation.type";
-import { CreateAssetsWareHouseReceipt } from "../../../../types/models/warehouse-assets-receipt";
-import { typeLiquidationOptions, typeLiquidationPosition } from "../../../../utils/constants.utils";
-import publicationsService from "../../../../_apis/services/publications.service";
 import { TPublications } from "../../../../types/models/publications.type";
+import { typeLiquidationOptions, typeLiquidationPosition } from "../../../../utils/constants.utils";
+import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 
 type Props = {
     open: boolean;
     onClose: () => void;
-    onSubmit?: (values: TLiquidationCreate, resetForm: () => void) => void;
+    onSubmit?: (values: CreateLiquidation, resetForm: () => void) => void;
     isFetching?: boolean;
-    initialValues: TLiquidationCreate;
+    initialValues: CreateLiquidation;
     isEditMode?: boolean;
+    liquidationRecord?: TLiquidation;
 };
 
 type TOptions = {
@@ -56,7 +57,7 @@ type TOptions = {
 };
 
 const schema = yup.object().shape({
-    supplierId: yup.string(),
+    // supplierId: yup.string(),
 });
 
 const FormAddEditLiquidation: FC<Props> = ({
@@ -70,6 +71,7 @@ const FormAddEditLiquidation: FC<Props> = ({
     },
     isFetching = false,
     isEditMode = false,
+    liquidationRecord
 }) => {
     const [selectedData, setSelectedData] = useState<TLiquidationDefaultWithType[]>([
         {
@@ -81,19 +83,26 @@ const FormAddEditLiquidation: FC<Props> = ({
         },
     ]);
 
-    const formik = useFormik<TLiquidationCreate>({
+    const formik = useFormik<CreateLiquidation>({
         initialValues,
         validationSchema: schema,
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
+
             if (onSubmit) {
-                onSubmit(values, resetForm);
+                const createLiqui: CreateLiquidation = {
+                    note: values.note,
+                    reason: values.reason,
+                    liquidations: selectedData,
+                };
+                onSubmit(createLiqui, resetForm);
             }
         },
     });
     const { errors, touched, values, setFieldValue, handleSubmit, getFieldProps } = useMemo(() => formik, [formik]);
 
     const [selectedType, setSelectedType] = useState<TLiquidationType>("Asset");
+    const [selectedPosition, setSelectedPosition] = useState<TPosition>("trong kho");
     const [optionsAutocomplete, setOptionsAutocomplete] = useState<TOptions[]>([]);
     const [selectedOptAutocomplete, setSelectedOptAutocomplete] = useState<TOptions | null>(null);
     const [loadingSearching, setLoadingSearching] = useState(false);
@@ -159,8 +168,30 @@ const FormAddEditLiquidation: FC<Props> = ({
 
         setSelectedData((prev) => [...prev, newAsset]);
     };
-
-    const componentRef = useRef();
+    
+    useEffect(() => {
+        if (liquidationRecord) {
+            let editLiquiData: TLiquidationDefaultWithType[] = [];
+            liquidationRecord.liquidations.forEach((item) => {
+                const newData: TLiquidationDefaultWithType = {
+                    itemId: item?.itemId,
+                    label: item?.name,
+                    quantityLiquidation: item?.quantityLiquidation,
+                    priceLiquidation: item?.priceLiquidation,
+                    position: item?.position,
+                    type: item?.type,
+                    quantity: item?.quantity,
+                    quantityTotal: item?.quantityTotal,
+                    quantityUsed: item?.quantityUsed,
+                    shelvesQuantity: item?.shelvesQuantity,
+                    barcode: item?.barcode,
+                };
+                // Đẩy object vào mảng editLiquiData
+                editLiquiData.push(newData);
+            });
+            setSelectedData(editLiquiData);
+        }
+    }, [liquidationRecord]);
 
     const handleSelectAssetOption = (value: TOptions | null, index: number) => {
         const prevSelectedData = [...selectedData];
@@ -175,7 +206,7 @@ const FormAddEditLiquidation: FC<Props> = ({
             const newValue: TLiquidationDefaultWithType = {
                 itemId: value.value,
                 label: value.label,
-                position: "trong kho",
+                position: selectedPosition,
                 priceLiquidation: 0,
                 quantityLiquidation: 1,
                 type: selectedType,
@@ -201,19 +232,6 @@ const FormAddEditLiquidation: FC<Props> = ({
         setSelectedType("Asset");
     };
 
-    const handlePrint = useReactToPrint({
-        content: () => componentRef.current,
-        pageStyle: `
-            @page {
-                margin: 10mm; /* Thiết lập margin */
-                size: A4; /* Thiết lập kích thước */
-            }
-            body {
-                margin: 0; /* Đảm bảo không có margin thừa */
-            }
-        `,
-    });
-
     return (
         <>
             <FormikProvider value={formik}>
@@ -230,7 +248,7 @@ const FormAddEditLiquidation: FC<Props> = ({
                     disableEscapeKeyDown
                 >
                     <DialogTitle sx={{ p: { xs: 2, sm: 2, md: 4 } }}>
-                        {isEditMode ? "Sửa thông tin phiếu nhập tài sản" : "Thêm thông tin phiếu nhập tài sản mới"}
+                        {isEditMode ? "Sửa thông tin biên bản thanh lý" : "Tạo biên bản thanh lý"}
                     </DialogTitle>
                     <DialogContent sx={{ p: { xs: 3, sm: 3, md: 8 } }}>
                         <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
@@ -242,6 +260,7 @@ const FormAddEditLiquidation: FC<Props> = ({
                                         variant="contained"
                                         onClick={() => handleAddAsset()}
                                         sx={{ background: "green", color: "white" }}
+                                        type="button"
                                     >
                                         Thêm thông tin thanh lý
                                     </StyledButton>
@@ -300,24 +319,34 @@ const FormAddEditLiquidation: FC<Props> = ({
                                                             <Box style={{ width: "100%" }}>
                                                                 {row.itemId !== "" ? (
                                                                     <Box>
-                                                                        <Typography>{row.label}</Typography>
+                                                                        <Typography>{capitalizeFirstLetter(row.label)}</Typography>
                                                                         {
-                                                                            row?.quantity &&
-                                                                            <Typography>{row?.quantity}</Typography>
+                                                                            row?.type === "Publication" &&
+                                                                            <>
+
+                                                                                <Typography>
+                                                                                    SL trong kho: <strong>{row?.quantity !== undefined ? row?.quantity : 0}</strong>
+                                                                                </Typography>
+
+                                                                                <Typography>
+                                                                                    SL trên kệ: <strong>{row?.shelvesQuantity !== undefined ? row?.shelvesQuantity : 0}</strong>
+                                                                                </Typography>
+                                                                            </>
                                                                         }
-                                                                        {
-                                                                            row?.shelvesQuantity &&
-                                                                            <Typography>{row?.shelvesQuantity}</Typography>
-                                                                        }
-                                                                        {
-                                                                            row?.quantityTotal &&
-                                                                            <Typography>{row?.quantityTotal}</Typography>
-                                                                        }
-                                                                        {
-                                                                            row?.quantityUsed &&
-                                                                            <Typography>{row?.quantityUsed}</Typography>
+
+                                                                        {row?.type === "Asset" &&
+                                                                            <>
+                                                                                <Typography>
+                                                                                    SL trong kho: <strong>{row?.quantityTotal !== undefined ? row?.quantityTotal : 0}</strong>
+                                                                                </Typography>
+
+                                                                                <Typography>
+                                                                                    SL sử dụng: <strong>{row?.quantityUsed !== undefined ? row?.quantityUsed : 0}</strong>
+                                                                                </Typography>
+                                                                            </>
                                                                         }
                                                                     </Box>
+
                                                                 ) : (
                                                                     <Autocomplete
                                                                         getOptionLabel={(option) => option?.label}
@@ -352,7 +381,16 @@ const FormAddEditLiquidation: FC<Props> = ({
                                                                 <SelectForm
                                                                     options={typeLiquidationPosition}
                                                                     value={row.position}
-                                                                    onChange={(e) => e.target.value}
+                                                                    onChange={(e) => {
+                                                                        const newValue = e.target
+                                                                            .value as TPosition;
+
+                                                                        setSelectedPosition(newValue);
+                                                                        const updatedAssets = [...selectedData];
+
+                                                                        updatedAssets[index].position = newValue;
+                                                                        setSelectedData(updatedAssets);
+                                                                    }}
                                                                     sx={{ mt: 0, mb: "11px" }}
                                                                 />
                                                             </Box>
@@ -458,15 +496,6 @@ const FormAddEditLiquidation: FC<Props> = ({
                         <Button disabled={isFetching} onClick={onClose} color="error">
                             Huỷ
                         </Button>
-                        {isEditMode && (
-                            <Button
-                                onClick={() => handlePrint()}
-                                style={{ background: "#212121", color: "white" }}
-                                variant="contained"
-                            >
-                                In
-                            </Button>
-                        )}
                         <StyledButton
                             disableHoverEffect
                             color="primary"

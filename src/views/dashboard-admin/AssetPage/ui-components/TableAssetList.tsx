@@ -325,6 +325,7 @@ function TableAssetList<T extends DataType>({
                                                         <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{capitalizeFirstLetter(row?.status)}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityUsed}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityWarehouse}</StyledTableCell>
+                                                        <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityLiquidation}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center" sx={{ paddingRight: 4 }}>{row?.quantityTotal}</StyledTableCell>
                                                         <StyledTableCell padding="none" align="center">
                                                             <Box sx={{

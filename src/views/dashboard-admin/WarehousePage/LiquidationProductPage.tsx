@@ -9,14 +9,14 @@ import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
-import { useDeleteLiquidation, useDeleteManyLiquidation, useEditLiquidation } from "../../../hooks/services/liquidation/liquidation-mutation";
+import { useAddLiquidation, useDeleteLiquidation, useDeleteManyLiquidation, useEditLiquidation } from "../../../hooks/services/liquidation/liquidation-mutation";
 import {
     useFetchLiquidation,
     useReFetchLiquidation,
 } from "../../../hooks/services/liquidation/liquidation-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn } from "../../../types/common/table";
-import { TLiquidation, TLiquidationCreate } from "../../../types/models/liquidation.type";
+import { CreateLiquidation, TLiquidation } from "../../../types/models/liquidation.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import usePermission from "../../../utils/hasPermission";
@@ -44,7 +44,8 @@ const LiquidationProductPage = () => {
         ...filter
     });
 
-    const mutationUpdateLiquidation = useEditLiquidation();
+    const mutationAdd = useAddLiquidation();
+    const mutationEdit = useEditLiquidation();
     const revalidate = useReFetchLiquidation();
     const { hasPermission } = usePermission();
     const mutationDelete = useDeleteLiquidation();
@@ -69,9 +70,32 @@ const LiquidationProductPage = () => {
         setSelectedEdit(null);
     };
 
-    const handleSubmit = (values: TLiquidationCreate) => {
-
+    const handleSubmit = (values: CreateLiquidation) => {
         console.log("value", values);
+        if (selectedEdit) {
+            mutationEdit.mutate(
+                {
+                    ...values,
+                    _id: selectedEdit._id,
+                },
+                {
+                    onSuccess: () => {
+                        revalidate();
+                        toast.success("Chỉnh sửa thành công.");
+                        handleClose();
+                    },
+                }
+            );
+            return;
+        }
+
+        mutationAdd.mutate(values, {
+            onSuccess: (data) => {
+                revalidate();
+                toast.success("Thêm thành công.");
+                setOpenAddEdit(false);
+            },
+        });
     };
 
     const handleOpenConfirmDialog = (row: TLiquidation) => {
@@ -352,6 +376,9 @@ const LiquidationProductPage = () => {
         setOpenAddEdit(true);
     };
 
+    console.log(selectedEdit);
+    
+
     return (
         <div>
             <IBreadcrumsCustom
@@ -367,6 +394,7 @@ const LiquidationProductPage = () => {
                     initialValues={initialValues}
                     onSubmit={handleSubmit}
                     isEditMode={selectedEdit ? true : false}
+                    liquidationRecord={selectedEdit}
                 />
             )}
 

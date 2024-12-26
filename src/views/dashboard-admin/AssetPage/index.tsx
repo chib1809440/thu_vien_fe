@@ -36,19 +36,25 @@ const headCells: HeadCell[] = [
         id: 'quantityUsed',
         numeric: true,
         disablePadding: true,
-        label: 'Số lượng sử dụng',
+        label: 'SL sử dụng',
     },
     {
         id: 'quantityWarehouse',
         numeric: true,
         disablePadding: true,
-        label: 'Số lượng trong kho',
+        label: 'SL trong kho',
+    },
+    {
+        id: 'quantityLiquidation',
+        numeric: true,
+        disablePadding: true,
+        label: 'SL đã thanh lý',
     },
     {
         id: 'quantityTotal',
         numeric: true,
         disablePadding: true,
-        label: 'Số lượng tổng',
+        label: 'SL tổng',
     },
     {
         id: 'action',

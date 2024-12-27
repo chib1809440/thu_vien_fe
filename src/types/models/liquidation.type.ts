@@ -20,10 +20,11 @@ type TLiquidationDefault = {
     quantityLiquidation: number;
     priceLiquidation: number;
     position: TPosition;
+    name?: string;
 };
 
 // Define type liquidation with type
-export type TLiquidationDefaultWithType = { type: TLiquidationType, label?: string } & TLiquidationDefault;
+export type TLiquidationDefaultWithType = { type: TLiquidationType} & TLiquidationDefault;
 
 // Define type liquidation for asset
 type TLiquidationAssetBase = { type: "Asset" } & TLiquidationDefault & TAsset;
@@ -44,6 +45,7 @@ export type TLiquidation = TEntityAbstract & {
     isActive?: string;
     isCancel?: string;
     signatures?: string[];
+    fileSignature?: any;
 };
 
 type TLiquidationPick = Pick<TLiquidation, "note" | "reason" | "status">;

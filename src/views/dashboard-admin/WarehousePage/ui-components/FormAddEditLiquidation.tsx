@@ -40,6 +40,7 @@ import {
 import { TPublications } from "../../../../types/models/publications.type";
 import { typeLiquidationOptions, typeLiquidationPosition } from "../../../../utils/constants.utils";
 import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
+import { toast } from "react-toastify";
 
 type Props = {
     open: boolean;
@@ -52,12 +53,14 @@ type Props = {
 };
 
 type TOptions = {
-    label: string;
+    quatity: number;
+    quatityUsed: number;
+    name: string;
     value: string;
 };
 
 const schema = yup.object().shape({
-    // supplierId: yup.string(),
+    reason: yup.string().required("Vui lòng nhập lý do thanh lý"),
 });
 
 const FormAddEditLiquidation: FC<Props> = ({
@@ -80,6 +83,7 @@ const FormAddEditLiquidation: FC<Props> = ({
             priceLiquidation: 0,
             position: "trong kho",
             type: "Asset",
+            name: "",
         },
     ]);
 
@@ -88,12 +92,27 @@ const FormAddEditLiquidation: FC<Props> = ({
         validationSchema: schema,
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
+            const filteredData = selectedData.filter((item) => item.itemId !== "" && item.priceLiquidation > 0);
+
+            const hasInvalidPrice = selectedData.some(
+                (item) => item.priceLiquidation === 0 && item.itemId !== ""
+            );
+
+            if (hasInvalidPrice) {
+                toast.error("Vui lòng nhập giá thanh lý lớn hơn 0.");
+                return;
+            }
+
+            if (filteredData?.length === 0) {
+                toast.error("Không có giá trị để thanh lý! Vui lòng kiểm tra thông tin.")
+                return;
+            }
 
             if (onSubmit) {
                 const createLiqui: CreateLiquidation = {
                     note: values.note,
                     reason: values.reason,
-                    liquidations: selectedData,
+                    liquidations: filteredData,
                 };
                 onSubmit(createLiqui, resetForm);
             }
@@ -124,8 +143,10 @@ const FormAddEditLiquidation: FC<Props> = ({
                 if (selectedType === "Asset") {
                     // call api for asset
                     const response = await getAllAssets(undefined, undefined, valueSearchDebounce);
-                    data = response.data.result.map((item) => ({
-                        label: item.name,
+                    data = response?.data?.result?.filter((item) => item?.quantityTotal > 0)?.map((item) => ({
+                        quatityUsed: item.quantityUsed,
+                        quatity: item.quantityWarehouse,
+                        name: item.name,
                         value: item._id,
                     }));
                 } else {
@@ -133,14 +154,15 @@ const FormAddEditLiquidation: FC<Props> = ({
                     const response = await publicationsService.getAll<TPublications>({
                         search: valueSearchDebounce,
                     });
-                    data = response.data.result.map((item) => ({
-                        label: item.name,
+                    data = response?.data?.result?.filter((item) => item?.quantity > 0)?.map((item) => ({
+                        quatityUsed: item.shelvesQuantity,
+                        quatity: item.quantity,
+                        name: item.name,
                         value: item._id,
                     }));
                 }
 
                 setOptionsAutocomplete(data);
-
                 setValueSearch("");
             } catch (error) {
                 console.error("Error fetching publication data:", error);
@@ -158,7 +180,7 @@ const FormAddEditLiquidation: FC<Props> = ({
 
     const handleAddAsset = () => {
         const newAsset: TLiquidationDefaultWithType = {
-            label: "",
+            name: "",
             itemId: "",
             position: "trong kho",
             priceLiquidation: 0,
@@ -168,22 +190,22 @@ const FormAddEditLiquidation: FC<Props> = ({
 
         setSelectedData((prev) => [...prev, newAsset]);
     };
-    
+
     useEffect(() => {
         if (liquidationRecord) {
             let editLiquiData: TLiquidationDefaultWithType[] = [];
             liquidationRecord.liquidations.forEach((item) => {
                 const newData: TLiquidationDefaultWithType = {
                     itemId: item?.itemId,
-                    label: item?.name,
+                    name: item?.name,
                     quantityLiquidation: item?.quantityLiquidation,
                     priceLiquidation: item?.priceLiquidation,
                     position: item?.position,
                     type: item?.type,
-                    quantity: item?.quantity,
-                    quantityTotal: item?.quantityTotal,
-                    quantityUsed: item?.quantityUsed,
-                    shelvesQuantity: item?.shelvesQuantity,
+                    quantity: item?.quantity || 0,
+                    quantityTotal: item?.quantityTotal || 0,
+                    quantityUsed: item?.quantityUsed || 0,
+                    shelvesQuantity: item?.shelvesQuantity || 0,
                     barcode: item?.barcode,
                 };
                 // Đẩy object vào mảng editLiquiData
@@ -205,7 +227,7 @@ const FormAddEditLiquidation: FC<Props> = ({
         } else {
             const newValue: TLiquidationDefaultWithType = {
                 itemId: value.value,
-                label: value.label,
+                name: value.name,
                 position: selectedPosition,
                 priceLiquidation: 0,
                 quantityLiquidation: 1,
@@ -222,6 +244,7 @@ const FormAddEditLiquidation: FC<Props> = ({
                     priceLiquidation: 0,
                     position: "trong kho",
                     type: "Asset",
+                    name: "",
                 });
             }
         }
@@ -319,37 +342,12 @@ const FormAddEditLiquidation: FC<Props> = ({
                                                             <Box style={{ width: "100%" }}>
                                                                 {row.itemId !== "" ? (
                                                                     <Box>
-                                                                        <Typography>{capitalizeFirstLetter(row.label)}</Typography>
-                                                                        {
-                                                                            row?.type === "Publication" &&
-                                                                            <>
-
-                                                                                <Typography>
-                                                                                    SL trong kho: <strong>{row?.quantity !== undefined ? row?.quantity : 0}</strong>
-                                                                                </Typography>
-
-                                                                                <Typography>
-                                                                                    SL trên kệ: <strong>{row?.shelvesQuantity !== undefined ? row?.shelvesQuantity : 0}</strong>
-                                                                                </Typography>
-                                                                            </>
-                                                                        }
-
-                                                                        {row?.type === "Asset" &&
-                                                                            <>
-                                                                                <Typography>
-                                                                                    SL trong kho: <strong>{row?.quantityTotal !== undefined ? row?.quantityTotal : 0}</strong>
-                                                                                </Typography>
-
-                                                                                <Typography>
-                                                                                    SL sử dụng: <strong>{row?.quantityUsed !== undefined ? row?.quantityUsed : 0}</strong>
-                                                                                </Typography>
-                                                                            </>
-                                                                        }
+                                                                        <Typography>{capitalizeFirstLetter(row.name)}</Typography>
                                                                     </Box>
 
                                                                 ) : (
                                                                     <Autocomplete
-                                                                        getOptionLabel={(option) => option?.label}
+                                                                        getOptionLabel={(option) => { return `${option?.name} (SL trong kho: ${option.quatity} - SL trưng bày: ${option.quatityUsed})`; }}
                                                                         loading={loadingSearching}
                                                                         onChange={(event, value) =>
                                                                             handleSelectAssetOption(value, index)
@@ -421,20 +419,22 @@ const FormAddEditLiquidation: FC<Props> = ({
                                                                 <TextField
                                                                     variant="outlined"
                                                                     fullWidth
-                                                                    placeholder="Giá nhập"
+                                                                    placeholder="Giá thanh lý"
                                                                     value={row.priceLiquidation}
                                                                     onChange={(e) => {
-                                                                        const updatedAssets = [...selectedData];
-                                                                        updatedAssets[index].priceLiquidation = Number(
-                                                                            e.target.value
-                                                                        );
-                                                                        setSelectedData(updatedAssets);
+                                                                        const newValue = e.target.value;
+                                                                        if (newValue === "" || Number(newValue) > 0) {
+                                                                            const updatedAssets = [...selectedData];
+                                                                            updatedAssets[index].priceLiquidation = Number(newValue);
+                                                                            setSelectedData(updatedAssets);
+                                                                        }
                                                                     }}
                                                                     onKeyDown={(e) => {
                                                                         if (e.key === "Enter") {
-                                                                            e.preventDefault(); // Ngăn hành động mặc định khi nhấn Enter
+                                                                            e.preventDefault();
                                                                         }
                                                                     }}
+                                                                    error={Number(row.priceLiquidation) <= 0}
                                                                 />
                                                             </Box>
                                                         </StyledTableCell>
@@ -448,6 +448,7 @@ const FormAddEditLiquidation: FC<Props> = ({
                                                                         row.priceLiquidation * row.quantityLiquidation
                                                                     }
                                                                     InputProps={{ readOnly: true }}
+                                                                    disabled
                                                                 />
                                                             </Box>
                                                         </StyledTableCell>
@@ -470,14 +471,20 @@ const FormAddEditLiquidation: FC<Props> = ({
                                         </Table>
                                     </TableContainer>
                                     <Box sx={{ mt: 4 }}>
-                                        <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>Lý do thanh lý</Typography>
-                                        <TextareaAutosize
+                                        <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>Lý do thanh lý <span className="required_text">(*)</span></Typography>
+                                        <TextField
                                             id="reason"
                                             name="reason"
                                             value={formik.values.reason}
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
-                                            minRows={4}
+                                            error={
+                                                formik.touched.reason &&
+                                                Boolean(formik.errors.reason)
+                                            }
+                                            sx={{ width: "100%" }}
+                                            multiline
+                                            rows={4}
                                         />
                                         {formik.touched.reason && Boolean(formik.errors.reason) && (
                                             <FormHelperText className="required_text">

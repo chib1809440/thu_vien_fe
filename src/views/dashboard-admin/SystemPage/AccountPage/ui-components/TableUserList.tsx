@@ -38,7 +38,7 @@ import { activeUser, blockUser, importExcelUser } from "../../../../../_apis/use
 import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
 import { useAuth } from "../../../../../contexts/JWTContext";
 import usePermission from "../../../../../utils/hasPermission";
-import DialogImportFile from "../../../PublicationsPage/ui-components/DialogImportFile ";
+import DialogImportFile from "../../../PublicationsPage/ui-components/DialogImportFile";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,

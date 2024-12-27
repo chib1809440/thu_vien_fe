@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Divider, Stack, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Chip, Divider, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { GridExpandMoreIcon } from "@mui/x-data-grid";
 import { IconEye, IconPencil } from "@tabler/icons";
@@ -143,55 +143,64 @@ const LiquidationProductPage = () => {
                                 <Typography>Chi tiết thanh lý</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
-                                <Box>
-                                    {/* Lặp qua từng phần tử trong liquidations */}
-                                    {liquidations.map((liquidation, index) => (
-                                        <Box key={index}>
-                                            {/* Kiểm tra liquidation.type để hiển thị tên tài sản hoặc tên ấn phẩm */}
-                                            {liquidation.type === "Asset" ? (
-                                                <Box>
+                                {liquidations?.length > 0
+                                    && (
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                            {liquidations.slice(0, 2).map((liquidation, index) => (
+                                                <Box key={index}>
+                                                    {/* Kiểm tra liquidation.type để hiển thị tên tài sản hoặc tên ấn phẩm */}
+                                                    {liquidation.type === "Asset" ? (
+                                                        <Box>
+                                                            <Typography sx={{ mt: 0.5 }}>
+                                                                Tên tài sản: <strong>{capitalizeFirstLetter(liquidation?.name) || "Không có tên tài sản"}</strong>
+                                                            </Typography>
+                                                        </Box>
+                                                    ) : liquidation.type === "Publication" ? (
+                                                        <Box>
+                                                            <Typography sx={{ mt: 0.5 }}>
+                                                                Tên ấn phẩm: <strong>{capitalizeFirstLetter(liquidation?.name) || "Không có tên ấn phẩm"}</strong>
+                                                            </Typography>
+                                                        </Box>
+                                                    ) : null}
+
+                                                    {/* Hiển thị số lượng thanh lý */}
                                                     <Typography sx={{ mt: 0.5 }}>
-                                                        Tên tài sản: <strong>{liquidation?.name || "Không có tên tài sản"}</strong>
+                                                        SL thanh lý: <strong>{liquidation?.quantityLiquidation || "Không có số lượng"}</strong>
                                                     </Typography>
-                                                </Box>
-                                            ) : liquidation.type === "Publication" ? (
-                                                <Box>
+
+                                                    {/* Định dạng giá */}
                                                     <Typography sx={{ mt: 0.5 }}>
-                                                        Tên ấn phẩm: <strong>{liquidation?.name || "Không có tên ấn phẩm"}</strong>
+                                                        Giá: <strong>
+                                                            {liquidation?.priceLiquidation
+                                                                ? new Intl.NumberFormat('vi-VN', {
+                                                                    style: 'currency',
+                                                                    currency: 'VND',
+                                                                }).format(liquidation.priceLiquidation)
+                                                                : "Không có giá"
+                                                            }
+                                                        </strong>
                                                     </Typography>
+                                                    {/* <Typography sx={{ mt: 0.5 }}>
+                                                        Vị trí: <strong>
+                                                            {capitalizeFirstLetter(liquidation?.position)}
+                                                        </strong>
+                                                    </Typography> */}
+
+                                                    {/* Đường gạch ngang giữa các phần tử, trừ phần tử cuối */}
+                                                    {index < liquidations.length - 1 && (
+                                                        <Divider sx={{ my: 1 }} />
+                                                    )}
                                                 </Box>
-                                            ) : null}
-
-                                            {/* Hiển thị số lượng thanh lý */}
-                                            <Typography sx={{ mt: 0.5 }}>
-                                                SL thanh lý: <strong>{liquidation?.quantityLiquidation || "Không có số lượng"}</strong>
-                                            </Typography>
-
-                                            {/* Định dạng giá */}
-                                            <Typography sx={{ mt: 0.5 }}>
-                                                Giá: <strong>
-                                                    {liquidation?.priceLiquidation
-                                                        ? new Intl.NumberFormat('vi-VN', {
-                                                            style: 'currency',
-                                                            currency: 'VND',
-                                                        }).format(liquidation.priceLiquidation)
-                                                        : "Không có giá"
-                                                    }
-                                                </strong>
-                                            </Typography>
-                                            <Typography sx={{ mt: 0.5 }}>
-                                                Vị trí: <strong>
-                                                    {capitalizeFirstLetter(liquidation?.position)}
-                                                </strong>
-                                            </Typography>
-
-                                            {/* Đường gạch ngang giữa các phần tử, trừ phần tử cuối */}
-                                            {index < liquidations.length - 1 && (
-                                                <Divider sx={{ my: 1 }} />
+                                            ))}
+                                            {liquidations.length > 2 && (
+                                                <Chip
+                                                    label={`+${liquidations?.length - 2} vật phẩm khác`}
+                                                    variant="outlined"
+                                                    color="primary"
+                                                />
                                             )}
                                         </Box>
-                                    ))}
-                                </Box>
+                                    )}
                             </AccordionDetails>
                         </Accordion>
                     );
@@ -377,7 +386,7 @@ const LiquidationProductPage = () => {
     };
 
     console.log(selectedEdit);
-    
+
 
     return (
         <div>

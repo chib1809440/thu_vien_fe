@@ -73,7 +73,7 @@ import MainCard from "../../../ui-component/cards/MainCard";
 import { statusOptions, typeOptions } from "../../../utils/constants.utils";
 import usePermission from "../../../utils/hasPermission";
 import { getLabelFromOptions, parserParams } from "../../../utils/object";
-import DialogImportFile from "./ui-components/DialogImportFile ";
+import DialogImportFile from "./ui-components/DialogImportFile";
 import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";

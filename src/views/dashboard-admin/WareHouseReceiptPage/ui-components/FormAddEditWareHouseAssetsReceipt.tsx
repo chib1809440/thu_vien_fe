@@ -99,7 +99,20 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
             const filteredAssets = assets.filter((asset) => asset.assetId !== "");
-            console.log(filteredAssets);
+
+            const hasInvalidPrice = assets.some(
+                (item) => item.price === 0 && item.assetId !== ""
+            );
+
+            if (hasInvalidPrice) {
+                toast.error("Vui lòng nhập giá nhập lớn hơn 0.");
+                return;
+            }
+
+            if (filteredAssets?.length === 0) {
+                toast.error("Không có giá trị để nhập kho! Vui lòng kiểm tra thông tin.")
+                return;
+            }
             
             if (onSubmit) {
                 const createLoanSlip: TWareHouseAssetsReceiptCreate = {
@@ -628,6 +641,7 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
                                                                             e.preventDefault(); // Ngăn hành động mặc định khi nhấn Enter
                                                                         }
                                                                     }}
+                                                                    error={Number(row.price) <= 0}
                                                                 />
                                                             </Box>
                                                         </StyledTableCell>
@@ -642,6 +656,7 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
                                                                         row.quantity
                                                                     }
                                                                     InputProps={{ readOnly: true }}
+                                                                    disabled
                                                                 />
                                                             </Box>
                                                         </StyledTableCell>

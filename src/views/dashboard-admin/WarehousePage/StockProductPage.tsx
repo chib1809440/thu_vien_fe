@@ -115,7 +115,7 @@ const StockProductPage = () => {
                     }
                 );
             }
-        } 
+        }
         // else if (values.statusWarehouse === "thanh lý") {
         //     mutationCreateLiquidation.mutate(
         //         {
@@ -204,12 +204,16 @@ const StockProductPage = () => {
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
-                id: "quantityLiquidationDamaged",
+                id: "quantityLiquidation",
                 disablePadding: "none",
-                label: "SL hư hỏng - thanh lý",
-                align: "left",
+                label: "SL thanh lý",
+                align: "center",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => row.quantityLiquidation + row.quantityDamaged,
+                render: (row) => {
+                    return (
+                        <Typography>{row.quantityLiquidation ?? 0}</Typography>
+                    )
+                },
             },
             {
                 id: "totalQuantity",

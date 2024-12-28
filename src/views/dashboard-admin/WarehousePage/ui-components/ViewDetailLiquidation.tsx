@@ -6,18 +6,17 @@ import TableRow from '@mui/material/TableRow';
 import { FC, useEffect, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
+import liquidationService from "../../../../_apis/services/liquidation.service";
 import ConfirmDeleteDialog from "../../../../components/default/dialog/ConfirmDeleteDialog";
 import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 import { formatDate } from "../../../../helpers/formatDate";
 import { useSignature } from "../../../../hooks/services/liquidation/liquidation-mutation";
 import { useReFetchLiquidation } from "../../../../hooks/services/liquidation/liquidation-query";
 import { TLiquidation } from "../../../../types/models/liquidation.type";
-import PrintLiquidation from "./PrintLiquidation";
-import { getLabelFromOptions } from "../../../../utils/object";
 import { typeLiquidationOptions } from "../../../../utils/constants.utils";
-import DialogImportFile from "../../PublicationsPage/ui-components/DialogImportFile";
-import liquidationService from "../../../../_apis/services/liquidation.service";
-import { IconFileDownload } from "@tabler/icons-react";
+import { getLabelFromOptions } from "../../../../utils/object";
+import PrintLiquidation from "./PrintLiquidation";
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: theme.palette.common.black,
@@ -38,7 +37,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-
 type Props = {
     open: boolean;
     onClose: () => void;
@@ -50,7 +48,114 @@ const ViewDetailLiquidation: FC<Props> = ({
     onClose,
     liquidationData,
 }) => {
+    const [buttonState, setButtonState] = useState<'Thủ thư ký' | 'Hiệu trưởng ký' | 'Đã ký'>('Thủ thư ký');
+    const [liquidationToSignature, setLiquidationToSignature] = useState<TLiquidation | null>(null);
+    const [openConfirmSignatureDialog, setOpenConfirmSignatureDialog] = useState(false);
+    const [openImportFile, setOpenImportFile] = useState(false);
+    const [file, setFile] = useState<File | null>(null);
     const componentRef = useRef();
+    const mutationSignature = useSignature();
+    const revalidate = useReFetchLiquidation();
+
+    const handleImportFile = () => {
+        setOpenImportFile(true);
+    };
+
+    const handleCloseImportFile = () => {
+        setOpenImportFile(false);
+    };
+
+    const handleCloseConfirmSignatureDialog = () => {
+        setOpenConfirmSignatureDialog(false);
+    };
+
+    useEffect(() => {
+        if (liquidationData) {
+            if (liquidationData.signatures?.length >= 2) {
+                setButtonState('Đã ký');
+            } else if (liquidationData.signatures?.length === 1) {
+                setButtonState('Hiệu trưởng ký');
+            } else {
+                setButtonState('Thủ thư ký');
+            }
+        }
+    }, [liquidationData]);
+
+
+
+    const handleConfirmSignature = () => {
+        if (liquidationToSignature) {
+            mutationSignature.mutate(liquidationToSignature._id, {
+                onSuccess: () => {
+                    revalidate();
+                    toast.success('Xác nhận ký thành công.');
+
+                    // Cập nhật trực tiếp trạng thái buttonState sau khi ký mà không cần đóng modal
+                    const updatedSignaturesLength = liquidationToSignature.signatures?.length || 0;
+                    const newButtonState = updatedSignaturesLength >= 2
+                        ? 'Đã ký'
+                        : updatedSignaturesLength === 1
+                            ? 'Hiệu trưởng ký'
+                            : 'Thủ thư ký';
+
+                    // Cập nhật trạng thái button mà không cần đóng modal
+                    setButtonState(newButtonState);
+
+                    setOpenConfirmSignatureDialog(false);
+                },
+                onError: (error) => {
+                    toast.error('Lỗi khi xác nhận chữ ký.');
+                },
+            });
+        }
+    };
+
+    const handleIsAccept = (row: TLiquidation) => {
+        setLiquidationToSignature(row);
+
+        if (row.signatures?.length >= 2) {
+            setButtonState('Đã ký');
+        } else if (row.signatures?.length === 1) {
+            setButtonState('Hiệu trưởng ký');
+        } else {
+            setButtonState('Thủ thư ký');
+        }
+
+        setOpenConfirmSignatureDialog(true);
+    };
+
+    console.log(buttonState)
+
+
+    const handleSubmitImportFile = async () => {
+        if (!file) {
+            toast.error("Vui lòng chọn file trước khi tải lên.");
+            return;
+        }
+
+        try {
+            const uploadedFile = await liquidationService.upLoadFile(file, liquidationData?._id);
+            if (uploadedFile) {
+                if (uploadedFile?.data?.fileSignature) {
+                    liquidationData.fileSignature = uploadedFile?.data?.fileSignature;
+                }
+                revalidate();
+                setFile(null);
+                setOpenImportFile(false);
+                toast.success("Tải file thành công.");
+            }
+        } catch (error) {
+            toast.error(error?.message || "Đã có lỗi xảy ra khi tải lên.");
+        }
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const fileInput = e.target.files?.[0];
+        if (fileInput) {
+            setFile(fileInput);
+        }
+    };
+
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
         pageStyle: `
@@ -63,79 +168,6 @@ const ViewDetailLiquidation: FC<Props> = ({
             }
         `,
     });
-    const [buttonState, setButtonState] = useState<'Thủ thư ký' | 'Hiệu trưởng ký' | 'Đã ký'>('Thủ thư ký');
-    const [liquidationToSignature, setLiquidationToSignature] = useState<TLiquidation | null>(null);
-    const [openConfirmSignatureDialog, setOpenConfirmSignatureDialog] = useState(false);
-    const mutationSignature = useSignature();
-    const revalidate = useReFetchLiquidation();
-
-    useEffect(() => {
-        if (liquidationData) {
-            // Kiểm tra độ dài của signatures để xác định trạng thái isAccept
-            if (liquidationData.signatures?.length === 2) {
-                liquidationData.isAccept = true;  // Chỉ khi có 2 chữ ký thì isAccept mới = true
-                setButtonState('Đã ký');  // Nếu đã ký đủ 2 chữ ký, thì cập nhật trạng thái nút
-            } else if (liquidationData.signatures?.length === 1) {
-                setButtonState('Hiệu trưởng ký');  // Nếu chỉ có 1 chữ ký, trạng thái nút là "Hiệu trưởng ký"
-            } else {
-                setButtonState('Thủ thư ký');  // Nếu chưa có chữ ký nào, trạng thái nút là "Thủ thư ký"
-            }
-        }
-    }, [liquidationData]);
-    const handleCloseConfirmSignatureDialog = () => {
-        setOpenConfirmSignatureDialog(false);
-    };
-
-    const handleConfirmSignature = () => {
-        if (liquidationToSignature) {
-            mutationSignature.mutate(liquidationToSignature._id, {
-                onSuccess: () => {
-                    revalidate();
-                    toast.success('Xác nhận ký thành công.');
-                    setOpenConfirmSignatureDialog(false);
-                },
-                onError: (error) => {
-                    toast.error('Lỗi khi xác nhận chữ ký.');
-                },
-            });
-        }
-    };
-
-    const handleIsAccept = (row: TLiquidation) => {
-        setLiquidationToSignature(row);
-        setOpenConfirmSignatureDialog(true);
-        // Cập nhật lại trạng thái nút khi có sự thay đổi
-        if (row.signatures?.length === 2) {
-            setButtonState('Đã ký');
-        } else if (row.signatures?.length === 1) {
-            setButtonState('Hiệu trưởng ký');
-        } else {
-            setButtonState('Thủ thư ký');
-        }
-    };
-
-    console.log(buttonState)
-    const [openImportFile, setOpenImportFile] = useState(false);
-    const handleImportFile = () => {
-        setOpenImportFile(true);
-    };
-    const handleCloseImportFile = () => {
-        setOpenImportFile(false);
-    };
-
-    const handleSubmitImportFile = async (file: File) => {
-        try {
-            await liquidationService.upLoadFile(file, liquidationData?._id);
-            revalidate();
-            toast.success("Tải file thành công.")
-            setOpenImportFile(false);
-        } catch (error) {
-            toast.error(error?.message);
-        }
-    };
-
-    console.log("liquidationData", liquidationData);
-
 
     return (
         <>
@@ -147,15 +179,6 @@ const ViewDetailLiquidation: FC<Props> = ({
                 title="Xác nhận ký?"
                 description={`Bạn có chắc chắn muốn xác nhận ký"?`}
             />
-
-            {openImportFile && (
-                <DialogImportFile
-                    open={openImportFile}
-                    onClose={handleCloseImportFile}
-                    onSubmit={handleSubmitImportFile}
-                    title={"Tải file biên bản thanh lý"}
-                />
-            )}
 
             <Dialog
                 maxWidth="xl"
@@ -292,75 +315,50 @@ const ViewDetailLiquidation: FC<Props> = ({
                                 >
                                     <strong>File biên bản:</strong> {liquidationData.fileSignature.name.replace(/\.pdf$/, '')}
                                 </Typography>
-                                <Box sx={{ display: 'flex', gap: 2 }}>
-                                    {liquidationData.fileSignature.typeFile === 'pdf' ? (
-                                        <>
-                                            <a
-                                                href={`${process.env.REACT_APP_BASE_API_FILE_URL}/${liquidationData.fileSignature.path}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <Button variant="contained" sx={{ background: 'green', color: 'white' }}>
-                                                    Xem
-                                                </Button>
-                                            </a>
-                                            <a
-                                                href={`${process.env.REACT_APP_BASE_API_FILE_URL}/${liquidationData.fileSignature.path}`}
-                                                download
-                                                style={{
-                                                    textDecoration: 'none',
-                                                    display: 'inline-flex',
-                                                    alignItems: 'center',
-                                                    color: '#616161',
-                                                }}
-                                            >
-                                                <Button variant="contained" sx={{ mr: 2, background: 'gray', color: 'white' }}>
-                                                    <IconFileDownload size={20} stroke={1.5} style={{ marginRight: 8 }} />
-                                                    Tải xuống
-                                                </Button>
-                                            </a>
-                                        </>
-                                    ) : liquidationData.fileSignature.typeFile === 'image' ? (
-                                        <>
-                                            <a
-                                                href={`${process.env.REACT_APP_BASE_API_FILE_URL}/${liquidationData.fileSignature.path}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                <Button variant="contained" sx={{ background: 'green', color: 'white' }}>
-                                                    Xem Ảnh
-                                                </Button>
-                                            </a>
-                                            <a
-                                                href={`${process.env.REACT_APP_BASE_API_FILE_URL}/${liquidationData?.fileSignature?.path}`}
-                                                download
-                                                style={{
-                                                    textDecoration: 'none',
-                                                    display: 'inline-flex',
-                                                    alignItems: 'center',
-                                                    color: '#616161',
-                                                }}
-                                            >
-                                                <Button variant="contained" sx={{ textTransform: 'inherit', mr: 2, background: 'gray', color: 'white' }}>
-                                                    <IconFileDownload size={20} stroke={1.5} style={{ marginRight: 8 }} />
-                                                    Tải xuống
-                                                </Button>
-                                            </a>
-                                        </>
-                                    ) : null}
+                                <Box sx={{ mr: 2 }}>
+                                    <a href={`${process.env.REACT_APP_BASE_API_FILE_URL}/${liquidationData.fileSignature.path}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Button variant="contained" sx={{ background: 'green', color: 'white' }}>
+                                            Xem
+                                        </Button>
+                                    </a>
                                 </Box>
                             </Box>
                         )}
-                        {liquidationData?.isAccept && (
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                sx={{ textTransform: 'inherit' }}
-                                onClick={handleImportFile}
-                            >
-                                {liquidationData?.fileSignature ? 'Cập nhật phiếu' : 'Tải phiếu biên bản'}
-                            </Button>
-                        )}
+                        <Box>
+                            {liquidationData?.isAccept && (
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    sx={{ textTransform: 'inherit' }}
+                                    onClick={handleImportFile}
+                                >
+                                    {liquidationData?.fileSignature ? 'Cập nhật phiếu' : 'Tải phiếu biên bản'}
+                                </Button>
+                            )}
+
+                            {/* Dialog Upload File */}
+                            <Dialog open={openImportFile} onClose={handleCloseImportFile}>
+                                <DialogTitle>{liquidationData?.fileSignature ? 'Cập nhật phiếu biên bản' : 'Tải phiếu biên bản'}</DialogTitle>
+                                <DialogContent>
+                                    <input
+                                        type="file"
+                                        onChange={handleFileChange}
+                                        accept=".pdf, .jpg, .png"  // Giới hạn loại file nếu cần
+                                    />
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button onClick={handleCloseImportFile} color="primary">
+                                        Hủy
+                                    </Button>
+                                    <Button onClick={handleSubmitImportFile} color="primary">
+                                        {liquidationData?.fileSignature ? 'Cập nhật' : 'Tải lên'}
+                                    </Button>
+                                </DialogActions>
+                            </Dialog>
+                        </Box>
                     </Box>
 
                     <Box sx={{ display: 'flex', gap: 2 }}>
@@ -379,8 +377,9 @@ const ViewDetailLiquidation: FC<Props> = ({
                             disabled={liquidationData?.isAccept}
                             sx={{ textTransform: 'inherit' }}
                         >
-                            {buttonState}  {/* Hiển thị trạng thái của nút */}
+                            {buttonState}
                         </Button>
+
                     </Box>
                 </DialogActions>
 

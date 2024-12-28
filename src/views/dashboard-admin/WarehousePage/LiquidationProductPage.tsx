@@ -1,8 +1,8 @@
-import { Accordion, AccordionDetails, AccordionSummary, Chip, Divider, Stack, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Chip, Divider, Stack, Tooltip, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { GridExpandMoreIcon } from "@mui/x-data-grid";
 import { IconEye, IconPencil } from "@tabler/icons";
-import { IconPlus, IconTrash } from "@tabler/icons-react";
+import { IconCheck, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import TableList from "../../../components/custom/table-list/TableList";
@@ -259,17 +259,21 @@ const LiquidationProductPage = () => {
                 render: (row) => {
                     const signatures = row?.signatures || [];
                     let signatureText = '';
+                    let textColor = '';  // Để lưu màu sắc
 
-                    if (signatures.length === 2) {
+                    if (signatures.length >= 2) {
                         signatureText = `Hiệu trưởng đã ký`;
+                        textColor = 'green';  // Màu xanh lá cho trường hợp đã ký
                     } else if (signatures.includes('thủ thư')) {
                         signatureText = 'Thủ thư ký';
+                        textColor = '#de52cf';  // Màu cam cho trường hợp thủ thư ký
                     } else {
                         signatureText = 'Chưa ký';
+                        textColor = 'red';  // Màu đỏ cho trường hợp chưa ký
                     }
 
                     return (
-                        <Typography sx={{ mt: 0.5 }}>
+                        <Typography sx={{ mt: 0.5, color: textColor }}>
                             {signatureText}
                         </Typography>
                     );
@@ -283,6 +287,7 @@ const LiquidationProductPage = () => {
                 render: (row) => {
                     const canDelete = row?.signatures?.length <= 1;
                     const canEdit = row?.signatures?.length < 1;
+                    const hasFileSignature = row?.fileSignature != null;
 
                     return (
                         <Box
@@ -313,6 +318,17 @@ const LiquidationProductPage = () => {
                                     stroke={1.5}
                                     onClick={() => handleOpenConfirmDialog(row)}
                                 />
+                            )}
+                            {hasFileSignature && (
+                                <Tooltip title="Đã tải file biên bản" arrow>
+                                    <Box sx={{ cursor: 'default' }}>
+                                        <IconCheck
+                                            size={20}
+                                            stroke={1.5}
+                                            color="#75ba75"
+                                        />
+                                    </Box>
+                                </Tooltip>
                             )}
                         </Box>
                     );

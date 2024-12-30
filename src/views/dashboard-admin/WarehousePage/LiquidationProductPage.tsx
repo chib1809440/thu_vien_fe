@@ -1,19 +1,31 @@
-import { Accordion, AccordionDetails, AccordionSummary, Chip, Divider, Stack, Tooltip, Typography } from "@mui/material";
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Chip,
+    Divider,
+    Stack,
+    Tooltip,
+    Typography,
+} from "@mui/material";
 import { Box } from "@mui/system";
 import { GridExpandMoreIcon } from "@mui/x-data-grid";
 import { IconEye, IconPencil } from "@tabler/icons";
 import { IconCheck, IconPlus, IconTrash } from "@tabler/icons-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
-import { useAddLiquidation, useDeleteLiquidation, useDeleteManyLiquidation, useEditLiquidation } from "../../../hooks/services/liquidation/liquidation-mutation";
 import {
-    useFetchLiquidation,
-    useReFetchLiquidation,
-} from "../../../hooks/services/liquidation/liquidation-query";
+    useAddLiquidation,
+    useDeleteLiquidation,
+    useDeleteManyLiquidation,
+    useEditLiquidation,
+    useSignature,
+} from "../../../hooks/services/liquidation/liquidation-mutation";
+import { useFetchLiquidation, useReFetchLiquidation } from "../../../hooks/services/liquidation/liquidation-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn } from "../../../types/common/table";
 import { CreateLiquidation, TLiquidation } from "../../../types/models/liquidation.type";
@@ -30,18 +42,12 @@ const LiquidationProductPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
 
-    const filter = useMemo(
-        () =>
-            parserParams([
-                { compare: "", target: { search } },
-            ]),
-        [search]
-    );
+    const filter = useMemo(() => parserParams([{ compare: "", target: { search } }]), [search]);
 
     const { data, isLoading, isFetching } = useFetchLiquidation({
         limit,
         page,
-        ...filter
+        ...filter,
     });
 
     const mutationAdd = useAddLiquidation();
@@ -59,6 +65,7 @@ const LiquidationProductPage = () => {
     const [liquidationToDelete, setLiquidationToDelete] = useState<TLiquidation | null>(null);
     const [openViewDetail, setOpenViewDetail] = useState(false);
     const [liquidationDetails, setLiquidationDetails] = useState<TLiquidation | null>(null);
+    const mutationSignature = useSignature();
 
     const handleEditLiquidation = (row: TLiquidation) => {
         setSelectedEdit(row);
@@ -71,7 +78,7 @@ const LiquidationProductPage = () => {
     };
 
     const handleSubmit = (values: CreateLiquidation) => {
-        console.log("value", values);
+        // console.log("value", values);
         if (selectedEdit) {
             mutationEdit.mutate(
                 {
@@ -108,7 +115,7 @@ const LiquidationProductPage = () => {
             mutationDelete.mutate(liquidationToDelete._id, {
                 onSuccess: () => {
                     revalidate();
-                    toast.success('Xóa phiếu nhập kho thành công.');
+                    toast.success("Xóa phiếu nhập kho thành công.");
                     setOpenConfirmDialog(false);
                 },
             });
@@ -139,72 +146,84 @@ const LiquidationProductPage = () => {
                     const liquidations = row?.liquidations || [];
                     return (
                         <Accordion sx={{ mt: 2 }}>
-                            <AccordionSummary expandIcon={<GridExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+                            <AccordionSummary
+                                expandIcon={<GridExpandMoreIcon />}
+                                aria-controls="panel1a-content"
+                                id="panel1a-header"
+                            >
                                 <Typography>Chi tiết thanh lý</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
-                                {liquidations?.length > 0
-                                    && (
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                            {liquidations.slice(0, 2).map((liquidation, index) => (
-                                                <Box key={index}>
-                                                    {/* Kiểm tra liquidation.type để hiển thị tên tài sản hoặc tên ấn phẩm */}
-                                                    {liquidation.type === "Asset" ? (
-                                                        <Box>
-                                                            <Typography sx={{ mt: 0.5 }}>
-                                                                Tên tài sản: <strong>{capitalizeFirstLetter(liquidation?.name) || "Không có tên tài sản"}</strong>
-                                                            </Typography>
-                                                        </Box>
-                                                    ) : liquidation.type === "Publication" ? (
-                                                        <Box>
-                                                            <Typography sx={{ mt: 0.5 }}>
-                                                                Tên ấn phẩm: <strong>{capitalizeFirstLetter(liquidation?.name) || "Không có tên ấn phẩm"}</strong>
-                                                            </Typography>
-                                                        </Box>
-                                                    ) : null}
+                                {liquidations?.length > 0 && (
+                                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                                        {liquidations.slice(0, 2).map((liquidation, index) => (
+                                            <Box key={index}>
+                                                {/* Kiểm tra liquidation.type để hiển thị tên tài sản hoặc tên ấn phẩm */}
+                                                {liquidation.type === "Asset" ? (
+                                                    <Box>
+                                                        <Typography sx={{ mt: 0.5 }}>
+                                                            Tên tài sản:{" "}
+                                                            <strong>
+                                                                {capitalizeFirstLetter(liquidation?.name) ||
+                                                                    "Không có tên tài sản"}
+                                                            </strong>
+                                                        </Typography>
+                                                    </Box>
+                                                ) : liquidation.type === "Publication" ? (
+                                                    <Box>
+                                                        <Typography sx={{ mt: 0.5 }}>
+                                                            Tên ấn phẩm:{" "}
+                                                            <strong>
+                                                                {capitalizeFirstLetter(liquidation?.name) ||
+                                                                    "Không có tên ấn phẩm"}
+                                                            </strong>
+                                                        </Typography>
+                                                    </Box>
+                                                ) : null}
 
-                                                    {/* Hiển thị số lượng thanh lý */}
-                                                    <Typography sx={{ mt: 0.5 }}>
-                                                        SL thanh lý: <strong>{liquidation?.quantityLiquidation || "Không có số lượng"}</strong>
-                                                    </Typography>
+                                                {/* Hiển thị số lượng thanh lý */}
+                                                <Typography sx={{ mt: 0.5 }}>
+                                                    SL thanh lý:{" "}
+                                                    <strong>
+                                                        {liquidation?.quantityLiquidation || "Không có số lượng"}
+                                                    </strong>
+                                                </Typography>
 
-                                                    {/* Định dạng giá */}
-                                                    <Typography sx={{ mt: 0.5 }}>
-                                                        Giá: <strong>
-                                                            {liquidation?.priceLiquidation
-                                                                ? new Intl.NumberFormat('vi-VN', {
-                                                                    style: 'currency',
-                                                                    currency: 'VND',
-                                                                }).format(liquidation.priceLiquidation)
-                                                                : "Không có giá"
-                                                            }
-                                                        </strong>
-                                                    </Typography>
-                                                    {/* <Typography sx={{ mt: 0.5 }}>
+                                                {/* Định dạng giá */}
+                                                <Typography sx={{ mt: 0.5 }}>
+                                                    Giá:{" "}
+                                                    <strong>
+                                                        {liquidation?.priceLiquidation
+                                                            ? new Intl.NumberFormat("vi-VN", {
+                                                                style: "currency",
+                                                                currency: "VND",
+                                                            }).format(liquidation.priceLiquidation)
+                                                            : "Không có giá"}
+                                                    </strong>
+                                                </Typography>
+                                                {/* <Typography sx={{ mt: 0.5 }}>
                                                         Vị trí: <strong>
                                                             {capitalizeFirstLetter(liquidation?.position)}
                                                         </strong>
                                                     </Typography> */}
 
-                                                    {/* Đường gạch ngang giữa các phần tử, trừ phần tử cuối */}
-                                                    {index < liquidations.length - 1 && (
-                                                        <Divider sx={{ my: 1 }} />
-                                                    )}
-                                                </Box>
-                                            ))}
-                                            {liquidations.length > 2 && (
-                                                <Chip
-                                                    label={`+${liquidations?.length - 2} vật phẩm khác`}
-                                                    variant="outlined"
-                                                    color="primary"
-                                                />
-                                            )}
-                                        </Box>
-                                    )}
+                                                {/* Đường gạch ngang giữa các phần tử, trừ phần tử cuối */}
+                                                {index < liquidations.length - 1 && <Divider sx={{ my: 1 }} />}
+                                            </Box>
+                                        ))}
+                                        {liquidations.length > 2 && (
+                                            <Chip
+                                                label={`+${liquidations?.length - 2} vật phẩm khác`}
+                                                variant="outlined"
+                                                color="primary"
+                                            />
+                                        )}
+                                    </Box>
+                                )}
                             </AccordionDetails>
                         </Accordion>
                     );
-                }
+                },
             },
             {
                 id: "reason",
@@ -212,8 +231,9 @@ const LiquidationProductPage = () => {
                 label: "Lý do thanh lý",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 150 },
-                render: (row) => { return capitalizeFirstLetter(row?.reason) }
-                ,
+                render: (row) => {
+                    return capitalizeFirstLetter(row?.reason);
+                },
             },
             {
                 id: "quantity",
@@ -224,9 +244,7 @@ const LiquidationProductPage = () => {
                     const totalQuantity = row?.liquidations?.reduce((total, liquidation) => {
                         return total + (liquidation?.quantityLiquidation || 0);
                     }, 0);
-                    return (
-                        <Typography sx={{ mt: 0.5 }}>{totalQuantity}</Typography>
-                    )
+                    return <Typography sx={{ mt: 0.5 }}>{totalQuantity}</Typography>;
                 },
             },
             {
@@ -241,14 +259,14 @@ const LiquidationProductPage = () => {
                     }, 0);
 
                     // Định dạng giá trị tiền tệ
-                    const formattedPrice = totalPrice ? new Intl.NumberFormat('vi-VN', {
-                        style: 'currency',
-                        currency: 'VND',
-                    }).format(totalPrice) : "0 VND";
+                    const formattedPrice = totalPrice
+                        ? new Intl.NumberFormat("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                        }).format(totalPrice)
+                        : "0 VND";
 
-                    return (
-                        <Typography sx={{ mt: 0.5 }}>{formattedPrice}</Typography>
-                    );
+                    return <Typography sx={{ mt: 0.5 }}>{formattedPrice}</Typography>;
                 },
             },
             {
@@ -258,25 +276,21 @@ const LiquidationProductPage = () => {
                 align: "left",
                 render: (row) => {
                     const signatures = row?.signatures || [];
-                    let signatureText = '';
-                    let textColor = '';  // Để lưu màu sắc
+                    let signatureText = "";
+                    let textColor = ""; // Để lưu màu sắc
 
                     if (signatures.length >= 2) {
                         signatureText = `Hiệu trưởng đã ký`;
-                        textColor = 'green';  // Màu xanh lá cho trường hợp đã ký
-                    } else if (signatures.includes('thủ thư')) {
-                        signatureText = 'Thủ thư ký';
-                        textColor = '#de52cf';  // Màu cam cho trường hợp thủ thư ký
+                        textColor = "green"; // Màu xanh lá cho trường hợp đã ký
+                    } else if (signatures.includes("thủ thư")) {
+                        signatureText = "Thủ thư ký";
+                        textColor = "#de52cf"; // Màu cam cho trường hợp thủ thư ký
                     } else {
-                        signatureText = 'Chưa ký';
-                        textColor = 'red';  // Màu đỏ cho trường hợp chưa ký
+                        signatureText = "Chưa ký";
+                        textColor = "red"; // Màu đỏ cho trường hợp chưa ký
                     }
 
-                    return (
-                        <Typography sx={{ mt: 0.5, color: textColor }}>
-                            {signatureText}
-                        </Typography>
-                    );
+                    return <Typography sx={{ mt: 0.5, color: textColor }}>{signatureText}</Typography>;
                 },
             },
             {
@@ -298,35 +312,19 @@ const LiquidationProductPage = () => {
                                 gap: 1,
                             }}
                         >
-                            <IconEye
-                                size={20}
-                                stroke={1.5}
-                                onClick={() => handleViewDetails(row)}
-                            />
+                            <IconEye size={20} stroke={1.5} onClick={() => handleViewDetails(row)} />
 
                             {canEdit && (
-                                <IconPencil
-                                    onClick={() => handleEditLiquidation(row)}
-                                    size={20}
-                                    stroke={1.5}
-                                />
+                                <IconPencil onClick={() => handleEditLiquidation(row)} size={20} stroke={1.5} />
                             )}
 
                             {canDelete && (
-                                <IconTrash
-                                    size={20}
-                                    stroke={1.5}
-                                    onClick={() => handleOpenConfirmDialog(row)}
-                                />
+                                <IconTrash size={20} stroke={1.5} onClick={() => handleOpenConfirmDialog(row)} />
                             )}
                             {hasFileSignature && (
                                 <Tooltip title="Đã tải file biên bản" arrow>
-                                    <Box sx={{ cursor: 'default' }}>
-                                        <IconCheck
-                                            size={20}
-                                            stroke={1.5}
-                                            color="#75ba75"
-                                        />
+                                    <Box sx={{ cursor: "default" }}>
+                                        <IconCheck size={20} stroke={1.5} color="#75ba75" />
                                     </Box>
                                 </Tooltip>
                             )}
@@ -382,7 +380,6 @@ const LiquidationProductPage = () => {
 
     const initialValues = useMemo(() => {
         if (selectedEdit) {
-
             return {
                 note: selectedEdit.note,
                 reason: selectedEdit.reason,
@@ -393,7 +390,7 @@ const LiquidationProductPage = () => {
         return {
             note: "",
             reason: "",
-            status: ""
+            status: "",
         };
     }, [selectedEdit]);
 
@@ -401,8 +398,38 @@ const LiquidationProductPage = () => {
         setOpenAddEdit(true);
     };
 
-    console.log(selectedEdit);
+    useEffect(() => {
+        if (!data || !data?.data || !data?.data?.result || data?.data?.result?.length === 0 || !liquidationDetails)
+            return;
 
+        const prevSelected = { ...liquidationDetails };
+        const liquidationData = [...data.data.result];
+
+        const findSelectedUpdated = liquidationData.find((item) => item._id === prevSelected._id);
+        if (findSelectedUpdated) setLiquidationDetails(findSelectedUpdated);
+    }, [data]);
+
+    const handleSubmitConfirmSignature = (id: string, callbackCloseDialogConfirm: () => void) => {
+        if (!liquidationDetails) return;
+
+        mutationSignature.mutate(id, {
+            onSuccess: () => {
+                revalidate();
+                toast.success("Xác nhận ký thành công.");
+
+                callbackCloseDialogConfirm();
+            },
+            onError: (error) => {
+                const errorMessages = (error?.messages || [error?.message]).flat();
+
+                const errorText = errorMessages.map((msg, index) => `<strong>${index + 1}.</strong> ${capitalizeFirstLetter(msg)}`).join('\n');
+
+                toast.error(<div dangerouslySetInnerHTML={{ __html: errorText }} />, {
+                    autoClose: 5000,
+                });
+            },
+        });
+    };
 
     return (
         <div>
@@ -433,23 +460,22 @@ const LiquidationProductPage = () => {
                     }}
                 >
                     <Box display="flex" flexWrap="wrap">
-                        {
-                            hasPermission([
-                                { resource: "stockassets", action: "manage" },
-                                { resource: "stockassets", action: "create" },
-                            ]) &&
-                            <Box>
-                                <StyledButton
-                                    color="primary"
-                                    size="small"
-                                    startIcon={<IconPlus stroke={2} />}
-                                    variant="contained"
-                                    onClick={addLiquidation}
-                                >
-                                    Tạo phiếu thanh lý
-                                </StyledButton>
-                            </Box>
-                        }
+                        {hasPermission([
+                            { resource: "stockassets", action: "manage" },
+                            { resource: "stockassets", action: "create" },
+                        ]) && (
+                                <Box>
+                                    <StyledButton
+                                        color="primary"
+                                        size="small"
+                                        startIcon={<IconPlus stroke={2} />}
+                                        variant="contained"
+                                        onClick={addLiquidation}
+                                    >
+                                        Tạo phiếu thanh lý
+                                    </StyledButton>
+                                </Box>
+                            )}
                     </Box>
                 </Stack>
 
@@ -487,6 +513,7 @@ const LiquidationProductPage = () => {
                         open={openViewDetail}
                         onClose={handleCloseViewDetail}
                         liquidationData={liquidationDetails}
+                        onSubmitConfirmSignature={handleSubmitConfirmSignature}
                     />
                 )}
             </MainCard>

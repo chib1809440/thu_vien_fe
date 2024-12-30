@@ -21,6 +21,7 @@ type TLiquidationDefault = {
     priceLiquidation: number;
     position: TPosition;
     name?: string;
+    quantityWarehouse?:number
 };
 
 // Define type liquidation with type

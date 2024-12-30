@@ -107,6 +107,38 @@ const FormAddEditLiquidation: FC<Props> = ({
                 toast.error("Không có giá trị để thanh lý! Vui lòng kiểm tra thông tin.")
                 return;
             }
+            const errorMessages = [];
+            filteredData.forEach((item) => {
+                const quantityLiquidation = item.quantityLiquidation || 0;
+                const quantityUsed = item.quantityUsed || 0;
+                const quantityWarehouse = item.quantityWarehouse || 0;
+                const shelvesQuantity = item.shelvesQuantity || 0;
+                const quantity = item.quantity || 0;
+
+                if (item.type === "Asset") {
+                    if (item.position === "trưng bày" && quantityLiquidation > quantityUsed) {
+                        errorMessages.push(`Số lượng thanh lý cho tài sản "<strong>${item.name}</strong>" vượt quá số lượng trưng bày <strong>(${quantityUsed})</strong>`);
+                    } else if (item.position === "trong kho" && quantityLiquidation > quantityWarehouse) {
+                        errorMessages.push(`Số lượng thanh lý cho tài sản "<strong>${item.name}</strong>" vượt quá số lượng trong kho <strong>(${quantityWarehouse})</strong>`);
+                    }
+                } else if (item.type === "Publication") {
+                    if (item.position === "trưng bày" && quantityLiquidation > shelvesQuantity) {
+                        errorMessages.push(`Số lượng thanh lý cho ấn phẩm "<strong>${item.name}</strong>" vượt quá số lượng trưng bày <strong>(${shelvesQuantity})</strong>`);
+                    } else if (item.position === "trong kho" && quantityLiquidation > quantity) {
+                        errorMessages.push(`Số lượng thanh lý cho ấn phẩm "<strong>${item.name}</strong>" vượt quá số lượng trong kho <strong>(${quantity})</strong>`);
+                    }
+                }
+            });
+
+            // Nếu có lỗi, hiển thị tất cả lỗi
+            if (errorMessages.length > 0) {
+                const errorText = errorMessages.flat().map((msg, index) => `<strong>${index + 1}.</strong> ${capitalizeFirstLetter(msg)}`).join('<br /><br />');
+
+                toast.error(<div dangerouslySetInnerHTML={{ __html: errorText }} />, {
+                    autoClose: 5000,
+                });
+                return;
+            }
 
             if (onSubmit) {
                 const createLiqui: CreateLiquidation = {
@@ -116,6 +148,8 @@ const FormAddEditLiquidation: FC<Props> = ({
                 };
                 onSubmit(createLiqui, resetForm);
             }
+
+
         },
     });
     const { errors, touched, values, setFieldValue, handleSubmit, getFieldProps } = useMemo(() => formik, [formik]);
@@ -202,10 +236,14 @@ const FormAddEditLiquidation: FC<Props> = ({
                     priceLiquidation: item?.priceLiquidation,
                     position: item?.position,
                     type: item?.type,
+                    //SL trong kho của ấn phẩm
                     quantity: item?.quantity || 0,
+                    // tong SL tai san
                     quantityTotal: item?.quantityTotal || 0,
                     quantityUsed: item?.quantityUsed || 0,
                     shelvesQuantity: item?.shelvesQuantity || 0,
+                    //SL trong kho ts
+                    quantityWarehouse: item?.quantityWarehouse || 0,
                     barcode: item?.barcode,
                 };
                 // Đẩy object vào mảng editLiquiData
@@ -342,7 +380,7 @@ const FormAddEditLiquidation: FC<Props> = ({
                                                             <Box style={{ width: "100%" }}>
                                                                 {row.itemId !== "" ? (
                                                                     <Box>
-                                                                        <Typography>{capitalizeFirstLetter(row.name)}</Typography>
+                                                                        {`${capitalizeFirstLetter(row.name)}`}
                                                                     </Box>
 
                                                                 ) : (

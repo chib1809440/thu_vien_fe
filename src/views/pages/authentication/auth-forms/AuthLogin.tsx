@@ -9,7 +9,8 @@ import {
     IconButton,
     InputAdornment,
     InputLabel,
-    OutlinedInput
+    OutlinedInput,
+    Typography
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
@@ -194,6 +195,17 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
                                 Forgot Password?
                             </Typography>
                         </Grid> */}
+                        <Grid item xs={12}>
+                            <Button sx={{ float: "right" }}>
+                                <Typography
+                                    variant="caption"
+                                    fontSize="16px"
+                                    color="#de524a"
+                                >
+                                    Quên mật khẩu?
+                                </Typography>
+                            </Button>
+                        </Grid>
                     </Grid>
 
                     <Box sx={{ mt: 2 }}>

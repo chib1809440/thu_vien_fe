@@ -355,7 +355,7 @@ const LoanSlipPage = () => {
             {
                 id: "isAgree",
                 disablePadding: "none",
-                label: "Duyệt",
+                label: "Quy trình thủ thư",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
                 render: (row) => {
@@ -376,14 +376,19 @@ const LoanSlipPage = () => {
                                         label="Giao sách"
                                         variant="filled"
                                     />
-                                ) : row.isAgree === true ? (
-                                    // Nếu isAgree là true, render chip "Đã duyệt"
+                                ) : row?.status === "đang mượn" ? (
                                     <Chip
-                                        style={{ color: 'white', background: '#096A5E' }}
-                                        label="Đã duyệt"
+                                        style={{ color: 'white', background: '#204165' }}
+                                        label="Đã giao sách"
                                         variant="filled"
                                     />
-                                ) : (
+                                ) : row.isAgree && row.isReturn ? (
+                                    <Chip
+                                        style={{ color: 'white', background: '#096A5E' }}
+                                        label="Đã nhận sách"
+                                        variant="filled"
+                                    />
+                                ) :  (
                                     // Nếu isAgree là false, render chip "Chưa duyệt"
                                     <Chip
                                         style={{ color: 'black', background: 'yellow' }}

@@ -99,6 +99,21 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
             const filteredPublications = publications.filter(
                 (publication) => publication.publicationId !== ""
             );
+
+            const hasInvalidPrice = publications.some(
+                (item) => item.price === 0 && item.publicationId !== ""
+            );
+
+            if (hasInvalidPrice) {
+                toast.error("Vui lòng nhập giá nhập lớn hơn 0.");
+                return;
+            }
+
+            if (filteredPublications?.length === 0) {
+                toast.error("Không có giá trị để nhập kho! Vui lòng kiểm tra thông tin.")
+                return;
+            }
+
             if (onSubmit) {
                 const createLoanSlip: TWareHouseReceiptCreate = {
                     note: values.note,
@@ -143,6 +158,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
             quantityWareHouse: 0,
             name: "",
             barcode: "",
+            price: 0,
         },
     ]);
     const mutationAdd = useAddPublications();
@@ -235,6 +251,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                             publicationId: publicationData._id,
                                             quantityWareHouse: 1,
                                             barcode: publicationData.barcode,
+                                            price: 0,
                                         } // Increment the quantityLoan
                                         : pub
                                 );
@@ -243,6 +260,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                     publicationId: "",
                                     quantityWareHouse: 1,
                                     barcode: "",
+                                    price: 0,
                                 });
                                 return newPublications;
                             }
@@ -287,6 +305,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
             publicationId: "",
             quantityWareHouse: 1,
             barcode: "",
+            price: 0,
         };
         setPublications([...publications, newPublication]); // Thêm phần tử mới vào danh sách
     };
@@ -410,6 +429,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                     name: publication.name,
                     quantityWareHouse: publication.quantityWareHouse,
                     barcode: publication.barcode,
+                    price: publication.priceInput,
                 };
                 // Đẩy object vào mảng editPublications
                 editPublications.push(newPublication);
@@ -435,6 +455,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                 name: value.name,
                 publicationId: value.publicationId,
                 quantityWareHouse: 1,
+                price: 0,
             };
 
             updatedPublications[index] = newValue;
@@ -446,6 +467,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                     publicationId: "",
                     quantityWareHouse: 1,
                     barcode: "",
+                    price: 0,
                 });
             }
         }
@@ -690,6 +712,12 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                                         Số lượng
                                                     </StyledTableCell>
                                                     <StyledTableCell align="center" width="15%">
+                                                        Giá nhập
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="center" width="15%">
+                                                        Tổng giá
+                                                    </StyledTableCell>
+                                                    <StyledTableCell align="center" width="15%">
                                                         Hành động
                                                     </StyledTableCell>
                                                 </TableRow>
@@ -784,6 +812,48 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                                                             e.preventDefault(); // Ngăn hành động mặc định khi nhấn Enter
                                                                         }
                                                                     }}
+                                                                />
+                                                            </Box>
+                                                        </StyledTableCell>
+                                                        <StyledTableCell align="center">
+                                                            <Box style={{ width: "100%" }}>
+                                                                <TextField
+                                                                    variant="outlined"
+                                                                    fullWidth
+                                                                    placeholder="Giá nhập"
+                                                                    value={row.price}
+                                                                    onChange={(e) => {
+                                                                        const updatedPublications = [
+                                                                            ...publications,
+                                                                        ];
+                                                                        updatedPublications[
+                                                                            index
+                                                                        ].price = Number(
+                                                                            e.target.value
+                                                                        );
+                                                                        setPublications(updatedPublications);
+                                                                    }}
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === "Enter") {
+                                                                            e.preventDefault(); // Ngăn hành động mặc định khi nhấn Enter
+                                                                        }
+                                                                    }}
+                                                                    error={Number(row.price) <= 0}
+                                                                />
+                                                            </Box>
+                                                        </StyledTableCell>
+                                                        <StyledTableCell align="center">
+                                                            <Box style={{ width: "100%" }}>
+                                                                <TextField
+                                                                    variant="outlined"
+                                                                    fullWidth
+                                                                    placeholder="Tổng giá"
+                                                                    value={
+                                                                        row.price *
+                                                                        row.quantityWareHouse
+                                                                    }
+                                                                    InputProps={{ readOnly: true }}
+                                                                    disabled
                                                                 />
                                                             </Box>
                                                         </StyledTableCell>

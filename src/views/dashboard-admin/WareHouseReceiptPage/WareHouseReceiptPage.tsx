@@ -150,7 +150,10 @@ const WareHouseReceiptPage = () => {
                                     <Typography><strong>Danh sách nhập:</strong></Typography>
                                     <ul style={{ marginTop: 5 }}>
                                         {row?.publications.map((publication, idx) => (
-                                            <li key={idx}>{capitalizeFirstLetter(publication?.name)} (SLN: {publication?.quantityWareHouse})</li>
+                                            <li key={idx}>
+                                                {capitalizeFirstLetter(publication?.name)} (SLN:
+                                                <strong>{publication?.quantityWareHouse}</strong> - Tổng giá: <strong>{publication?.priceInput * publication?.quantity}</strong>)
+                                            </li>
                                         ))}
                                     </ul>
                                 </Box>

@@ -1209,6 +1209,12 @@ const FormAddEditLoanSlip: FC<Props> = ({
                         </Button>
                         {
 
+                             isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button style={{ background: '#de524a', color: 'white' }} variant="contained"  >
+                                Báo mất
+                            </Button>
+                        }
+                        {
+
                             loanSlip && (libraryId === initialValues.libraryId) && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
                                 Trả sách
                             </Button>

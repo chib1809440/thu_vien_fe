@@ -5,10 +5,7 @@ import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter
 
 // Đảm bảo xuất component theo cách đúng
 const PrintLiquidation = forwardRef<HTMLDivElement, { liquidationData: TLiquidation }>(
-    ({ liquidationData }, ref) => {
-        console.log(liquidationData);
-        
-
+    ({ liquidationData }, ref) => {   
 
         return (
             <div ref={ref} className="invoice-content" style={{ marginTop: 0, fontSize: '9px' }}>

@@ -1235,14 +1235,20 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             Đóng
                         </Button>
                         {
+                            !loanSlip?.isReturn && loanSlip?.isAgree && isEditMode &&
+                            <Button style={{ background: '#de524a', color: 'white', textTransform: "inherit" }} variant="contained">
+                                Báo mất
+                            </Button>
+                        }
+                        {
 
-                            (roleName === "Owner" || roleName === "Admin") && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                            (roleName === "Owner" || roleName === "Admin") && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white', textTransform: "inherit" }} variant="contained"  >
                                 Trả sách
                             </Button>
                         }
                         {
 
-                            (roleName === "Owner" || roleName === "Admin") && isEditMode && <Button onClick={() => handleOpenDialog('print')} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                            (roleName === "Owner" || roleName === "Admin") && isEditMode && <Button onClick={() => handleOpenDialog('print')} style={{ background: '#212121', color: 'white', textTransform: "inherit" }} variant="contained"  >
                                 In
                             </Button>
                         }
@@ -1255,7 +1261,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             !loanSlip.isCancel && (
                                 <Button
                                     onClick={() => handleOpenDialog('cancel')}
-                                    style={{ background: '#c62828', color: 'white' }}
+                                    style={{ background: '#c62828', color: 'white', textTransform: "inherit" }}
                                     variant="contained"
                                 >
                                     Hủy phiếu mượn
@@ -1269,6 +1275,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                     onClick={() => handleOpenDialog('submit')}
                                     variant="contained"
                                     color="primary"
+                                    sx={{ textTransform: "inherit" }}
                                 >
                                     {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
                                 </Button>
@@ -1280,6 +1287,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                             onClick={() => handleOpenDialog('submit')}
                                             variant="contained"
                                             color="primary"
+                                            sx={{ textTransform: "inherit" }}
                                         >
                                             {isFetching ? "Đang thêm..." : "Thêm mới"}
                                         </Button>

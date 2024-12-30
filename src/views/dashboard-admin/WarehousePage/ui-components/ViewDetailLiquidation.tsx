@@ -1,8 +1,22 @@
-import { Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Table, TableBody, TableContainer, TableHead, Typography } from "@mui/material";
-import Paper from '@mui/material/Paper';
-import { styled } from '@mui/material/styles';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableRow from '@mui/material/TableRow';
+import {
+    Box,
+    Button,
+    Chip,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Grid,
+    Table,
+    TableBody,
+    TableContainer,
+    TableHead,
+    Typography,
+} from "@mui/material";
+import Paper from "@mui/material/Paper";
+import { styled } from "@mui/material/styles";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
+import TableRow from "@mui/material/TableRow";
 import { FC, useEffect, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
@@ -28,11 +42,11 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(odd)': {
+    "&:nth-of-type(odd)": {
         backgroundColor: theme.palette.action.hover,
     },
     // hide last border
-    '&:last-child td, &:last-child th': {
+    "&:last-child td, &:last-child th": {
         border: 0,
     },
 }));
@@ -41,14 +55,11 @@ type Props = {
     open: boolean;
     onClose: () => void;
     liquidationData?: TLiquidation;
+    onSubmitConfirmSignature?: (id: string, callbackCloseDialogConfirm: () => void) => void;
 };
 
-const ViewDetailLiquidation: FC<Props> = ({
-    open,
-    onClose,
-    liquidationData,
-}) => {
-    const [buttonState, setButtonState] = useState<'Thủ thư ký' | 'Hiệu trưởng ký' | 'Đã ký'>('Thủ thư ký');
+const ViewDetailLiquidation: FC<Props> = ({ open, onClose, onSubmitConfirmSignature, liquidationData }) => {
+    const [buttonState, setButtonState] = useState<"Thủ thư ký" | "Hiệu trưởng ký" | "Đã ký">("Thủ thư ký");
     const [liquidationToSignature, setLiquidationToSignature] = useState<TLiquidation | null>(null);
     const [openConfirmSignatureDialog, setOpenConfirmSignatureDialog] = useState(false);
     const [openImportFile, setOpenImportFile] = useState(false);
@@ -72,60 +83,30 @@ const ViewDetailLiquidation: FC<Props> = ({
     useEffect(() => {
         if (liquidationData) {
             if (liquidationData.signatures?.length >= 2) {
-                setButtonState('Đã ký');
+                setButtonState("Đã ký");
             } else if (liquidationData.signatures?.length === 1) {
-                setButtonState('Hiệu trưởng ký');
+                setButtonState("Hiệu trưởng ký");
             } else {
-                setButtonState('Thủ thư ký');
+                setButtonState("Thủ thư ký");
             }
         }
     }, [liquidationData]);
 
-
-
     const handleConfirmSignature = () => {
         if (liquidationToSignature) {
-            mutationSignature.mutate(liquidationToSignature._id, {
-                onSuccess: () => {
-                    revalidate();
-                    toast.success('Xác nhận ký thành công.');
+            const payload = liquidationToSignature._id;            
+            const callbackCloseDialogConfirm = () => {
+                setOpenConfirmSignatureDialog(false);
+            };
 
-                    // Cập nhật trực tiếp trạng thái buttonState sau khi ký mà không cần đóng modal
-                    const updatedSignaturesLength = liquidationToSignature.signatures?.length || 0;
-                    const newButtonState = updatedSignaturesLength >= 2
-                        ? 'Đã ký'
-                        : updatedSignaturesLength === 1
-                            ? 'Hiệu trưởng ký'
-                            : 'Thủ thư ký';
-
-                    // Cập nhật trạng thái button mà không cần đóng modal
-                    setButtonState(newButtonState);
-
-                    setOpenConfirmSignatureDialog(false);
-                },
-                onError: (error) => {
-                    toast.error('Lỗi khi xác nhận chữ ký.');
-                },
-            });
+            onSubmitConfirmSignature(payload, callbackCloseDialogConfirm);
         }
     };
 
     const handleIsAccept = (row: TLiquidation) => {
         setLiquidationToSignature(row);
-
-        if (row.signatures?.length >= 2) {
-            setButtonState('Đã ký');
-        } else if (row.signatures?.length === 1) {
-            setButtonState('Hiệu trưởng ký');
-        } else {
-            setButtonState('Thủ thư ký');
-        }
-
         setOpenConfirmSignatureDialog(true);
     };
-
-    console.log(buttonState)
-
 
     const handleSubmitImportFile = async () => {
         if (!file) {
@@ -192,15 +173,11 @@ const ViewDetailLiquidation: FC<Props> = ({
                 }}
                 disableEscapeKeyDown
             >
-                <DialogTitle sx={{ p: 4 }}>
-                    Chi tiết phiếu biên bản thanh lý
-                </DialogTitle>
+                <DialogTitle sx={{ p: 4 }}>Chi tiết phiếu biên bản thanh lý</DialogTitle>
 
-                <DialogContent sx={{ p: { xs: 3, sm: 3, md: 8 } }} >
-                    <Box sx={{ display: 'none' }}>
-                        {
-                            liquidationData && <PrintLiquidation ref={componentRef} liquidationData={liquidationData} />
-                        }
+                <DialogContent sx={{ p: { xs: 3, sm: 3, md: 8 } }}>
+                    <Box sx={{ display: "none" }}>
+                        {liquidationData && <PrintLiquidation ref={componentRef} liquidationData={liquidationData} />}
                     </Box>
                     <Typography variant="body1" sx={{ mt: 1 }}>
                         <strong>Ngày tạo:</strong> {formatDate(liquidationData?.createdAt)}
@@ -211,55 +188,100 @@ const ViewDetailLiquidation: FC<Props> = ({
                     <Typography variant="body1" sx={{ mt: 1 }}>
                         <strong>Trạng thái:</strong> {liquidationData?.isAccept === true ? "Đã ký" : "Chưa ký"}
                     </Typography>
-                    {
-                        liquidationData?.liquidations?.length > 0 && <Grid container spacing={2}>
+                    {liquidationData?.liquidations?.length > 0 && (
+                        <Grid container spacing={2}>
                             <Grid item xs={12}>
-                                <Box sx={{ mt: 4, display: 'flex', alignItems: 'center' }}>
-                                    <Chip
-                                        color='primary'
-                                        label="Thông tin thanh lý"
-                                        variant="filled"
-                                    />
+                                <Box sx={{ mt: 4, display: "flex", alignItems: "center" }}>
+                                    <Chip color="primary" label="Thông tin thanh lý" variant="filled" />
                                 </Box>
                                 <TableContainer component={Paper} sx={{ mt: 4 }}>
                                     <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                                        <TableHead >
+                                        <TableHead>
                                             <TableRow>
-                                                <StyledTableCell align="left" width='20%'>Mã barcode</StyledTableCell>
-                                                <StyledTableCell align="left" width='40%'>Thông tin thanh lý</StyledTableCell>
-                                                <StyledTableCell align="left" width='15%'>Số lượng thanh lý</StyledTableCell>
-                                                <StyledTableCell align="left" width='15%'>Giá</StyledTableCell>
-                                                <StyledTableCell align="left" width='15%'>Tổng giá</StyledTableCell>
+                                                <StyledTableCell align="left" width="20%">
+                                                    Mã barcode
+                                                </StyledTableCell>
+                                                <StyledTableCell align="left" width="40%">
+                                                    Thông tin thanh lý
+                                                </StyledTableCell>
+                                                <StyledTableCell align="left" width="15%">
+                                                    Số lượng thanh lý
+                                                </StyledTableCell>
+                                                <StyledTableCell align="left" width="15%">
+                                                    Giá
+                                                </StyledTableCell>
+                                                <StyledTableCell align="left" width="15%">
+                                                    Tổng giá
+                                                </StyledTableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
                                             {liquidationData?.liquidations?.map((row, index) => (
                                                 <StyledTableRow key={index}>
                                                     <StyledTableCell align="left">
-                                                        <Box style={{ width: "100%" }} >
+                                                        <Box style={{ width: "100%" }}>
                                                             {row?.barcode || "Không có barcode"}
                                                         </Box>
                                                     </StyledTableCell>
                                                     <StyledTableCell align="left">
                                                         <Box>
                                                             <Typography>{row?.name || "Không có dữ liệu"}</Typography>
-                                                            <Typography sx={{ mt: 0.5 }}>Vị trí: <strong>{capitalizeFirstLetter(row?.position) || "Không có dữ liệu"}</strong></Typography>
-                                                            <Typography sx={{ mt: 0.5 }}>Loại: <strong>{getLabelFromOptions(typeLiquidationOptions, row?.type) || "Không có dữ liệu"}</strong></Typography>
-                                                            {
-                                                                row?.type === "Asset" &&
+                                                            <Typography sx={{ mt: 0.5 }}>
+                                                                Vị trí:{" "}
+                                                                <strong>
+                                                                    {capitalizeFirstLetter(row?.position) ||
+                                                                        "Không có dữ liệu"}
+                                                                </strong>
+                                                            </Typography>
+                                                            <Typography sx={{ mt: 0.5 }}>
+                                                                Loại:{" "}
+                                                                <strong>
+                                                                    {getLabelFromOptions(
+                                                                        typeLiquidationOptions,
+                                                                        row?.type
+                                                                    ) || "Không có dữ liệu"}
+                                                                </strong>
+                                                            </Typography>
+                                                            {row?.type === "Asset" && (
                                                                 <>
-                                                                    <Typography sx={{ mt: 0.5 }}>SL trong kho: <strong>{row?.quantityWarehouse !== undefined ? row?.quantityWarehouse : "0"}</strong></Typography>
-                                                                    <Typography sx={{ mt: 0.5 }}>SL sử dụng: <strong>{row?.quantityUsed !== undefined ? row?.quantityUsed : "0"}</strong></Typography>
+                                                                    <Typography sx={{ mt: 0.5 }}>
+                                                                        SL trong kho:{" "}
+                                                                        <strong>
+                                                                            {row?.quantityWarehouse !== undefined
+                                                                                ? row?.quantityWarehouse
+                                                                                : "0"}
+                                                                        </strong>
+                                                                    </Typography>
+                                                                    <Typography sx={{ mt: 0.5 }}>
+                                                                        SL sử dụng:{" "}
+                                                                        <strong>
+                                                                            {row?.quantityUsed !== undefined
+                                                                                ? row?.quantityUsed
+                                                                                : "0"}
+                                                                        </strong>
+                                                                    </Typography>
                                                                 </>
-                                                            }
-                                                            {
-                                                                row?.type === "Publication" &&
+                                                            )}
+                                                            {row?.type === "Publication" && (
                                                                 <>
-                                                                    <Typography sx={{ mt: 0.5 }}>SL trong kho: <strong>{row?.quantity !== undefined ? row?.quantity : "0"}</strong></Typography>
-                                                                    <Typography sx={{ mt: 0.5 }}>SL trên kệ: <strong>{row?.shelvesQuantity !== undefined ? row?.shelvesQuantity : "0"}</strong></Typography>
+                                                                    <Typography sx={{ mt: 0.5 }}>
+                                                                        SL trong kho:{" "}
+                                                                        <strong>
+                                                                            {row?.quantity !== undefined
+                                                                                ? row?.quantity
+                                                                                : "0"}
+                                                                        </strong>
+                                                                    </Typography>
+                                                                    <Typography sx={{ mt: 0.5 }}>
+                                                                        SL trên kệ:{" "}
+                                                                        <strong>
+                                                                            {row?.shelvesQuantity !== undefined
+                                                                                ? row?.shelvesQuantity
+                                                                                : "0"}
+                                                                        </strong>
+                                                                    </Typography>
                                                                 </>
-                                                            }
-
+                                                            )}
                                                         </Box>
                                                     </StyledTableCell>
                                                     <StyledTableCell align="left">
@@ -272,22 +294,31 @@ const ViewDetailLiquidation: FC<Props> = ({
                                                         {row?.priceLiquidation * row?.quantityLiquidation || "0"}
                                                     </StyledTableCell>
                                                 </StyledTableRow>
-
                                             ))}
                                             <StyledTableRow>
-                                                <StyledTableCell colSpan={2} align="center"><strong>Tổng cộng:</strong></StyledTableCell>
+                                                <StyledTableCell colSpan={2} align="center">
+                                                    <strong>Tổng cộng:</strong>
+                                                </StyledTableCell>
                                                 <StyledTableCell align="left" colSpan={2}>
                                                     <strong style={{ marginLeft: 1 }}>
-                                                        {liquidationData?.liquidations?.reduce((total, row) => {
-                                                            return total + (row?.quantityLiquidation || 0);
-                                                        }, 0).toLocaleString() || "0"}
+                                                        {liquidationData?.liquidations
+                                                            ?.reduce((total, row) => {
+                                                                return total + (row?.quantityLiquidation || 0);
+                                                            }, 0)
+                                                            .toLocaleString() || "0"}
                                                     </strong>
                                                 </StyledTableCell>
                                                 <StyledTableCell>
                                                     <strong>
-                                                        {liquidationData?.liquidations?.reduce((total, row) => {
-                                                            return total + (row?.priceLiquidation * row?.quantityLiquidation || 0);
-                                                        }, 0).toLocaleString() || "0"}
+                                                        {liquidationData?.liquidations
+                                                            ?.reduce((total, row) => {
+                                                                return (
+                                                                    total +
+                                                                    (row?.priceLiquidation * row?.quantityLiquidation ||
+                                                                        0)
+                                                                );
+                                                            }, 0)
+                                                            .toLocaleString() || "0"}
                                                     </strong>
                                                 </StyledTableCell>
                                             </StyledTableRow>
@@ -296,31 +327,33 @@ const ViewDetailLiquidation: FC<Props> = ({
                                 </TableContainer>
                             </Grid>
                         </Grid>
-                    }
+                    )}
                 </DialogContent>
 
-                <DialogActions sx={{ p: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <DialogActions sx={{ p: 4, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
                         {liquidationData?.fileSignature && (
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
                                 <Typography
                                     variant="body2"
                                     sx={{
                                         marginRight: 2,
-                                        maxWidth: '300px',
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap',
+                                        maxWidth: "300px",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
                                     }}
                                 >
-                                    <strong>File biên bản:</strong> {liquidationData.fileSignature.name.replace(/\.pdf$/, '')}
+                                    <strong>File biên bản:</strong>{" "}
+                                    {liquidationData.fileSignature.name.replace(/\.pdf$/, "")}
                                 </Typography>
                                 <Box sx={{ mr: 2 }}>
-                                    <a href={`${process.env.REACT_APP_BASE_API_FILE_URL}/${liquidationData.fileSignature.path}`}
+                                    <a
+                                        href={`${process.env.REACT_APP_BASE_API_FILE_URL}/${liquidationData.fileSignature.path}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
-                                        <Button variant="contained" sx={{ background: 'green', color: 'white' }}>
+                                        <Button variant="contained" sx={{ background: "green", color: "white" }}>
                                             Xem
                                         </Button>
                                     </a>
@@ -332,21 +365,23 @@ const ViewDetailLiquidation: FC<Props> = ({
                                 <Button
                                     variant="contained"
                                     color="primary"
-                                    sx={{ textTransform: 'inherit' }}
+                                    sx={{ textTransform: "inherit" }}
                                     onClick={handleImportFile}
                                 >
-                                    {liquidationData?.fileSignature ? 'Cập nhật phiếu' : 'Tải phiếu biên bản'}
+                                    {liquidationData?.fileSignature ? "Cập nhật phiếu" : "Tải phiếu biên bản"}
                                 </Button>
                             )}
 
                             {/* Dialog Upload File */}
                             <Dialog open={openImportFile} onClose={handleCloseImportFile}>
-                                <DialogTitle>{liquidationData?.fileSignature ? 'Cập nhật phiếu biên bản' : 'Tải phiếu biên bản'}</DialogTitle>
+                                <DialogTitle>
+                                    {liquidationData?.fileSignature ? "Cập nhật phiếu biên bản" : "Tải phiếu biên bản"}
+                                </DialogTitle>
                                 <DialogContent>
                                     <input
                                         type="file"
                                         onChange={handleFileChange}
-                                        accept=".pdf, .jpg, .png"  // Giới hạn loại file nếu cần
+                                        accept=".pdf, .jpg, .png" // Giới hạn loại file nếu cần
                                     />
                                 </DialogContent>
                                 <DialogActions>
@@ -354,19 +389,23 @@ const ViewDetailLiquidation: FC<Props> = ({
                                         Hủy
                                     </Button>
                                     <Button onClick={handleSubmitImportFile} color="primary">
-                                        {liquidationData?.fileSignature ? 'Cập nhật' : 'Tải lên'}
+                                        {liquidationData?.fileSignature ? "Cập nhật" : "Tải lên"}
                                     </Button>
                                 </DialogActions>
                             </Dialog>
                         </Box>
                     </Box>
 
-                    <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Box sx={{ display: "flex", gap: 2 }}>
                         <Button onClick={onClose} color="error">
                             Đóng
                         </Button>
 
-                        <Button onClick={() => handlePrint()} style={{ background: '#212121', color: 'white' }} variant="contained">
+                        <Button
+                            onClick={() => handlePrint()}
+                            style={{ background: "#212121", color: "white" }}
+                            variant="contained"
+                        >
                             In
                         </Button>
 
@@ -375,15 +414,13 @@ const ViewDetailLiquidation: FC<Props> = ({
                             color="primary"
                             onClick={() => handleIsAccept(liquidationData)}
                             disabled={liquidationData?.isAccept}
-                            sx={{ textTransform: 'inherit' }}
+                            sx={{ textTransform: "inherit" }}
                         >
                             {buttonState}
                         </Button>
-
                     </Box>
                 </DialogActions>
-
-            </Dialog >
+            </Dialog>
         </>
     );
 };

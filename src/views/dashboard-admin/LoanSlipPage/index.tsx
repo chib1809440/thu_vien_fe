@@ -395,7 +395,7 @@ const LoanSlipPage = () => {
             {
                 id: "isAgree",
                 disablePadding: "none",
-                label: "Duyệt",
+                label: "Quy trình thủ thư",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
                 render: (row) => {
@@ -423,10 +423,16 @@ const LoanSlipPage = () => {
                                     label="Không duyệt"
                                     variant="filled"
                                 />
-                            ) : row.isAgree ? (
+                            ) : row?.status === "đang mượn" ? (
+                                <Chip
+                                    style={{ color: 'white', background: '#204165' }}
+                                    label="Đã giao sách"
+                                    variant="filled"
+                                />
+                            ) : row.isAgree && row.isReturn ? (
                                 <Chip
                                     style={{ color: 'white', background: '#096A5E' }}
-                                    label="Đã duyệt"
+                                    label="Đã nhận sách"
                                     variant="filled"
                                 />
                             ) : (roleName === 'Owner' || roleName === "Admin") ? (

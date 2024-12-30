@@ -327,7 +327,7 @@ const LoanSlipRequestLink = () => {
             {
                 id: "isAgree",
                 disablePadding: "none",
-                label: "Duyệt",
+                label: "Quy trình thủ thư",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
                 render: (row) => {
@@ -335,10 +335,16 @@ const LoanSlipRequestLink = () => {
                         <Box
                         >
                             {
-                                row.isAgree === true ? (
+                                row?.status === "đang mượn" ? (
+                                    <Chip
+                                        style={{ color: 'white', background: '#204165' }}
+                                        label="Đã giao sách"
+                                        variant="filled"
+                                    />
+                                ) : row.isAgree && row.isReturn ? (
                                     <Chip
                                         style={{ color: 'white', background: '#096A5E' }}
-                                        label="Đã duyệt"
+                                        label="Đã nhận sách"
                                         variant="filled"
                                     />
                                 ) : row.status === "đã hủy" ? ( // Kiểm tra nếu status là 'đã hủy'
@@ -656,10 +662,10 @@ const LoanSlipRequestLink = () => {
 
     const initialValues = useMemo((): TLoanSlipCreate => {
         if (selectedEdit) {
-               // Kiểm tra xem selectedEdit.libraryId có phải là đối tượng TLibrary không
-        const libraryId = typeof selectedEdit.libraryId === 'string' 
-        ? selectedEdit.libraryId // Nếu là chuỗi, sử dụng trực tiếp
-        : (selectedEdit.libraryId as TLibrary)._id; // Nếu là đối tượng, lấy _id
+            // Kiểm tra xem selectedEdit.libraryId có phải là đối tượng TLibrary không
+            const libraryId = typeof selectedEdit.libraryId === 'string'
+                ? selectedEdit.libraryId // Nếu là chuỗi, sử dụng trực tiếp
+                : (selectedEdit.libraryId as TLibrary)._id; // Nếu là đối tượng, lấy _id
             return {
                 note: selectedEdit.note,
                 borrowedDay: selectedEdit.borrowedDay,

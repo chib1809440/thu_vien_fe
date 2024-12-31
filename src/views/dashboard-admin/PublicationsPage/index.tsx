@@ -1,17 +1,6 @@
 import BackspaceIcon from "@mui/icons-material/Backspace";
-import {
-    Alert,
-    Checkbox,
-    Chip,
-    Grid,
-    IconButton,
-    Paper,
-    Switch,
-    Tooltip,
-    Typography,
-    useTheme,
-} from "@mui/material";
-import { Box, Stack } from "@mui/system";
+import { Alert, Checkbox, Chip, Grid, IconButton, Paper, Switch, Tooltip, Typography, useTheme } from "@mui/material";
+import { Box, Stack, useMediaQuery } from "@mui/system";
 import { IconBook, IconFileExport, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import {
     IconBuildingWarehouse,
@@ -28,9 +17,9 @@ import {
     IconShareOff,
     IconTrashXFilled,
     IconVideo,
-    IconWorldShare
+    IconWorldShare,
 } from "@tabler/icons-react";
-import ExcelJS from 'exceljs';
+import ExcelJS from "exceljs";
 import { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -56,10 +45,7 @@ import {
     useUpdateIsLink,
     useUpdateIsUnLink,
 } from "../../../hooks/services/publications/publications-mutation";
-import {
-    useFetchPublications,
-    useReFetchPublications,
-} from "../../../hooks/services/publications/publications-query";
+import { useFetchPublications, useReFetchPublications } from "../../../hooks/services/publications/publications-query";
 import { useFetchPublisher } from "../../../hooks/services/publisher/publisher-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { addInternalItem } from "../../../store/slices/cartInternalLoanSlip";
@@ -78,12 +64,31 @@ import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
 
+const BreakpointsColumn = {
+    xs: 12,
+    sm: 12,
+    md: 6,
+    lg: 4,
+    xl: 3,
+};
+
+const MAX_ROWS = 3;
+
 const PublicationsPage = () => {
+    const theme = useTheme();
+
+    const isMdScreen = useMediaQuery(theme.breakpoints.down("sm")); // md, sm, xs
+
+    const _limitDisplay = useMemo(() => {
+        if (isMdScreen) {
+            return (12 / BreakpointsColumn.md) * MAX_ROWS;
+        }
+    }, [isMdScreen]);
+
     const queryString = useQueryString();
     const page = queryString?.page ?? 1;
-    const limit = queryString?.limit ?? 6;
+    const limit = queryString?.limit ?? _limitDisplay;
     const search = queryString?.q ?? "";
-    const theme = useTheme();
 
     const [selectedMaterial, setSelectedMaterial] = useState(0);
     const [selectedPublications, setSelectedPublications] = useState(0);
@@ -140,8 +145,8 @@ const PublicationsPage = () => {
         ...(selectedValuePublication === "thuvien"
             ? { isPublic: true }
             : selectedValuePublication !== "all"
-                ? { isPublic: false, createBy: userId }
-                : {}),
+            ? { isPublic: false, createBy: userId }
+            : {}),
     });
 
     // const filterByLibId = useMemo(
@@ -394,9 +399,7 @@ const PublicationsPage = () => {
         setSelectedLibrary(event.target.value);
     };
     const dispatch = useDispatch();
-    const items = useSelector(
-        (state: { cartLoanSlip: { items: CreatePublication[] } }) => state.cartLoanSlip.items
-    );
+    const items = useSelector((state: { cartLoanSlip: { items: CreatePublication[] } }) => state.cartLoanSlip.items);
     const handleAddItem = (item: TPublications & { libraryDetails?: TLibrary }) => {
         if (item.type === "ấn phẩm mềm") {
             toast.warning(`Không thể mượn ấn phẩm mềm`, {
@@ -422,9 +425,7 @@ const PublicationsPage = () => {
             libraryId: (item?.libraryDetails as TLibrary)?._id,
             libraryName: (item?.libraryDetails as TLibrary)?.name,
         };
-        const duplicateItem = items.find(
-            (cartItem) => cartItem.libraryId === createPublication.libraryId
-        );
+        const duplicateItem = items.find((cartItem) => cartItem.libraryId === createPublication.libraryId);
         // if (!duplicateItem && items.length > 0) {
         //     const item = items[0];
         //     toast.warning(`Chỉ thêm sách của một thư viện là ${item.libraryName}`, {
@@ -459,11 +460,7 @@ const PublicationsPage = () => {
                 sxRow: { px: 3, maxWidth: 150 },
                 render: (row) => {
                     const hasWhitespace = /\s/.test(row?.name);
-                    return (
-                        <Typography noWrap={!hasWhitespace}>
-                            {capitalizeFirstLetter(row?.name)}
-                        </Typography>
-                    );
+                    return <Typography noWrap={!hasWhitespace}>{capitalizeFirstLetter(row?.name)}</Typography>;
                 },
             },
             {
@@ -475,8 +472,7 @@ const PublicationsPage = () => {
                 render: (row) => {
                     const selectedType = typeOptions.find((option) => option.value === row.type);
 
-                    const chipColor =
-                        selectedType?.value === "ấn phẩm cứng" ? "#007e43" : "#fa7d70";
+                    const chipColor = selectedType?.value === "ấn phẩm cứng" ? "#007e43" : "#fa7d70";
 
                     return selectedType ? (
                         <Chip
@@ -505,9 +501,7 @@ const PublicationsPage = () => {
                                     <Box sx={{ display: "flex", alignItems: "center" }}>
                                         Thư viện:{" "}
                                         <Typography ml={1} fontWeight={600}>
-                                            {capitalizeFirstLetter(
-                                                (row?.libraryId as TLibrary)?.name
-                                            )}
+                                            {capitalizeFirstLetter((row?.libraryId as TLibrary)?.name)}
                                         </Typography>
                                     </Box>
                                 ) : (
@@ -526,21 +520,19 @@ const PublicationsPage = () => {
                                     </Typography>
                                 </Box>
                             )}
-                            {!(row?.type === "ấn phẩm cứng") &&
-                                userRole !== "Student" &&
-                                row?.createBy === userId && (
-                                    <Box>
-                                        Chia sẻ lên thư viện:
-                                        <Switch
-                                            checked={row?.isPublic}
-                                            value={row?.isPublic}
-                                            // onChange={(event) =>
-                                            //     handleChangePublic(row, event.target.checked)
-                                            // }
-                                            disabled={row?.isLink === true}
-                                        />
-                                    </Box>
-                                )}
+                            {!(row?.type === "ấn phẩm cứng") && userRole !== "Student" && row?.createBy === userId && (
+                                <Box>
+                                    Chia sẻ lên thư viện:
+                                    <Switch
+                                        checked={row?.isPublic}
+                                        value={row?.isPublic}
+                                        // onChange={(event) =>
+                                        //     handleChangePublic(row, event.target.checked)
+                                        // }
+                                        disabled={row?.isLink === true}
+                                    />
+                                </Box>
+                            )}
                             <Box sx={{ display: "flex", alignItems: "center" }}>
                                 Trạng thái:{" "}
                                 <Typography ml={1} fontWeight={600}>
@@ -555,35 +547,33 @@ const PublicationsPage = () => {
                                         row?.mimetype === "image/bmp" ||
                                         row?.mimetype === "image/webp") &&
                                         row?.type === "ấn phẩm cứng")) && (
-                                        <IconBook size={30} stroke={1.5} color="#007e43" />
-                                    )}
+                                    <IconBook size={30} stroke={1.5} color="#007e43" />
+                                )}
                                 {row?.mimetype === "application/pdf" && (
                                     <IconPdf size={30} stroke={1.5} color="#fd6033" />
                                 )}
                                 {(row?.mimetype === "application/msword" ||
                                     row?.mimetype ===
-                                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && (
-                                        <IconFileWord size={30} stroke={1.5} color="#007bff" />
-                                    )}
+                                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && (
+                                    <IconFileWord size={30} stroke={1.5} color="#007bff" />
+                                )}
                                 {(row?.mimetype === "video/mp4" ||
                                     row?.mimetype === "video/x-msvideo" ||
                                     row?.mimetype === "video/x-matroska" ||
                                     row?.mimetype === "video/webm") && (
-                                        <IconVideo size={30} stroke={1.5} color="#ff5733" />
-                                    )}
+                                    <IconVideo size={30} stroke={1.5} color="#ff5733" />
+                                )}
                                 {(row?.mimetype === "application/vnd.ms-powerpoint" ||
                                     row?.mimetype ===
-                                    "application/vnd.openxmlformats-officedocument.presentationml.presentation") && (
-                                        <IconPresentation size={30} stroke={1.5} color="#ffc107" />
-                                    )}
+                                        "application/vnd.openxmlformats-officedocument.presentationml.presentation") && (
+                                    <IconPresentation size={30} stroke={1.5} color="#ffc107" />
+                                )}
                                 {(row?.mimetype === "image/jpeg" ||
                                     row?.mimetype === "image/png" ||
                                     row?.mimetype === "image/gif" ||
                                     row?.mimetype === "image/bmp" ||
                                     row?.mimetype === "image/webp") &&
-                                    row?.type === "ấn phẩm mềm" && (
-                                        <IconPhoto size={30} stroke={1.5} color="#28a745" />
-                                    )}
+                                    row?.type === "ấn phẩm mềm" && <IconPhoto size={30} stroke={1.5} color="#28a745" />}
                             </Box>
                         </>
                     );
@@ -604,9 +594,7 @@ const PublicationsPage = () => {
                             checked={row?.isLink}
                             onChange={() => handleOpenConfirmLink(row)}
                             value={row?.isLink}
-                            disabled={
-                                userRole === "Super Admin" || userRole === "Student" ? true : false
-                            }
+                            disabled={userRole === "Super Admin" || userRole === "Student" ? true : false}
                         />
                     );
                 },
@@ -638,52 +626,25 @@ const PublicationsPage = () => {
                         >
                             {row?.type === "ấn phẩm cứng" && (
                                 <Tooltip title="Mượn ấn phẩm" arrow placement="top">
-                                    <IconPlus
-                                        size={25}
-                                        stroke={1.5}
-                                        onClick={() => handleAddItem(row)}
-                                    />
+                                    <IconPlus size={25} stroke={1.5} onClick={() => handleAddItem(row)} />
                                 </Tooltip>
                             )}
-                            <IconEye
-                                size={20}
-                                stroke={1.5}
-                                onClick={() => handleViewDetails(row)}
-                            />
+                            <IconEye size={20} stroke={1.5} onClick={() => handleViewDetails(row)} />
                             {canManagePublications && (
-                                <IconPencil
-                                    onClick={() => handleEditPublications(row)}
-                                    size={20}
-                                    stroke={1.5}
-                                />
+                                <IconPencil onClick={() => handleEditPublications(row)} size={20} stroke={1.5} />
                             )}
-                            {userRole === "Teacher" &&
-                                row?.createBy === userId &&
-                                canDeletePublications && (
-                                    <IconTrash
-                                        size={20}
-                                        stroke={1.5}
-                                        onClick={() => handleOpenConfirmDialog(row)}
-                                    />
-                                )}
+                            {userRole === "Teacher" && row?.createBy === userId && canDeletePublications && (
+                                <IconTrash size={20} stroke={1.5} onClick={() => handleOpenConfirmDialog(row)} />
+                            )}
                             {userRole !== "Teacher" && canDeletePublications && (
-                                <IconTrash
-                                    size={20}
-                                    stroke={1.5}
-                                    onClick={() => handleOpenConfirmDialog(row)}
-                                />
+                                <IconTrash size={20} stroke={1.5} onClick={() => handleOpenConfirmDialog(row)} />
                             )}
                         </Box>
                     );
                 },
             },
         ],
-        [
-            handleEditPublications,
-            handleOpenConfirmDialog,
-            handleChangeShareConnect,
-            handleChangePublic,
-        ]
+        [handleEditPublications, handleOpenConfirmDialog, handleChangeShareConnect, handleChangePublic]
     );
 
     const handleCheckedDelete = useCallback((row: TPublications, checked: boolean) => {
@@ -745,12 +706,8 @@ const PublicationsPage = () => {
             );
 
             if (duplicateBarcodeErrors.length > 0) {
-                const barcodeErrors = duplicateBarcodeErrors.filter(
-                    (error) => error.error === "Barcode đã tồn tại!"
-                );
-                const nameErrors = duplicateBarcodeErrors.filter(
-                    (error) => error.error === "tên ấn phẩm đã tồn tại!"
-                );
+                const barcodeErrors = duplicateBarcodeErrors.filter((error) => error.error === "Barcode đã tồn tại!");
+                const nameErrors = duplicateBarcodeErrors.filter((error) => error.error === "tên ấn phẩm đã tồn tại!");
 
                 // Lấy các dòng bị lỗi
                 const barcodeRows = barcodeErrors.map(({ row }) => row);
@@ -765,18 +722,16 @@ const PublicationsPage = () => {
                 if (barcodeErrors.length > 0) {
                     toast.error(
                         <span>
-                            Barcode đã tồn tại ở dòng:{" "}
-                            <strong style={{ color: "red" }}>[ {barcodeRowList} ]</strong>.
+                            Barcode đã tồn tại ở dòng: <strong style={{ color: "red" }}>[ {barcodeRowList} ]</strong>.
                         </span>
                     );
                 }
-        
+
                 // Hiển thị lỗi Tên ấn phẩm nếu có
                 if (nameErrors.length > 0) {
                     toast.error(
                         <span>
-                            Tên ấn phẩm đã tồn tại ở dòng:{" "}
-                            <strong style={{ color: "red" }}>[ {nameRowList} ]</strong>.
+                            Tên ấn phẩm đã tồn tại ở dòng: <strong style={{ color: "red" }}>[ {nameRowList} ]</strong>.
                         </span>
                     );
                 }
@@ -796,20 +751,20 @@ const PublicationsPage = () => {
         console.log(data);
         if (data) {
             const workbook = new ExcelJS.Workbook();
-            const worksheet = workbook.addWorksheet('Publications');
+            const worksheet = workbook.addWorksheet("Publications");
 
             // Thêm hàng tiêu đề chính
-            worksheet.addRow(['Danh sách ấn phẩm']).font = { bold: true, size: 14 };
+            worksheet.addRow(["Danh sách ấn phẩm"]).font = { bold: true, size: 14 };
             worksheet.addRow([]);
 
             const currentDateTime = new Date();
-            const formattedDateTime = currentDateTime.toLocaleString('vi-VN', {
-                year: 'numeric',
-                month: 'numeric',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                second: 'numeric',
+            const formattedDateTime = currentDateTime.toLocaleString("vi-VN", {
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric",
                 hour12: false,
             });
 
@@ -817,52 +772,52 @@ const PublicationsPage = () => {
             worksheet.addRow([]);
 
             worksheet.addRow([
-                'Mã ấn phẩm',
-                'Tên ấn phẩm',
-                'Dạng học liệu',
-                'Lĩnh vực',
-                'Tác giả',
-                'Nhà xuất bản',
-                'Số lượng tồn kho',
-                'Số lượng trên kệ',
-                'Số lượng mượn',
-                'Số lượng thanh lý',
-                'Số lượng hư hỏng',
-                'Số lượng tổng',
-                'Trạng thái',
-                'Loại',
-                'Ghi chú'
+                "Mã ấn phẩm",
+                "Tên ấn phẩm",
+                "Dạng học liệu",
+                "Lĩnh vực",
+                "Tác giả",
+                "Nhà xuất bản",
+                "Số lượng tồn kho",
+                "Số lượng trên kệ",
+                "Số lượng mượn",
+                "Số lượng thanh lý",
+                "Số lượng hư hỏng",
+                "Số lượng tổng",
+                "Trạng thái",
+                "Loại",
+                "Ghi chú",
             ]).font = { bold: true };
 
-            worksheet.getColumn('A').width = 15;
-            worksheet.getColumn('B').width = 30;
-            worksheet.getColumn('C').width = 30;
-            worksheet.getColumn('D').width = 30;
-            worksheet.getColumn('E').width = 30;
-            worksheet.getColumn('F').width = 30;
-            worksheet.getColumn('G').width = 20;
-            worksheet.getColumn('H').width = 15;
-            worksheet.getColumn('I').width = 15;
-            worksheet.getColumn('J').width = 20;
-            worksheet.getColumn('K').width = 20;
-            worksheet.getColumn('L').width = 15;
-            worksheet.getColumn('M').width = 15;
-            worksheet.getColumn('N').width = 30;
-            worksheet.getColumn('O').width = 30;
+            worksheet.getColumn("A").width = 15;
+            worksheet.getColumn("B").width = 30;
+            worksheet.getColumn("C").width = 30;
+            worksheet.getColumn("D").width = 30;
+            worksheet.getColumn("E").width = 30;
+            worksheet.getColumn("F").width = 30;
+            worksheet.getColumn("G").width = 20;
+            worksheet.getColumn("H").width = 15;
+            worksheet.getColumn("I").width = 15;
+            worksheet.getColumn("J").width = 20;
+            worksheet.getColumn("K").width = 20;
+            worksheet.getColumn("L").width = 15;
+            worksheet.getColumn("M").width = 15;
+            worksheet.getColumn("N").width = 30;
+            worksheet.getColumn("O").width = 30;
 
             const publicationsData = data?.data?.result?.map((publication) => {
                 const categoryNames = publication?.categoryIds
-                    ? publication?.categoryIds.map((category) => category?.name).join(', ')
-                    : '';
+                    ? publication?.categoryIds.map((category) => category?.name).join(", ")
+                    : "";
                 const authorNames = publication?.authorIds
-                    ? publication?.authorIds.map((author) => author?.name).join(', ')
-                    : '';
+                    ? publication?.authorIds.map((author) => author?.name).join(", ")
+                    : "";
                 const materialNames = publication?.materialIds
-                    ? publication?.materialIds.map((material) => material?.name).join(', ')
-                    : '';
+                    ? publication?.materialIds.map((material) => material?.name).join(", ")
+                    : "";
                 const publisherNames = publication?.publisherIds
-                    ? publication?.publisherIds.map((publisher) => publisher?.name).join(', ')
-                    : '';
+                    ? publication?.publisherIds.map((publisher) => publisher?.name).join(", ")
+                    : "";
                 return {
                     barcode: publication?.barcode,
                     name: publication?.name,
@@ -878,7 +833,7 @@ const PublicationsPage = () => {
                     totalQuantity: publication?.totalQuantity,
                     status: capitalizeFirstLetter(publication?.status),
                     type: getLabelFromOptions(typeOptions, publication?.type),
-                    note: publication?.note || ''
+                    note: publication?.note || "",
                 };
             });
 
@@ -899,14 +854,14 @@ const PublicationsPage = () => {
                     dataRow.totalQuantity,
                     dataRow.status,
                     dataRow.type,
-                    dataRow.note
+                    dataRow.note,
                 ];
                 row.eachCell((cell) => {
                     cell.border = {
-                        top: { style: 'thin' },
-                        left: { style: 'thin' },
-                        bottom: { style: 'thin' },
-                        right: { style: 'thin' }
+                        top: { style: "thin" },
+                        left: { style: "thin" },
+                        bottom: { style: "thin" },
+                        right: { style: "thin" },
                     };
                 });
             });
@@ -914,30 +869,30 @@ const PublicationsPage = () => {
             const headerRow = worksheet.getRow(4);
             headerRow.eachCell((cell) => {
                 cell.border = {
-                    top: { style: 'thin' },
-                    left: { style: 'thin' },
-                    bottom: { style: 'thin' },
-                    right: { style: 'thin' }
+                    top: { style: "thin" },
+                    left: { style: "thin" },
+                    bottom: { style: "thin" },
+                    right: { style: "thin" },
                 };
                 cell.fill = {
-                    type: 'pattern',
-                    pattern: 'solid',
-                    fgColor: { argb: 'FFCCCCCC' }
+                    type: "pattern",
+                    pattern: "solid",
+                    fgColor: { argb: "FFCCCCCC" },
                 };
                 cell.font = {
                     bold: true,
-                    color: { argb: 'FF000000' }
+                    color: { argb: "FF000000" },
                 };
             });
 
             // Tạo file Excel và lưu
-            const formattedDate = currentDateTime.toLocaleDateString('vi-VN');
+            const formattedDate = currentDateTime.toLocaleDateString("vi-VN");
             const fileName = `DanhSach_AnPhamTruyenThong_${formattedDate}.xlsx`;
 
             workbook.xlsx.writeBuffer().then((buffer) => {
-                const blob = new Blob([buffer], { type: 'application/octet-stream' });
+                const blob = new Blob([buffer], { type: "application/octet-stream" });
                 const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
+                const a = document.createElement("a");
                 a.href = url;
                 a.download = fileName;
                 a.click();
@@ -954,44 +909,44 @@ const PublicationsPage = () => {
             { resource: "publications", action: "create" },
         ])
             ? [
-                {
-                    label: "Tải file mẫu",
-                    icon: <IconFileDownload size={20} stroke={1.5} />,
-                    component: (
-                        <a
-                            href={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/mau_them_nhieu_an_pham.xlsx`}
-                            style={{
-                                textDecoration: "none",
-                                display: "inline-flex",
-                                alignItems: "center",
-                                color: "#616161",
-                            }}
-                        >
-                            <IconFileDownload size={20} stroke={1.5} style={{ marginRight: 8 }} />
-                            Tải file mẫu
-                        </a>
-                    ),
-                },
-                {
-                    label: "Nhập file excel",
-                    icon: <IconFileUpload size={20} stroke={1.5} />,
-                    onClick: handleImportExcel,
-                },
-                {
-                    label: "Xuất danh sách ấn phẩm",
-                    icon: <IconFileExport size={20} stroke={1.5} />,
-                    onClick: handleExportPublicationsExcel,
-                },
-                ...(userRole === "Admin" || userRole === "Owner"
-                    ? [
-                        {
-                            label: "Xóa các dữ liệu đã chọn",
-                            icon: <IconTrashXFilled size={20} stroke={1.5} />,
-                            onClick: handleDeleteMultiple,
-                        },
-                    ]
-                    : []),
-            ]
+                  {
+                      label: "Tải file mẫu",
+                      icon: <IconFileDownload size={20} stroke={1.5} />,
+                      component: (
+                          <a
+                              href={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/mau_them_nhieu_an_pham.xlsx`}
+                              style={{
+                                  textDecoration: "none",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  color: "#616161",
+                              }}
+                          >
+                              <IconFileDownload size={20} stroke={1.5} style={{ marginRight: 8 }} />
+                              Tải file mẫu
+                          </a>
+                      ),
+                  },
+                  {
+                      label: "Nhập file excel",
+                      icon: <IconFileUpload size={20} stroke={1.5} />,
+                      onClick: handleImportExcel,
+                  },
+                  {
+                      label: "Xuất danh sách ấn phẩm",
+                      icon: <IconFileExport size={20} stroke={1.5} />,
+                      onClick: handleExportPublicationsExcel,
+                  },
+                  ...(userRole === "Admin" || userRole === "Owner"
+                      ? [
+                            {
+                                label: "Xóa các dữ liệu đã chọn",
+                                icon: <IconTrashXFilled size={20} stroke={1.5} />,
+                                onClick: handleDeleteMultiple,
+                            },
+                        ]
+                      : []),
+              ]
             : [];
     }, [userRole, handleDeleteMultiple, handleImportExcel, handleExportPublicationsExcel]);
 
@@ -1037,11 +992,7 @@ const PublicationsPage = () => {
 
     return (
         <div>
-            <IBreadcrumsCustom
-                profile="Quản lý ấn phẩm"
-                mainProfile="Danh sách ấn phẩm"
-                link="/thu-vien/an-pham"
-            />
+            <IBreadcrumsCustom profile="Quản lý ấn phẩm" mainProfile="Danh sách ấn phẩm" link="/thu-vien/an-pham" />
 
             {openImportFile && (
                 <DialogImportFile
@@ -1067,8 +1018,8 @@ const PublicationsPage = () => {
                         selectedEdit?.priviewImage
                             ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.priviewImage}`
                             : selectedEdit?.path
-                                ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
-                                : ""
+                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
+                            : ""
                     }
                     isFetching={mutationAdd.isPending || mutationEdit.isPending}
                 />
@@ -1103,23 +1054,16 @@ const PublicationsPage = () => {
                             )}
                         </Box>
 
-                        <Box
-                            sx={{ display: { xs: "none", sm: "none", md: "block" } }}
-                        >
-                            {hasPermission([
-                                { resource: "publications", action: "manage" },
-                            ]) ? (
+                        <Box sx={{ display: { xs: "none", sm: "none", md: "block" } }}>
+                            {hasPermission([{ resource: "publications", action: "manage" }]) ? (
                                 <>
-                                    {hasPermission([
-                                        { resource: "warehousereceipts", action: "manage" },
-                                    ]) && <Link
-                                        to="/quan-ly-kho/kho-tai-san"
-                                        style={{ textDecoration: "none" }}
-                                    >
+                                    {hasPermission([{ resource: "warehousereceipts", action: "manage" }]) && (
+                                        <Link to="/quan-ly-kho/kho-tai-san" style={{ textDecoration: "none" }}>
                                             <StyledButton
                                                 sx={{
-                                                    background: "#a36e21", color: "white",
-                                                    marginLeft: "10px"
+                                                    background: "#a36e21",
+                                                    color: "white",
+                                                    marginLeft: "10px",
                                                 }}
                                                 size="small"
                                                 startIcon={<IconBuildingWarehouse stroke={2} />}
@@ -1128,14 +1072,9 @@ const PublicationsPage = () => {
                                                 Quản lý kho
                                             </StyledButton>
                                         </Link>
-                                    }
-                                    {hasPermission([
-                                        { resource: "publications", action: "delete" },
-                                    ]) &&
-                                        <Link
-                                            to="/thu-vien/danh-sach-xoa-an-pham"
-                                            style={{ textDecoration: "none" }}
-                                        >
+                                    )}
+                                    {hasPermission([{ resource: "publications", action: "delete" }]) && (
+                                        <Link to="/thu-vien/danh-sach-xoa-an-pham" style={{ textDecoration: "none" }}>
                                             <StyledButton
                                                 sx={{
                                                     background: "#de524a",
@@ -1149,7 +1088,7 @@ const PublicationsPage = () => {
                                                 Thùng rác
                                             </StyledButton>
                                         </Link>
-                                    }
+                                    )}
                                 </>
                             ) : (
                                 <></>
@@ -1166,16 +1105,16 @@ const PublicationsPage = () => {
                     // nếu người dùng là thủ thư hoặc giáo viên
                     {...(userRole === "Admin" || userRole === "Teacher" || userRole === "Owner"
                         ? {
-                            selectedValuePublication: selectedValuePublication,
-                            handleValuePublication: handleValuePublication,
-                        }
+                              selectedValuePublication: selectedValuePublication,
+                              handleValuePublication: handleValuePublication,
+                          }
                         : {})}
                     {...(userRole === "Super Admin"
                         ? {
-                            selectedLibrary: selectedLibrary,
-                            handleLibraryFilterChange: handleLibraryFilterChange,
-                            libraryData: libraryData?.data?.result,
-                        }
+                              selectedLibrary: selectedLibrary,
+                              handleLibraryFilterChange: handleLibraryFilterChange,
+                              libraryData: libraryData?.data?.result,
+                          }
                         : {})}
                 />
 
@@ -1185,21 +1124,20 @@ const PublicationsPage = () => {
                     typeOptions={typeOptions}
                     {...(userRole !== "Super Admin"
                         ? {
-                            selectedMaterial: selectedMaterial,
-                            handleMaterialFilterChange: handleMaterialFilterChange,
-                            materialData: materialData,
-                            selectedCategory: selectedCategory,
-                            handleCategoryFilterChange: handleCategoryFilterChange,
-                            categoryData: categoryData,
-                            selectedAuthor: selectedAuthor,
-                            handleAuthorFilterChange: handleAuthorFilterChange,
-                            authorData: authorData,
-                            selectedPublisher: selectedPublisher,
-                            handlePublisherFilterChange: handlePublisherFilterChange,
-                            publisherData: publisherData,
-                        }
+                              selectedMaterial: selectedMaterial,
+                              handleMaterialFilterChange: handleMaterialFilterChange,
+                              materialData: materialData,
+                              selectedCategory: selectedCategory,
+                              handleCategoryFilterChange: handleCategoryFilterChange,
+                              categoryData: categoryData,
+                              selectedAuthor: selectedAuthor,
+                              handleAuthorFilterChange: handleAuthorFilterChange,
+                              authorData: authorData,
+                              selectedPublisher: selectedPublisher,
+                              handlePublisherFilterChange: handlePublisherFilterChange,
+                              publisherData: publisherData,
+                          }
                         : {})}
-
                 />
                 {/* <TableList
                     checked={checkedDelete}
@@ -1215,11 +1153,17 @@ const PublicationsPage = () => {
 
                 <Grid container spacing={2} sx={{ p: { xs: 0, sm: 0, md: "12px 32px" }, pt: 2 }}>
                     {data?.data?.result?.length > 0 && userRole !== "Student" && userRole !== "Teacher" && (
-                        <Grid item xs={12} p={0} sx={{
-                            display: { xs: "none", sm: "none", md: "flex" },
-                            flexDirection: "column",
-                            ml: -1, mt: -3
-                        }}>
+                        <Grid
+                            item
+                            xs={12}
+                            p={0}
+                            sx={{
+                                display: { xs: "none", sm: "none", md: "flex" },
+                                flexDirection: "column",
+                                ml: -1,
+                                mt: -3,
+                            }}
+                        >
                             <Box display={"flex"} alignItems={"center"}>
                                 <Checkbox
                                     checked={checkedAll}
@@ -1241,9 +1185,9 @@ const PublicationsPage = () => {
                         </Grid>
                     )}
 
-                    {isLoading === false &&
-                        isFetching === false &&
-                        data?.data?.result.length > 0 ? (
+                    {isLoading || isFetching ? (
+                        <div>Loading...</div>
+                    ) : data?.data?.result.length > 0 ? (
                         data?.data?.result.map((item, index) => (
                             <Grid item xs={12} sm={12} md={6} lg={4} xl={3}>
                                 <Paper
@@ -1251,7 +1195,7 @@ const PublicationsPage = () => {
                                         p: 2,
                                         height: "100%",
                                         border: `1px solid ${theme.palette.grey[300]}`,
-                                        boxShadow: "0px 4px 6px rgba(86, 204, 242, 0.3)"
+                                        boxShadow: "0px 4px 6px rgba(86, 204, 242, 0.3)",
                                     }}
                                     elevation={0}
                                 >
@@ -1262,25 +1206,25 @@ const PublicationsPage = () => {
                                             flexDirection: "column",
                                             alignItems: "center",
                                             justifyContent: "space-between",
-                                            position: "relative"
+                                            position: "relative",
                                         }}
                                     >
-                                        {
-                                            userRole !== "Student" && userRole !== "Teacher" &&
-                                            <Box sx={{
-                                                display: { xs: "none", sm: "none", md: "flex" },
-                                                position: "absolute",
-                                                zIndex: 99,
-                                                top: -25,
-                                                left: -25,
-
-                                            }}>
+                                        {userRole !== "Student" && userRole !== "Teacher" && (
+                                            <Box
+                                                sx={{
+                                                    display: { xs: "none", sm: "none", md: "flex" },
+                                                    position: "absolute",
+                                                    zIndex: 99,
+                                                    top: -25,
+                                                    left: -25,
+                                                }}
+                                            >
                                                 <Checkbox
                                                     checked={checkedDelete.includes(item._id)}
                                                     onChange={(e) => handleCheckedDelete(item, e.target.checked)}
                                                 />
                                             </Box>
-                                        }
+                                        )}
 
                                         <Paper sx={{ width: "100%", position: "relative" }}>
                                             <Box onClick={() => handleViewDetails(item)}>
@@ -1290,8 +1234,8 @@ const PublicationsPage = () => {
                                                         item?.priviewImage
                                                             ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
                                                             : item?.path
-                                                                ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
-                                                                : ""
+                                                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
+                                                            : ""
                                                     }
                                                     aspectRatio={"16/9"}
                                                     objectFit="contain"
@@ -1324,9 +1268,7 @@ const PublicationsPage = () => {
                                                             sx={{
                                                                 color: theme.palette.error.dark,
                                                             }}
-                                                            onClick={() =>
-                                                                handleOpenConfirmDialog(item)
-                                                            }
+                                                            onClick={() => handleOpenConfirmDialog(item)}
                                                         />
                                                     </StyledIconButton>
                                                 )}
@@ -1356,9 +1298,7 @@ const PublicationsPage = () => {
                                                             sx={{
                                                                 color: theme.palette.error.dark,
                                                             }}
-                                                            onClick={() =>
-                                                                handleOpenConfirmDialog(item)
-                                                            }
+                                                            onClick={() => handleOpenConfirmDialog(item)}
                                                         />
                                                     </StyledIconButton>
                                                 )}
@@ -1383,55 +1323,48 @@ const PublicationsPage = () => {
                                                         },
                                                     }}
                                                 >
-                                                    {!(item?.type === "ấn phẩm cứng") && userRole !== "Student" && item?.createBy === userId && !item?.isLink && (
-                                                        <Tooltip title="Chia sẻ lên thư viện" arrow placement="top">
-                                                            <IconButton
-                                                                onClick={() =>
-                                                                    handleOpenConfirmPublic(item)
-                                                                }
-                                                            >
-                                                                {item?.isPublic ? (
-                                                                    <IconHomeOff stroke={2} color="green" size={24} />
-                                                                ) : (
-                                                                    <IconHomeLink stroke={2} color="gray" size={24} />
-                                                                )}
-                                                            </IconButton>
-                                                        </Tooltip>
-                                                    )}
+                                                    {!(item?.type === "ấn phẩm cứng") &&
+                                                        userRole !== "Student" &&
+                                                        item?.createBy === userId &&
+                                                        !item?.isLink && (
+                                                            <Tooltip title="Chia sẻ lên thư viện" arrow placement="top">
+                                                                <IconButton
+                                                                    onClick={() => handleOpenConfirmPublic(item)}
+                                                                >
+                                                                    {item?.isPublic ? (
+                                                                        <IconHomeOff
+                                                                            stroke={2}
+                                                                            color="green"
+                                                                            size={24}
+                                                                        />
+                                                                    ) : (
+                                                                        <IconHomeLink
+                                                                            stroke={2}
+                                                                            color="gray"
+                                                                            size={24}
+                                                                        />
+                                                                    )}
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        )}
 
                                                     {item?.isPublic && userRole !== "Student" && (
-                                                        <Tooltip
-                                                            title="Chia sẻ liên thông"
-                                                            arrow
-                                                            placement="top"
-                                                        >
+                                                        <Tooltip title="Chia sẻ liên thông" arrow placement="top">
                                                             <IconButton
-                                                                onClick={() =>
-                                                                    handleOpenConfirmLink(item)
-                                                                }
+                                                                onClick={() => handleOpenConfirmLink(item)}
                                                                 disabled={
-                                                                    userRole === "Super Admin" ||
-                                                                    userRole === "Student"
+                                                                    userRole === "Super Admin" || userRole === "Student"
                                                                 }
                                                             >
                                                                 {item?.isLink ? (
-                                                                    <IconShareOff
-                                                                        stroke={2}
-                                                                        color="blue"
-                                                                        size={24}
-                                                                    />
+                                                                    <IconShareOff stroke={2} color="blue" size={24} />
                                                                 ) : (
-                                                                    <IconWorldShare
-                                                                        stroke={2}
-                                                                        color="gray"
-                                                                        size={24}
-                                                                    />
+                                                                    <IconWorldShare stroke={2} color="gray" size={24} />
                                                                 )}
                                                             </IconButton>
                                                         </Tooltip>
                                                     )}
                                                 </StyledIconButton>
-
 
                                                 <StyledIconButton
                                                     disableHoverEffect
@@ -1439,7 +1372,12 @@ const PublicationsPage = () => {
                                                         position: "absolute",
                                                         zIndex: 999,
                                                         bottom: -90,
-                                                        right: (userRole === "Super Admin" || userRole === "Student" || userRole === "Teacher") ? -15 : 15,
+                                                        right:
+                                                            userRole === "Super Admin" ||
+                                                            userRole === "Student" ||
+                                                            userRole === "Teacher"
+                                                                ? -15
+                                                                : 15,
                                                         margin: "8px",
                                                         background: "none",
                                                         [theme.breakpoints.down("sm")]: {
@@ -1451,10 +1389,19 @@ const PublicationsPage = () => {
                                                     }}
                                                 >
                                                     {item?.type === "ấn phẩm cứng" && (
-                                                        <Tooltip title={item?.status === "có sẵn" ? "Mượn ấn phẩm" : "Ấn phẩm không có sẵn"} arrow placement="top">
+                                                        <Tooltip
+                                                            title={
+                                                                item?.status === "có sẵn"
+                                                                    ? "Mượn ấn phẩm"
+                                                                    : "Ấn phẩm không có sẵn"
+                                                            }
+                                                            arrow
+                                                            placement="top"
+                                                        >
                                                             <Box
                                                                 sx={{
-                                                                    background: item?.status === "có sẵn" ? "green" : "gray",
+                                                                    background:
+                                                                        item?.status === "có sẵn" ? "green" : "gray",
                                                                     color: "white",
                                                                     borderRadius: 2,
                                                                     display: "flex",
@@ -1484,89 +1431,87 @@ const PublicationsPage = () => {
                                                     hasPermission([
                                                         { resource: "publications", action: "manage" },
                                                         { resource: "publications", action: "update" },
-                                                    ]) && <StyledIconButton
-                                                        disableHoverEffect
-                                                        sx={{
-                                                            position: "absolute",
-                                                            zIndex: 999,
-                                                            bottom: -90,
-                                                            right: -15,
-                                                            margin: "8px",
-                                                            background: "none",
-                                                            [theme.breakpoints.down("sm")]: {
-                                                                width: "7%",
-                                                            },
-                                                            [theme.breakpoints.down("md")]: {
-                                                                width: "10%",
-                                                            },
-                                                        }}
-                                                    >
-                                                        <Box
-                                                            bgcolor={"red"}
+                                                    ]) && (
+                                                        <StyledIconButton
+                                                            disableHoverEffect
                                                             sx={{
-                                                                background: "#3078ec",
-                                                                color: "white",
-                                                                borderRadius: 2,
-                                                                display: "flex",
-                                                                alignItems: "center",
-                                                                justifyContent: "center",
-                                                                p: 0.5,
+                                                                position: "absolute",
+                                                                zIndex: 999,
+                                                                bottom: -90,
+                                                                right: -15,
+                                                                margin: "8px",
+                                                                background: "none",
+                                                                [theme.breakpoints.down("sm")]: {
+                                                                    width: "7%",
+                                                                },
+                                                                [theme.breakpoints.down("md")]: {
+                                                                    width: "10%",
+                                                                },
                                                             }}
                                                         >
-                                                            <IconPencil
-                                                                onClick={() =>
-                                                                    handleEditPublications(item)
-                                                                }
-                                                                size={20}
-                                                                stroke={2}
-                                                            />
-                                                        </Box>
-                                                    </StyledIconButton>
-                                                }
+                                                            <Box
+                                                                bgcolor={"red"}
+                                                                sx={{
+                                                                    background: "#3078ec",
+                                                                    color: "white",
+                                                                    borderRadius: 2,
+                                                                    display: "flex",
+                                                                    alignItems: "center",
+                                                                    justifyContent: "center",
+                                                                    p: 0.5,
+                                                                }}
+                                                            >
+                                                                <IconPencil
+                                                                    onClick={() => handleEditPublications(item)}
+                                                                    size={20}
+                                                                    stroke={2}
+                                                                />
+                                                            </Box>
+                                                        </StyledIconButton>
+                                                    )}
 
                                                 {userRole !== "Teacher" &&
                                                     hasPermission([
                                                         { resource: "publications", action: "manage" },
                                                         { resource: "publications", action: "update" },
-                                                    ]) && <StyledIconButton
-                                                        disableHoverEffect
-                                                        sx={{
-                                                            position: "absolute",
-                                                            zIndex: 999,
-                                                            bottom: -90,
-                                                            right: -15,
-                                                            margin: "8px",
-                                                            background: "none",
-                                                            [theme.breakpoints.down("sm")]: {
-                                                                width: "7%",
-                                                            },
-                                                            [theme.breakpoints.down("md")]: {
-                                                                width: "10%",
-                                                            },
-                                                        }}
-                                                    >
-                                                        <Box
-                                                            bgcolor={"red"}
+                                                    ]) && (
+                                                        <StyledIconButton
+                                                            disableHoverEffect
                                                             sx={{
-                                                                background: "#3078ec",
-                                                                color: "white",
-                                                                borderRadius: 2,
-                                                                display: "flex",
-                                                                alignItems: "center",
-                                                                justifyContent: "center",
-                                                                p: 0.5,
+                                                                position: "absolute",
+                                                                zIndex: 999,
+                                                                bottom: -90,
+                                                                right: -15,
+                                                                margin: "8px",
+                                                                background: "none",
+                                                                [theme.breakpoints.down("sm")]: {
+                                                                    width: "7%",
+                                                                },
+                                                                [theme.breakpoints.down("md")]: {
+                                                                    width: "10%",
+                                                                },
                                                             }}
                                                         >
-                                                            <IconPencil
-                                                                onClick={() =>
-                                                                    handleEditPublications(item)
-                                                                }
-                                                                size={20}
-                                                                stroke={2}
-                                                            />
-                                                        </Box>
-                                                    </StyledIconButton>
-                                                }
+                                                            <Box
+                                                                bgcolor={"red"}
+                                                                sx={{
+                                                                    background: "#3078ec",
+                                                                    color: "white",
+                                                                    borderRadius: 2,
+                                                                    display: "flex",
+                                                                    alignItems: "center",
+                                                                    justifyContent: "center",
+                                                                    p: 0.5,
+                                                                }}
+                                                            >
+                                                                <IconPencil
+                                                                    onClick={() => handleEditPublications(item)}
+                                                                    size={20}
+                                                                    stroke={2}
+                                                                />
+                                                            </Box>
+                                                        </StyledIconButton>
+                                                    )}
                                             </Box>
                                         </Paper>
                                         <Box
@@ -1610,29 +1555,35 @@ const PublicationsPage = () => {
                             <Typography>Chưa có ấn phẩm</Typography>
                         </Box>
                     )}
+
                     <Grid item xs={12}>
                         {data?.data?.meta && Object.keys(data?.data?.meta).length > 0 && (
-                            <PaginationForm pagination={data?.data?.meta} />
+                            <PaginationForm defaultLimit={_limitDisplay} pagination={data?.data?.meta} />
                         )}
                     </Grid>
                 </Grid>
 
-                <ConfirmDeleteDialog
-                    key={"delete"}
-                    open={openConfirmDialog}
-                    onClose={handleCloseConfirmDialog}
-                    onConfirm={handleConfirmDelete}
-                    title="Xác nhận xóa thư viện"
-                    description={`Bạn có chắc chắn muốn xóa "${publicationsToDelete?.name}" ?`}
-                />
-                <ConfirmDeleteDialog
-                    key={"deleteMultiple"}
-                    open={openConfirmSoftDeleteMultiple}
-                    onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
-                    onConfirm={handleConfirmSoftDeleteMultiple}
-                    title="Xác nhận xóa các mục đã chọn?"
-                    description={`Bạn có chắc chắn muốn xóa?`}
-                />
+                {openConfirmDialog && (
+                    <ConfirmDeleteDialog
+                        key={"delete"}
+                        open={openConfirmDialog}
+                        onClose={handleCloseConfirmDialog}
+                        onConfirm={handleConfirmDelete}
+                        title="Xác nhận xóa thư viện"
+                        description={`Bạn có chắc chắn muốn xóa "${publicationsToDelete?.name}" ?`}
+                    />
+                )}
+                {openConfirmSoftDeleteMultiple && (
+                    <ConfirmDeleteDialog
+                        key={"deleteMultiple"}
+                        open={openConfirmSoftDeleteMultiple}
+                        onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
+                        onConfirm={handleConfirmSoftDeleteMultiple}
+                        title="Xác nhận xóa các mục đã chọn?"
+                        description={`Bạn có chắc chắn muốn xóa?`}
+                    />
+                )}
+
                 {selectedEditIsLink?.isLink === true ? (
                     <ConfirmDeleteDialog
                         key={"isUnLink"}
@@ -1672,11 +1623,13 @@ const PublicationsPage = () => {
                     />
                 )}
 
-                <PublicationsDetailsDialog
-                    open={openViewDetails}
-                    onClose={handleCloseViewDetails}
-                    publications={publicationsDetails}
-                />
+                {openViewDetails && (
+                    <PublicationsDetailsDialog
+                        open={openViewDetails}
+                        onClose={handleCloseViewDetails}
+                        publications={publicationsDetails}
+                    />
+                )}
             </MainCard>
         </div>
     );

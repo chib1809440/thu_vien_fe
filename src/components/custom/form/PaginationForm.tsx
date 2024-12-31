@@ -8,12 +8,7 @@ import {
     SelectChangeEvent,
     Typography,
 } from "@mui/material";
-import {
-    IconChevronLeft,
-    IconChevronRight,
-    IconChevronsLeft,
-    IconChevronsRight,
-} from "@tabler/icons";
+import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight } from "@tabler/icons";
 import { FC, useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { TMeta } from "../../../types/api/api.type";
@@ -22,9 +17,10 @@ import CustomInput from "../../default/input/CustomInput";
 
 type Props = {
     pagination: TMeta;
+    defaultLimit?: number;
 };
 
-const PaginationForm: FC<Props> = ({ pagination }) => {
+const PaginationForm: FC<Props> = ({ pagination, defaultLimit = 5 }) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const queryString = useQueryString();
 
@@ -49,8 +45,8 @@ const PaginationForm: FC<Props> = ({ pagination }) => {
 
     const limitOption = useMemo(() => {
         // @ts-ignore
-        return [...new Set([1, 5, 10, 20, +queryString?.limit || 5])].sort((a, b) => a - b);
-    }, [queryString?.limit]);
+        return [...new Set([1, 5, 10, 20, +queryString?.limit || defaultLimit])].sort((a, b) => a - b);
+    }, [queryString?.limit, defaultLimit]);
 
     return (
         <Box
@@ -61,7 +57,7 @@ const PaginationForm: FC<Props> = ({ pagination }) => {
                 alignItems: "center",
                 gap: 2,
                 flexDirection: "row",
-                flexWrap: "wrap"
+                flexWrap: "wrap",
             }}
         >
             <Box

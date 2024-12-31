@@ -33,6 +33,7 @@ import usePermission from "../../../utils/hasPermission";
 import FormAddEditWareHouseAssetsReceipt from "./ui-components/FormAddEditWareHouseAssetsReceipt";
 import ViewDetailWareHouseAssetsReceipt from "./ui-components/ViewDetailWareHouseAssets";
 import { Link } from "react-router-dom";
+import { formatPrice } from "../../../utils/object";
 
 const WareHouseReceiptAssetsPage = () => {
     const queryString = useQueryString();
@@ -171,8 +172,9 @@ const WareHouseReceiptAssetsPage = () => {
                                     <ul style={{ marginTop: 5 }}>
                                         {row?.assets.map((asset, idx) => (
                                             <li key={idx}>
-                                                {capitalizeFirstLetter(asset?.name)} (SLN:
-                                                <strong>{asset?.quantity}</strong> - Tổng giá: <strong>{asset?.priceInput * asset?.quantity}</strong>)
+                                                {capitalizeFirstLetter(asset?.name)} 
+                                                {/* (SLN:
+                                                <strong>{asset?.quantity}</strong> - Tổng giá: <strong>{formatPrice(asset?.priceInput * asset?.quantity)}</strong>) */}
                                             </li>
                                         ))}
                                     </ul>

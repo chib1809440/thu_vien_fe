@@ -1,5 +1,5 @@
 import { Button, Grid, Paper, Tooltip, Typography, useTheme } from "@mui/material";
-import { Box } from "@mui/system";
+import { Box, useMediaQuery } from "@mui/system";
 import { IconBook } from "@tabler/icons";
 import { IconFileDescription, IconFileWord, IconPdf, IconPhoto, IconPresentation, IconShoppingBag, IconVideo } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
@@ -30,6 +30,8 @@ import FilterByItems from "../../../PublicationsPage/ui-components/FilterByItems
 import PublicationsDetailsDialog from "../../../PublicationsPage/ui-components/PublicationsDetailsDialog";
 import { useAuth } from "../../../../../contexts/JWTContext";
 import { Role } from "../../../../../interfaces/role";
+import GradientCircularProgressLoading from "../../../../../components/default/loading/GradientCircularProgressLoading/GradientCircularProgressLoading";
+
 
 const LibraryPublicationsPage = () => {
     const queryString = useQueryString();
@@ -271,188 +273,197 @@ const LibraryPublicationsPage = () => {
                 /> */}
 
                 <Grid container spacing={2} sx={{ p: { xs: 0, sm: 0, md: "12px 32px" }, pt: 2 }}>
-                    {
-                        isLoading === false && isFetching === false && dataLibPublications.length > 0 ? (
-                            dataLibPublications.map((item, index) => (
-                                <Grid item xs={12} sm={12} md={6} lg={4} xl={3} >
-                                    <Paper sx={{ p: 2, height: "100%", border: `1px solid ${theme.palette.grey[300]}`, }} elevation={0}>
-                                        <Box sx={{ display: "flex", height: "100%", flexDirection: "column", alignItems: "center", justifyContent: "space-between" }}>
-                                            <Paper sx={{ width: "100%", position: "relative" }}>
-                                                <Box onClick={() => handleViewDetails(item)}>
-                                                    <ImageCard id={item._id} photo={item?.priviewImage
-                                                        ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
-                                                        : item?.path
-                                                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
-                                                            : ""} aspectRatio={"16/9"} objectFit="contain" />
-                                                </Box>
-                                                <Button
-                                                    onClick={() => handleViewDetails(item)}
+                    {isLoading || isFetching ? (
+                        <Grid
+                            item
+                            xs={12}
+                            p={0}
+                        >
+
+                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}><GradientCircularProgressLoading /></Box>
+                        </Grid>
+                    ) : dataLibPublications?.length > 0 ? (
+                        dataLibPublications.map((item, index) => (
+                            <Grid item xs={12} sm={12} md={6} lg={4} xl={3} >
+                                <Paper sx={{ p: 2, height: "100%", border: `1px solid ${theme.palette.grey[300]}`, }} elevation={0}>
+                                    <Box sx={{ display: "flex", height: "100%", flexDirection: "column", alignItems: "center", justifyContent: "space-between" }}>
+                                        <Paper sx={{ width: "100%", position: "relative" }}>
+                                            <Box onClick={() => handleViewDetails(item)}>
+                                                <ImageCard id={item._id} photo={item?.priviewImage
+                                                    ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
+                                                    : item?.path
+                                                        ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
+                                                        : ""} aspectRatio={"16/9"} objectFit="contain" />
+                                            </Box>
+                                            <Button
+                                                onClick={() => handleViewDetails(item)}
+                                                sx={{
+                                                    position: "absolute",
+                                                    top: 0,
+                                                    right: 0,
+                                                    minWidth: 35, height: 35,
+                                                    // margin: "8px",
+                                                    background: colorType(item?.mimetype),
+                                                    boxShadow: "5px 5px 7px rgba(0.1, 0.1, 0.1, 0.1)",
+
+                                                }}
+                                            >
+                                                {
+                                                    (!item?.mimetype || [
+                                                        "image/jpeg",
+                                                        "image/png",
+                                                        "image/gif",
+                                                        "image/bmp",
+                                                        "image/webp",
+                                                    ].includes(item?.mimetype) && item?.type === "ấn phẩm cứng") && (
+                                                        <IconBook
+                                                            size={25}
+                                                            stroke={1.5}
+                                                            color="white"
+                                                        />
+                                                    )
+                                                }
+                                                {
+                                                    (item?.mimetype === "application/pdf") && (
+                                                        <IconPdf
+                                                            size={25}
+                                                            stroke={1.5}
+                                                            color="white"
+                                                        />
+                                                    )
+                                                }
+                                                {
+                                                    [
+                                                        "application/msword",
+                                                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                                    ].includes(item?.mimetype) && (
+                                                        <IconFileWord
+                                                            size={25}
+                                                            stroke={1.5}
+                                                            color="white"
+                                                        />
+                                                    )
+                                                }
+                                                {
+                                                    [
+                                                        "video/mp4",
+                                                        "video/x-matroska",
+                                                        "video/webm",
+                                                        "video/x-msvideo",
+                                                    ].includes(item?.mimetype) && (
+                                                        <IconVideo
+                                                            size={25}
+                                                            stroke={1.5}
+                                                            color="white"
+                                                        />
+                                                    )
+                                                }
+                                                {
+                                                    [
+                                                        "application/vnd.ms-powerpoint",
+                                                        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                                                    ].includes(item?.mimetype) && (
+                                                        <IconPresentation
+                                                            size={25}
+                                                            stroke={1.5}
+                                                            color="white"
+                                                        />
+                                                    )
+                                                }
+                                                {
+                                                    [
+                                                        "image/jpeg",
+                                                        "image/png",
+                                                        "image/gif",
+                                                        "image/bmp",
+                                                        "image/webp",
+                                                    ].includes(item?.mimetype) && (
+                                                        <IconPhoto
+                                                            size={25}
+                                                            stroke={1.5}
+                                                            color="white"
+                                                        />
+                                                    )
+                                                }
+                                            </Button>
+
+                                            <Box>
+
+                                                <StyledIconButton
+                                                    disableHoverEffect
                                                     sx={{
                                                         position: "absolute",
-                                                        top: 0,
-                                                        right: 0,
-                                                        minWidth: 35, height: 35,
-                                                        // margin: "8px",
-                                                        background: colorType(item?.mimetype),
-                                                        boxShadow: "5px 5px 7px rgba(0.1, 0.1, 0.1, 0.1)",
-
+                                                        zIndex: 999,
+                                                        bottom: -90,
+                                                        right: -15,
+                                                        margin: "8px",
+                                                        background: "none",
+                                                        [theme.breakpoints.down("sm")]: {
+                                                            width: "7%",
+                                                        },
+                                                        [theme.breakpoints.down("md")]: {
+                                                            width: "10%",
+                                                        },
                                                     }}
                                                 >
                                                     {
-                                                        (!item?.mimetype || [
-                                                            "image/jpeg",
-                                                            "image/png",
-                                                            "image/gif",
-                                                            "image/bmp",
-                                                            "image/webp",
-                                                        ].includes(item?.mimetype) && item?.type === "ấn phẩm cứng") && (
-                                                            <IconBook
-                                                                size={25}
-                                                                stroke={1.5}
-                                                                color="white"
-                                                            />
-                                                        )
-                                                    }
-                                                    {
-                                                        (item?.mimetype === "application/pdf") && (
-                                                            <IconPdf
-                                                                size={25}
-                                                                stroke={1.5}
-                                                                color="white"
-                                                            />
-                                                        )
-                                                    }
-                                                    {
-                                                        [
-                                                            "application/msword",
-                                                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                                                        ].includes(item?.mimetype) && (
-                                                            <IconFileWord
-                                                                size={25}
-                                                                stroke={1.5}
-                                                                color="white"
-                                                            />
-                                                        )
-                                                    }
-                                                    {
-                                                        [
-                                                            "video/mp4",
-                                                            "video/x-matroska",
-                                                            "video/webm",
-                                                            "video/x-msvideo",
-                                                        ].includes(item?.mimetype) && (
-                                                            <IconVideo
-                                                                size={25}
-                                                                stroke={1.5}
-                                                                color="white"
-                                                            />
-                                                        )
-                                                    }
-                                                    {
-                                                        [
-                                                            "application/vnd.ms-powerpoint",
-                                                            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                                                        ].includes(item?.mimetype) && (
-                                                            <IconPresentation
-                                                                size={25}
-                                                                stroke={1.5}
-                                                                color="white"
-                                                            />
-                                                        )
-                                                    }
-                                                    {
-                                                        [
-                                                            "image/jpeg",
-                                                            "image/png",
-                                                            "image/gif",
-                                                            "image/bmp",
-                                                            "image/webp",
-                                                        ].includes(item?.mimetype) && (
-                                                            <IconPhoto
-                                                                size={25}
-                                                                stroke={1.5}
-                                                                color="white"
-                                                            />
-                                                        )
-                                                    }
-                                                </Button>
-
-                                                <Box>
-
-                                                    <StyledIconButton
-                                                        disableHoverEffect
-                                                        sx={{
-                                                            position: "absolute",
-                                                            zIndex: 999,
-                                                            bottom: -90,
-                                                            right: -15,
-                                                            margin: "8px",
-                                                            background: "none",
-                                                            [theme.breakpoints.down("sm")]: {
-                                                                width: "7%",
-                                                            },
-                                                            [theme.breakpoints.down("md")]: {
-                                                                width: "10%",
-                                                            },
-                                                        }}
-                                                    >
-                                                        {
-                                                            userRole !== "Student" && item?.type === "ấn phẩm cứng" && item?.libraryDetails && item?.libraryDetails?._id !== libraryId && (
-                                                                <Tooltip title={item?.status === "có sẵn" ? "Mượn ấn phẩm" : "Ấn phẩm không có sẵn"} arrow placement="top">
-                                                                    <Box
-                                                                        sx={{
-                                                                            background: item?.status === "có sẵn" ? "green" : "gray",
-                                                                            color: "white",
-                                                                            borderRadius: 2,
-                                                                            display: "flex",
-                                                                            alignItems: "center",
-                                                                            justifyContent: "center",
-                                                                            p: 0.5,
-                                                                            // pointerEvents: item?.status === "có sẵn" ? "auto" : "none",
-                                                                            opacity: item?.status === "có sẵn" ? 1 : 0.5,
+                                                        userRole !== "Student" && item?.type === "ấn phẩm cứng" && item?.libraryDetails && item?.libraryDetails?._id !== libraryId && (
+                                                            <Tooltip title={item?.status === "có sẵn" ? "Mượn ấn phẩm" : "Ấn phẩm không có sẵn"} arrow placement="top">
+                                                                <Box
+                                                                    sx={{
+                                                                        background: item?.status === "có sẵn" ? "green" : "gray",
+                                                                        color: "white",
+                                                                        borderRadius: 2,
+                                                                        display: "flex",
+                                                                        alignItems: "center",
+                                                                        justifyContent: "center",
+                                                                        p: 0.5,
+                                                                        // pointerEvents: item?.status === "có sẵn" ? "auto" : "none",
+                                                                        opacity: item?.status === "có sẵn" ? 1 : 0.5,
+                                                                    }}
+                                                                >
+                                                                    <IconFileDescription
+                                                                        size={20}
+                                                                        stroke={2}
+                                                                        onClick={() => {
+                                                                            if (item?.status === "có sẵn") {
+                                                                                handleAddItem(item);
+                                                                            }
                                                                         }}
-                                                                    >
-                                                                        <IconFileDescription
-                                                                            size={20}
-                                                                            stroke={2}
-                                                                            onClick={() => {
-                                                                                if (item?.status === "có sẵn") {
-                                                                                    handleAddItem(item);
-                                                                                }
-                                                                            }}
-                                                                        />
-                                                                    </Box>
-                                                                </Tooltip>
-                                                            )
-                                                        }
-                                                    </StyledIconButton>
+                                                                    />
+                                                                </Box>
+                                                            </Tooltip>
+                                                        )
+                                                    }
+                                                </StyledIconButton>
 
-                                                </Box>
-                                            </Paper>
-                                            <Box sx={{ display: "flex", alignItems: "flex-start", height: "100%", minHeight: "75px", width: "200px" }}>
-                                                <Typography pt={2} color={theme.palette.info.dark} textAlign={"center"} variant="h6" fontSize={"16px !important"}
-                                                    sx={{
-                                                        whiteSpace: "nowrap",
-                                                        overflow: "hidden",
-                                                        textOverflow: "ellipsis",
-                                                        width: "100%"
-                                                    }}
-                                                >{capitalizeFirstLetter(item.name)}</Typography>
                                             </Box>
-
+                                        </Paper>
+                                        <Box sx={{ display: "flex", alignItems: "flex-start", height: "100%", minHeight: "75px", width: "200px" }}>
+                                            <Typography pt={2} color={theme.palette.info.dark} textAlign={"center"} variant="h6" fontSize={"16px !important"}
+                                                sx={{
+                                                    whiteSpace: "nowrap",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                    width: "100%"
+                                                }}
+                                            >{capitalizeFirstLetter(item.name)}</Typography>
                                         </Box>
-                                    </Paper>
-                                </Grid>
 
-                            ))) : (
-                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
-                                <Typography>Chưa có ấn phẩm</Typography>
-                            </Box>
-                        )
+                                    </Box>
+                                </Paper>
+                            </Grid>
+
+                        ))
+                    ) : (
+                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
+                            <Typography>Chưa có ấn phẩm</Typography>
+                        </Box>
+                    )
 
                     }
                     < Grid item xs={12}>
-                        {data?.data?.meta && Object.keys(data?.data?.meta).length > 0 && (
+                        {data?.data?.meta && Object.keys(data?.data?.meta)?.length > 0 && (
                             <PaginationForm pagination={data?.data?.meta} />
                         )}
                     </Grid>

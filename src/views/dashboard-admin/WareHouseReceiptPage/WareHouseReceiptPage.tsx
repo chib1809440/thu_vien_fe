@@ -24,6 +24,7 @@ import MainCard from "../../../ui-component/cards/MainCard";
 import usePermission from "../../../utils/hasPermission";
 import FormAddEditWareHouseReceipt from "./ui-components/FormAddEditWareHouseReceipt";
 import ViewDetailWareHouseReceipt from "./ui-components/ViewDetailWareHouse";
+import { formatPrice } from "../../../utils/object";
 
 
 const WareHouseReceiptPage = () => {
@@ -151,8 +152,9 @@ const WareHouseReceiptPage = () => {
                                     <ul style={{ marginTop: 5 }}>
                                         {row?.publications.map((publication, idx) => (
                                             <li key={idx}>
-                                                {capitalizeFirstLetter(publication?.name)} (SLN:
-                                                <strong>{publication?.quantityWareHouse}</strong> - Tổng giá: <strong>{publication?.priceInput * publication?.quantity}</strong>)
+                                                {capitalizeFirstLetter(publication?.name)} 
+                                                {/* (SLN:
+                                                <strong>{publication?.quantityWareHouse}</strong> - Tổng giá: <strong>{formatPrice(publication?.priceInput * publication?.quantity)}</strong>) */}
                                             </li>
                                         ))}
                                     </ul>

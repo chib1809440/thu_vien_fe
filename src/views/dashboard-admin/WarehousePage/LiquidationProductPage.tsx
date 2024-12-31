@@ -11,7 +11,8 @@ import {
 import { Box } from "@mui/system";
 import { GridExpandMoreIcon } from "@mui/x-data-grid";
 import { IconEye, IconPencil } from "@tabler/icons";
-import { IconCheck, IconPlus, IconTrash } from "@tabler/icons-react";
+import { IconCheck, IconFileExport, IconPlus, IconTrash } from "@tabler/icons-react";
+import ExcelJS from 'exceljs';
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import TableList from "../../../components/custom/table-list/TableList";
@@ -27,14 +28,15 @@ import {
 } from "../../../hooks/services/liquidation/liquidation-mutation";
 import { useFetchLiquidation, useReFetchLiquidation } from "../../../hooks/services/liquidation/liquidation-query";
 import useQueryString from "../../../hooks/services/useQueryString";
-import { TColumn } from "../../../types/common/table";
+import { TColumn, TMenuOption } from "../../../types/common/table";
 import { CreateLiquidation, TLiquidation } from "../../../types/models/liquidation.type";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import usePermission from "../../../utils/hasPermission";
-import { parserParams } from "../../../utils/object";
+import { formatPrice, parserParams } from "../../../utils/object";
 import FormAddEditLiquidation from "./ui-components/FormAddEditLiquidation";
 import ViewDetailLiquidation from "./ui-components/ViewDetailLiquidation";
+import ActionsForm from "../../../components/custom/form/ActionForm";
 
 const LiquidationProductPage = () => {
     const queryString = useQueryString();
@@ -191,14 +193,9 @@ const LiquidationProductPage = () => {
 
                                                 {/* Định dạng giá */}
                                                 <Typography sx={{ mt: 0.5 }}>
-                                                    Giá:{" "}
+                                                    Giá:
                                                     <strong>
-                                                        {liquidation?.priceLiquidation
-                                                            ? new Intl.NumberFormat("vi-VN", {
-                                                                style: "currency",
-                                                                currency: "VND",
-                                                            }).format(liquidation.priceLiquidation)
-                                                            : "Không có giá"}
+                                                        {formatPrice(liquidation?.priceLiquidation)}
                                                     </strong>
                                                 </Typography>
                                                 {/* <Typography sx={{ mt: 0.5 }}>
@@ -258,15 +255,7 @@ const LiquidationProductPage = () => {
                         return total + (liquidation?.priceLiquidation * liquidation?.quantityLiquidation || 0);
                     }, 0);
 
-                    // Định dạng giá trị tiền tệ
-                    const formattedPrice = totalPrice
-                        ? new Intl.NumberFormat("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                        }).format(totalPrice)
-                        : "0 VND";
-
-                    return <Typography sx={{ mt: 0.5 }}>{formattedPrice}</Typography>;
+                    return <Typography sx={{ mt: 0.5 }}>{formatPrice(totalPrice)}</Typography>;
                 },
             },
             {
@@ -431,6 +420,145 @@ const LiquidationProductPage = () => {
         });
     };
 
+    const handleExportLiquidationExcel = () => {
+        // Tạo một workbook mới
+        console.log(data);
+        if (data) {
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Publications');
+
+            // Thêm hàng tiêu đề chính
+            worksheet.addRow(['Danh sách nhập ấn phẩm']).font = { bold: true, size: 14 };
+            worksheet.addRow([]);
+
+            const currentDateTime = new Date();
+            const formattedDateTime = currentDateTime.toLocaleString('vi-VN', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: false,
+            });
+
+            worksheet.addRow([`Ngày xuất file: ${formattedDateTime}`]).font = { bold: true };
+            worksheet.addRow([]);
+
+            worksheet.addRow([
+                'Thông tin thanh lý',
+                'Ngày tạo',
+                'Ngày cập nhật',
+                'Số lượng thanh lý',
+                'Giá',
+                'Tổng giá',
+                'Trạng thái ký'
+            ]).font = { bold: true };
+
+            worksheet.getColumn('A').width = 15;
+            worksheet.getColumn('B').width = 30;
+            worksheet.getColumn('C').width = 30;
+            worksheet.getColumn('D').width = 30;
+            worksheet.getColumn('E').width = 30;
+            worksheet.getColumn('F').width = 30;
+            worksheet.getColumn('G').width = 20;
+
+            const LiquidationsData = data?.data?.result?.map((liquidation) => {
+                const isAccepted = liquidation?.isAccept ? 'Đã duyệt' : 'Chưa duyệt';
+
+                const liquiData = liquidation?.liquidations?.map((item) => {
+                    return {
+                        name: item?.name || '',
+                        createdAt: liquidation?.createdAt ? new Date(liquidation?.createdAt) : null,
+                        updatedAt: liquidation?.updatedAt ? new Date(liquidation?.updatedAt) : null,
+                        quantityLiquidation: item?.quantityLiquidation || 0,
+                        priceLiquidation: formatPrice(item?.priceLiquidation) || 0,
+                        priceTotal: formatPrice(item?.priceLiquidation * item?.quantityLiquidation) || 0,
+                        approve: isAccepted,
+                    };
+                });
+
+                return liquiData;
+            }).flat();
+
+            LiquidationsData.sort((a: any, b: any) => {
+                if (a.createdAt && b.createdAt) {
+                    return a.createdAt.getTime() - b.createdAt.getTime();
+                }
+                return 0;
+            });
+
+
+            // Add the data to the worksheet
+            LiquidationsData.forEach((dataRow) => {
+                const row = worksheet.addRow([]);
+                row.values = [
+                    dataRow.name,
+                    dataRow.createdAt,
+                    dataRow.updatedAt,
+                    dataRow.quantityLiquidation,
+                    dataRow.priceLiquidation,
+                    dataRow.priceTotal,
+                    dataRow.approve
+                ];
+                row.eachCell((cell) => {
+                    cell.border = {
+                        top: { style: 'thin' },
+                        left: { style: 'thin' },
+                        bottom: { style: 'thin' },
+                        right: { style: 'thin' }
+                    };
+                });
+            });
+
+            // Style the header row
+            const headerRow = worksheet.getRow(4); // Header starts at row 4
+            headerRow.eachCell((cell) => {
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' }
+                };
+                cell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FFCCCCCC' }
+                };
+                cell.font = {
+                    bold: true,
+                    color: { argb: 'FF000000' }
+                };
+            });
+
+            // Tạo file Excel và lưu
+            const formattedDate = currentDateTime.toLocaleDateString('vi-VN');
+            const fileName = `PhieuBienBan_Thanhly_${formattedDate}.xlsx`;
+
+            workbook.xlsx.writeBuffer().then((buffer) => {
+                const blob = new Blob([buffer], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        } else {
+            toast.error("Không có dữ liệu để xuất excel");
+        }
+    };
+
+    const actionMenus = useMemo((): TMenuOption[] => {
+        return [
+            {
+                label: "Xuất danh sách phiếu biên bản",
+                icon: <IconFileExport size={20} stroke={1.5} />,
+                onClick: handleExportLiquidationExcel,
+            },
+        ];
+    }, [handleExportLiquidationExcel]);
+
     return (
         <div>
             <IBreadcrumsCustom
@@ -478,6 +606,8 @@ const LiquidationProductPage = () => {
                             )}
                     </Box>
                 </Stack>
+
+                <ActionsForm isActive={false} actions={actionMenus} />
 
                 <TableList
                     checked={checkedDelete}

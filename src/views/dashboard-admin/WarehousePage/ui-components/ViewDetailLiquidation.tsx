@@ -28,7 +28,7 @@ import { useSignature } from "../../../../hooks/services/liquidation/liquidation
 import { useReFetchLiquidation } from "../../../../hooks/services/liquidation/liquidation-query";
 import { TLiquidation } from "../../../../types/models/liquidation.type";
 import { typeLiquidationOptions } from "../../../../utils/constants.utils";
-import { getLabelFromOptions } from "../../../../utils/object";
+import { formatPrice, getLabelFromOptions } from "../../../../utils/object";
 import PrintLiquidation from "./PrintLiquidation";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -228,7 +228,7 @@ const ViewDetailLiquidation: FC<Props> = ({ open, onClose, onSubmitConfirmSignat
                                                     </StyledTableCell>
                                                     <StyledTableCell align="left">
                                                         <Box>
-                                                            <Typography>{row?.name || "Không có dữ liệu"}</Typography>
+                                                            <Typography>{capitalizeFirstLetter(row?.name) || "Không có dữ liệu"}</Typography>
                                                             <Typography sx={{ mt: 0.5 }}>
                                                                 Vị trí:{" "}
                                                                 <strong>
@@ -291,10 +291,10 @@ const ViewDetailLiquidation: FC<Props> = ({ open, onClose, onSubmitConfirmSignat
                                                         {row?.quantityLiquidation || "0"}
                                                     </StyledTableCell>
                                                     <StyledTableCell align="left">
-                                                        {row?.priceLiquidation || "0"}
+                                                        {formatPrice(row?.priceLiquidation) || "0"}
                                                     </StyledTableCell>
                                                     <StyledTableCell align="left">
-                                                        {row?.priceLiquidation * row?.quantityLiquidation || "0"}
+                                                        {formatPrice(row?.priceLiquidation * row?.quantityLiquidation) || "0"}
                                                     </StyledTableCell>
                                                 </StyledTableRow>
                                             ))}
@@ -313,15 +313,12 @@ const ViewDetailLiquidation: FC<Props> = ({ open, onClose, onSubmitConfirmSignat
                                                 </StyledTableCell>
                                                 <StyledTableCell>
                                                     <strong>
-                                                        {liquidationData?.liquidations
-                                                            ?.reduce((total, row) => {
-                                                                return (
-                                                                    total +
-                                                                    (row?.priceLiquidation * row?.quantityLiquidation ||
-                                                                        0)
-                                                                );
-                                                            }, 0)
-                                                            .toLocaleString() || "0"}
+                                                        {formatPrice(
+                                                            liquidationData?.liquidations
+                                                                ?.reduce((total, row) => {
+                                                                    return total + (row?.priceLiquidation * row?.quantityLiquidation || 0);
+                                                                }, 0)
+                                                        ) || "0"}
                                                     </strong>
                                                 </StyledTableCell>
                                             </StyledTableRow>
@@ -376,7 +373,7 @@ const ViewDetailLiquidation: FC<Props> = ({ open, onClose, onSubmitConfirmSignat
                             )}
 
                             {/* Dialog Upload File */}
-                            <Dialog open={openImportFile} onClose={handleCloseImportFile}>
+                            <Dialog open={openImportFile} onClose={handleCloseImportFile} >
                                 <DialogTitle>
                                     {liquidationData?.fileSignature ? "Cập nhật phiếu biên bản" : "Tải phiếu biên bản"}
                                 </DialogTitle>
@@ -388,7 +385,7 @@ const ViewDetailLiquidation: FC<Props> = ({ open, onClose, onSubmitConfirmSignat
                                     />
                                 </DialogContent>
                                 <DialogActions>
-                                    <Button onClick={handleCloseImportFile} color="primary">
+                                    <Button onClick={handleCloseImportFile} color="error">
                                         Hủy
                                     </Button>
                                     <Button onClick={handleSubmitImportFile} color="primary">

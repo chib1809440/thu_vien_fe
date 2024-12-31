@@ -805,21 +805,19 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                                                     placeholder="Số lượng"
                                                                     value={row.quantityWareHouse}
                                                                     onChange={(e) => {
-                                                                        const updatedPublications =
-                                                                            [...publications];
-                                                                        updatedPublications[
-                                                                            index
-                                                                        ].quantityWareHouse =
-                                                                            Number(e.target.value);
-                                                                        setPublications(
-                                                                            updatedPublications
-                                                                        );
+                                                                        const newValue = e.target.value;
+                                                                        if (newValue === "" || Number(newValue) > 0) {
+                                                                            const updatedPublications = [...publications];
+                                                                            updatedPublications[index].quantityWareHouse = Number(newValue);
+                                                                            setPublications(updatedPublications);
+                                                                        }
                                                                     }}
                                                                     onKeyDown={(e) => {
                                                                         if (e.key === "Enter") {
                                                                             e.preventDefault(); // Ngăn hành động mặc định khi nhấn Enter
                                                                         }
                                                                     }}
+                                                                    error={row?.name !== "" && Number(row.quantityWareHouse) <= 0}
                                                                 />
                                                             </Box>
                                                         </StyledTableCell>
@@ -831,22 +829,19 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                                                     placeholder="Giá nhập"
                                                                     value={row.price}
                                                                     onChange={(e) => {
-                                                                        const updatedPublications = [
-                                                                            ...publications,
-                                                                        ];
-                                                                        updatedPublications[
-                                                                            index
-                                                                        ].price = Number(
-                                                                            e.target.value
-                                                                        );
-                                                                        setPublications(updatedPublications);
+                                                                        const newValue = e.target.value;
+                                                                        if (newValue === "" || Number(newValue) > 0) {
+                                                                            const updatedPublications = [...publications];
+                                                                            updatedPublications[index].price = Number(newValue);
+                                                                            setPublications(updatedPublications);
+                                                                        }
                                                                     }}
                                                                     onKeyDown={(e) => {
                                                                         if (e.key === "Enter") {
                                                                             e.preventDefault(); // Ngăn hành động mặc định khi nhấn Enter
                                                                         }
                                                                     }}
-                                                                    error={Number(row.price) <= 0}
+                                                                    error={row?.name !== "" && Number(row.price) <= 0}
                                                                 />
                                                             </Box>
                                                         </StyledTableCell>

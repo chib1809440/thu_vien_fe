@@ -122,7 +122,7 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
                 toast.error("Không có giá trị để nhập kho! Vui lòng kiểm tra thông tin.")
                 return;
             }
-            
+
             if (onSubmit) {
                 const createLoanSlip: TWareHouseAssetsReceiptCreate = {
                     note: values.note,
@@ -610,20 +610,19 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
                                                                     placeholder="Số lượng"
                                                                     value={row.quantity}
                                                                     onChange={(e) => {
-                                                                        const updatedAssets = [
-                                                                            ...assets,
-                                                                        ];
-                                                                        updatedAssets[
-                                                                            index
-                                                                        ].quantity =
-                                                                            Number(e.target.value);
-                                                                        setAssets(updatedAssets);
+                                                                        const value = e.target.value;
+                                                                        if (/^\d+$/.test(value)) {
+                                                                            const updatedAssets = [...assets];
+                                                                            updatedAssets[index].quantity = Number(value);
+                                                                            setAssets(updatedAssets);
+                                                                        }
                                                                     }}
                                                                     onKeyDown={(e) => {
                                                                         if (e.key === "Enter") {
                                                                             e.preventDefault(); // Ngăn hành động mặc định khi nhấn Enter
                                                                         }
                                                                     }}
+                                                                    error={row?.name !== "" && Number(row.quantity) <= 0}
                                                                 />
                                                             </Box>
                                                         </StyledTableCell>
@@ -635,22 +634,19 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
                                                                     placeholder="Giá nhập"
                                                                     value={row.price}
                                                                     onChange={(e) => {
-                                                                        const updatedAssets = [
-                                                                            ...assets,
-                                                                        ];
-                                                                        updatedAssets[
-                                                                            index
-                                                                        ].price = Number(
-                                                                            e.target.value
-                                                                        );
-                                                                        setAssets(updatedAssets);
+                                                                        const newValue = e.target.value;
+                                                                        if (newValue === "" || Number(newValue) > 0) {
+                                                                            const updatedAssets = [...assets];
+                                                                            updatedAssets[index].price = Number(newValue);
+                                                                            setAssets(updatedAssets);
+                                                                        }
                                                                     }}
                                                                     onKeyDown={(e) => {
                                                                         if (e.key === "Enter") {
                                                                             e.preventDefault(); // Ngăn hành động mặc định khi nhấn Enter
                                                                         }
                                                                     }}
-                                                                    error={Number(row.price) <= 0}
+                                                                    error={row?.name !== "" && Number(row.price) <= 0}
                                                                 />
                                                             </Box>
                                                         </StyledTableCell>

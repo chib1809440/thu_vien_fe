@@ -177,6 +177,7 @@ const LoanSlipPage = () => {
                         console.log("kk", data.data.result);
                         setSelectedEdit(data.data.result);
                     }
+                    handleClose();
                     toast.success('Hủy phiếu mượn thành công.');
                 },
             }
@@ -299,9 +300,16 @@ const LoanSlipPage = () => {
                                 <Box sx={{ mt: 0.5 }}>
                                     <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
                                     <ul style={{ margin: 0 }}>
-                                        {row?.publications.map((publication, idx) => (
+                                        {row?.publications.slice(0, 2).map((publication, idx) => (
                                             <li key={idx}>{capitalizeFirstLetter(publication?.name)} (SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
                                         ))}
+                                        {row?.publications?.length > 2 && (
+                                            <Chip
+                                                label={`+${row?.publications?.length - 2} ấn phẩm khác`}
+                                                variant="outlined"
+                                                color="primary"
+                                            />
+                                        )}
                                     </ul>
                                 </Box>
                             )}

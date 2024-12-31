@@ -118,39 +118,38 @@ const FormAddEditLiquidation: FC<Props> = ({
                 return;
             }
 
-            if (isEditMode) {
-                const errorMessages = [];
-                filteredData.forEach((item) => {
-                    const quantityLiquidation = item.quantityLiquidation || 0;
-                    // kho tài sản
-                    const quantityWarehouse = item.quantityWarehouse || 0;
-                    const shelvesQuantity = item.shelvesQuantity || 0;
-                    // kho ấn phẩm
-                    const quantity = item.quantity || 0;
+            const errorMessages = [];
+            filteredData.forEach((item) => {
+                const quantityLiquidation = item.quantityLiquidation || 0;
+                // kho tài sản
+                const quantityWarehouse = item.quantityWarehouse || 0;
+                const shelvesQuantity = item.shelvesQuantity || 0;
+                // kho ấn phẩm
+                const quantity = item.quantity || 0;
 
-                    if (item.type === "Asset") {
-                        if (item.position === "trong kho" && quantityLiquidation > quantityWarehouse) {
-                            errorMessages.push(`Số lượng thanh lý cho tài sản "<strong>${item.name}</strong>" vượt quá số lượng trong kho <strong>(${quantityWarehouse})</strong>`);
-                        }
-                    } else if (item.type === "Publication") {
-                        if (item.position === "trưng bày" && quantityLiquidation > shelvesQuantity) {
-                            errorMessages.push(`Số lượng thanh lý cho ấn phẩm "<strong>${item.name}</strong>" vượt quá số lượng trưng bày <strong>(${shelvesQuantity})</strong>`);
-                        } else if (item.position === "trong kho" && quantityLiquidation > quantity) {
-                            errorMessages.push(`Số lượng thanh lý cho ấn phẩm "<strong>${item.name}</strong>" vượt quá số lượng trong kho <strong>(${quantity})</strong>`);
-                        }
+                if (item.type === "Asset") {
+                    if (item.position === "trong kho" && quantityLiquidation > quantityWarehouse) {
+                        errorMessages.push(`Số lượng thanh lý cho tài sản "<strong>${item.name}</strong>" vượt quá số lượng trong kho <strong>(${quantityWarehouse})</strong>`);
                     }
-                });
-
-                // Nếu có lỗi, hiển thị tất cả lỗi
-                if (errorMessages.length > 0) {
-                    const errorText = errorMessages.flat().map((msg, index) => `<strong>${index + 1}.</strong> ${capitalizeFirstLetter(msg)}`).join('<br /><br />');
-
-                    toast.error(<div dangerouslySetInnerHTML={{ __html: errorText }} />, {
-                        autoClose: 5000,
-                    });
-                    return;
+                } else if (item.type === "Publication") {
+                    if (item.position === "trưng bày" && quantityLiquidation > shelvesQuantity) {
+                        errorMessages.push(`Số lượng thanh lý cho ấn phẩm "<strong>${item.name}</strong>" vượt quá số lượng trưng bày <strong>(${shelvesQuantity})</strong>`);
+                    } else if (item.position === "trong kho" && quantityLiquidation > quantity) {
+                        errorMessages.push(`Số lượng thanh lý cho ấn phẩm "<strong>${item.name}</strong>" vượt quá số lượng trong kho <strong>(${quantity})</strong>`);
+                    }
                 }
+            });
+
+            // Nếu có lỗi, hiển thị tất cả lỗi
+            if (errorMessages.length > 0) {
+                const errorText = errorMessages.flat().map((msg, index) => `<strong>${index + 1}.</strong> ${capitalizeFirstLetter(msg)}`).join('<br /><br />');
+
+                toast.error(<div dangerouslySetInnerHTML={{ __html: errorText }} />, {
+                    autoClose: 5000,
+                });
+                return;
             }
+
 
             if (onSubmit) {
                 const createLiqui: CreateLiquidation = {
@@ -282,6 +281,12 @@ const FormAddEditLiquidation: FC<Props> = ({
                 priceLiquidation: 0,
                 quantityLiquidation: 1,
                 type: selectedType,
+                ...(selectedType === "Asset"
+                    ? { quantityWarehouse: value.quatity }
+                    : {
+                        shelvesQuantity: value.quatityUsed,
+                        quantity: value.quatity
+                    })
             };
 
             prevSelectedData[index] = newValue;
@@ -452,16 +457,19 @@ const FormAddEditLiquidation: FC<Props> = ({
                                                                     placeholder="Số lượng"
                                                                     value={row.quantityLiquidation}
                                                                     onChange={(e) => {
-                                                                        const updatedAssets = [...selectedData];
-                                                                        updatedAssets[index].quantityLiquidation =
-                                                                            Number(e.target.value);
-                                                                        setSelectedData(updatedAssets);
+                                                                        const value = e.target.value;
+                                                                        if (/^\d+$/.test(value)) {
+                                                                            const updatedAssets = [...selectedData];
+                                                                            updatedAssets[index].quantityLiquidation = Number(value);
+                                                                            setSelectedData(updatedAssets);
+                                                                        }
                                                                     }}
                                                                     onKeyDown={(e) => {
                                                                         if (e.key === "Enter") {
                                                                             e.preventDefault(); // Ngăn hành động mặc định khi nhấn Enter
                                                                         }
                                                                     }}
+                                                                    error={row?.name !== "" && Number(row.quantityLiquidation) <= 0}
                                                                 />
                                                             </Box>
                                                         </StyledTableCell>
@@ -485,7 +493,7 @@ const FormAddEditLiquidation: FC<Props> = ({
                                                                             e.preventDefault();
                                                                         }
                                                                     }}
-                                                                    error={Number(row.priceLiquidation) <= 0}
+                                                                    error={row?.name !== "" && Number(row.priceLiquidation) <= 0}
                                                                 />
                                                             </Box>
                                                         </StyledTableCell>

@@ -1195,7 +1195,7 @@ const PublicationsPage = () => {
 
                             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}><GradientCircularProgressLoading /></Box>
                         </Grid>
-                    ) : data?.data?.result.length > 0 ? (
+                    ) : data?.data?.result?.length > 0 ? (
                         data?.data?.result.map((item, index) => (
                             <Grid item xs={12} sm={12} md={6} lg={4} xl={3}>
                                 <Paper
@@ -1565,7 +1565,7 @@ const PublicationsPage = () => {
                     )}
 
                     <Grid item xs={12}>
-                        {data?.data?.meta && Object.keys(data?.data?.meta).length > 0 && (
+                        {data?.data?.meta && Object.keys(data?.data?.meta)?.length > 0 && (
                             <PaginationForm defaultLimit={_limitDisplay} pagination={data?.data?.meta} />
                         )}
                     </Grid>

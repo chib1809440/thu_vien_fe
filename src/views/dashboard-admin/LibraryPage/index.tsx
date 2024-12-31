@@ -204,11 +204,11 @@ const LibraryPage = () => {
                                         size={20}
                                         stroke={1.5}
                                     />
-                                    <IconTrash
+                                    {/* <IconTrash
                                         size={20}
                                         stroke={1.5}
                                         onClick={() => handleOpenConfirmDialog(row)}
-                                    />
+                                    /> */}
                                 </>
                             }
 
@@ -356,22 +356,30 @@ const LibraryPage = () => {
                     pagination={data?.data?.meta}
                 />
 
-                <ConfirmDeleteDialog
-                    key={"delete"}
-                    open={openConfirmDialog}
-                    onClose={handleCloseConfirmDialog}
-                    onConfirm={handleConfirmDelete}
-                    title="Xác nhận xóa thư viện"
-                    description={`Bạn có chắc chắn muốn xóa "${libraryToDelete?.name}" ?`}
-                />
-                <ConfirmDeleteDialog
-                    key={"deleteMultiple"}
-                    open={openConfirmDeleteMultiple}
-                    onClose={() => setOpenConfirmDeleteMultiple(false)}
-                    onConfirm={handleConfirmDeleteMultiple}
-                    title="Xác nhận xóa các mục đã chọn"
-                    description={`Bạn có chắc chắn muốn xóa?`}
-                />
+{
+                    openConfirmDialog &&
+                    <ConfirmDeleteDialog
+                        key={"delete"}
+                        open={openConfirmDialog}
+                        onClose={handleCloseConfirmDialog}
+                        onConfirm={handleConfirmDelete}
+                        title="Xác nhận xóa thư viện"
+                        description={`Bạn có chắc chắn muốn xóa "${libraryToDelete?.name}" ?`}
+                    />
+                }
+
+                {
+                    openConfirmDeleteMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"deleteMultiple"}
+                        open={openConfirmDeleteMultiple}
+                        onClose={() => setOpenConfirmDeleteMultiple(false)}
+                        onConfirm={handleConfirmDeleteMultiple}
+                        title="Xác nhận xóa các mục đã chọn"
+                        description={`Bạn có chắc chắn muốn xóa?`}
+                    />
+
+                }
             </MainCard>
         </div>
     );

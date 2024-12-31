@@ -60,7 +60,7 @@ const CategoryPage = () => {
     const [categoryToDelete, setCategoryToDelete] = useState<TCategory | null>(null);
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
-    const [openConfirmDeleteMultiple, setOpenConfirmDeleteMultiple] = useState(false);
+    const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
 
     const { user } = useAuth();
     const userRole = useMemo(() => {
@@ -264,16 +264,16 @@ const CategoryPage = () => {
             toast.error("Vui lòng chọn dữ liệu để xóa");
             return;
         }
-        setOpenConfirmDeleteMultiple(true);
+        setOpenConfirmSoftDeleteMultiple(true);
     }, [checkedDelete]);
 
-    const handleConfirmDeleteMultiple = useCallback(() => {
+    const handleConfirmSoftDeleteMultiple = useCallback(() => {
         if (checkedDelete.length === 0) return;
         mutationSoftDeleteMany.mutate(checkedDelete, {
             onSuccess: () => {
                 revalidate();
                 toast.success("Xóa các mục đã chọn thành công.");
-                setOpenConfirmDeleteMultiple(false);
+                setOpenConfirmSoftDeleteMultiple(false);
                 setCheckedDelete([]);
             },
         });
@@ -395,22 +395,27 @@ const CategoryPage = () => {
                     pagination={data?.data?.meta}
                 />
 
-                <ConfirmDeleteDialog
-                    key={"delete"}
-                    open={openConfirmDialog}
-                    onClose={handleCloseConfirmDialog}
-                    onConfirm={handleConfirmDelete}
-                    title="Xác nhận xóa"
-                    description={`Bạn có chắc chắn muốn xóa "${categoryToDelete?.name}" ?`}
-                />
-                <ConfirmDeleteDialog
-                    key={"deleteMultiple"}
-                    open={openConfirmDeleteMultiple}
-                    onClose={() => setOpenConfirmDeleteMultiple(false)}
-                    onConfirm={handleConfirmDeleteMultiple}
-                    title="Xác nhận xóa các mục đã chọn"
-                    description={`Bạn có chắc chắn muốn xóa?`}
-                />
+                {openConfirmDialog &&
+                    <ConfirmDeleteDialog
+                        key={"delete"}
+                        open={openConfirmDialog}
+                        onClose={handleCloseConfirmDialog}
+                        onConfirm={handleConfirmDelete}
+                        title="Xác nhận xóa?"
+                        description={`Bạn có chắc chắn muốn xóa "${categoryToDelete?.name}" ?`}
+                    />
+                }
+
+                {openConfirmSoftDeleteMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"deleteMultiple"}
+                        open={openConfirmSoftDeleteMultiple}
+                        onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
+                        onConfirm={handleConfirmSoftDeleteMultiple}
+                        title="Xác nhận xóa các mục đã chọn?"
+                        description={`Bạn có chắc chắn muốn xóa?`}
+                    />
+                }
             </MainCard>
         </div>
     );

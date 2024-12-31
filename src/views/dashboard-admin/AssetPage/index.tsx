@@ -1,7 +1,7 @@
 import { useTheme } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { IconPlus, IconTrash } from '@tabler/icons';
-import { IconDevices, IconTransferIn } from '@tabler/icons-react';
+import { IconTransferIn } from '@tabler/icons-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { HeadCell } from '../../../components/custom/table/type';
@@ -65,7 +65,6 @@ const headCells: HeadCell[] = [
 ];
 
 export default function AssetPage() {
-
     const [isOpenAddDilog, setIsOpenAddDialog] = useState<boolean>(false);
     const [selected, setSelected] = useState<number[]>([]);
     const theme = useTheme()

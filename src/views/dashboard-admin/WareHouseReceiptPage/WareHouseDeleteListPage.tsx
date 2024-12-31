@@ -1,4 +1,3 @@
-import { Switch } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconArrowBack, IconArrowBackUp, IconTrash } from "@tabler/icons";
 import { IconRestore, IconTrashXFilled } from "@tabler/icons-react";
@@ -10,16 +9,16 @@ import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
 import { CsFlexRowBetween } from "../../../components/default/flex";
+import { formatDate } from "../../../helpers/formatDate";
 import useQueryString from "../../../hooks/services/useQueryString";
+import { useDeleteManyWareHouseReceipt, useDeleteWareHouseReceipt, useRestoreManyWareHouseReceipt } from "../../../hooks/services/warehouseReceipt/warehousereceipt-mutation";
+import { useFetchWareHouseReceiptDeleteList, useReFetchWareHouseReceiptDeleteList } from "../../../hooks/services/warehouseReceipt/warehousereceipt-query";
+import { User } from "../../../interfaces/user";
 import { TColumn, TMenuOption } from "../../../types/common/table";
+import { TSupplier } from "../../../types/models/supplier.type";
+import { TWareHouseReceipt } from "../../../types/models/warehouse-receipt";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
-import { useFetchWareHouseReceiptDeleteList, useReFetchWareHouseReceiptDeleteList } from "../../../hooks/services/warehouseReceipt/warehousereceipt-query";
-import { useDeleteManyWareHouseReceipt, useDeleteWareHouseReceipt, useRestoreManyWareHouseReceipt } from "../../../hooks/services/warehouseReceipt/warehousereceipt-mutation";
-import { TWareHouseReceipt } from "../../../types/models/warehouse-receipt";
-import { User } from "../../../interfaces/user";
-import { TSupplier } from "../../../types/models/supplier.type";
-import { formatDate } from "../../../helpers/formatDate";
 
 
 const WareHouseReceiptDeleteListPage = () => {
@@ -37,9 +36,9 @@ const WareHouseReceiptDeleteListPage = () => {
     const revalidate = useReFetchWareHouseReceiptDeleteList();
 
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-    const [supplierToDelete, setWareHouseReceiptToDelete] = useState<TWareHouseReceipt | null>(null);
+    const [warehouseReceiptToDelete, setWareHouseReceiptToDelete] = useState<TWareHouseReceipt | null>(null);
     const [openConfirmRestoreDialog, setOpenConfirmRestoreDialog] = useState(false);
-    const [supplierToRestore, setWareHouseReceiptToRestore] = useState<TWareHouseReceipt | null>(null);
+    const [warehouseReceiptToRestore, setWareHouseReceiptToRestore] = useState<TWareHouseReceipt | null>(null);
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmDeleteMultiple, setOpenConfirmDeleteMultiple] = useState(false);
@@ -51,8 +50,8 @@ const WareHouseReceiptDeleteListPage = () => {
     };
 
     const handleConfirmDelete = () => {
-        if (supplierToDelete) {
-            mutationDelete.mutate(supplierToDelete._id, {
+        if (warehouseReceiptToDelete) {
+            mutationDelete.mutate(warehouseReceiptToDelete._id, {
                 onSuccess: () => {
                     revalidate({ limit, page, search });
                     toast.success('Xóa phiếu nhập kho thành công.');
@@ -73,8 +72,8 @@ const WareHouseReceiptDeleteListPage = () => {
     };
 
     const handleConfirmRestore = () => {
-        if (supplierToRestore) {
-            mutationRestoreMany.mutate([supplierToRestore._id], {
+        if (warehouseReceiptToRestore) {
+            mutationRestoreMany.mutate([warehouseReceiptToRestore._id], {
                 onSuccess: () => {
                     revalidate({ limit, page, search });
                     toast.success('Khôi phục thành công.');
@@ -309,41 +308,49 @@ const WareHouseReceiptDeleteListPage = () => {
                     pagination={data?.data?.meta}
                 />
 
-                <ConfirmDeleteDialog
-                    key={"delete"}
-                    open={openConfirmDialog}
-                    onClose={handleCloseConfirmDialog}
-                    onConfirm={handleConfirmDelete}
-                    title="Xác nhận xóa?"
-                    description={`Bạn có chắc chắn muốn xóa "${supplierToDelete?._id}" ?`}
-                />
+                {openConfirmDialog &&
+                    <ConfirmDeleteDialog
+                        key={"delete"}
+                        open={openConfirmDialog}
+                        onClose={handleCloseConfirmDialog}
+                        onConfirm={handleConfirmDelete}
+                        title="Xác nhận xóa?"
+                        description={`Bạn có chắc chắn muốn xóa "${warehouseReceiptToDelete?._id}" ?`}
+                    />
+                }
 
-                <ConfirmDeleteDialog
-                    key={"deleteMultiple"}
-                    open={openConfirmDeleteMultiple}
-                    onClose={() => setOpenConfirmDeleteMultiple(false)}
-                    onConfirm={handleConfirmDeleteMultiple}
-                    title="Xác nhận xóa các mục đã chọn?"
-                    description={`Bạn có chắc chắn muốn xóa?`}
-                />
+                {openConfirmDeleteMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"deleteMultiple"}
+                        open={openConfirmDeleteMultiple}
+                        onClose={() => setOpenConfirmDeleteMultiple(false)}
+                        onConfirm={handleConfirmDeleteMultiple}
+                        title="Xác nhận xóa các mục đã chọn?"
+                        description={`Bạn có chắc chắn muốn xóa?`}
+                    />
+                }
 
-                <ConfirmDeleteDialog
-                    key={"restore"}
-                    open={openConfirmRestoreDialog}
-                    onClose={handleCloseConfirmRestoreDialog}
-                    onConfirm={handleConfirmRestore}
-                    title="Xác nhận khôi phục?"
-                    description={`Bạn có chắc chắn muốn khôi phục phiếu nhập kho "${supplierToRestore?._id}"?`}
-                />
+                {openConfirmRestoreDialog &&
+                    <ConfirmDeleteDialog
+                        key={"restore"}
+                        open={openConfirmRestoreDialog}
+                        onClose={handleCloseConfirmRestoreDialog}
+                        onConfirm={handleConfirmRestore}
+                        title="Xác nhận khôi phục?"
+                        description={`Bạn có chắc chắn muốn khôi phục phiếu nhập kho ấn phẩm "${warehouseReceiptToRestore?._id}"?`}
+                    />
+                }
 
-                <ConfirmDeleteDialog
-                    key={"restoreMultiple"}
-                    open={openConfirmRestoreMultiple}
-                    onClose={() => setOpenConfirmRestoreMultiple(false)}
-                    onConfirm={handleConfirmRestoreMultiple}
-                    title="Xác nhận khôi phục các mục đã chọn?"
-                    description={`Bạn có chắc chắn muốn khôi phục các mục đã chọn?`}
-                />
+                {openConfirmRestoreMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"restoreMultiple"}
+                        open={openConfirmRestoreMultiple}
+                        onClose={() => setOpenConfirmRestoreMultiple(false)}
+                        onConfirm={handleConfirmRestoreMultiple}
+                        title="Xác nhận khôi phục các mục đã chọn?"
+                        description={`Bạn có chắc chắn muốn khôi phục các mục đã chọn?`}
+                    />
+                }
 
             </MainCard>
         </div>

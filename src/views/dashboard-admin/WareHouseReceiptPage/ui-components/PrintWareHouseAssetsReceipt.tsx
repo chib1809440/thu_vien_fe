@@ -28,6 +28,9 @@ const PrintWareHouseAssetsReceipt = forwardRef<HTMLDivElement, { wareHouseAssets
                 <p>
                     <strong>Địa chỉ:</strong>  {(wareHouseAssetsReceipt?.supplierId as TSupplier).address}
                 </p>
+                <p>
+                    Ngày lập phiếu nhập: {new Date().toLocaleDateString('vi-VN')}
+                </p>
 
                 <h3 style={{ textAlign: "center", marginTop: '0px' }}>Tài sản nhập kho</h3>
                 <table style={{ width: "100%", borderCollapse: "collapse", margin: "10px 0" }}>

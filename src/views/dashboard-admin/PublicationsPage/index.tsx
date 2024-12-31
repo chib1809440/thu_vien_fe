@@ -63,6 +63,7 @@ import DialogImportFile from "./ui-components/DialogImportFile";
 import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
+import GradientCircularProgressLoading from "../../../components/default/loading/GradientCircularProgressLoading/GradientCircularProgressLoading";
 
 const BreakpointsColumn = {
     xs: 12,
@@ -145,8 +146,8 @@ const PublicationsPage = () => {
         ...(selectedValuePublication === "thuvien"
             ? { isPublic: true }
             : selectedValuePublication !== "all"
-            ? { isPublic: false, createBy: userId }
-            : {}),
+                ? { isPublic: false, createBy: userId }
+                : {}),
     });
 
     // const filterByLibId = useMemo(
@@ -547,27 +548,27 @@ const PublicationsPage = () => {
                                         row?.mimetype === "image/bmp" ||
                                         row?.mimetype === "image/webp") &&
                                         row?.type === "ấn phẩm cứng")) && (
-                                    <IconBook size={30} stroke={1.5} color="#007e43" />
-                                )}
+                                        <IconBook size={30} stroke={1.5} color="#007e43" />
+                                    )}
                                 {row?.mimetype === "application/pdf" && (
                                     <IconPdf size={30} stroke={1.5} color="#fd6033" />
                                 )}
                                 {(row?.mimetype === "application/msword" ||
                                     row?.mimetype ===
-                                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && (
-                                    <IconFileWord size={30} stroke={1.5} color="#007bff" />
-                                )}
+                                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document") && (
+                                        <IconFileWord size={30} stroke={1.5} color="#007bff" />
+                                    )}
                                 {(row?.mimetype === "video/mp4" ||
                                     row?.mimetype === "video/x-msvideo" ||
                                     row?.mimetype === "video/x-matroska" ||
                                     row?.mimetype === "video/webm") && (
-                                    <IconVideo size={30} stroke={1.5} color="#ff5733" />
-                                )}
+                                        <IconVideo size={30} stroke={1.5} color="#ff5733" />
+                                    )}
                                 {(row?.mimetype === "application/vnd.ms-powerpoint" ||
                                     row?.mimetype ===
-                                        "application/vnd.openxmlformats-officedocument.presentationml.presentation") && (
-                                    <IconPresentation size={30} stroke={1.5} color="#ffc107" />
-                                )}
+                                    "application/vnd.openxmlformats-officedocument.presentationml.presentation") && (
+                                        <IconPresentation size={30} stroke={1.5} color="#ffc107" />
+                                    )}
                                 {(row?.mimetype === "image/jpeg" ||
                                     row?.mimetype === "image/png" ||
                                     row?.mimetype === "image/gif" ||
@@ -909,44 +910,44 @@ const PublicationsPage = () => {
             { resource: "publications", action: "create" },
         ])
             ? [
-                  {
-                      label: "Tải file mẫu",
-                      icon: <IconFileDownload size={20} stroke={1.5} />,
-                      component: (
-                          <a
-                              href={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/mau_them_nhieu_an_pham.xlsx`}
-                              style={{
-                                  textDecoration: "none",
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                  color: "#616161",
-                              }}
-                          >
-                              <IconFileDownload size={20} stroke={1.5} style={{ marginRight: 8 }} />
-                              Tải file mẫu
-                          </a>
-                      ),
-                  },
-                  {
-                      label: "Nhập file excel",
-                      icon: <IconFileUpload size={20} stroke={1.5} />,
-                      onClick: handleImportExcel,
-                  },
-                  {
-                      label: "Xuất danh sách ấn phẩm",
-                      icon: <IconFileExport size={20} stroke={1.5} />,
-                      onClick: handleExportPublicationsExcel,
-                  },
-                  ...(userRole === "Admin" || userRole === "Owner"
-                      ? [
-                            {
-                                label: "Xóa các dữ liệu đã chọn",
-                                icon: <IconTrashXFilled size={20} stroke={1.5} />,
-                                onClick: handleDeleteMultiple,
-                            },
-                        ]
-                      : []),
-              ]
+                {
+                    label: "Tải file mẫu",
+                    icon: <IconFileDownload size={20} stroke={1.5} />,
+                    component: (
+                        <a
+                            href={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/mau_them_nhieu_an_pham.xlsx`}
+                            style={{
+                                textDecoration: "none",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                color: "#616161",
+                            }}
+                        >
+                            <IconFileDownload size={20} stroke={1.5} style={{ marginRight: 8 }} />
+                            Tải file mẫu
+                        </a>
+                    ),
+                },
+                {
+                    label: "Nhập file excel",
+                    icon: <IconFileUpload size={20} stroke={1.5} />,
+                    onClick: handleImportExcel,
+                },
+                {
+                    label: "Xuất danh sách ấn phẩm",
+                    icon: <IconFileExport size={20} stroke={1.5} />,
+                    onClick: handleExportPublicationsExcel,
+                },
+                ...(userRole === "Admin" || userRole === "Owner"
+                    ? [
+                        {
+                            label: "Xóa các dữ liệu đã chọn",
+                            icon: <IconTrashXFilled size={20} stroke={1.5} />,
+                            onClick: handleDeleteMultiple,
+                        },
+                    ]
+                    : []),
+            ]
             : [];
     }, [userRole, handleDeleteMultiple, handleImportExcel, handleExportPublicationsExcel]);
 
@@ -1018,8 +1019,8 @@ const PublicationsPage = () => {
                         selectedEdit?.priviewImage
                             ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.priviewImage}`
                             : selectedEdit?.path
-                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
-                            : ""
+                                ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
+                                : ""
                     }
                     isFetching={mutationAdd.isPending || mutationEdit.isPending}
                 />
@@ -1105,16 +1106,16 @@ const PublicationsPage = () => {
                     // nếu người dùng là thủ thư hoặc giáo viên
                     {...(userRole === "Admin" || userRole === "Teacher" || userRole === "Owner"
                         ? {
-                              selectedValuePublication: selectedValuePublication,
-                              handleValuePublication: handleValuePublication,
-                          }
+                            selectedValuePublication: selectedValuePublication,
+                            handleValuePublication: handleValuePublication,
+                        }
                         : {})}
                     {...(userRole === "Super Admin"
                         ? {
-                              selectedLibrary: selectedLibrary,
-                              handleLibraryFilterChange: handleLibraryFilterChange,
-                              libraryData: libraryData?.data?.result,
-                          }
+                            selectedLibrary: selectedLibrary,
+                            handleLibraryFilterChange: handleLibraryFilterChange,
+                            libraryData: libraryData?.data?.result,
+                        }
                         : {})}
                 />
 
@@ -1124,19 +1125,19 @@ const PublicationsPage = () => {
                     typeOptions={typeOptions}
                     {...(userRole !== "Super Admin"
                         ? {
-                              selectedMaterial: selectedMaterial,
-                              handleMaterialFilterChange: handleMaterialFilterChange,
-                              materialData: materialData,
-                              selectedCategory: selectedCategory,
-                              handleCategoryFilterChange: handleCategoryFilterChange,
-                              categoryData: categoryData,
-                              selectedAuthor: selectedAuthor,
-                              handleAuthorFilterChange: handleAuthorFilterChange,
-                              authorData: authorData,
-                              selectedPublisher: selectedPublisher,
-                              handlePublisherFilterChange: handlePublisherFilterChange,
-                              publisherData: publisherData,
-                          }
+                            selectedMaterial: selectedMaterial,
+                            handleMaterialFilterChange: handleMaterialFilterChange,
+                            materialData: materialData,
+                            selectedCategory: selectedCategory,
+                            handleCategoryFilterChange: handleCategoryFilterChange,
+                            categoryData: categoryData,
+                            selectedAuthor: selectedAuthor,
+                            handleAuthorFilterChange: handleAuthorFilterChange,
+                            authorData: authorData,
+                            selectedPublisher: selectedPublisher,
+                            handlePublisherFilterChange: handlePublisherFilterChange,
+                            publisherData: publisherData,
+                        }
                         : {})}
                 />
                 {/* <TableList
@@ -1186,7 +1187,14 @@ const PublicationsPage = () => {
                     )}
 
                     {isLoading || isFetching ? (
-                        <div>Loading...</div>
+                        <Grid
+                            item
+                            xs={12}
+                            p={0}
+                        >
+
+                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}><GradientCircularProgressLoading /></Box>
+                        </Grid>
                     ) : data?.data?.result.length > 0 ? (
                         data?.data?.result.map((item, index) => (
                             <Grid item xs={12} sm={12} md={6} lg={4} xl={3}>
@@ -1234,8 +1242,8 @@ const PublicationsPage = () => {
                                                         item?.priviewImage
                                                             ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
                                                             : item?.path
-                                                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
-                                                            : ""
+                                                                ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
+                                                                : ""
                                                     }
                                                     aspectRatio={"16/9"}
                                                     objectFit="contain"
@@ -1374,8 +1382,8 @@ const PublicationsPage = () => {
                                                         bottom: -90,
                                                         right:
                                                             userRole === "Super Admin" ||
-                                                            userRole === "Student" ||
-                                                            userRole === "Teacher"
+                                                                userRole === "Student" ||
+                                                                userRole === "Teacher"
                                                                 ? -15
                                                                 : 15,
                                                         margin: "8px",

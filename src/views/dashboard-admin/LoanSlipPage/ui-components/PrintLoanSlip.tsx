@@ -1,9 +1,8 @@
-import React, { forwardRef, useMemo } from "react";
-import { TLoanSlip } from "../../../../types/models/loanSlip.type";
+import { forwardRef } from "react";
 import Barcode from 'react-barcode';
-import { useAuth } from "../../../../contexts/JWTContext";
 import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 import { formatDate } from "../../../../helpers/formatDate";
+import { TLoanSlip } from "../../../../types/models/loanSlip.type";
 // Đảm bảo xuất component theo cách đúng
 const PrintLoanSlip = forwardRef<HTMLDivElement, { loanSlip: TLoanSlip, libraryDetail: any }>(
     ({ loanSlip, libraryDetail }, ref) => {

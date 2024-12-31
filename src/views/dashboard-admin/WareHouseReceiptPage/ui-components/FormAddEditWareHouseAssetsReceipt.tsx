@@ -98,11 +98,20 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
         validationSchema: schema,
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
-            const filteredAssets = assets.filter((asset) => asset.assetId !== "");
+            const filteredAssets = assets.filter((asset) => asset.name !== "");
 
-            const hasInvalidPrice = assets.some(
+            const hasInvalidPrice = filteredAssets.some(
                 (item) => item.price === 0 && item.assetId !== ""
             );
+
+            const hasInvalidQuantity = filteredAssets.some(
+                (item) => item.quantity === 0 && item.assetId !== ""
+            );
+
+            if (hasInvalidQuantity) {
+                toast.error("Vui lòng nhập số lượng lớn hơn 0.");
+                return;
+            }
 
             if (hasInvalidPrice) {
                 toast.error("Vui lòng nhập giá nhập lớn hơn 0.");
@@ -710,15 +719,6 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
                         <Button disabled={isFetching} onClick={onClose} color="error">
                             Huỷ
                         </Button>
-                        {isEditMode && (
-                            <Button
-                                onClick={() => handlePrint()}
-                                style={{ background: "#212121", color: "white" }}
-                                variant="contained"
-                            >
-                                In
-                            </Button>
-                        )}
                         <StyledButton
                             disableHoverEffect
                             color="primary"

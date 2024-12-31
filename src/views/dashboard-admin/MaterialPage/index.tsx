@@ -9,6 +9,9 @@ import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
+import { useAuth } from "../../../contexts/JWTContext";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
+import { useFetchLibrary } from "../../../hooks/services/library/library-query";
 import { useAddMaterial, useDeleteSoftManyMaterial, useDeleteSoftMaterial, useEditMaterial } from "../../../hooks/services/material/material-mutation";
 import { useFetchMaterial, useReFetchMaterial } from "../../../hooks/services/material/material-query";
 import useQueryString from "../../../hooks/services/useQueryString";
@@ -16,12 +19,9 @@ import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TMaterial, TMaterialCreate } from "../../../types/models/material";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
-import FormAddEditMaterial from "./ui-components/FormAddEditMaterial";
-import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
-import { parserParams } from "../../../utils/object";
-import { useAuth } from "../../../contexts/JWTContext";
-import { useFetchLibrary } from "../../../hooks/services/library/library-query";
 import usePermission from "../../../utils/hasPermission";
+import { parserParams } from "../../../utils/object";
+import FormAddEditMaterial from "./ui-components/FormAddEditMaterial";
 
 
 const MaterialPage = () => {
@@ -60,7 +60,7 @@ const MaterialPage = () => {
     const [materialToDelete, setMaterialToDelete] = useState<TMaterial | null>(null);
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
-    const [openConfirmDeleteMultiple, setOpenConfirmDeleteMultiple] = useState(false);
+    const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
 
     const { user } = useAuth();
     const userRole = useMemo(() => {
@@ -268,16 +268,16 @@ const MaterialPage = () => {
             toast.error("Vui lòng chọn dữ liệu để xóa");
             return;
         }
-        setOpenConfirmDeleteMultiple(true);
+        setOpenConfirmSoftDeleteMultiple(true);
     }, [checkedDelete]);
 
-    const handleConfirmDeleteMultiple = useCallback(() => {
+    const handleConfirmSoftDeleteMultiple = useCallback(() => {
         if (checkedDelete.length === 0) return;
         mutationSoftDeleteMany.mutate(checkedDelete, {
             onSuccess: () => {
                 revalidate();
                 toast.success("Xóa các mục đã chọn thành công.");
-                setOpenConfirmDeleteMultiple(false);
+                setOpenConfirmSoftDeleteMultiple(false);
                 setCheckedDelete([]);
             },
         });
@@ -399,22 +399,27 @@ const MaterialPage = () => {
                     pagination={data?.data?.meta}
                 />
 
-                <ConfirmDeleteDialog
-                    key={"delete"}
-                    open={openConfirmDialog}
-                    onClose={handleCloseConfirmDialog}
-                    onConfirm={handleConfirmDelete}
-                    title="Xác nhận xóa thư viện"
-                    description={`Bạn có chắc chắn muốn xóa "${materialToDelete?.name}" ?`}
-                />
-                <ConfirmDeleteDialog
-                    key={"deleteMultiple"}
-                    open={openConfirmDeleteMultiple}
-                    onClose={() => setOpenConfirmDeleteMultiple(false)}
-                    onConfirm={handleConfirmDeleteMultiple}
-                    title="Xác nhận xóa các mục đã chọn"
-                    description={`Bạn có chắc chắn muốn xóa?`}
-                />
+                {openConfirmDialog &&
+                    <ConfirmDeleteDialog
+                        key={"delete"}
+                        open={openConfirmDialog}
+                        onClose={handleCloseConfirmDialog}
+                        onConfirm={handleConfirmDelete}
+                        title="Xác nhận xóa?"
+                        description={`Bạn có chắc chắn muốn xóa "${materialToDelete?.name}" ?`}
+                    />
+                }
+
+                {openConfirmSoftDeleteMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"deleteMultiple"}
+                        open={openConfirmSoftDeleteMultiple}
+                        onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
+                        onConfirm={handleConfirmSoftDeleteMultiple}
+                        title="Xác nhận xóa các mục đã chọn?"
+                        description={`Bạn có chắc chắn muốn xóa?`}
+                    />
+                }
             </MainCard>
         </div>
     );

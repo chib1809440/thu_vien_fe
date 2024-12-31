@@ -97,12 +97,20 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
             const filteredPublications = publications.filter(
-                (publication) => publication.publicationId !== ""
+                (publication) => publication.name !== ""
             );
 
-            const hasInvalidPrice = publications.some(
+            const hasInvalidPrice = filteredPublications.some(
                 (item) => item.price === 0 && item.publicationId !== ""
             );
+            const hasInvalidQuantity = filteredPublications.some(
+                (item) => item.quantityWareHouse === 0 && item.publicationId !== ""
+            );
+
+            if (hasInvalidQuantity) {
+                toast.error("Vui lòng nhập số lượng lớn hơn 0.");
+                return;
+            }
 
             if (hasInvalidPrice) {
                 toast.error("Vui lòng nhập giá nhập lớn hơn 0.");
@@ -544,8 +552,8 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                 >
                     <DialogTitle sx={{ p: { xs: 2, sm: 2, md: 4 } }}>
                         {isEditMode
-                            ? "Sửa thông tin phiếu nhập kho"
-                            : "Thêm thông tin phiếu nhập kho mới"}
+                            ? "Sửa thông tin phiếu nhập ấn phẩm"
+                            : "Thêm thông tin phiếu nhập ấn phẩm mới"}
                     </DialogTitle>
                     {openAddEdit && (
                         <FormAddEditPublications

@@ -10,6 +10,7 @@ import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { formatDate } from "../../../helpers/formatDate";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { useAcceptWareHouseReceipt, useAddWareHouseReceipt, useDeleteSoftManyWareHouseReceipt, useDeleteSoftWareHouseReceipt, useEditWareHouseReceipt } from "../../../hooks/services/warehouseReceipt/warehousereceipt-mutation";
@@ -23,7 +24,6 @@ import MainCard from "../../../ui-component/cards/MainCard";
 import usePermission from "../../../utils/hasPermission";
 import FormAddEditWareHouseReceipt from "./ui-components/FormAddEditWareHouseReceipt";
 import ViewDetailWareHouseReceipt from "./ui-components/ViewDetailWareHouse";
-import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 
 
 const WareHouseReceiptPage = () => {
@@ -576,22 +576,27 @@ const WareHouseReceiptPage = () => {
                     pagination={data?.data?.meta}
                 />
 
-                <ConfirmDeleteDialog
-                    key={"delete"}
-                    open={openConfirmDialog}
-                    onClose={handleCloseConfirmDialog}
-                    onConfirm={handleConfirmDelete}
-                    title="Xác nhận xóa?"
-                    description={`Bạn có chắc chắn muốn xóa "${wareHouseReceiptToDelete?._id}" ?`}
-                />
-                <ConfirmDeleteDialog
-                    key={"deleteMultiple"}
-                    open={openConfirmSoftDeleteMultiple}
-                    onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
-                    onConfirm={handleConfirmSoftDeleteMultiple}
-                    title="Xác nhận xóa các mục đã chọn?"
-                    description={`Bạn có chắc chắn muốn xóa?`}
-                />
+                {openConfirmDialog && (
+                    <ConfirmDeleteDialog
+                        key={"delete"}
+                        open={openConfirmDialog}
+                        onClose={handleCloseConfirmDialog}
+                        onConfirm={handleConfirmDelete}
+                        title="Xác nhận xóa?"
+                        description={`Bạn có chắc chắn muốn xóa "${wareHouseReceiptToDelete?._id}" ?`}
+                    />
+                )}
+
+                {openConfirmSoftDeleteMultiple && (
+                    <ConfirmDeleteDialog
+                        key={"deleteMultiple"}
+                        open={openConfirmSoftDeleteMultiple}
+                        onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
+                        onConfirm={handleConfirmSoftDeleteMultiple}
+                        title="Xác nhận xóa các mục đã chọn?"
+                        description={`Bạn có chắc chắn muốn xóa?`}
+                    />
+                )}
 
                 {openViewDetail && (
                     <ViewDetailWareHouseReceipt

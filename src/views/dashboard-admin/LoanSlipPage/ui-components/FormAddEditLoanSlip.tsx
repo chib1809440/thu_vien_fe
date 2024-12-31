@@ -1306,13 +1306,16 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             )
                         }
                     </Box>
-                    <AlertConfirmDialog
-                        openConfirm={openDialog}
-                        handleOpenConfirmDialog={handleCloseDialog}
-                        onHandleConfirm={handleConfirmAction}
-                        title="Vui lòng xác nhận"
-                        message={getConfirmationMessage()} // Truyền thông điệp động vào AlertDialog
-                    />
+                    {
+                        openDialog &&
+                        <AlertConfirmDialog
+                            openConfirm={openDialog}
+                            handleOpenConfirmDialog={handleCloseDialog}
+                            onHandleConfirm={handleConfirmAction}
+                            title="Vui lòng xác nhận"
+                            message={getConfirmationMessage()} // Truyền thông điệp động vào AlertDialog
+                        />
+                    }
                 </DialogActions>
             </Dialog>
         </FormikProvider >

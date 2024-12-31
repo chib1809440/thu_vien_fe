@@ -388,7 +388,7 @@ const LoanSlipPage = () => {
                                         label="Đã nhận sách"
                                         variant="filled"
                                     />
-                                ) :  (
+                                ) : (
                                     // Nếu isAgree là false, render chip "Chưa duyệt"
                                     <Chip
                                         style={{ color: 'black', background: 'yellow' }}
@@ -955,14 +955,16 @@ const LoanSlipPage = () => {
                         </Grid>
                 }
 
-                <ConfirmDeleteDialog
-                    key={"delete"}
-                    open={openConfirmDialog}
-                    onClose={handleCloseConfirmDialog}
-                    onConfirm={handleConfirmDelete}
-                    title="Xác nhận xóa?"
-                    description={`Bạn có chắc chắn muốn xóa "${loanSlipToDelete?._id}" ?`}
-                />
+                {openConfirmDialog &&
+                    <ConfirmDeleteDialog
+                        key={"delete"}
+                        open={openConfirmDialog}
+                        onClose={handleCloseConfirmDialog}
+                        onConfirm={handleConfirmDelete}
+                        title="Xác nhận xóa?"
+                        description={`Bạn có chắc chắn muốn xóa "${loanSlipToDelete?._id}" ?`}
+                    />
+                }
             </MainCard>
         </div>
     );

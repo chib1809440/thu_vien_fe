@@ -86,7 +86,7 @@ const ViewDetailWareHouseReceipt: FC<Props> = ({
             disableEscapeKeyDown
         >
             <DialogTitle sx={{ p: 4 }}>
-                Chi tiết phiếu nhập kho
+                Chi tiết phiếu nhập kho ấn phẩm
             </DialogTitle>
 
             <DialogContent sx={{ p: { xs: 3, sm: 3, md: 8 } }} >
@@ -124,6 +124,8 @@ const ViewDetailWareHouseReceipt: FC<Props> = ({
                                             <StyledTableCell align="left" width='20%'>BarCode</StyledTableCell>
                                             <StyledTableCell align="left" width='40%'>Tên sách</StyledTableCell>
                                             <StyledTableCell align="left" width='15%'>Số lượng nhập</StyledTableCell>
+                                            <StyledTableCell align="left" width='15%'>Giá nhập</StyledTableCell>
+                                            <StyledTableCell align="left" width='15%'>Tổng giá</StyledTableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -138,7 +140,13 @@ const ViewDetailWareHouseReceipt: FC<Props> = ({
                                                     {row?.name || "Không có dữ liệu"}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left">
-                                                    {row?.quantityWareHouse || "Không có dữ liệu"}
+                                                    {row?.quantityWareHouse || "0"}
+                                                </StyledTableCell>
+                                                <StyledTableCell align="left">
+                                                    {row?.priceInput || "0"}
+                                                </StyledTableCell>
+                                                <StyledTableCell align="left">
+                                                    {row?.quantity * row?.priceInput || "0"}
                                                 </StyledTableCell>
                                             </StyledTableRow>
                                         ))}

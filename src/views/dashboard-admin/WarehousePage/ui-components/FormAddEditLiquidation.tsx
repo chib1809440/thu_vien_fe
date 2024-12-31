@@ -92,11 +92,21 @@ const FormAddEditLiquidation: FC<Props> = ({
         validationSchema: schema,
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
-            const filteredData = selectedData.filter((item) => item.itemId !== "" && item.priceLiquidation > 0);
+            const filteredData = selectedData.filter((item) => item.name !== "");
+            console.log(filteredData);
 
-            const hasInvalidPrice = selectedData.some(
+            const hasInvalidPrice = filteredData.some(
                 (item) => item.priceLiquidation === 0 && item.itemId !== ""
             );
+
+            const hasInvalidQuantity = filteredData.some(
+                (item) => item.quantityLiquidation === 0 && item.itemId !== ""
+            );
+
+            if (hasInvalidQuantity) {
+                toast.error("Vui lòng nhập số lượng thanh lý lớn hơn 0.");
+                return;
+            }
 
             if (hasInvalidPrice) {
                 toast.error("Vui lòng nhập giá thanh lý lớn hơn 0.");
@@ -107,37 +117,39 @@ const FormAddEditLiquidation: FC<Props> = ({
                 toast.error("Không có giá trị để thanh lý! Vui lòng kiểm tra thông tin.")
                 return;
             }
-            const errorMessages = [];
-            filteredData.forEach((item) => {
-                const quantityLiquidation = item.quantityLiquidation || 0;
-                const quantityUsed = item.quantityUsed || 0;
-                const quantityWarehouse = item.quantityWarehouse || 0;
-                const shelvesQuantity = item.shelvesQuantity || 0;
-                const quantity = item.quantity || 0;
 
-                if (item.type === "Asset") {
-                    if (item.position === "trưng bày" && quantityLiquidation > quantityUsed) {
-                        errorMessages.push(`Số lượng thanh lý cho tài sản "<strong>${item.name}</strong>" vượt quá số lượng trưng bày <strong>(${quantityUsed})</strong>`);
-                    } else if (item.position === "trong kho" && quantityLiquidation > quantityWarehouse) {
-                        errorMessages.push(`Số lượng thanh lý cho tài sản "<strong>${item.name}</strong>" vượt quá số lượng trong kho <strong>(${quantityWarehouse})</strong>`);
+            if (isEditMode) {
+                const errorMessages = [];
+                filteredData.forEach((item) => {
+                    const quantityLiquidation = item.quantityLiquidation || 0;
+                    // kho tài sản
+                    const quantityWarehouse = item.quantityWarehouse || 0;
+                    const shelvesQuantity = item.shelvesQuantity || 0;
+                    // kho ấn phẩm
+                    const quantity = item.quantity || 0;
+
+                    if (item.type === "Asset") {
+                        if (item.position === "trong kho" && quantityLiquidation > quantityWarehouse) {
+                            errorMessages.push(`Số lượng thanh lý cho tài sản "<strong>${item.name}</strong>" vượt quá số lượng trong kho <strong>(${quantityWarehouse})</strong>`);
+                        }
+                    } else if (item.type === "Publication") {
+                        if (item.position === "trưng bày" && quantityLiquidation > shelvesQuantity) {
+                            errorMessages.push(`Số lượng thanh lý cho ấn phẩm "<strong>${item.name}</strong>" vượt quá số lượng trưng bày <strong>(${shelvesQuantity})</strong>`);
+                        } else if (item.position === "trong kho" && quantityLiquidation > quantity) {
+                            errorMessages.push(`Số lượng thanh lý cho ấn phẩm "<strong>${item.name}</strong>" vượt quá số lượng trong kho <strong>(${quantity})</strong>`);
+                        }
                     }
-                } else if (item.type === "Publication") {
-                    if (item.position === "trưng bày" && quantityLiquidation > shelvesQuantity) {
-                        errorMessages.push(`Số lượng thanh lý cho ấn phẩm "<strong>${item.name}</strong>" vượt quá số lượng trưng bày <strong>(${shelvesQuantity})</strong>`);
-                    } else if (item.position === "trong kho" && quantityLiquidation > quantity) {
-                        errorMessages.push(`Số lượng thanh lý cho ấn phẩm "<strong>${item.name}</strong>" vượt quá số lượng trong kho <strong>(${quantity})</strong>`);
-                    }
-                }
-            });
-
-            // Nếu có lỗi, hiển thị tất cả lỗi
-            if (errorMessages.length > 0) {
-                const errorText = errorMessages.flat().map((msg, index) => `<strong>${index + 1}.</strong> ${capitalizeFirstLetter(msg)}`).join('<br /><br />');
-
-                toast.error(<div dangerouslySetInnerHTML={{ __html: errorText }} />, {
-                    autoClose: 5000,
                 });
-                return;
+
+                // Nếu có lỗi, hiển thị tất cả lỗi
+                if (errorMessages.length > 0) {
+                    const errorText = errorMessages.flat().map((msg, index) => `<strong>${index + 1}.</strong> ${capitalizeFirstLetter(msg)}`).join('<br /><br />');
+
+                    toast.error(<div dangerouslySetInnerHTML={{ __html: errorText }} />, {
+                        autoClose: 5000,
+                    });
+                    return;
+                }
             }
 
             if (onSubmit) {
@@ -418,16 +430,17 @@ const FormAddEditLiquidation: FC<Props> = ({
                                                                     options={typeLiquidationPosition}
                                                                     value={row.position}
                                                                     onChange={(e) => {
-                                                                        const newValue = e.target
-                                                                            .value as TPosition;
+                                                                        const newValue = e.target.value as TPosition;
 
-                                                                        setSelectedPosition(newValue);
-                                                                        const updatedAssets = [...selectedData];
-
-                                                                        updatedAssets[index].position = newValue;
-                                                                        setSelectedData(updatedAssets);
+                                                                        if (row.type !== 'Asset') {
+                                                                            setSelectedPosition(newValue);
+                                                                            const updatedAssets = [...selectedData];
+                                                                            updatedAssets[index].position = newValue;
+                                                                            setSelectedData(updatedAssets);
+                                                                        }
                                                                     }}
                                                                     sx={{ mt: 0, mb: "11px" }}
+                                                                    disabled={row.type === 'Asset'}
                                                                 />
                                                             </Box>
                                                         </StyledTableCell>

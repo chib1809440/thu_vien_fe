@@ -354,10 +354,6 @@ const dashboardAdmin = {
                     resource: "shelves",
                     action: "manage",
                 },
-                {
-                    resource: "all",
-                    action: "manage",
-                },
             ],
             children: [
                 {
@@ -377,10 +373,6 @@ const dashboardAdmin = {
                     breadcrumbs: false,
                     permissions: [
                         {
-                            resource: "all",
-                            action: "manage",
-                        },
-                        {
                             resource: "shelves",
                             action: "manage",
                         },
@@ -395,7 +387,17 @@ const dashboardAdmin = {
             type: "item",
             url: "/thanh-ly-tai-san-an-pham",
             icon: icons.IconDevices,
-            breadcrumbs: false
+            breadcrumbs: false,
+            permissions: [
+                {
+                    resource: "assets",
+                    action: "manage",
+                },
+                {
+                    resource: "publications",
+                    action: "manage",
+                }
+            ],
         },
         {
             id: "phieu-muon",

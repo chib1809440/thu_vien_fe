@@ -199,7 +199,7 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
                             <Button sx={{ float: "right" }}>
                                 <Typography
                                     variant="caption"
-                                    fontSize="16px"
+                                    fontSize="14px"
                                     color="#de524a"
                                 >
                                     Quên mật khẩu?

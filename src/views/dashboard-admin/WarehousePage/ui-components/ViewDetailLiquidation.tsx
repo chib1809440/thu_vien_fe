@@ -94,7 +94,7 @@ const ViewDetailLiquidation: FC<Props> = ({ open, onClose, onSubmitConfirmSignat
 
     const handleConfirmSignature = () => {
         if (liquidationToSignature) {
-            const payload = liquidationToSignature._id;            
+            const payload = liquidationToSignature._id;
             const callbackCloseDialogConfirm = () => {
                 setOpenConfirmSignatureDialog(false);
             };
@@ -152,14 +152,17 @@ const ViewDetailLiquidation: FC<Props> = ({ open, onClose, onSubmitConfirmSignat
 
     return (
         <>
-            <ConfirmDeleteDialog
-                key={"isAccept"}
-                open={openConfirmSignatureDialog}
-                onClose={handleCloseConfirmSignatureDialog}
-                onConfirm={handleConfirmSignature}
-                title="Xác nhận ký?"
-                description={`Bạn có chắc chắn muốn xác nhận ký"?`}
-            />
+            {
+                openConfirmSignatureDialog &&
+                <ConfirmDeleteDialog
+                    key={"isAccept"}
+                    open={openConfirmSignatureDialog}
+                    onClose={handleCloseConfirmSignatureDialog}
+                    onConfirm={handleConfirmSignature}
+                    title="Xác nhận ký?"
+                    description={`Bạn có chắc chắn muốn xác nhận ký"?`}
+                />
+            }
 
             <Dialog
                 maxWidth="xl"

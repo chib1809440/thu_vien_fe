@@ -30,6 +30,9 @@ const PrintWareHouseReceipt = forwardRef<HTMLDivElement, { wareHouseReceipt: TWa
                 <p>
                     <strong>Địa chỉ:</strong>  {(wareHouseReceipt?.supplierId as TSupplier).address}
                 </p>
+                <p>
+                    Ngày lập phiếu nhập: {new Date().toLocaleDateString('vi-VN')}
+                </p>
                 <h3 style={{ textAlign: "center", marginTop: '0px' }}>Ấn phẩm nhập kho</h3>
                 <table style={{ width: "100%", borderCollapse: "collapse", margin: "10px 0" }}>
                     <thead>
@@ -37,6 +40,8 @@ const PrintWareHouseReceipt = forwardRef<HTMLDivElement, { wareHouseReceipt: TWa
                             <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>STT</th>
                             <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Tên ấn phẩm</th>
                             <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Số lượng</th>
+                            <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Giá nhập</th>
+                            <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Tổng giá</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -44,12 +49,16 @@ const PrintWareHouseReceipt = forwardRef<HTMLDivElement, { wareHouseReceipt: TWa
                             <tr key={index}>
                                 <td style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{index + 1}</td> {/* Hiển thị STT */}
                                 <td style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{publication.name}</td>
-                                <td width="30%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{publication.quantityWareHouse}</td>
+                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{publication.quantityWareHouse}</td>
+                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{publication.priceInput}</td>
+                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{publication.quantityWareHouse * publication.priceInput}</td>
                             </tr>
                         ))}
-                        <tr>
-                            <td colSpan={2} style={{ border: "1px solid black", padding: "8px", textAlign: "center", fontWeight: 'bold' }}>Tổng cộng</td>
-                            <td style={{ border: "1px solid black", padding: "8px", textAlign: "center", fontWeight: 'bold' }}>{totalQuantity}</td>
+                       <tr>
+                            <td colSpan={4} style={{ border: "1px solid black", padding: "8px", textAlign: "center", fontWeight: 'bold' }}>Tổng cộng</td>
+                            <td style={{ border: "1px solid black", padding: "8px", textAlign: "center", fontWeight: 'bold' }}>
+                                {wareHouseReceipt?.publications?.reduce((total, pub) => total + pub.quantityWareHouse * pub.priceInput, 0)}
+                            </td>
                         </tr>
                     </tbody>
                 </table>

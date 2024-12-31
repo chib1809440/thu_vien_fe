@@ -61,7 +61,7 @@ const ShelfPage = () => {
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const [openConfirmDeleteMultiple, setOpenConfirmDeleteMultiple] = useState(false);
 
-    const { data: assetData } = useFetchAsset();    
+    const { data: assetData } = useFetchAsset();
 
     const addShelf = () => {
         setOpenAddEdit(true);
@@ -271,7 +271,7 @@ const ShelfPage = () => {
         };
     }, [selectedEdit]);
 
-    const filteredData = assetData?.data?.result?.filter(item => (item?.typeAssetId as TTypeAsset)?.name === "tủ kệ");    
+    const filteredData = assetData?.data?.result?.filter(item => (item?.typeAssetId as TTypeAsset)?.name === "tủ kệ");
     // loc
     const handleAssetsFilterChange = (event) => {
         setSelectedBelongAsset(event.target.value);
@@ -343,22 +343,28 @@ const ShelfPage = () => {
                     pagination={data?.data?.meta}
                 />
 
-                <ConfirmDeleteDialog
-                    key={"removeStock"}
-                    open={openConfirmDialog}
-                    onClose={handleCloseConfirmDialog}
-                    onConfirm={handleConfirmDelete}
-                    title="Chuyển xuống kho?"
-                    description={`Bạn có chắc chắn muốn chuyển tủ kệ "${shelfToDelete?.name}" xuống kho?`}
-                />
-                <ConfirmDeleteDialog
-                    key={"removeStockMultiple"}
-                    open={openConfirmDeleteMultiple}
-                    onClose={() => setOpenConfirmDeleteMultiple(false)}
-                    onConfirm={handleConfirmDeleteMultiple}
-                    title="Xác nhận chuyển các mục đã chọn xuống kho?"
-                    description={`Bạn có chắc chắn muốn chuyển xuống kho?`}
-                />
+                {
+                    openConfirmDialog &&
+                    <ConfirmDeleteDialog
+                        key={"removeStock"}
+                        open={openConfirmDialog}
+                        onClose={handleCloseConfirmDialog}
+                        onConfirm={handleConfirmDelete}
+                        title="Chuyển xuống kho?"
+                        description={`Bạn có chắc chắn muốn chuyển tủ kệ "${shelfToDelete?.name}" xuống kho?`}
+                    />
+                }
+                {
+                    openConfirmDeleteMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"removeStockMultiple"}
+                        open={openConfirmDeleteMultiple}
+                        onClose={() => setOpenConfirmDeleteMultiple(false)}
+                        onConfirm={handleConfirmDeleteMultiple}
+                        title="Xác nhận chuyển các mục đã chọn xuống kho?"
+                        description={`Bạn có chắc chắn muốn chuyển xuống kho?`}
+                    />
+                }
             </MainCard>
         </div>
     );

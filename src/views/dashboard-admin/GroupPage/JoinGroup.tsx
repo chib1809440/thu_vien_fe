@@ -45,7 +45,7 @@ const JoinGroup = () => {
                 onSuccess: async () => {
                     revalidateJoinGroup();
                     // await refreshUser();
-                    
+
                     toast.success('Đã duyệt thành công.');
                     setOpenConfirmDialog(false);
                 },
@@ -195,14 +195,17 @@ const JoinGroup = () => {
                     pagination={data?.data?.meta}
                 />
 
-                <ConfirmDeleteDialog
-                    key={"approve"}
-                    open={openConfirmDialog}
-                    onClose={handleCloseConfirmDialog}
-                    onConfirm={() => handleSubmit(selectedEdit)}
-                    title="Xác nhận tham gia nhóm"
-                    description={`Bạn có chắc chắn muốn duyệt ?`}
-                />
+                {
+                    openConfirmDialog &&
+                    <ConfirmDeleteDialog
+                        key={"approve"}
+                        open={openConfirmDialog}
+                        onClose={handleCloseConfirmDialog}
+                        onConfirm={() => handleSubmit(selectedEdit)}
+                        title="Xác nhận tham gia nhóm"
+                        description={`Bạn có chắc chắn muốn duyệt ?`}
+                    />
+                }
             </MainCard>
         </div>
     );

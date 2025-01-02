@@ -17,16 +17,17 @@ import { CsFlexRowBetween } from "../../../../components/default/flex";
 import CustomInput from "../../../../components/default/input/CustomInput";
 import GradientCircularProgressLoading from "../../../../components/default/loading/GradientCircularProgressLoading/GradientCircularProgressLoading";
 import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
-import { useAssetList, useSoftDeleteAsset, useSoftDeleteAssetSelected } from "../../../../hooks/react-query/assetData";
+import { useAssetList, useEditAsset, useSoftDeleteAsset, useSoftDeleteAssetSelected } from "../../../../hooks/react-query/assetData";
 import { useAddShelf } from "../../../../hooks/services/shelf/shelf-mutation";
 import { useReFetchShelf } from "../../../../hooks/services/shelf/shelf-query";
 import { useFetchTypeAsset } from "../../../../hooks/services/type-asset/type-voice-query";
 import useDebounce, { searchDelay } from "../../../../hooks/useDebounce";
-import { Asset } from "../../../../interfaces/asset";
+import { Asset, CreateAssetModel, UpdateAssetModel } from "../../../../interfaces/asset";
 import { EntityResponse } from "../../../../interfaces/entityResponse";
 import { TShelvesCreate } from "../../../../types/models/shelves";
 import { TTypeAsset } from "../../../../types/models/type-asset";
 import FormAddEditShelf from "../../ShelfPage/ui-components/FormAddEditShelf";
+import FormAddEditAsset from "./FormAddEditAsset";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -61,6 +62,7 @@ function TableAssetList<T extends DataType>({
     const debouncedSearch = useDebounce<string>(contentSearch, searchDelay);
     const [checked, setChecked] = useState<string[]>([]);
     const [checkedAll, setCheckedAll] = useState<boolean>(false);
+    const [openUpdateAsset, setOpenUpdateAsset] = useState(false);
 
     const [filterTypeAssetId, setFilterTypeAssetId] = useState<string | number>(0);
     const { data: typeAssetData } = useFetchTypeAsset({ order: "ASC" });
@@ -75,6 +77,7 @@ function TableAssetList<T extends DataType>({
     const { mutate: deleteAssetSelected } = useSoftDeleteAssetSelected();
 
     const mutationAdd = useAddShelf();
+    const mutationUpdate = useEditAsset();
     const revalidate = useReFetchShelf();
     const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
     const handleClose = () => {
@@ -153,7 +156,8 @@ function TableAssetList<T extends DataType>({
         let asset: Asset = assets.data.result.find(x => x._id === row?._id);
         setAsset(asset)
         setIsOpenUpdateDialog(true);
-        setSelectedAsset(row)
+        setSelectedAsset(row);
+        setOpenUpdateAsset(true)
     }
     const [asset, setAsset] = useState<Asset>();
     const pageCount = useMemo(() => {
@@ -228,6 +232,48 @@ function TableAssetList<T extends DataType>({
             assetId: selectedAsset ? selectedAsset?._id : null,
         };
     }, [selectedAsset]);
+
+    const handleCloseAsset = () => {
+        setSelectedAsset(null);
+        setOpenUpdateAsset(false);
+        setOpenUpdateAsset(false);
+    };
+
+    const initialValueAssets = useMemo((): CreateAssetModel => {
+        if (selectedAsset) {
+            return {
+                name: selectedAsset.name,
+                description: selectedAsset.description,
+                note: selectedAsset.note,
+                quantityTotal: selectedAsset.quantityTotal,
+                quantityUsed: selectedAsset.quantityUsed,
+                status: selectedAsset.status,
+                quantityWarehouse: selectedAsset.quantityWarehouse,
+                quantityDamage: selectedAsset.quantityDamage,
+                quantityLiquidation: selectedAsset.quantityLiquidation,
+                typeAssetId: (selectedAsset.typeAssetId as string) || null,
+            };
+        }
+    }, [selectedAsset]);
+
+    const handleSubmitAsset = (values: UpdateAssetModel) => {
+        if (selectedAsset) {
+
+            mutationUpdate.mutate(
+                { ...values, _id: selectedAsset._id },
+                {
+                    onSuccess: () => {
+                        revalidate();
+                        refetch();
+                        toast.success("Chuyển đi sử dụng thành công.");
+                        handleCloseAsset();
+                    },
+                }
+            );
+
+            return;
+        }
+    };
 
     const filteredData = assets?.data?.result?.filter(item => (item?.typeAssetId as TTypeAsset)?.name === "tủ kệ");
     return (
@@ -334,7 +380,7 @@ function TableAssetList<T extends DataType>({
                                                                 alignItems: "center",
                                                                 gap: 1
                                                             }}>
-                                                                {(row?.typeAssetId as TTypeAsset)?.name === "tủ kệ" && <IconPencil onClick={() => handleClickUpdate(row)} size={20} stroke={1.5} />}
+                                                                {row?.quantityTotal > 0 && <IconPencil onClick={() => handleClickUpdate(row)} size={20} stroke={1.5} />}
                                                                 <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
                                                             </Box>
                                                         </StyledTableCell>
@@ -438,7 +484,17 @@ function TableAssetList<T extends DataType>({
                 />
             } */}
 
-            {isOpenUpdateDilog && (
+            {openUpdateAsset && (selectedAsset?.typeAssetId as TTypeAsset)?.name !== "tủ kệ" && (
+                <FormAddEditAsset
+                    open={openUpdateAsset}
+                    onClose={handleCloseAsset}
+                    initialValues={initialValueAssets}
+                    onSubmit={handleSubmitAsset}
+                    isEditMode={true}
+                />
+            )}
+
+            {isOpenUpdateDilog && (selectedAsset?.typeAssetId as TTypeAsset)?.name === "tủ kệ" && (
                 <FormAddEditShelf
                     open={isOpenUpdateDilog}
                     onClose={handleClose}

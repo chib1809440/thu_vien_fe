@@ -260,7 +260,7 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                                 )}
                                             </Box>
                                         </Grid>
-                                        <Grid item xs={12} sm={12} md={6}>
+                                        {/* <Grid item xs={12} sm={12} md={6}>
                                             <Box sx={{ width: "100%" }}>
                                                 <SelectForm
                                                     label="Phân loại"
@@ -273,6 +273,22 @@ export default function AssetDialog({ title, maxWidth, id, content, action, full
                                                     onChange={(e) => formik.setFieldValue("typeAssetId", e.target.value)}
                                                     error={formik.touched.typeAssetId && Boolean(formik.errors.typeAssetId)}
                                                     helperText={formik.touched.typeAssetId && formik.errors.typeAssetId}
+                                                />
+                                            </Box>
+                                        </Grid> */}
+                                        <Grid item xs={12} sm={12} md={6}>
+                                            <Box sx={{ width: "100%" }}>
+                                                <SelectForm
+                                                    label="Phân loại"
+                                                    required
+                                                    value={formik.values.typeAssetId as string}
+                                                    options={TypeAssetData?.data?.result?.map((item) => ({
+                                                        value: item._id,
+                                                        label: capitalizeFirstLetter(item.name),
+                                                    }))}
+                                                    onChange={(e) => formik.setFieldValue("typeAssetId", e.target.value)}
+                                                    error={formik.touched.typeAssetId && Boolean(formik.errors.typeAssetId)}
+                                                    helperText={formik.touched.typeAssetId && formik.errors.typeAssetId} 
                                                 />
                                             </Box>
                                         </Grid>

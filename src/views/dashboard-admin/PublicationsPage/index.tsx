@@ -78,11 +78,12 @@ const MAX_ROWS = 3;
 const PublicationsPage = () => {
     const theme = useTheme();
 
-    const isMdScreen = useMediaQuery(theme.breakpoints.down("sm")); // md, sm, xs
-
+    const isMdScreen = useMediaQuery(theme.breakpoints.down("sm"));
     const _limitDisplay = useMemo(() => {
         if (isMdScreen) {
             return (12 / BreakpointsColumn.md) * MAX_ROWS;
+        } else {
+            return 12
         }
     }, [isMdScreen]);
 

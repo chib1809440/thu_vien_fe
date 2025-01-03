@@ -51,6 +51,7 @@ const ShelvesProductPage = () => {
         page,
         ...filter,
     });
+    const pubData = (data?.data?.result || []).filter((t) => t.shelvesQuantity > 0);
     const { data: shelfData } = useFetchShelf();
     const revalidate = useReFetchPublications();
     const { hasPermission } = usePermission();
@@ -220,6 +221,10 @@ const ShelvesProductPage = () => {
         };
     }, [selectedEdit]);
 
+    const itemCount = data?.data?.meta?.itemCount || 0;
+    const pageCount = Math.ceil(itemCount / limit);
+    const hasNextPage = page < pageCount;
+    const hasPreviousPage = page > 1;
     return (
         <div>
             <IBreadcrumsCustom
@@ -251,13 +256,20 @@ const ShelvesProductPage = () => {
                 <TableList
                     checked={checkedDelete}
                     columns={columns}
-                    rows={data?.data?.result?.filter((t) => t.shelvesId !== null && t.shelvesId !== undefined) || []}
+                    rows={pubData}
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
                     isLoading={isLoading || isFetching}
                     keyChecked="_id"
-                    pagination={data?.data?.meta}
+                    pagination={{
+                        itemCount, 
+                        limit, 
+                        page, 
+                        pageCount, 
+                        hasNextPage, 
+                        hasPreviousPage, 
+                    }}
                 />
             </MainCard>
         </div>

@@ -150,13 +150,20 @@ const WareHouseReceiptPage = () => {
                                 <Box sx={{ mt: 0.5 }}>
                                     <Typography><strong>Danh sách nhập:</strong></Typography>
                                     <ul style={{ marginTop: 5 }}>
-                                        {row?.publications.map((publication, idx) => (
+                                        {row?.publications.slice(0, 5).map((publication, idx) => (
                                             <li key={idx}>
                                                 {capitalizeFirstLetter(publication?.name)} 
                                                 {/* (SLN:
                                                 <strong>{publication?.quantityWareHouse}</strong> - Tổng giá: <strong>{formatPrice(publication?.priceInput * publication?.quantity)}</strong>) */}
                                             </li>
                                         ))}
+                                        {row?.publications?.length > 5 && (
+                                            <Chip
+                                                label={`+${row?.publications?.length - 5} ấn phẩm khác`}
+                                                variant="outlined"
+                                                color="primary"
+                                            />
+                                        )}
                                     </ul>
                                 </Box>
                             )}

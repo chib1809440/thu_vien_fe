@@ -374,8 +374,8 @@ function TableUserList<T extends DataType>({
         <>
             {isOpenLibCard && <PrintAccount ref={componentRef} dataUsers={checkedUsers} />}
             <SearchAndFilter
-                onHandleDeleteSelectedItem={handleDeleteItemSelected}
-                actionDeleteSelectedItem={true}
+                // onHandleDeleteSelectedItem={handleDeleteItemSelected}
+                // actionDeleteSelectedItem={true}
                 contentSearch={contentSearch}
                 handleContentSearch={setContentSearch}
                 actionLibCardSelectedItem={handleOpenLibs}
@@ -502,7 +502,7 @@ function TableUserList<T extends DataType>({
                                                                             }}>
                                                                                 <IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} />
                                                                                 <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
-                                                                                <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
+                                                                                {/* <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} /> */}
                                                                                 {
                                                                                     hasPermission([
                                                                                         { resource: "all", action: "manage" },

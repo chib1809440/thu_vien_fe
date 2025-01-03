@@ -48,8 +48,8 @@ const PaginationForm: FC<Props> = ({ pagination, defaultLimit = 5 }) => {
         return [...new Set([1, 5, 10, 20, +queryString?.limit || defaultLimit])].sort((a, b) => a - b);
     }, [queryString?.limit, defaultLimit]);
 
-    console.log("pageCount:", pagination.pageCount);  // Kiểm tra số trang (pageCount)
-    console.log("currentPage:", pagination.page);
+    // console.log("pageCount:", pagination.pageCount);  // Kiểm tra số trang (pageCount)
+    // console.log("currentPage:", pagination.page);
 
     return (
         <Box

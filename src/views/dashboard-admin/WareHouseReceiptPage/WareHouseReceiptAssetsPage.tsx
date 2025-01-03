@@ -170,13 +170,20 @@ const WareHouseReceiptAssetsPage = () => {
                                         <strong>Danh sách nhập:</strong>
                                     </Typography>
                                     <ul style={{ marginTop: 5 }}>
-                                        {row?.assets.map((asset, idx) => (
+                                        {row?.assets.slice(0, 5).map((asset, idx) => (
                                             <li key={idx}>
                                                 {capitalizeFirstLetter(asset?.name)} 
                                                 {/* (SLN:
                                                 <strong>{asset?.quantity}</strong> - Tổng giá: <strong>{formatPrice(asset?.priceInput * asset?.quantity)}</strong>) */}
                                             </li>
                                         ))}
+                                        {row?.assets?.length > 5 && (
+                                            <Chip
+                                                label={`+${row?.assets?.length - 5} tài sản khác`}
+                                                variant="outlined"
+                                                color="primary"
+                                            />
+                                        )}
                                     </ul>
                                 </Box>
                             )}

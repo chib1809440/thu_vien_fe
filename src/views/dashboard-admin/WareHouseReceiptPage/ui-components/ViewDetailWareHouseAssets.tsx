@@ -11,6 +11,7 @@ import { formatDate } from "../../../../helpers/formatDate";
 import { TSupplier } from "../../../../types/models/supplier.type";
 import { TWareHouseAssetsReceipt } from "../../../../types/models/warehouse-assets-receipt";
 import PrintWareHouseAssetsReceipt from "./PrintWareHouseAssetsReceipt";
+import { formatPrice } from "../../../../utils/object";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: theme.palette.common.black,
@@ -129,10 +130,10 @@ const ViewDetailWareHouseAssetsReceipt: FC<Props> = ({
                                                     {row?.quantity || "0"}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left">
-                                                    {row?.priceInput || "0"}
+                                                    {formatPrice(row?.priceInput) || "0"}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left">
-                                                    {row?.quantity * row?.priceInput || "0"}
+                                                    {formatPrice(row?.quantity * row?.priceInput) || "0"}
                                                 </StyledTableCell>
                                             </StyledTableRow>
                                         ))}

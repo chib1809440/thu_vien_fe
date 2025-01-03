@@ -3,6 +3,7 @@ import { User } from "../../../../interfaces/user";
 import { TSupplier } from "../../../../types/models/supplier.type";
 import { TWareHouseAssetsReceipt } from "../../../../types/models/warehouse-assets-receipt";
 import Barcode from "react-barcode";
+import { formatPrice } from "../../../../utils/object";
 
 // Đảm bảo xuất component theo cách đúng
 const PrintWareHouseAssetsReceipt = forwardRef<HTMLDivElement, { wareHouseAssetsReceipt: TWareHouseAssetsReceipt }>(
@@ -49,14 +50,14 @@ const PrintWareHouseAssetsReceipt = forwardRef<HTMLDivElement, { wareHouseAssets
                                 <td style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{index + 1}</td> {/* Hiển thị STT */}
                                 <td style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{asset.name}</td>
                                 <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{asset.quantity}</td>
-                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{asset.priceInput}</td>
-                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{asset.quantity * asset.priceInput}</td>
+                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{formatPrice(asset.priceInput)}</td>
+                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{formatPrice(asset.quantity * asset.priceInput)}</td>
                             </tr>
                         ))}
                         <tr>
                             <td colSpan={4} style={{ border: "1px solid black", padding: "8px", textAlign: "center", fontWeight: 'bold' }}>Tổng cộng</td>
                             <td style={{ border: "1px solid black", padding: "8px", textAlign: "center", fontWeight: 'bold' }}>
-                                {wareHouseAssetsReceipt?.assets?.reduce((total, asset) => total + asset.quantity * asset.priceInput, 0)}
+                                {formatPrice(wareHouseAssetsReceipt?.assets?.reduce((total, asset) => total + asset.quantity * asset.priceInput, 0))}
                             </td>
                         </tr>
                     </tbody>

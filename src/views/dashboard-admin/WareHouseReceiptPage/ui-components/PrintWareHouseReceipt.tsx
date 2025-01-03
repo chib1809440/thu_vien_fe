@@ -3,6 +3,7 @@ import { TWareHouseReceipt } from "../../../../types/models/warehouse-receipt";
 import Barcode from 'react-barcode';
 import { TSupplier } from "../../../../types/models/supplier.type";
 import { User } from "../../../../interfaces/user";
+import { formatPrice } from "../../../../utils/object";
 
 // Đảm bảo xuất component theo cách đúng
 const PrintWareHouseReceipt = forwardRef<HTMLDivElement, { wareHouseReceipt: TWareHouseReceipt }>(
@@ -50,14 +51,14 @@ const PrintWareHouseReceipt = forwardRef<HTMLDivElement, { wareHouseReceipt: TWa
                                 <td style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{index + 1}</td> {/* Hiển thị STT */}
                                 <td style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{publication.name}</td>
                                 <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{publication.quantityWareHouse}</td>
-                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{publication.priceInput}</td>
-                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{publication.quantityWareHouse * publication.priceInput}</td>
+                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{formatPrice(publication.priceInput)}</td>
+                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{formatPrice(publication.quantityWareHouse * publication.priceInput)}</td>
                             </tr>
                         ))}
                        <tr>
                             <td colSpan={4} style={{ border: "1px solid black", padding: "8px", textAlign: "center", fontWeight: 'bold' }}>Tổng cộng</td>
                             <td style={{ border: "1px solid black", padding: "8px", textAlign: "center", fontWeight: 'bold' }}>
-                                {wareHouseReceipt?.publications?.reduce((total, pub) => total + pub.quantityWareHouse * pub.priceInput, 0)}
+                                {formatPrice(wareHouseReceipt?.publications?.reduce((total, pub) => total + pub.quantityWareHouse * pub.priceInput, 0))}
                             </td>
                         </tr>
                     </tbody>

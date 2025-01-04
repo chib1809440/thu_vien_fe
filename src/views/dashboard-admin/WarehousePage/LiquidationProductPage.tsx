@@ -428,7 +428,7 @@ const LiquidationProductPage = () => {
             const worksheet = workbook.addWorksheet('Publications');
 
             // Thêm hàng tiêu đề chính
-            worksheet.addRow(['Danh sách nhập ấn phẩm']).font = { bold: true, size: 14 };
+            worksheet.addRow(['Danh sách phiếu biên bản thanh lý']).font = { bold: true, size: 14 };
             worksheet.addRow([]);
 
             const currentDateTime = new Date();
@@ -447,6 +447,7 @@ const LiquidationProductPage = () => {
 
             worksheet.addRow([
                 'Thông tin thanh lý',
+                'Vị trí',
                 'Ngày tạo',
                 'Ngày cập nhật',
                 'Số lượng thanh lý',
@@ -462,13 +463,15 @@ const LiquidationProductPage = () => {
             worksheet.getColumn('E').width = 30;
             worksheet.getColumn('F').width = 30;
             worksheet.getColumn('G').width = 20;
+            worksheet.getColumn('H').width = 20;
 
             const LiquidationsData = data?.data?.result?.map((liquidation) => {
-                const isAccepted = liquidation?.isAccept ? 'Đã duyệt' : 'Chưa duyệt';
+                const isAccepted = liquidation?.isAccept ? 'Đã ký' : 'Chưa ký';
 
                 const liquiData = liquidation?.liquidations?.map((item) => {
                     return {
                         name: item?.name || '',
+                        position: capitalizeFirstLetter(item?.position),
                         createdAt: liquidation?.createdAt ? new Date(liquidation?.createdAt) : null,
                         updatedAt: liquidation?.updatedAt ? new Date(liquidation?.updatedAt) : null,
                         quantityLiquidation: item?.quantityLiquidation || 0,
@@ -494,6 +497,7 @@ const LiquidationProductPage = () => {
                 const row = worksheet.addRow([]);
                 row.values = [
                     dataRow.name,
+                    dataRow.position,
                     dataRow.createdAt,
                     dataRow.updatedAt,
                     dataRow.quantityLiquidation,

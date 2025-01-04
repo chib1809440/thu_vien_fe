@@ -4,6 +4,7 @@ import { IconEye, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconFileExport, IconTrashXFilled } from "@tabler/icons-react";
 import ExcelJS from 'exceljs';
 import { useCallback, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
@@ -32,7 +33,6 @@ import MainCard from "../../../ui-component/cards/MainCard";
 import usePermission from "../../../utils/hasPermission";
 import FormAddEditWareHouseAssetsReceipt from "./ui-components/FormAddEditWareHouseAssetsReceipt";
 import ViewDetailWareHouseAssetsReceipt from "./ui-components/ViewDetailWareHouseAssets";
-import { Link } from "react-router-dom";
 import { formatPrice } from "../../../utils/object";
 
 const WareHouseReceiptAssetsPage = () => {
@@ -172,7 +172,7 @@ const WareHouseReceiptAssetsPage = () => {
                                     <ul style={{ marginTop: 5 }}>
                                         {row?.assets.slice(0, 5).map((asset, idx) => (
                                             <li key={idx}>
-                                                {capitalizeFirstLetter(asset?.name)} 
+                                                {capitalizeFirstLetter(asset?.name)}
                                                 {/* (SLN:
                                                 <strong>{asset?.quantity}</strong> - Tổng giá: <strong>{formatPrice(asset?.priceInput * asset?.quantity)}</strong>) */}
                                             </li>
@@ -356,7 +356,7 @@ const WareHouseReceiptAssetsPage = () => {
             const worksheet = workbook.addWorksheet('Publications');
 
             // Thêm hàng tiêu đề chính
-            worksheet.addRow(['Danh sách nhập ấn phẩm']).font = { bold: true, size: 14 };
+            worksheet.addRow(['Danh sách nhập tài sản']).font = { bold: true, size: 14 };
             worksheet.addRow([]);
 
             const currentDateTime = new Date();
@@ -408,8 +408,8 @@ const WareHouseReceiptAssetsPage = () => {
                         supplierName: supplierName,
                         creatorName: creatorName,
                         quantityWareHouse: asset?.quantity || 0,
-                        price: asset?.priceInput || 0,
-                        priceTotal: (asset?.priceInput * asset?.quantity) || 0,
+                        price: formatPrice(asset?.priceInput || 0),
+                        priceTotal: formatPrice(asset?.priceInput * asset?.quantity || 0),
                         approve: isAccepted,
                     };
                 });
@@ -488,11 +488,15 @@ const WareHouseReceiptAssetsPage = () => {
     };
 
     const actionMenus = useMemo((): TMenuOption[] => {
-        return hasPermission([
+        const canManageOrDelete = hasPermission([
             { resource: "stockassets", action: "manage" },
             { resource: "stockassets", action: "delete" },
-        ])
-            ? [
+        ]);
+        
+        const hasUnacceptedData = data?.data?.result?.some(item => item.isAccept === false);
+    
+        if (canManageOrDelete && hasUnacceptedData) {
+            return [
                 {
                     label: "Xóa các dữ liệu vào thùng rác",
                     icon: <IconTrashXFilled size={20} stroke={1.5} />,
@@ -503,9 +507,21 @@ const WareHouseReceiptAssetsPage = () => {
                     icon: <IconFileExport size={20} stroke={1.5} />,
                     onClick: handleExportWareHouseReceiptExcel,
                 },
-            ]
-            : [];
-    }, [handleDeleteMultiple, handleExportWareHouseReceiptExcel]);
+            ];
+        }
+    
+        if (canManageOrDelete) {
+            return [
+                {
+                    label: "Xuất danh sách nhập kho",
+                    icon: <IconFileExport size={20} stroke={1.5} />,
+                    onClick: handleExportWareHouseReceiptExcel,
+                },
+            ];
+        }
+        return [];
+    }, [handleDeleteMultiple, handleExportWareHouseReceiptExcel, data?.data?.result]);
+    
 
     const initialValues = useMemo((): TWareHouseAssetsReceiptCreate => {
         if (selectedEdit) {
@@ -571,7 +587,7 @@ const WareHouseReceiptAssetsPage = () => {
                                 hasPermission([
                                     { resource: "stockassets", action: "manage" },
                                     { resource: "stockassets", action: "delete" },
-                                ]) &&
+                                ]) && 
                                 <Link to="/quan-ly-nhap-kho/phieu-nhap-tai-san/danh-sach-xoa-phieu-nhap-kho-tai-san" style={{ textDecoration: 'none' }}>
                                     <StyledButton
                                         sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}

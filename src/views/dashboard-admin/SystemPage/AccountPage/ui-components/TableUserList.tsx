@@ -490,7 +490,8 @@ function TableUserList<T extends DataType>({
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{getLabelFromOptions(statusRole, (row?.roleId as Role)?.name)}</StyledTableCell>
                                                         {
                                                             (row?.roleId as Role)?.name === userRole ?
-                                                                <StyledTableCell padding="none" align="right" sx={{ paddingRight: 2 }}><IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} /></StyledTableCell>
+                                                                <StyledTableCell padding="none" align="center" sx={{ paddingRight: 2 }}>
+                                                                    <IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} /></StyledTableCell>
                                                                 : row?.isActive ?
                                                                     (
                                                                         <StyledTableCell padding="none" align="center">

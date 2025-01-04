@@ -784,7 +784,6 @@ const PublicationsPage = () => {
                 "Số lượng trên kệ",
                 "Số lượng mượn",
                 "Số lượng thanh lý",
-                "Số lượng hư hỏng",
                 "Số lượng tổng",
                 "Trạng thái",
                 "Loại",
@@ -801,11 +800,10 @@ const PublicationsPage = () => {
             worksheet.getColumn("H").width = 15;
             worksheet.getColumn("I").width = 15;
             worksheet.getColumn("J").width = 20;
-            worksheet.getColumn("K").width = 20;
+            worksheet.getColumn("K").width = 15;
             worksheet.getColumn("L").width = 15;
-            worksheet.getColumn("M").width = 15;
+            worksheet.getColumn("M").width = 30;
             worksheet.getColumn("N").width = 30;
-            worksheet.getColumn("O").width = 30;
 
             const publicationsData = data?.data?.result?.map((publication) => {
                 const categoryNames = publication?.categoryIds
@@ -831,7 +829,6 @@ const PublicationsPage = () => {
                     shelvesQuantity: publication?.shelvesQuantity,
                     quantityLoan: publication?.quantityLoan,
                     quantityLiquidation: publication?.quantityLiquidation,
-                    quantityDamaged: publication?.quantityDamaged,
                     totalQuantity: publication?.totalQuantity,
                     status: capitalizeFirstLetter(publication?.status),
                     type: getLabelFromOptions(typeOptions, publication?.type),
@@ -852,7 +849,6 @@ const PublicationsPage = () => {
                     dataRow.shelvesQuantity,
                     dataRow.quantityLoan,
                     dataRow.quantityLiquidation,
-                    dataRow.quantityDamaged,
                     dataRow.totalQuantity,
                     dataRow.status,
                     dataRow.type,

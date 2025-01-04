@@ -26,7 +26,6 @@ import FormAddEditWareHouseReceipt from "./ui-components/FormAddEditWareHouseRec
 import ViewDetailWareHouseReceipt from "./ui-components/ViewDetailWareHouse";
 import { formatPrice } from "../../../utils/object";
 
-
 const WareHouseReceiptPage = () => {
     const queryString = useQueryString();
     const page = queryString?.page ?? 1;
@@ -152,7 +151,7 @@ const WareHouseReceiptPage = () => {
                                     <ul style={{ marginTop: 5 }}>
                                         {row?.publications.slice(0, 5).map((publication, idx) => (
                                             <li key={idx}>
-                                                {capitalizeFirstLetter(publication?.name)} 
+                                                {capitalizeFirstLetter(publication?.name)}
                                                 {/* (SLN:
                                                 <strong>{publication?.quantityWareHouse}</strong> - Tổng giá: <strong>{formatPrice(publication?.priceInput * publication?.quantity)}</strong>) */}
                                             </li>
@@ -362,6 +361,8 @@ const WareHouseReceiptPage = () => {
                 'Nhà cung cấp',
                 'Người tạo',
                 'Số lượng nhập',
+                'Giá nhập',
+                'Tổng giá',
                 'Trạng thái',
                 'Ghi chú'
             ]).font = { bold: true };
@@ -376,6 +377,8 @@ const WareHouseReceiptPage = () => {
             worksheet.getColumn('H').width = 15;
             worksheet.getColumn('I').width = 15;
             worksheet.getColumn('J').width = 20;
+            worksheet.getColumn('K').width = 20;
+            worksheet.getColumn('L').width = 20;
 
             const warehouseReceiptsData = data?.data?.result?.map((receipt) => {
                 const supplierName = (receipt?.supplierId as TSupplier)?.name || '';
@@ -394,6 +397,8 @@ const WareHouseReceiptPage = () => {
                         supplierName: supplierName,
                         creatorName: creatorName,
                         quantityWareHouse: publication?.quantityWareHouse || 0,
+                        price: formatPrice(publication?.priceInput || 0),
+                        priceTotal: formatPrice(publication?.priceInput * publication?.quantityWareHouse || 0),
                         status: isAccepted,
                         note: receipt?.note || '',
                     };
@@ -422,6 +427,8 @@ const WareHouseReceiptPage = () => {
                     dataRow.supplierName,
                     dataRow.creatorName,
                     dataRow.quantityWareHouse,
+                    dataRow.price,
+                    dataRow.priceTotal,
                     dataRow.status,
                     dataRow.note,
                 ];
@@ -474,22 +481,39 @@ const WareHouseReceiptPage = () => {
     };
 
     const actionMenus = useMemo((): TMenuOption[] => {
-        return hasPermission([
+        const canManageOrDelete = hasPermission([
             { resource: "warehousereceipts", action: "manage" },
             { resource: "warehousereceipts", action: "delete" },
-        ]) ? [
-            {
-                label: "Xóa các dữ liệu vào thùng rác",
-                icon: <IconTrashXFilled size={20} stroke={1.5} />,
-                onClick: handleDeleteMultiple,
-            },
-            {
-                label: "Xuất danh sách nhập kho",
-                icon: <IconFileExport size={20} stroke={1.5} />,
-                onClick: handleExportWareHouseReceiptExcel,
-            },
-        ] : [];
-    }, [handleDeleteMultiple, handleExportWareHouseReceiptExcel]);
+        ]);
+        
+        const hasUnacceptedData = data?.data?.result?.some(item => item.isAccept === false);
+    
+        if (canManageOrDelete && hasUnacceptedData) {
+            return [
+                {
+                    label: "Xóa các dữ liệu vào thùng rác",
+                    icon: <IconTrashXFilled size={20} stroke={1.5} />,
+                    onClick: handleDeleteMultiple,
+                },
+                {
+                    label: "Xuất danh sách nhập kho",
+                    icon: <IconFileExport size={20} stroke={1.5} />,
+                    onClick: handleExportWareHouseReceiptExcel,
+                },
+            ];
+        }
+    
+        if (canManageOrDelete) {
+            return [
+                {
+                    label: "Xuất danh sách nhập kho",
+                    icon: <IconFileExport size={20} stroke={1.5} />,
+                    onClick: handleExportWareHouseReceiptExcel,
+                },
+            ];
+        }
+        return [];
+    }, [handleDeleteMultiple, handleExportWareHouseReceiptExcel, data?.data?.result]);
 
     const initialValues = useMemo((): TWareHouseReceiptCreate => {
         if (selectedEdit) {

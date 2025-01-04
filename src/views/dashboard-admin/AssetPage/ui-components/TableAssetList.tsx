@@ -278,7 +278,14 @@ function TableAssetList<T extends DataType>({
     const filteredData = assets?.data?.result?.filter(item => (item?.typeAssetId as TTypeAsset)?.name === "tủ kệ");
     return (
         <>
-            <SearchAndFilter onHandleDeleteSelectedItem={handleDeleteItemSelected} actionDeleteSelectedItem={true} contentSearch={contentSearch} handleContentSearch={setContentSearch} />
+            <SearchAndFilter
+                // onHandleDeleteSelectedItem={handleDeleteItemSelected}
+                // actionDeleteSelectedItem={true}
+                contentSearch={contentSearch}
+                handleContentSearch={setContentSearch}
+                isOperation={false}
+            />
+
             <Grid container xs={12} sm={12} md={12} lg={12} gap={2} sx={{
                 display: "flex", mb: 1, flexWrap: "wrap",
                 pl: { xs: 0, sm: 0, md: 4 },
@@ -381,7 +388,7 @@ function TableAssetList<T extends DataType>({
                                                                 gap: 1
                                                             }}>
                                                                 {row?.quantityTotal > 0 && <IconPencil onClick={() => handleClickUpdate(row)} size={20} stroke={1.5} />}
-                                                                <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
+                                                                {/* <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} /> */}
                                                             </Box>
                                                         </StyledTableCell>
                                                     </StyledTableRow>

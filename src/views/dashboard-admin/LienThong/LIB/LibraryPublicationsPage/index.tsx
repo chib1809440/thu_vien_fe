@@ -32,13 +32,32 @@ import { useAuth } from "../../../../../contexts/JWTContext";
 import { Role } from "../../../../../interfaces/role";
 import GradientCircularProgressLoading from "../../../../../components/default/loading/GradientCircularProgressLoading/GradientCircularProgressLoading";
 
+const BreakpointsColumn = {
+    xs: 12,
+    sm: 12,
+    md: 6,
+    lg: 4,
+    xl: 3,
+};
+
+const MAX_ROWS = 3;
 
 const LibraryPublicationsPage = () => {
+    const theme = useTheme();
+
+    const isMdScreen = useMediaQuery(theme.breakpoints.down("sm"));
+    const _limitDisplay = useMemo(() => {
+        if (isMdScreen) {
+            return (12 / BreakpointsColumn.md) * MAX_ROWS;
+        } else {
+            return 12
+        }
+    }, [isMdScreen]);
+
     const queryString = useQueryString();
     const page = queryString?.page ?? 1;
-    const limit = queryString?.limit ?? 5;
+    const limit = queryString?.limit ?? _limitDisplay;
     const search = queryString?.q ?? "";
-    const theme = useTheme();
 
     const [selectedLibrary, setSelectedLibrary] = useState(0);
     const [selectedMaterial, setSelectedMaterial] = useState(0);
@@ -464,7 +483,7 @@ const LibraryPublicationsPage = () => {
                     }
                     < Grid item xs={12}>
                         {data?.data?.meta && Object.keys(data?.data?.meta)?.length > 0 && (
-                            <PaginationForm pagination={data?.data?.meta} />
+                            <PaginationForm defaultLimit={_limitDisplay} pagination={data?.data?.meta} />
                         )}
                     </Grid>
                 </Grid>

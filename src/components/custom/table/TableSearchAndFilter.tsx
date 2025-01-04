@@ -28,7 +28,8 @@ interface PropSearch {
     onHandlePromotedClass?: () => void,
     onHandleRestoreSelectedItem?: () => void,
     onHandleLibCardSelectedItem?: () => void,
-    fileUrl?: string
+    fileUrl?: string,
+    isOperation?: boolean
 }
 export function SearchAndFilter({
     contentSearch, actionPromotedClass, actionRestoreSelectedItem,
@@ -37,7 +38,7 @@ export function SearchAndFilter({
     actionDeleteSelectedItem, handleContentSearch, onHandleImportFile, onHandleDownloadFile,
     onHandlePrintFile, placeholderText, actionDownLoadFile, actionImportFile, pathFileActionDownLoadFile,
     actionPrintFile, actionExportFile, onHandleExportFile, actionLibCardSelectedItem, onHandleLibCardSelectedItem,
-    fileUrl }: PropSearch) {
+    fileUrl, isOperation = true }: PropSearch) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -95,14 +96,17 @@ export function SearchAndFilter({
             <Grid item xs={12} sm={12} md={3} lg={4} marginBottom={2}>
                 <SearchNoButtonSection fullwidth contentSearch={contentSearch} handleContentSearch={handleContentSearch} placeholder="Tìm kiếm theo tên" />
             </Grid>
-            <Grid item xs={12} sm={6} md={9} lg={8} marginBottom={2}>
-                <Box sx={{
-                    display: "flex",
-                    justifyContent: { xs: "space-between", sm: "flex-end" },
-                    alignItems: "center",
-                    gap: 1
-                }}>
-                    {/* <Tooltip title={t("Lọc")}>
+            {isOperation &&
+                <Grid item xs={12} sm={6} md={9} lg={8} marginBottom={2}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: { xs: "space-between", sm: "flex-end" },
+                            alignItems: "center",
+                            gap: 1
+                        }}
+                    >
+                        {/* <Tooltip title={t("Lọc")}>
                         <StyledButton
                             size="small"
                             variant="outlined"
@@ -112,121 +116,122 @@ export function SearchAndFilter({
                             {t("Lọc")}
                         </StyledButton>
                     </Tooltip> */}
-                    <StyledButton
-                        size="small"
-                        variant="outlined"
-                        color="default"
-                        aria-controls={open ? 'basic-menu' : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={open ? 'true' : undefined}
-                        onClick={handleClick}
-                        startIcon={<IconSettings size={20} stroke={1.5} />}
-                    >
-                        Thao tác
-                    </StyledButton>
-                    <Menu
-                        id="basic-menu"
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleClose}
-                        MenuListProps={{
-                            'aria-labelledby': 'basic-button',
-                        }}
-                    >
-                        {
-                            actionDownLoadFile && <MenuItem sx={{ fontSize: '0.875rem' }}>
-                                <Box sx={{ display: "flex", alignItems: "center" }}>
-                                    <IconDownload size={20} stroke={1.5} />
-                                    <a
-                                        href={fileUrl}
-                                        style={{
-                                            textDecoration: "none",
-                                            display: "inline-flex",
-                                            alignItems: "center",
-                                            color: "#616161",
-                                            marginLeft: 4
-                                        }}
-                                    >
-                                        Tải file mẫu
-                                    </a>
-                                </Box>
-                            </MenuItem>
-                        }
-                        {
-                            actionImportFile && <MenuItem onClick={handleImportFile} sx={{ fontSize: '0.875rem' }}>
-                                <Box sx={{ display: "flex", alignItems: "center" }}>
-                                    <IconFileImport size={20} stroke={1.5} />
-                                    <Box sx={{ ml: 1 }}>Nhập file excel</Box>
-                                </Box>
-                            </MenuItem>
-                        }
-                        {
-                            actionImportQuestionFile && <MenuItem onClick={handleImportQuestionFile} sx={{ fontSize: '0.875rem' }}>
-                                <Box sx={{ display: "flex", alignItems: "center" }}>
-                                    <IconFileImport size={20} stroke={1.5} />
-                                    <Box sx={{ ml: 1 }}>Nhập file excel câu hỏi </Box>
-                                </Box>
-                            </MenuItem>
-                        }
-                        {
-                            actionExportFile && <MenuItem onClick={handleExportFile} sx={{ fontSize: '0.875rem' }}>
-                                <Box sx={{ display: "flex", alignItems: "center" }}>
-                                    <IconFileImport size={20} stroke={1.5} />
-                                    <Box sx={{ ml: 1 }}>Xuất Excel</Box>
-                                </Box>
-                            </MenuItem>
-                        }
-                        {
-                            actionPrintFile && <MenuItem onClick={handlePrintFile} sx={{ fontSize: '0.875rem', }}>
-                                <Box sx={{ display: "flex", alignItems: "center" }}>
-                                    <IconPrinter size={20} stroke={1.5} />
-                                    <Box sx={{ ml: 1 }}>In</Box>
-                                </Box>
-                            </MenuItem>
-                        }
-                        {
-                            actionLibCardSelectedItem && <MenuItem onClick={handleLibCardSeletedItem} sx={{ fontSize: '0.875rem' }}>
-                                <Box sx={{ display: "flex", alignItems: "center" }}>
-                                    <IconPrinter size={20} stroke={1.5} />
-                                    <Box sx={{ ml: 1 }}>In thẻ thư viện</Box>
-                                </Box>
-                            </MenuItem>
-                        }
-                        {
-                            actionChangeClass && <MenuItem onClick={handleChangeClass} sx={{ fontSize: '0.875rem', }}>
-                                <Box sx={{ display: "flex", alignItems: "center" }}>
-                                    <IconTransformFilled size={20} stroke={1.5} />
-                                    <Box sx={{ ml: 1 }}>Chuyển lớp</Box>
-                                </Box>
-                            </MenuItem>
-                        }
-                        {
-                            actionPromotedClass && <MenuItem onClick={handlePromotedClass} sx={{ fontSize: '0.875rem', }}>
-                                <Box sx={{ display: "flex", alignItems: "center" }}>
-                                    <IconBookUpload size={20} stroke={1.5} />
-                                    <Box sx={{ ml: 1 }}>Lên lớp</Box>
-                                </Box>
-                            </MenuItem>
-                        }
-                        {
-                            actionDeleteSelectedItem && <MenuItem onClick={handleDeleteSeletedItem} sx={{ fontSize: '0.875rem' }}>
-                                <Box sx={{ display: "flex", alignItems: "center" }}>
-                                    <IconTrashXFilled size={20} stroke={1.5} />
-                                    <Box sx={{ ml: 1 }}>Xóa các dữ liệu đã chọn</Box>
-                                </Box>
-                            </MenuItem>
-                        }
-                        {
-                            actionRestoreSelectedItem && <MenuItem onClick={handleRestoreSeletedItem} sx={{ fontSize: '0.875rem' }}>
-                                <Box sx={{ display: "flex", alignItems: "center" }}>
-                                    <IconRestore size={20} stroke={1.5} />
-                                    <Box sx={{ ml: 1 }}>Khối phục dữ liệu đã chọn</Box>
-                                </Box>
-                            </MenuItem>
-                        }
-                    </Menu>
-                </Box>
-            </Grid>
+                        <StyledButton
+                            size="small"
+                            variant="outlined"
+                            color="default"
+                            aria-controls={open ? 'basic-menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={open ? 'true' : undefined}
+                            onClick={handleClick}
+                            startIcon={<IconSettings size={20} stroke={1.5} />}
+                        >
+                            Thao tác
+                        </StyledButton>
+                        <Menu
+                            id="basic-menu"
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                            MenuListProps={{
+                                'aria-labelledby': 'basic-button',
+                            }}
+                        >
+                            {
+                                actionDownLoadFile && <MenuItem sx={{ fontSize: '0.875rem' }}>
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        <IconDownload size={20} stroke={1.5} />
+                                        <a
+                                            href={fileUrl}
+                                            style={{
+                                                textDecoration: "none",
+                                                display: "inline-flex",
+                                                alignItems: "center",
+                                                color: "#616161",
+                                                marginLeft: 4
+                                            }}
+                                        >
+                                            Tải file mẫu
+                                        </a>
+                                    </Box>
+                                </MenuItem>
+                            }
+                            {
+                                actionImportFile && <MenuItem onClick={handleImportFile} sx={{ fontSize: '0.875rem' }}>
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        <IconFileImport size={20} stroke={1.5} />
+                                        <Box sx={{ ml: 1 }}>Nhập file excel</Box>
+                                    </Box>
+                                </MenuItem>
+                            }
+                            {
+                                actionImportQuestionFile && <MenuItem onClick={handleImportQuestionFile} sx={{ fontSize: '0.875rem' }}>
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        <IconFileImport size={20} stroke={1.5} />
+                                        <Box sx={{ ml: 1 }}>Nhập file excel câu hỏi </Box>
+                                    </Box>
+                                </MenuItem>
+                            }
+                            {
+                                actionExportFile && <MenuItem onClick={handleExportFile} sx={{ fontSize: '0.875rem' }}>
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        <IconFileImport size={20} stroke={1.5} />
+                                        <Box sx={{ ml: 1 }}>Xuất Excel</Box>
+                                    </Box>
+                                </MenuItem>
+                            }
+                            {
+                                actionPrintFile && <MenuItem onClick={handlePrintFile} sx={{ fontSize: '0.875rem', }}>
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        <IconPrinter size={20} stroke={1.5} />
+                                        <Box sx={{ ml: 1 }}>In</Box>
+                                    </Box>
+                                </MenuItem>
+                            }
+                            {
+                                actionLibCardSelectedItem && <MenuItem onClick={handleLibCardSeletedItem} sx={{ fontSize: '0.875rem' }}>
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        <IconPrinter size={20} stroke={1.5} />
+                                        <Box sx={{ ml: 1 }}>In thẻ thư viện</Box>
+                                    </Box>
+                                </MenuItem>
+                            }
+                            {
+                                actionChangeClass && <MenuItem onClick={handleChangeClass} sx={{ fontSize: '0.875rem', }}>
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        <IconTransformFilled size={20} stroke={1.5} />
+                                        <Box sx={{ ml: 1 }}>Chuyển lớp</Box>
+                                    </Box>
+                                </MenuItem>
+                            }
+                            {
+                                actionPromotedClass && <MenuItem onClick={handlePromotedClass} sx={{ fontSize: '0.875rem', }}>
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        <IconBookUpload size={20} stroke={1.5} />
+                                        <Box sx={{ ml: 1 }}>Lên lớp</Box>
+                                    </Box>
+                                </MenuItem>
+                            }
+                            {
+                                actionDeleteSelectedItem && <MenuItem onClick={handleDeleteSeletedItem} sx={{ fontSize: '0.875rem' }}>
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        <IconTrashXFilled size={20} stroke={1.5} />
+                                        <Box sx={{ ml: 1 }}>Xóa các dữ liệu đã chọn</Box>
+                                    </Box>
+                                </MenuItem>
+                            }
+                            {
+                                actionRestoreSelectedItem && <MenuItem onClick={handleRestoreSeletedItem} sx={{ fontSize: '0.875rem' }}>
+                                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                                        <IconRestore size={20} stroke={1.5} />
+                                        <Box sx={{ ml: 1 }}>Khối phục dữ liệu đã chọn</Box>
+                                    </Box>
+                                </MenuItem>
+                            }
+                        </Menu>
+                    </Box>
+                </Grid>
+            }
         </Grid>
     )
 }

@@ -241,17 +241,8 @@ const ShelfPage = () => {
     }, [checkedDelete]);
 
     const actionMenus = useMemo((): TMenuOption[] => {
-        return hasPermission([
-            { resource: "shelves", action: "manage" },
-            { resource: "shelves", action: "delete" },
-        ]) ? [
-            {
-                label: "Xóa các dữ liệu đã chọn",
-                icon: <IconTrashXFilled size={20} stroke={1.5} />,
-                onClick: handleDeleteMultiple,
-            },
-        ] : [];
-    }, [handleDeleteMultiple]);
+        return [];
+    }, []);
 
     const initialValues = useMemo((): TShelvesCreate => {
         if (selectedEdit) {

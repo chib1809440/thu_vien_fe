@@ -566,7 +566,7 @@ const LoanSlipPage = () => {
             const worksheet = workbook.addWorksheet('Loan Slips');
 
             // Thêm hàng tiêu đề chính
-            worksheet.addRow(['Danh sách phiếu mượn']).font = { bold: true, size: 14 };
+            worksheet.addRow(['Danh sách phiếu mượn thư viện']).font = { bold: true, size: 14 };
             worksheet.addRow([]); // Thêm hàng trống
 
             // Thêm hàng từ ngày đến ngày

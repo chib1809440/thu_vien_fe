@@ -559,7 +559,7 @@ const GroupPage = () => {
                         open={openConfirmDialog}
                         onClose={handleCloseConfirmDialog}
                         onConfirm={handleConfirmDelete}
-                        title="Xác nhận xóa thư viện"
+                        title="Xác nhận xóa nhóm"
                         description={`Bạn có chắc chắn muốn xóa "${groupToDelete?.name}" ?`}
                     />
                 }

@@ -231,6 +231,9 @@ const FormAddEditLoanSlip: FC<Props> = ({
             case 'cancel':
                 handleCancelLoanSlip(loanSlip);
                 break;
+            case 'report':
+                handleReportLoss();
+                break;
             case 'print':
                 handlePrint();
                 break;
@@ -249,6 +252,8 @@ const FormAddEditLoanSlip: FC<Props> = ({
                 return "Bạn có chắc chắn muốn trả sách không?";
             case 'cancel':
                 return "Bạn có chắc chắn muốn hủy phiếu mượn không?";
+            case 'report':
+                return "Bạn có chắc chắn muốn báo mất ấn phẩm không?";
             case 'print':
                 return "Bạn có chắc chắn muốn in tài liệu này không?";
             case 'submit':
@@ -549,6 +554,10 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
         setPublications(updatedPublications);
     };
+
+    const handleReportLoss = ()=>{
+        console.log("hihihi");
+    }
 
     const isMd = useMediaQuery('(min-width: 900px)');
     return (
@@ -1236,7 +1245,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                         </Button>
                         {
                             !loanSlip?.isReturn && loanSlip?.isAgree && isEditMode &&
-                            <Button style={{ background: '#de524a', color: 'white', textTransform: "inherit" }} variant="contained">
+                            <Button onClick={() => handleOpenDialog('report')} style={{ background: '#de524a', color: 'white', textTransform: "inherit" }} variant="contained">
                                 Báo mất
                             </Button>
                         }

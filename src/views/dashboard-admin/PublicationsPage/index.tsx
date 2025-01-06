@@ -1574,7 +1574,7 @@ const PublicationsPage = () => {
                         open={openConfirmDialog}
                         onClose={handleCloseConfirmDialog}
                         onConfirm={handleConfirmDelete}
-                        title="Xác nhận xóa thư viện"
+                        title="Xác nhận xóa ấn phẩm"
                         description={`Bạn có chắc chắn muốn xóa "${publicationsToDelete?.name}" ?`}
                     />
                 )}

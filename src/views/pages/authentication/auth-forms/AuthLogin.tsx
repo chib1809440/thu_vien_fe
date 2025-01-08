@@ -207,7 +207,7 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
                                 Forgot Password?
                             </Typography>
                         </Grid> */}
-                        <Grid item xs={12}>
+                        {/* <Grid item xs={12}>
                             <Button sx={{ float: "right" }} onClick={handleOpenDialog}>
                                 <Typography
                                     variant="caption"
@@ -217,7 +217,7 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
                                     Quên mật khẩu?
                                 </Typography>
                             </Button>
-                        </Grid>
+                        </Grid> */}
                     </Grid>
 
                     <Box sx={{ mt: 2 }}>
@@ -248,7 +248,7 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
                             <FormHelperText error>{errors.submit}</FormHelperText>
                         </Box>
                     )}
-                    <Dialog open={openDialog} onClose={handleCloseDialog}>
+                    {/* <Dialog open={openDialog} onClose={handleCloseDialog}>
                         <DialogTitle>Quên mật khẩu</DialogTitle>
                         <DialogContent>
                             <Typography variant="body2">
@@ -283,7 +283,7 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
                                 Gửi yêu cầu
                             </Button>
                         </DialogActions>
-                    </Dialog>
+                    </Dialog> */}
                 </form>
             )}
 

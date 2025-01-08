@@ -1,11 +1,11 @@
-import { Lock, LockOpen } from "@mui/icons-material";
-import { Alert, Box, FormControl, Grid, MenuItem, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme } from "@mui/material";
+import { Lock, LockOpen, LockReset } from "@mui/icons-material";
+import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, OutlinedInput, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme } from "@mui/material";
 import Checkbox from '@mui/material/Checkbox';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import { IconEye } from "@tabler/icons";
-import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconPencil, IconTrash } from "@tabler/icons-react";
+import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconPencil } from "@tabler/icons-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
@@ -62,7 +62,8 @@ function TableUserList<T extends DataType>({
     const [rowsPerPage, setRowsPerPage] = useState<number>(Number(searchParams.get("limit")) || 10); // get rowsPerPage from URL or default to 10
     const [schools, setUsers] = useState<EntityResponse<User[]>>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isOpenUpdateDilog, setIsOpenUpdateDialog] = useState<boolean>(false);
+    const [isOpenUpdateDialog, setIsOpenUpdateDialog] = useState<boolean>(false);
+    const [isOpenResetPassDialog, setIsOpenResetPassDialog] = useState<boolean>(false);
     const [isOpenConfirmDialog, setIsOpenConfirmDialog] = useState(false);
     const [isOpenBlock, setIsOpenBlock] = useState(false);
     const [isOpenLibCard, setIsOpenLibCard] = useState(false);
@@ -168,9 +169,13 @@ function TableUserList<T extends DataType>({
     };
     const handleClickUpdate = (id: string) => {
         let user: User = users.data.result.find(x => x._id === id)
-        console.log(id);
         setUser(user)
         setIsOpenUpdateDialog(true)
+    }
+    const handleResetPass = (id: string) => {
+        let user: User = users.data.result.find(x => x._id === id)
+        setUser(user)
+        setIsOpenResetPassDialog(true)
     }
     const [user, setUser] = useState<User>();
     const pageCount = useMemo(() => {
@@ -333,7 +338,7 @@ function TableUserList<T extends DataType>({
             refetch();
             const duplicateBarcodeErrors = response?.data?.errors.filter(
                 (error) => error.error === "Username or email already exists"
-            );            
+            );
 
             if (duplicateBarcodeErrors.length > 0) {
                 const rows = duplicateBarcodeErrors.map(({ row }) => row);
@@ -490,8 +495,18 @@ function TableUserList<T extends DataType>({
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{getLabelFromOptions(statusRole, (row?.roleId as Role)?.name)}</StyledTableCell>
                                                         {
                                                             (row?.roleId as Role)?.name === userRole ?
-                                                                <StyledTableCell padding="none" align="center" sx={{ paddingRight: 2 }}>
-                                                                    <IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} /></StyledTableCell>
+                                                                <StyledTableCell padding="none" align="center" sx={{ gap: 2 }}>
+                                                                    <Box sx={{
+                                                                        display: "flex",
+                                                                        justifyContent: "center",
+                                                                        alignItems: "center",
+                                                                        gap: 1
+                                                                    }}>
+
+                                                                        <IconEye onClick={() => handleClickDetail(row?._id)} size={22} stroke={1.5} />
+                                                                        <LockReset onClick={() => handleResetPass(row?._id)} />
+                                                                    </Box>
+                                                                </StyledTableCell>
                                                                 : row?.isActive ?
                                                                     (
                                                                         <StyledTableCell padding="none" align="center">
@@ -501,8 +516,9 @@ function TableUserList<T extends DataType>({
                                                                                 alignItems: "center",
                                                                                 gap: 1
                                                                             }}>
-                                                                                <IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} />
-                                                                                <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
+                                                                                <IconEye onClick={() => handleClickDetail(row?._id)} size={22} stroke={1.5} />
+                                                                                <LockReset onClick={() => handleResetPass(row?._id)} />
+                                                                                <IconPencil onClick={() => handleClickUpdate(row?._id)} size={22} stroke={1.5} />
                                                                                 {/* <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} /> */}
                                                                                 {
                                                                                     hasPermission([
@@ -622,13 +638,49 @@ function TableUserList<T extends DataType>({
             </Box>
 
             {
-                isOpenUpdateDilog && user && <UserDialog
+                isOpenUpdateDialog && user && <UserDialog
                     id={user._id}
                     title={"Cập nhật tài khoản"}
-                    open={isOpenUpdateDilog}
+                    open={isOpenUpdateDialog}
                     user={user}
                     handleOpen={setIsOpenUpdateDialog}
                 />
+            }
+            {
+                isOpenResetPassDialog && user &&
+                <Dialog open={isOpenResetPassDialog} onClose={() => setIsOpenResetPassDialog(false)}>
+                    <DialogTitle>Đặt lại mật khẩu</DialogTitle>
+                    <DialogContent>
+                        <FormControl fullWidth sx={{ mt: 2 }}>
+                            <InputLabel htmlFor="email-reset">Mật khẩu mới</InputLabel>
+                            <OutlinedInput
+                                id="username"
+                                type="username"
+                                // value={resetEmail}
+                                // onChange={handleResetEmailChange}
+                                label="Tài khoản đăng nhập"
+                            />
+                        </FormControl>
+                        <FormControl fullWidth sx={{ mt: 4 }}>
+                            <InputLabel htmlFor="email-reset">Xác nhận mật khẩu</InputLabel>
+                            <OutlinedInput
+                                id="email-reset"
+                                type="email"
+                                // value={resetEmail}
+                                // onChange={handleResetEmailChange}
+                                label="Địa chỉ Email"
+                            />
+                        </FormControl>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setIsOpenResetPassDialog(false)} color="error">
+                            Hủy
+                        </Button>
+                        <Button onClick={() => setIsOpenResetPassDialog(false)} color="primary" sx={{ textTransform: "inherit" }}>
+                            Lưu
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             }
             {
                 isOpenDetailDialog === true && <AccountDetailDialog

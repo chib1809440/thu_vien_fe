@@ -25,7 +25,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
     const [showWord, setShowWord] = useState(false);
     const numberPage = publications?.images?.length;
     const theme = useTheme();
-    const isSM = useMediaQuery('(min-width: 850px)');    
+    const isSM = useMediaQuery('(min-width: 850px)');
 
     const handleOpenView = () => {
         setShowBook(true);
@@ -477,8 +477,8 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                 }}
                                             />
                                         </Grid>
-                                        <Grid item xs={12} mx={2} mt={publications?.mimetype === "application/pdf" ? 3 : 0}>
-                                            <Box display={"flex"} flexDirection={"column"} >
+                                        <Grid item xs={12} my={1} mt={publications?.mimetype === "application/pdf" ? 3 : 0}>
+                                            <Box display={"flex"} flexDirection={"column"} mt={1}>
                                                 <Typography variant="h4" display={"flex"}>
                                                     Tên ấn phẩm:
                                                     <StyledHeading ml={1} variant="h4">
@@ -500,7 +500,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                 )}
                                             </Box>
                                         </Grid>
-                                        <Grid item xs={12} mx={2}>
+                                        <Grid item xs={12}>
                                             {publications?.status && (
                                                 <Box display={"flex"} flexDirection={"column"}>
                                                     <Typography variant="h4" display={"flex"}>
@@ -528,7 +528,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                 </Box>
                                             )}
                                         </Grid>
-                                        <Grid item xs={12} mx={2}>
+                                        <Grid item xs={12}>
                                             {publications?.type?.length > 0 && (
                                                 <Box display="flex" alignItems="center">
                                                     <Typography variant="h4" >
@@ -539,15 +539,15 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                         label={getLabelFromOptions(typeOptions, publications?.type)}
                                                         sx={{
                                                             ml: 2,
-                                                            color: theme.palette.text.dark,
-                                                            background:
-                                                                "linear-gradient(90deg, rgba(255, 159, 0, 1) 0%, rgba(255, 109, 0, 1) 100%)",
+                                                            color: "black",
+                                                            fontSize: 14,
+                                                            fontWeight: 500,
                                                         }}
                                                     />
                                                 </Box>
                                             )}
                                         </Grid>
-                                        <Grid item xs={12} mx={2}>
+                                        <Grid item xs={12}>
                                             {publications?.materialIds?.length > 0 && (
                                                 <Box display="flex" alignItems="center">
                                                     <Typography variant="h4">
@@ -566,8 +566,9 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                 variant="filled"
                                                                 label={capitalizeFirstLetter(item.name)}
                                                                 sx={{
-                                                                    color: theme.palette.text.dark,
-                                                                    background: getRandomPastelGradient(),
+                                                                    color: "black",
+                                                                    fontSize: 14,
+                                                                    fontWeight: 500,
                                                                     ml: 2,
                                                                     mb: 1,
                                                                 }}
@@ -578,8 +579,9 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                 variant="filled"
                                                                 label={`+${publications?.materialIds?.length - 1} học liệu khác`}
                                                                 sx={{
-                                                                    color: theme.palette.text.dark,
-                                                                    background: getRandomPastelGradient(),
+                                                                    color: "black",
+                                                                    fontSize: 14,
+                                                                    fontWeight: 500,
                                                                     ml: 2,
                                                                     mb: 1,
                                                                 }}
@@ -589,7 +591,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                 </Box>
                                             )}
                                         </Grid>
-                                        <Grid item xs={12} mx={2}>
+                                        <Grid item xs={12}>
                                             {publications?.categoryIds?.length > 0 && (
                                                 <Box display="flex" alignItems="center">
                                                     <Typography variant="h4">
@@ -608,8 +610,9 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                 variant="filled"
                                                                 label={capitalizeFirstLetter(item.name)}
                                                                 sx={{
-                                                                    color: theme.palette.text.dark,
-                                                                    background: getRandomPastelGradient(),
+                                                                    color: "black",
+                                                                    fontSize: 14,
+                                                                    fontWeight: 500,
                                                                     ml: 2,
                                                                     mb: 1,
                                                                 }}
@@ -620,8 +623,9 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                 variant="filled"
                                                                 label={`+${publications?.categoryIds?.length - 1} lĩnh vực khác`}
                                                                 sx={{
-                                                                    color: theme.palette.text.dark,
-                                                                    background: getRandomPastelGradient(),
+                                                                    color: "black",
+                                                                    fontSize: 14,
+                                                                    fontWeight: 500,
                                                                     ml: 2,
                                                                     mb: 1,
                                                                 }}
@@ -631,7 +635,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                 </Box>
                                             )}
                                         </Grid>
-                                        <Grid item xs={12} mx={2}>
+                                        <Grid item xs={12}>
                                             {publications?.authorIds?.length > 0 && (
                                                 <Box display="flex" alignItems="center">
                                                     <Typography variant="h4">
@@ -650,8 +654,9 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                 variant="filled"
                                                                 label={capitalizeFirstLetter(item.name)}
                                                                 sx={{
-                                                                    color: theme.palette.text.dark,
-                                                                    background: getRandomPastelGradient(),
+                                                                    color: "black",
+                                                                    fontSize: 14,
+                                                                    fontWeight: 500,
                                                                     ml: 2,
                                                                     mb: 1,
                                                                 }}
@@ -662,8 +667,9 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                 variant="filled"
                                                                 label={`+${publications?.authorIds?.length - 1} tác giả khác`}
                                                                 sx={{
-                                                                    color: theme.palette.text.dark,
-                                                                    background: getRandomPastelGradient(),
+                                                                    color: "black",
+                                                                    fontSize: 14,
+                                                                    fontWeight: 500,
                                                                     ml: 2,
                                                                     mb: 1,
                                                                 }}
@@ -673,7 +679,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                 </Box>
                                             )}
                                         </Grid>
-                                        <Grid item xs={12} mx={2}>
+                                        <Grid item xs={12}>
                                             {publications?.publisherIds?.length > 0 && (
                                                 <Box display="flex" alignItems="center">
                                                     <Typography variant="h4">
@@ -692,8 +698,9 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                 variant="filled"
                                                                 label={capitalizeFirstLetter(item.name)}
                                                                 sx={{
-                                                                    color: theme.palette.text.dark,
-                                                                    background: getRandomPastelGradient(),
+                                                                    color: "black",
+                                                                    fontSize: 14,
+                                                                    fontWeight: 500,
                                                                     ml: 2,
                                                                     mb: 1,
                                                                 }}
@@ -704,8 +711,9 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                 variant="filled"
                                                                 label={`+${publications?.publisherIds?.length - 1} nhà xuất bản khác`}
                                                                 sx={{
-                                                                    color: theme.palette.text.dark,
-                                                                    background: getRandomPastelGradient(),
+                                                                    color: "black",
+                                                                    fontWeight: 500,
+                                                                    fontSize: 14,
                                                                     ml: 2,
                                                                     mb: 1,
                                                                 }}
@@ -737,22 +745,17 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                                                     ].includes(publications?.mimetype) && (
                                                             <>
-                                                                {
-                                                                    openLT === false ?
-                                                                        <StyledButton
-                                                                            color="primary"
-                                                                            size="small"
-                                                                            startIcon={<IconFileWord stroke={2} />}
-                                                                            variant="contained"
-                                                                            sx={{ marginTop: 1, width: "150px" }}
-                                                                        >
-                                                                            <a href={`${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`} download style={{ color: "white" }}>
-                                                                                Tải xuống
-                                                                            </a>
-                                                                        </StyledButton>
-
-                                                                        : ""
-                                                                }
+                                                                <StyledButton
+                                                                    color="primary"
+                                                                    size="small"
+                                                                    startIcon={<IconFileWord stroke={2} />}
+                                                                    variant="contained"
+                                                                    sx={{ marginTop: 1, width: "150px" }}
+                                                                >
+                                                                    <a href={`${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`} download style={{ color: "white" }}>
+                                                                        Tải xuống
+                                                                    </a>
+                                                                </StyledButton>
                                                             </>
                                                         )}
                                                     {[
@@ -777,20 +780,17 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                         "application/vnd.openxmlformats-officedocument.presentationml.presentation",
                                                     ].includes(publications?.mimetype) && (
                                                             <>
-                                                                {
-                                                                    openLT === false ? <StyledButton
-                                                                        color="primary"
-                                                                        size="small"
-                                                                        startIcon={<IconPresentation stroke={2} />}
-                                                                        variant="contained"
-                                                                        sx={{ marginTop: 1, width: "150px" }}
-                                                                    >
-                                                                        <a href={`${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`} download style={{ color: "white" }}>
-                                                                            Tải xuống
-                                                                        </a>
-                                                                    </StyledButton>
-                                                                        : ""
-                                                                }
+                                                                <StyledButton
+                                                                    color="primary"
+                                                                    size="small"
+                                                                    startIcon={<IconPresentation stroke={2} />}
+                                                                    variant="contained"
+                                                                    sx={{ marginTop: 1, width: "150px" }}
+                                                                >
+                                                                    <a href={`${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`} download style={{ color: "white" }}>
+                                                                        Tải xuống
+                                                                    </a>
+                                                                </StyledButton>
                                                             </>
                                                         )}
                                                     {[

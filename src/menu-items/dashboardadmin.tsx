@@ -392,10 +392,6 @@ const dashboardAdmin = {
                 {
                     resource: "assets",
                     action: "manage",
-                },
-                {
-                    resource: "publications",
-                    action: "manage",
                 }
             ],
         },

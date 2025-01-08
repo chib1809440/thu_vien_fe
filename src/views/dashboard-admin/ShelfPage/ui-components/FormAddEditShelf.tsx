@@ -23,7 +23,11 @@ type Props = {
 const schema = yup.object().shape({
     name: yup
         .string()
-        .required("Vui lòng nhập tên")
+        .required("Vui lòng nhập tên"),
+    assetId: yup
+        .string()
+        .required("Vui lòng chọn tài sản")
+        .nullable()
 });
 
 const FormAddEditShelf: FC<Props> = ({
@@ -85,16 +89,16 @@ const FormAddEditShelf: FC<Props> = ({
                             helperText={touched.name && errors.name}
                             {...getFieldProps("name")}
                         />
-                        
+
                         <SelectForm
                             label="Tài sản"
-                            value={(values.assetId as Asset)?._id}
+                            value={(values?.assetId as Asset)?._id}
                             options={selectedAsset ? [
                                 {
                                     value: selectedAsset?._id,
                                     label: capitalizeFirstLetter(selectedAsset?.name),
                                 },
-                            ] : assetData.map((item) => ({
+                            ] : assetData?.map((item) => ({
                                 value: item._id,
                                 label: capitalizeFirstLetter(item.name),
                             }))}

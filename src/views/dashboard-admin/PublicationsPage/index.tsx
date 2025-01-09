@@ -805,7 +805,7 @@ const PublicationsPage = () => {
             worksheet.getColumn("M").width = 30;
             worksheet.getColumn("N").width = 30;
 
-            const publicationsData = data?.data?.result?.map((publication) => {
+            const publicationsData = data?.data?.result?.filter((publication) => publication?.type === "ấn phẩm cứng")?.map((publication) => {
                 const categoryNames = publication?.categoryIds
                     ? publication?.categoryIds.map((category) => category?.name).join(", ")
                     : "";

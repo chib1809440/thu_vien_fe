@@ -29,12 +29,13 @@ import { useDeleteUserSelected, useSoftDeleteUser, useUserList } from "../../../
 import useDebounce, { searchDelay } from "../../../../../hooks/useDebounce";
 import { EntityResponse } from "../../../../../interfaces/entityResponse";
 import { Role } from "../../../../../interfaces/role";
-import { User } from "../../../../../interfaces/user";
+import { ChangePasswordUserModel, User } from "../../../../../interfaces/user";
 import { statusRole } from "../../../../../utils/constants.utils";
 import usePermission from "../../../../../utils/hasPermission";
 import { getLabelFromOptions } from "../../../../../utils/object";
 import DialogImportFile from "../../../PublicationsPage/ui-components/DialogImportFile";
 import PrintAccount from "../PrintAccount";
+import FormChangePassword from "../../../../../layout/MainLayout/Header/ProfileSection/FormChangePassword";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -375,6 +376,21 @@ function TableUserList<T extends DataType>({
         }
     };
 
+    const handleResetPasswordSubmit = (values: any) => {
+        console.log(values);
+
+    };
+
+    const initialValueResetPassword = useMemo((): ChangePasswordUserModel => {
+        if (user) {
+            return {
+                userId: user?._id,
+                newPassword: '',
+                confirmPassword: ''
+            };
+        }
+    }, [user]);
+
     return (
         <>
             {isOpenLibCard && <PrintAccount ref={componentRef} dataUsers={checkedUsers} />}
@@ -648,39 +664,13 @@ function TableUserList<T extends DataType>({
             }
             {
                 isOpenResetPassDialog && user &&
-                <Dialog open={isOpenResetPassDialog} onClose={() => setIsOpenResetPassDialog(false)}>
-                    <DialogTitle>Đặt lại mật khẩu</DialogTitle>
-                    <DialogContent>
-                        <FormControl fullWidth sx={{ mt: 2 }}>
-                            <InputLabel htmlFor="email-reset">Mật khẩu mới</InputLabel>
-                            <OutlinedInput
-                                id="username"
-                                type="username"
-                                // value={resetEmail}
-                                // onChange={handleResetEmailChange}
-                                label="Tài khoản đăng nhập"
-                            />
-                        </FormControl>
-                        <FormControl fullWidth sx={{ mt: 4 }}>
-                            <InputLabel htmlFor="email-reset">Xác nhận mật khẩu</InputLabel>
-                            <OutlinedInput
-                                id="email-reset"
-                                type="email"
-                                // value={resetEmail}
-                                // onChange={handleResetEmailChange}
-                                label="Địa chỉ Email"
-                            />
-                        </FormControl>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => setIsOpenResetPassDialog(false)} color="error">
-                            Hủy
-                        </Button>
-                        <Button onClick={() => setIsOpenResetPassDialog(false)} color="primary" sx={{ textTransform: "inherit" }}>
-                            Lưu
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                <FormChangePassword
+                    onClose={() => setIsOpenResetPassDialog(false)}
+                    open={isOpenResetPassDialog}
+                    onSubmit={handleResetPasswordSubmit}
+                    initialValues={initialValueResetPassword}
+                    isResetPass={true}
+                />
             }
             {
                 isOpenDetailDialog === true && <AccountDetailDialog

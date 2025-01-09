@@ -17,7 +17,8 @@ export type CreatePublicationWareHouseReceipt = {
     publicationId: string;
     name: string;
     barcode: string;
-    price: number;
+    priceInput: number;
+    priceOutput: number;
     quantityWareHouse: number;
 };
 export type TWareHouseReceiptCreate = {

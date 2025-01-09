@@ -161,7 +161,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                 </StyledHeading>
                                                             </Typography>
                                                         )}
-                                                        {publications?.shelvesQuantity > 0 && (
+                                                        {(publications?.shelvesId as TShelves)?.name && (
                                                             <Typography variant="h4" display={"flex"} mt={1}>
                                                                 Số lượng ấn phẩm trên kệ:
                                                                 <StyledHeading ml={1} variant="h4" textTransform={"capitalize"}>
@@ -517,7 +517,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                             </StyledHeading>
                                                         </Typography>
                                                     )}
-                                                    {publications?.shelvesQuantity > 0 && (
+                                                    {(publications?.shelvesId as TShelves)?.name && (
                                                         <Typography variant="h4" display={"flex"} mt={1}>
                                                             Số lượng ấn phẩm trên kệ:
                                                             <StyledHeading ml={1} variant="h4" textTransform={"capitalize"}>

@@ -109,7 +109,7 @@ export default function AssetPage() {
                                     Quản lý nhập tài sản
                                 </StyledButton>
                             </Link>
-                            <StyledButton
+                            {/* <StyledButton
                                 sx={{
                                     background: "#de524a", color: "white",
                                     //@ts-ignore
@@ -123,7 +123,7 @@ export default function AssetPage() {
                                 onClick={() => handleClickNavigateTrash()}
                             >
                                 Thùng rác
-                            </StyledButton>
+                            </StyledButton> */}
                         </Box>
 
                     </CsFlexRowBetween>

@@ -14,11 +14,18 @@ type Props = {
     isFetching?: boolean;
     initialValues: ChangePasswordUserModel;
     isEditMode?: boolean;
+    isResetPass?: boolean;
 };
 
 const schema = yup.object().shape({
-    password: yup.string().required("Mật khẩu cũ là bắt buộc."),
-    newPassword: yup.string().min(6, "Mật khẩu mới phải có ít nhất 6 ký tự.").required("Mật khẩu mới là bắt buộc."),
+    password: yup.string().when('isResetPass', {
+        is: false,
+        then: yup.string().required("Mật khẩu cũ là bắt buộc."),
+        otherwise: yup.string().notRequired(),
+    }),
+    newPassword: yup.string()
+        .min(6, "Mật khẩu mới phải có ít nhất 6 ký tự.")
+        .required("Mật khẩu mới là bắt buộc."),
     confirmPassword: yup.string()
         .oneOf([yup.ref('newPassword'), null], "Mật khẩu xác nhận không khớp.")
         .required("Xác nhận mật khẩu là bắt buộc."),
@@ -34,6 +41,7 @@ const FormChangePassword: FC<Props> = ({
         newPassword: "",
         confirmPassword: "",
     },
+    isResetPass = false
 }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
@@ -70,7 +78,7 @@ const FormChangePassword: FC<Props> = ({
                 disableEscapeKeyDown
             >
                 <DialogTitle>
-                    Đổi mật khẩu
+                    {isResetPass ? "Đặt lại mật khẩu" : "Đổi mật khẩu"}
                     <IconButton
                         aria-label="close"
                         onClick={onClose}
@@ -83,32 +91,35 @@ const FormChangePassword: FC<Props> = ({
                 <DialogContent>
                     <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
                         {/* Mật khẩu cũ */}
-                        <Box sx={{ width: "100%" }}>
-                            <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
-                                Mật khẩu cũ <span className="required_text">(*)</span>
-                            </Typography>
-                            <TextField
-                                variant="outlined"
-                                fullWidth
-                                type={showPassword ? "text" : "password"}
-                                {...getFieldProps('password')}
-                                error={Boolean(touched.password && errors.password)}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton onClick={toggleShowPassword} edge="end">
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                            {touched.password && errors.password && (
-                                <FormHelperText className="required_text">
-                                    {errors.password}
-                                </FormHelperText>
-                            )}
-                        </Box>
+                        {
+                            !isResetPass &&
+                            <Box sx={{ width: "100%" }}>
+                                <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>
+                                    Mật khẩu cũ <span className="required_text">(*)</span>
+                                </Typography>
+                                <TextField
+                                    variant="outlined"
+                                    fullWidth
+                                    type={showPassword ? "text" : "password"}
+                                    {...getFieldProps('password')}
+                                    error={Boolean(touched.password && errors.password)}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton onClick={toggleShowPassword} edge="end">
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                                {touched.password && errors.password && (
+                                    <FormHelperText className="required_text">
+                                        {errors.password}
+                                    </FormHelperText>
+                                )}
+                            </Box>
+                        }
 
                         {/* Mật khẩu mới */}
                         <Box sx={{ width: "100%", mt: 2 }}>
@@ -173,7 +184,7 @@ const FormChangePassword: FC<Props> = ({
                                 variant="contained"
                                 color="primary"
                             >
-                                Đổi mật khẩu
+                                {isResetPass ? "Lưu" : "Đổi mật khẩu"}
                             </Button>
                         </Box>
                     </Form>

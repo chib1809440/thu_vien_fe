@@ -362,7 +362,8 @@ const WareHouseReceiptPage = () => {
                 'Người tạo',
                 'Số lượng nhập',
                 'Giá nhập',
-                'Tổng giá',
+                'Giá niêm yết',
+                'Tổng giá nhập',
                 'Trạng thái',
                 'Ghi chú'
             ]).font = { bold: true };
@@ -379,6 +380,7 @@ const WareHouseReceiptPage = () => {
             worksheet.getColumn('J').width = 20;
             worksheet.getColumn('K').width = 20;
             worksheet.getColumn('L').width = 20;
+            worksheet.getColumn('M').width = 20;
 
             const warehouseReceiptsData = data?.data?.result?.map((receipt) => {
                 const supplierName = (receipt?.supplierId as TSupplier)?.name || '';
@@ -397,7 +399,8 @@ const WareHouseReceiptPage = () => {
                         supplierName: supplierName,
                         creatorName: creatorName,
                         quantityWareHouse: publication?.quantityWareHouse || 0,
-                        price: formatPrice(publication?.priceInput || 0),
+                        priceInput: formatPrice(publication?.priceInput || 0),
+                        priceOutput: formatPrice(publication?.priceOutput || 0),
                         priceTotal: formatPrice(publication?.priceInput * publication?.quantityWareHouse || 0),
                         status: isAccepted,
                         note: receipt?.note || '',
@@ -427,7 +430,8 @@ const WareHouseReceiptPage = () => {
                     dataRow.supplierName,
                     dataRow.creatorName,
                     dataRow.quantityWareHouse,
-                    dataRow.price,
+                    dataRow.priceInput,
+                    dataRow.priceOutput,
                     dataRow.priceTotal,
                     dataRow.status,
                     dataRow.note,

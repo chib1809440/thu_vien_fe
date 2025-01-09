@@ -42,7 +42,8 @@ const PrintWareHouseReceipt = forwardRef<HTMLDivElement, { wareHouseReceipt: TWa
                             <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Tên ấn phẩm</th>
                             <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Số lượng</th>
                             <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Giá nhập</th>
-                            <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Tổng giá</th>
+                            <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Giá niêm yết</th>
+                            <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Tổng giá nhập</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -52,11 +53,12 @@ const PrintWareHouseReceipt = forwardRef<HTMLDivElement, { wareHouseReceipt: TWa
                                 <td style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{publication.name}</td>
                                 <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{publication.quantityWareHouse}</td>
                                 <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{formatPrice(publication.priceInput)}</td>
+                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{formatPrice(publication.priceOutput)}</td>
                                 <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{formatPrice(publication.quantityWareHouse * publication.priceInput)}</td>
                             </tr>
                         ))}
                        <tr>
-                            <td colSpan={4} style={{ border: "1px solid black", padding: "8px", textAlign: "center", fontWeight: 'bold' }}>Tổng cộng</td>
+                            <td colSpan={5} style={{ border: "1px solid black", padding: "8px", textAlign: "center", fontWeight: 'bold' }}>Tổng cộng</td>
                             <td style={{ border: "1px solid black", padding: "8px", textAlign: "center", fontWeight: 'bold' }}>
                                 {formatPrice(wareHouseReceipt?.publications?.reduce((total, pub) => total + pub.quantityWareHouse * pub.priceInput, 0))}
                             </td>

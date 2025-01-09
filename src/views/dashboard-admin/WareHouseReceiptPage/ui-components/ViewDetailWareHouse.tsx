@@ -123,10 +123,11 @@ const ViewDetailWareHouseReceipt: FC<Props> = ({
                                     <TableHead >
                                         <TableRow>
                                             <StyledTableCell align="left" width='20%'>BarCode</StyledTableCell>
-                                            <StyledTableCell align="left" width='40%'>Tên sách</StyledTableCell>
+                                            <StyledTableCell align="left" width='30%'>Tên sách</StyledTableCell>
                                             <StyledTableCell align="left" width='15%'>Số lượng nhập</StyledTableCell>
                                             <StyledTableCell align="left" width='15%'>Giá nhập</StyledTableCell>
-                                            <StyledTableCell align="left" width='15%'>Tổng giá</StyledTableCell>
+                                            <StyledTableCell align="left" width='15%'>Giá niêm yết</StyledTableCell>
+                                            <StyledTableCell align="left" width='20%'>Tổng giá nhập</StyledTableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -147,7 +148,10 @@ const ViewDetailWareHouseReceipt: FC<Props> = ({
                                                     {formatPrice(row?.priceInput) || "0"}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left">
-                                                    {formatPrice(row?.quantity * row?.priceInput) || "0"}
+                                                    {formatPrice(row?.priceOutput) || "0"}
+                                                </StyledTableCell>
+                                                <StyledTableCell align="left">
+                                                    {formatPrice(row?.quantityWareHouse * row?.priceInput) || "0"}
                                                 </StyledTableCell>
                                             </StyledTableRow>
                                         ))}

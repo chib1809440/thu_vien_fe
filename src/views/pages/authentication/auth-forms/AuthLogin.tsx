@@ -248,11 +248,11 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
                             <FormHelperText error>{errors.submit}</FormHelperText>
                         </Box>
                     )}
-                    {/* <Dialog open={openDialog} onClose={handleCloseDialog}>
+                    <Dialog open={openDialog} onClose={handleCloseDialog}>
                         <DialogTitle>Quên mật khẩu</DialogTitle>
                         <DialogContent>
                             <Typography variant="body2">
-                                Nhập địa chỉ tài khoản đăng nhập, email của bạn để nhận hướng dẫn lấy lại mật khẩu.
+                                Nhập địa chỉ tài khoản đăng nhập của bạn để nhận hướng dẫn lấy lại mật khẩu.
                             </Typography>
                             <FormControl fullWidth sx={{ mt: 2 }}>
                                 <InputLabel htmlFor="email-reset">Tài khoản đăng nhập</InputLabel>
@@ -264,16 +264,6 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
                                     label="Tài khoản đăng nhập"
                                 />
                             </FormControl>
-                            <FormControl fullWidth sx={{ mt: 4 }}>
-                                <InputLabel htmlFor="email-reset">Địa chỉ Email</InputLabel>
-                                <OutlinedInput
-                                    id="email-reset"
-                                    type="email"
-                                    // value={resetEmail}
-                                    // onChange={handleResetEmailChange}
-                                    label="Địa chỉ Email"
-                                />
-                            </FormControl>
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={handleCloseDialog} color="error">
@@ -283,7 +273,7 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
                                 Gửi yêu cầu
                             </Button>
                         </DialogActions>
-                    </Dialog> */}
+                    </Dialog>
                 </form>
             )}
 

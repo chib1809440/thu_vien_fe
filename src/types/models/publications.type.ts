@@ -35,6 +35,7 @@ export type TPublications = TEntityAbstract & {
     totalQuantity?: number,
     mimetype?: string,
     priceInput?: number;
+    priceOutput?: number;
 };
 
 export type TPublicationsCreate = Partial<Pick<TPublications, "isPublic" | "isLink" | "name" | "barcode" | "description" | "note" | "quantity" | "shelvesQuantity" | "status" | "type" | "file" | "quantityLiquidation" | "quantityDamaged" | "totalQuantity" | "quantityLoan" | "mimetype">> & {

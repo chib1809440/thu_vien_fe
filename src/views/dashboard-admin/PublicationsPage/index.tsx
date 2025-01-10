@@ -1055,8 +1055,8 @@ const PublicationsPage = () => {
                         <Box sx={{ display: { xs: "none", sm: "none", md: "block" } }}>
                             {hasPermission([{ resource: "publications", action: "manage" }]) ? (
                                 <>
-                                    {hasPermission([{ resource: "warehousereceipts", action: "manage" }]) && (
-                                        <Link to="/quan-ly-kho/kho-tai-san" style={{ textDecoration: "none" }}>
+                                    {hasPermission([{ resource: "warehousereceipts", action: "manage" }]) && (userRole === "Admin" || userRole === "Owner") && (
+                                        <Link to="/quan-ly-kho/kho-an-pham" style={{ textDecoration: "none" }}>
                                             <StyledButton
                                                 sx={{
                                                     background: "#a36e21",

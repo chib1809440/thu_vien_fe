@@ -231,6 +231,9 @@ const FormAddEditLoanSlip: FC<Props> = ({
             case 'cancel':
                 handleCancelLoanSlip(loanSlip);
                 break;
+            case 'report':
+                handleReportLoss();
+                break;
             case 'print':
                 handlePrint();
                 break;
@@ -249,6 +252,8 @@ const FormAddEditLoanSlip: FC<Props> = ({
                 return "Bạn có chắc chắn muốn trả sách không?";
             case 'cancel':
                 return "Bạn có chắc chắn muốn hủy phiếu mượn không?";
+            case 'report':
+                return "Bạn có chắc chắn muốn báo mất ấn phẩm không?";
             case 'print':
                 return "Bạn có chắc chắn muốn in tài liệu này không?";
             case 'submit':
@@ -549,6 +554,10 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
         setPublications(updatedPublications);
     };
+
+    const handleReportLoss = ()=>{
+        console.log("hihihi");
+    }
 
     const isMd = useMediaQuery('(min-width: 900px)');
     return (
@@ -1235,14 +1244,20 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             Đóng
                         </Button>
                         {
+                            !loanSlip?.isReturn && loanSlip?.isAgree && isEditMode &&
+                            <Button onClick={() => handleOpenDialog('report')} style={{ background: '#de524a', color: 'white', textTransform: "inherit" }} variant="contained">
+                                Báo mất
+                            </Button>
+                        }
+                        {
 
-                            (roleName === "Owner" || roleName === "Admin") && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
+                            (roleName === "Owner" || roleName === "Admin") && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white', textTransform: "inherit" }} variant="contained"  >
                                 Trả sách
                             </Button>
                         }
                         {
 
-                            (roleName === "Owner" || roleName === "Admin") && isEditMode && <Button onClick={() => handleOpenDialog('print')} style={{ background: '#212121', color: 'white' }} variant="contained"  >
+                            (roleName === "Owner" || roleName === "Admin") && isEditMode && <Button onClick={() => handleOpenDialog('print')} style={{ background: '#212121', color: 'white', textTransform: "inherit" }} variant="contained"  >
                                 In
                             </Button>
                         }
@@ -1255,7 +1270,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             !loanSlip.isCancel && (
                                 <Button
                                     onClick={() => handleOpenDialog('cancel')}
-                                    style={{ background: '#c62828', color: 'white' }}
+                                    style={{ background: '#c62828', color: 'white', textTransform: "inherit" }}
                                     variant="contained"
                                 >
                                     Hủy phiếu mượn
@@ -1269,6 +1284,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                     onClick={() => handleOpenDialog('submit')}
                                     variant="contained"
                                     color="primary"
+                                    sx={{ textTransform: "inherit" }}
                                 >
                                     {isFetching ? "Đang thêm..." : isEditMode ? "Cập nhật" : "Thêm mới"}
                                 </Button>
@@ -1280,6 +1296,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
                                             onClick={() => handleOpenDialog('submit')}
                                             variant="contained"
                                             color="primary"
+                                            sx={{ textTransform: "inherit" }}
                                         >
                                             {isFetching ? "Đang thêm..." : "Thêm mới"}
                                         </Button>
@@ -1298,13 +1315,16 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             )
                         }
                     </Box>
-                    <AlertConfirmDialog
-                        openConfirm={openDialog}
-                        handleOpenConfirmDialog={handleCloseDialog}
-                        onHandleConfirm={handleConfirmAction}
-                        title="Vui lòng xác nhận"
-                        message={getConfirmationMessage()} // Truyền thông điệp động vào AlertDialog
-                    />
+                    {
+                        openDialog &&
+                        <AlertConfirmDialog
+                            openConfirm={openDialog}
+                            handleOpenConfirmDialog={handleCloseDialog}
+                            onHandleConfirm={handleConfirmAction}
+                            title="Vui lòng xác nhận"
+                            message={getConfirmationMessage()} // Truyền thông điệp động vào AlertDialog
+                        />
+                    }
                 </DialogActions>
             </Dialog>
         </FormikProvider >

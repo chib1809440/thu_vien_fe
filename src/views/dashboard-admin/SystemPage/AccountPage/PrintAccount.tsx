@@ -1,11 +1,10 @@
 import { forwardRef } from "react";
-import { User } from "../../../../interfaces/user";
-import { formatDate } from "../../../../helpers/formatDate";
 import Barcode from "react-barcode";
-import { TLibrary } from "../../../../types/models/library.type";
+import { formatDate } from "../../../../helpers/formatDate";
 import { Role } from "../../../../interfaces/role";
-import { getLabelFromOptions } from "../../../../utils/object";
+import { User } from "../../../../interfaces/user";
 import { statusRole } from "../../../../utils/constants.utils";
+import { getLabelFromOptions } from "../../../../utils/object";
 interface PrintAccountProps {
     dataUsers: User | User[];
 }

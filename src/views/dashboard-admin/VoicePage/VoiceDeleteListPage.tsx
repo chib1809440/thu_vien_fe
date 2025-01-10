@@ -1,4 +1,3 @@
-import { Switch } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconArrowBack, IconArrowBackUp, IconTrash } from "@tabler/icons";
 import { IconRestore, IconTrashXFilled } from "@tabler/icons-react";
@@ -14,10 +13,10 @@ import useQueryString from "../../../hooks/services/useQueryString";
 import { useDeleteManyVoice, useDeleteVoice, useRestoreManyVoice } from "../../../hooks/services/voice/voice-mutation";
 import { useFetchVoiceDeleteList, useReFetchVoiceDeleteList } from "../../../hooks/services/voice/voice-query";
 import { TColumn, TMenuOption } from "../../../types/common/table";
+import { TTypeVoice } from "../../../types/models/type-voice";
 import { TVoice } from "../../../types/models/voice";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
-import { TTypeVoice } from "../../../types/models/type-voice";
 
 
 const VoiceDeleteListPage = () => {
@@ -252,41 +251,49 @@ const VoiceDeleteListPage = () => {
                     pagination={data?.data?.meta}
                 />
 
-                <ConfirmDeleteDialog
-                    key={"delete"}
-                    open={openConfirmDialog}
-                    onClose={handleCloseConfirmDialog}
-                    onConfirm={handleConfirmDelete}
-                    title="Xác nhận xóa?"
-                    description={`Bạn có chắc chắn muốn xóa voice giọng"${(voiceToDelete?.typeVoiceId as TTypeVoice)?.name}" ?`}
-                />
+                {openConfirmDialog &&
+                    <ConfirmDeleteDialog
+                        key={"delete"}
+                        open={openConfirmDialog}
+                        onClose={handleCloseConfirmDialog}
+                        onConfirm={handleConfirmDelete}
+                        title="Xác nhận xóa?"
+                        description={`Bạn có chắc chắn muốn xóa voice giọng "${(voiceToDelete?.typeVoiceId as TTypeVoice)?.name}" ?`}
+                    />
+                }
 
-                <ConfirmDeleteDialog
-                    key={"deleteMultiple"}
-                    open={openConfirmDeleteMultiple}
-                    onClose={() => setOpenConfirmDeleteMultiple(false)}
-                    onConfirm={handleConfirmDeleteMultiple}
-                    title="Xác nhận xóa các mục đã chọn?"
-                    description={`Bạn có chắc chắn muốn xóa?`}
-                />
+                {openConfirmDeleteMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"deleteMultiple"}
+                        open={openConfirmDeleteMultiple}
+                        onClose={() => setOpenConfirmDeleteMultiple(false)}
+                        onConfirm={handleConfirmDeleteMultiple}
+                        title="Xác nhận xóa các mục đã chọn?"
+                        description={`Bạn có chắc chắn muốn xóa?`}
+                    />
+                }
 
-                <ConfirmDeleteDialog
-                    key={"restore"}
-                    open={openConfirmRestoreDialog}
-                    onClose={handleCloseConfirmRestoreDialog}
-                    onConfirm={handleConfirmRestore}
-                    title="Xác nhận khôi phục?"
-                    description={`Bạn có chắc chắn muốn khôi phục voice giọng"${(voiceToRestore?.typeVoiceId as TTypeVoice)?.name}"?`}
-                />
+                {openConfirmRestoreDialog &&
+                    <ConfirmDeleteDialog
+                        key={"restore"}
+                        open={openConfirmRestoreDialog}
+                        onClose={handleCloseConfirmRestoreDialog}
+                        onConfirm={handleConfirmRestore}
+                        title="Xác nhận khôi phục?"
+                        description={`Bạn có chắc chắn muốn khôi phục voice giọng "${(voiceToRestore?.typeVoiceId as TTypeVoice)?.name}"?`}
+                    />
+                }
 
-                <ConfirmDeleteDialog
-                    key={"restoreMultiple"}
-                    open={openConfirmRestoreMultiple}
-                    onClose={() => setOpenConfirmRestoreMultiple(false)}
-                    onConfirm={handleConfirmRestoreMultiple}
-                    title="Xác nhận khôi phục các mục đã chọn?"
-                    description={`Bạn có chắc chắn muốn khôi phục các mục đã chọn?`}
-                />
+                {openConfirmRestoreMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"restoreMultiple"}
+                        open={openConfirmRestoreMultiple}
+                        onClose={() => setOpenConfirmRestoreMultiple(false)}
+                        onConfirm={handleConfirmRestoreMultiple}
+                        title="Xác nhận khôi phục các mục đã chọn?"
+                        description={`Bạn có chắc chắn muốn khôi phục các mục đã chọn?`}
+                    />
+                }
 
             </MainCard>
         </div>

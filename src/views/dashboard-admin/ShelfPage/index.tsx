@@ -1,24 +1,28 @@
+import { Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
-import { IconTrashXFilled } from "@tabler/icons-react";
+import { IconPencil, IconPlus } from "@tabler/icons";
+import { IconDoorExit, IconTrashXFilled } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
-import { useAddShelf, useDeleteSoftManyShelf, useDeleteSoftShelf, useEditShelf } from "../../../hooks/services/shelf/shelf-mutation";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
+import { useFetchAsset } from "../../../hooks/react-query/assetData";
+import { useAddShelf, useDeleteManyShelf, useDeleteShelf, useEditShelf } from "../../../hooks/services/shelf/shelf-mutation";
 import { useFetchShelf, useReFetchShelf } from "../../../hooks/services/shelf/shelf-query";
 import useQueryString from "../../../hooks/services/useQueryString";
+import { Asset } from "../../../interfaces/asset";
 import { TColumn, TMenuOption } from "../../../types/common/table";
 import { TShelves, TShelvesCreate } from "../../../types/models/shelves";
+import { TTypeAsset } from "../../../types/models/type-asset";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
-import FormAddEditShelf from "./ui-components/FormAddEditShelf";
-import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import usePermission from "../../../utils/hasPermission";
-import { Typography } from "@mui/material";
+import { parserParams } from "../../../utils/object";
+import FilterByItems from "../PublicationsPage/ui-components/FilterByItems";
+import FormAddEditShelf from "./ui-components/FormAddEditShelf";
 
 
 const ShelfPage = () => {
@@ -27,11 +31,26 @@ const ShelfPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
 
-    const { data, isLoading, isFetching } = useFetchShelf({ limit, page, search });
+    const [selectedBelongAsset, setSelectedBelongAsset] = useState(0);
+
+    const filter = useMemo(
+        () =>
+            parserParams([
+                { compare: "", target: { search } },
+                { compare: 0, target: { assetId: selectedBelongAsset } },
+            ]),
+        [search, selectedBelongAsset]
+    );
+
+    const { data, isLoading, isFetching } = useFetchShelf({
+        limit,
+        page,
+        ...filter,
+    });
     const mutationAdd = useAddShelf();
     const mutationEdit = useEditShelf();
-    const mutationSoftDelete = useDeleteSoftShelf();
-    const mutationSoftDeleteMany = useDeleteSoftManyShelf();
+    const mutationDelete = useDeleteShelf();
+    const mutationDeleteMany = useDeleteManyShelf();
     const revalidate = useReFetchShelf();
     const { hasPermission } = usePermission();
     const [openAddEdit, setOpenAddEdit] = useState(false);
@@ -40,7 +59,9 @@ const ShelfPage = () => {
     const [shelfToDelete, setShelfToDelete] = useState<TShelves | null>(null);
 
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
-    const [openConfirmSoftDeleteMultiple, setOpenConfirmSoftDeleteMultiple] = useState(false);
+    const [openConfirmDeleteMultiple, setOpenConfirmDeleteMultiple] = useState(false);
+
+    const { data: assetData } = useFetchAsset();
 
     const addShelf = () => {
         setOpenAddEdit(true);
@@ -87,7 +108,7 @@ const ShelfPage = () => {
 
     const handleConfirmDelete = () => {
         if (shelfToDelete) {
-            mutationSoftDelete.mutate(shelfToDelete._id, {
+            mutationDelete.mutate(shelfToDelete._id, {
                 onSuccess: () => {
                     revalidate();
                     toast.success('Xóa tủ kệ thành công.');
@@ -119,16 +140,17 @@ const ShelfPage = () => {
                 },
             },
             {
+                id: "assetId",
+                disablePadding: "none",
+                label: "Thuộc tài sản",
+                align: "left",
+                sxRow: { paddingRight: 3, maxWidth: 200 },
+                render: (row) => (row.assetId as Asset)?.name,
+            },
+            {
                 id: "description",
                 disablePadding: "none",
                 label: "Mô tả",
-                align: "left",
-                sxRow: { paddingRight: 3, maxWidth: 200 },
-            },
-            {
-                id: "note",
-                disablePadding: "none",
-                label: "Ghi chú",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
@@ -162,7 +184,7 @@ const ShelfPage = () => {
                                 { resource: "shelves", action: "manage" },
                                 { resource: "shelves", action: "delete" },
                             ]) &&
-                                <IconTrash
+                                <IconDoorExit
                                     size={20}
                                     stroke={1.5}
                                     onClick={() => handleOpenConfirmDialog(row)}
@@ -203,33 +225,24 @@ const ShelfPage = () => {
             toast.error("Vui lòng chọn dữ liệu để xóa");
             return;
         }
-        setOpenConfirmSoftDeleteMultiple(true);
+        setOpenConfirmDeleteMultiple(true);
     }, [checkedDelete]);
 
-    const handleConfirmSoftDeleteMultiple = useCallback(() => {
+    const handleConfirmDeleteMultiple = useCallback(() => {
         if (checkedDelete.length === 0) return;
-        mutationSoftDeleteMany.mutate(checkedDelete, {
+        mutationDeleteMany.mutate(checkedDelete, {
             onSuccess: () => {
                 revalidate();
                 toast.success("Xóa các mục đã chọn thành công.");
-                setOpenConfirmSoftDeleteMultiple(false);
+                setOpenConfirmDeleteMultiple(false);
                 setCheckedDelete([]);
             },
         });
     }, [checkedDelete]);
 
     const actionMenus = useMemo((): TMenuOption[] => {
-        return hasPermission([
-            { resource: "shelves", action: "manage" },
-            { resource: "shelves", action: "delete" },
-        ]) ? [
-            {
-                label: "Xóa các dữ liệu vào thùng rác",
-                icon: <IconTrashXFilled size={20} stroke={1.5} />,
-                onClick: handleDeleteMultiple,
-            },
-        ] : [];
-    }, [handleDeleteMultiple]);
+        return [];
+    }, []);
 
     const initialValues = useMemo((): TShelvesCreate => {
         if (selectedEdit) {
@@ -237,6 +250,7 @@ const ShelfPage = () => {
                 name: selectedEdit.name,
                 description: selectedEdit.description,
                 note: selectedEdit.note,
+                assetId: (selectedEdit.assetId as Asset)?._id || null,
             };
         }
 
@@ -244,15 +258,22 @@ const ShelfPage = () => {
             name: "",
             description: "",
             note: "",
+            assetId: null,
         };
     }, [selectedEdit]);
+
+    const filteredData = assetData?.data?.result?.filter(item => (item?.typeAssetId as TTypeAsset)?.name === "tủ kệ");
+    // loc
+    const handleAssetsFilterChange = (event) => {
+        setSelectedBelongAsset(event.target.value);
+    };
 
     return (
         <div>
             <IBreadcrumsCustom
                 profile="Quản lý tủ kệ"
                 mainProfile="Danh sách tủ kệ"
-                link="/quan-ly-danh-muc/tu-ke"
+                link="/tai-san-thu-vien/tu-ke"
             />
 
             {openAddEdit && (
@@ -262,6 +283,7 @@ const ShelfPage = () => {
                     initialValues={initialValues}
                     onSubmit={handleSubmit}
                     isEditMode={selectedEdit ? true : false}
+                    assetData={filteredData}
                 />
             )}
 
@@ -289,28 +311,16 @@ const ShelfPage = () => {
                                 </StyledButton>
                             </Box>
                         }
-
-                        <Box>
-                            {hasPermission([
-                                { resource: "shelves", action: "manage" },
-                                { resource: "shelves", action: "delete" },
-                            ]) &&
-                                <Link to="/quan-ly-danh-muc/danh-sach-xoa-tu-ke" style={{ textDecoration: 'none' }}>
-                                    <StyledButton
-                                        sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
-                                        size="small"
-                                        startIcon={<IconTrash stroke={2} />}
-                                        variant="contained"
-                                    >
-                                        Thùng rác
-                                    </StyledButton>
-                                </Link>
-                            }
-                        </Box>
                     </Box>
                 </Stack>
 
                 <ActionsForm actions={actionMenus} />
+
+                <FilterByItems
+                    selectedBelongAsset={selectedBelongAsset}
+                    handleBelongAssetFilterChange={handleAssetsFilterChange}
+                    assetData={filteredData}
+                />
 
                 <TableList
                     checked={checkedDelete}
@@ -324,22 +334,28 @@ const ShelfPage = () => {
                     pagination={data?.data?.meta}
                 />
 
-                <ConfirmDeleteDialog
-                    key={"delete"}
-                    open={openConfirmDialog}
-                    onClose={handleCloseConfirmDialog}
-                    onConfirm={handleConfirmDelete}
-                    title="Xác nhận xóa?"
-                    description={`Bạn có chắc chắn muốn xóa "${shelfToDelete?.name}" ?`}
-                />
-                <ConfirmDeleteDialog
-                    key={"deleteMultiple"}
-                    open={openConfirmSoftDeleteMultiple}
-                    onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
-                    onConfirm={handleConfirmSoftDeleteMultiple}
-                    title="Xác nhận xóa các mục đã chọn?"
-                    description={`Bạn có chắc chắn muốn xóa?`}
-                />
+                {
+                    openConfirmDialog &&
+                    <ConfirmDeleteDialog
+                        key={"removeStock"}
+                        open={openConfirmDialog}
+                        onClose={handleCloseConfirmDialog}
+                        onConfirm={handleConfirmDelete}
+                        title="Chuyển xuống kho?"
+                        description={`Bạn có chắc chắn muốn chuyển tủ kệ "${shelfToDelete?.name}" xuống kho?`}
+                    />
+                }
+                {
+                    openConfirmDeleteMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"removeStockMultiple"}
+                        open={openConfirmDeleteMultiple}
+                        onClose={() => setOpenConfirmDeleteMultiple(false)}
+                        onConfirm={handleConfirmDeleteMultiple}
+                        title="Xác nhận chuyển các mục đã chọn xuống kho?"
+                        description={`Bạn có chắc chắn muốn chuyển xuống kho?`}
+                    />
+                }
             </MainCard>
         </div>
     );

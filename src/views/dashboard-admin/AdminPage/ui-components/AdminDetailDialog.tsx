@@ -1,54 +1,19 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import { LoadingButton } from "@mui/lab";
 import {
-    Alert,
-    Button,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    FilledInput,
-    FormControl,
-    FormControlLabel,
-    FormHelperText,
-    Grid,
-    Icon,
-    IconButton,
-    Input,
-    InputAdornment,
-    InputBase,
-    LinearProgress,
-    MenuItem,
-    OutlinedInput,
-    Radio,
-    RadioGroup,
-    Rating,
-    Select,
-    Snackbar,
-    Step,
-    StepLabel,
-    Stepper,
-    TextField,
+    IconButton
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { useTheme } from "@mui/material/styles";
-import { LoadingButton } from "@mui/lab";
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
-import { useFormik } from "formik";
-import * as yup from "yup";
-import { stringify } from "querystring";
-import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
-import { Entity } from "draft-js";
-import { vi } from "date-fns/locale";
-import DatePicker from "react-datepicker";
-import { IconHttpDelete, IconSquareXFilled } from "@tabler/icons-react";
-import { User } from "../../../../interfaces/user";
-import { useUser } from "../../../../hooks/react-query/userData";
 import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 import { formatDate } from "../../../../helpers/formatDate";
+import { useUser } from "../../../../hooks/react-query/userData";
+import { User } from "../../../../interfaces/user";
 
 interface DialogProps {
     id?: string,

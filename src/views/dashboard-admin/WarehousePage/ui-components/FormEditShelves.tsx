@@ -20,6 +20,8 @@ import { useAddShelf } from "../../../../hooks/services/shelf/shelf-mutation";
 import { useReFetchShelf } from "../../../../hooks/services/shelf/shelf-query";
 import { toast } from "react-toastify";
 import FormAddEditShelf from "../../ShelfPage/ui-components/FormAddEditShelf";
+import { TTypeAsset } from "../../../../types/models/type-asset";
+import { useFetchAsset } from "../../../../hooks/react-query/assetData";
 
 type Props = {
     open: boolean;
@@ -81,6 +83,8 @@ const FormEditShelves: FC<Props> = ({
         () => formik,
         [formik]
     );
+    const { data: assetData } = useFetchAsset();
+    const filteredData = assetData?.data?.result?.filter(item => (item?.typeAssetId as TTypeAsset)?.name === "tủ kệ");
 
     const handleAddShelves = () => {
         setOpenAdd(true);
@@ -107,6 +111,8 @@ const FormEditShelves: FC<Props> = ({
         return {
             name: "",
             description: "",
+            note: "",
+            assetId: null,
         };
     }, []);
 
@@ -119,6 +125,7 @@ const FormEditShelves: FC<Props> = ({
                     initialValues={initialValuesShelves}
                     onSubmit={handleSubmitShelves}
                     isEditMode={false}
+                    assetData={filteredData}
                 />
             )}
 

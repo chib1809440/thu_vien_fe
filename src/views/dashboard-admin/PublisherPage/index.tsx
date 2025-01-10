@@ -396,22 +396,27 @@ const PublisherPage = () => {
                     pagination={data?.data?.meta}
                 />
 
-                <ConfirmDeleteDialog
-                    key={"delete"}
-                    open={openConfirmDialog}
-                    onClose={handleCloseConfirmDialog}
-                    onConfirm={handleConfirmDelete}
-                    title="Xác nhận xóa?"
-                    description={`Bạn có chắc chắn muốn xóa "${publisherToDelete?.name}" ?`}
-                />
-                <ConfirmDeleteDialog
-                    key={"deleteMultiple"}
-                    open={openConfirmSoftDeleteMultiple}
-                    onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
-                    onConfirm={handleConfirmSoftDeleteMultiple}
-                    title="Xác nhận xóa các mục đã chọn?"
-                    description={`Bạn có chắc chắn muốn xóa?`}
-                />
+                {openConfirmDialog &&
+                    <ConfirmDeleteDialog
+                        key={"delete"}
+                        open={openConfirmDialog}
+                        onClose={handleCloseConfirmDialog}
+                        onConfirm={handleConfirmDelete}
+                        title="Xác nhận xóa?"
+                        description={`Bạn có chắc chắn muốn xóa "${publisherToDelete?.name}" ?`}
+                    />
+                }
+
+                {openConfirmSoftDeleteMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"deleteMultiple"}
+                        open={openConfirmSoftDeleteMultiple}
+                        onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
+                        onConfirm={handleConfirmSoftDeleteMultiple}
+                        title="Xác nhận xóa các mục đã chọn?"
+                        description={`Bạn có chắc chắn muốn xóa?`}
+                    />
+                }
             </MainCard>
         </div>
     );

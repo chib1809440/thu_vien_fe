@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
-import MainCard from '../../../ui-component/cards/MainCard';
+import { useTheme } from '@mui/material';
 import { Box, Stack } from '@mui/system';
-import { CsFlexRowBetween } from '../../../components/default/flex';
-import StyledButton from '../../../components/default/button/StyledButton';
 import { IconPlus, IconTrash } from '@tabler/icons';
-import TableAssetList from './ui-components/TableAssetList';
+import { IconTransferIn } from '@tabler/icons-react';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { HeadCell } from '../../../components/custom/table/type';
+import StyledButton from '../../../components/default/button/StyledButton';
+import { CsFlexRowBetween } from '../../../components/default/flex';
 import { Asset } from '../../../interfaces/asset';
-import { Button, useTheme } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import IBreadcrumsCustom from '../../../ui-component/breadcrums';
+import MainCard from '../../../ui-component/cards/MainCard';
+import TableAssetList from './ui-components/TableAssetList';
+
 const headCells: HeadCell[] = [
     {
         id: 'asset_name',
@@ -17,35 +19,42 @@ const headCells: HeadCell[] = [
         disablePadding: true,
         label: 'Tên tài sản',
     },
+
     {
-        id: 'asset_quantity_used',
+        id: 'typeAssetId',
         numeric: true,
         disablePadding: true,
-        label: 'Số lượng sử dụng',
+        label: 'Phân loại',
     },
     {
-        id: 'asset_quantity_in_stock',
+        id: 'status',
         numeric: true,
         disablePadding: true,
-        label: 'Số lượng ở kho',
+        label: 'Trạng thái',
     },
     {
-        id: 'asset_quantity_in_stock_liquidation',
+        id: 'quantityUsed',
         numeric: true,
         disablePadding: true,
-        label: 'Số lượng thanh lý',
+        label: 'SL sử dụng',
     },
     {
-        id: 'asset_quantity_of_damage',
+        id: 'quantityWarehouse',
         numeric: true,
         disablePadding: true,
-        label: 'Số lượng hư hỏng',
+        label: 'SL trong kho',
     },
     {
-        id: 'asset_quantity_total',
+        id: 'quantityLiquidation',
         numeric: true,
         disablePadding: true,
-        label: 'Số lượng tổng',
+        label: 'SL đã thanh lý',
+    },
+    {
+        id: 'quantityTotal',
+        numeric: true,
+        disablePadding: true,
+        label: 'SL tổng',
     },
     {
         id: 'action',
@@ -56,20 +65,20 @@ const headCells: HeadCell[] = [
 ];
 
 export default function AssetPage() {
-
     const [isOpenAddDilog, setIsOpenAddDialog] = useState<boolean>(false);
     const [selected, setSelected] = useState<number[]>([]);
     const theme = useTheme()
     const navigate = useNavigate();
     const handleClickNavigateTrash = () => {
         navigate('/tai-san-thu-vien/thung-rac');
-    };
+    };   
+
     return (
         <>
             <IBreadcrumsCustom
                 profile="Quản lý tài sản"
                 mainProfile="Danh sách tài sản"
-                link="/tai-san-thu-vien"
+                link="/tai-san-thu-vien/danh-sach"
             />
             <MainCard>
                 <Stack spacing={2}>
@@ -84,7 +93,23 @@ export default function AssetPage() {
                             >
                                 Thêm tài sản
                             </StyledButton>
-                            <StyledButton
+                            <Link to="/quan-ly-nhap-kho/phieu-nhap-tai-san" style={{ textDecoration: 'none' }}>
+                                <StyledButton
+                                    sx={{
+                                        background: "#a36e21", color: "white",
+                                        //@ts-ignore
+                                        marginLeft: { xs: 0, sm: 0, md: "10px" },
+                                        //@ts-ignore
+                                        marginTop: { xs: 1, sm: 1, md: 0 }
+                                    }}
+                                    size="small"
+                                    startIcon={<IconTransferIn stroke={2} />}
+                                    variant="contained"
+                                >
+                                    Quản lý nhập tài sản
+                                </StyledButton>
+                            </Link>
+                            {/* <StyledButton
                                 sx={{
                                     background: "#de524a", color: "white",
                                     //@ts-ignore
@@ -98,7 +123,7 @@ export default function AssetPage() {
                                 onClick={() => handleClickNavigateTrash()}
                             >
                                 Thùng rác
-                            </StyledButton>
+                            </StyledButton> */}
                         </Box>
 
                     </CsFlexRowBetween>

@@ -283,41 +283,49 @@ const MaterialDeleteListPage = () => {
                     pagination={data?.data?.meta}
                 />
 
-                <ConfirmDeleteDialog
-                    key={"delete"}
-                    open={openConfirmDialog}
-                    onClose={handleCloseConfirmDialog}
-                    onConfirm={handleConfirmDelete}
-                    title="Xác nhận xóa?"
-                    description={`Bạn có chắc chắn muốn xóa "${materialToDelete?.name}" ?`}
-                />
+                {openConfirmDialog &&
+                    <ConfirmDeleteDialog
+                        key={"delete"}
+                        open={openConfirmDialog}
+                        onClose={handleCloseConfirmDialog}
+                        onConfirm={handleConfirmDelete}
+                        title="Xác nhận xóa?"
+                        description={`Bạn có chắc chắn muốn xóa "${materialToDelete?.name}" ?`}
+                    />
+                }
 
-                <ConfirmDeleteDialog
-                    key={"deleteMultiple"}
-                    open={openConfirmDeleteMultiple}
-                    onClose={() => setOpenConfirmDeleteMultiple(false)}
-                    onConfirm={handleConfirmDeleteMultiple}
-                    title="Xác nhận xóa các mục đã chọn?"
-                    description={`Bạn có chắc chắn muốn xóa?`}
-                />
+                {openConfirmDeleteMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"deleteMultiple"}
+                        open={openConfirmDeleteMultiple}
+                        onClose={() => setOpenConfirmDeleteMultiple(false)}
+                        onConfirm={handleConfirmDeleteMultiple}
+                        title="Xác nhận xóa các mục đã chọn?"
+                        description={`Bạn có chắc chắn muốn xóa?`}
+                    />
+                }
 
-                <ConfirmDeleteDialog
-                    key={"restore"}
-                    open={openConfirmRestoreDialog}
-                    onClose={handleCloseConfirmRestoreDialog}
-                    onConfirm={handleConfirmRestore}
-                    title="Xác nhận khôi phục?"
-                    description={`Bạn có chắc chắn muốn khôi phục nhà sản xuất "${materialToRestore?.name}"?`}
-                />
+                {openConfirmRestoreDialog &&
+                    <ConfirmDeleteDialog
+                        key={"restore"}
+                        open={openConfirmRestoreDialog}
+                        onClose={handleCloseConfirmRestoreDialog}
+                        onConfirm={handleConfirmRestore}
+                        title="Xác nhận khôi phục?"
+                        description={`Bạn có chắc chắn muốn khôi phục dạng học liệu "${materialToRestore?.name}"?`}
+                    />
+                }
 
-                <ConfirmDeleteDialog
-                    key={"restoreMultiple"}
-                    open={openConfirmRestoreMultiple}
-                    onClose={() => setOpenConfirmRestoreMultiple(false)}
-                    onConfirm={handleConfirmRestoreMultiple}
-                    title="Xác nhận khôi phục các mục đã chọn?"
-                    description={`Bạn có chắc chắn muốn khôi phục các mục đã chọn?`}
-                />
+                {openConfirmRestoreMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"restoreMultiple"}
+                        open={openConfirmRestoreMultiple}
+                        onClose={() => setOpenConfirmRestoreMultiple(false)}
+                        onConfirm={handleConfirmRestoreMultiple}
+                        title="Xác nhận khôi phục các mục đã chọn?"
+                        description={`Bạn có chắc chắn muốn khôi phục các mục đã chọn?`}
+                    />
+                }
 
             </MainCard>
         </div>

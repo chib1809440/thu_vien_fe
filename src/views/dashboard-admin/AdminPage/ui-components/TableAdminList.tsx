@@ -1,43 +1,36 @@
-import { FormControl, MenuItem, Box, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme, CircularProgress, Alert, IconButton, Grid } from "@mui/material"
-import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconEye, IconPencil, IconTrash } from "@tabler/icons-react";
-import { useEffect, useMemo, useState } from "react";
+import { Lock, LockOpen } from "@mui/icons-material";
+import { Alert, Box, FormControl, Grid, MenuItem, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme } from "@mui/material";
 import Checkbox from '@mui/material/Checkbox';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
+import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconEye, IconPencil, IconTrash } from "@tabler/icons-react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { toast } from "react-toastify";
-import DeleteIcon from '@mui/icons-material/Delete';
-import CloseIcon from '@mui/icons-material/Close';
-import { filterBreakpointKeys } from "@mui/system/Unstable_Grid/traverseBreakpoints";
-import { DataType, HeadCell, Order } from "../../../../components/custom/table/type";
-import { EntityResponse } from "../../../../interfaces/entityResponse";
-import { User } from "../../../../interfaces/user";
-import useDebounce, { searchDelay } from "../../../../hooks/useDebounce";
-import { useDeleteUserSelected, useSoftDeleteUser, useUserList } from "../../../../hooks/react-query/userData";
-import { useRoleBySuperAdminList } from "../../../../hooks/react-query/roleData";
-import { SearchAndFilter } from "../../../../components/custom/table/TableSearchAndFilter";
-import CustomInput from "../../../../components/default/input/CustomInput";
-import { EnhancedTableHead } from "../../../../components/custom/table/TableHead";
-import { StyledTableCell, StyledTableRow } from "../../../../components/custom/table-list/style";
-import { formatDate } from "../../../../helpers/formatDate";
-import GradientCircularProgressLoading from "../../../../components/default/loading/GradientCircularProgressLoading/GradientCircularProgressLoading";
-import { CsFlexRowBetween } from "../../../../components/default/flex";
-import UserDialog from "../../../../components/default/dialog/UserDialog";
-import AlertConfirmDialog from "../../../../components/default/alert/confirmAlertDialog";
-import AdminAccountDialog from "../../../../components/default/dialog/AdminAccountDialog";
-import { TLibrary } from "../../../../types/models/library.type";
-import AdminDetailDialog from "./AdminDetailDialog";
-import AccountDetailDialog from "../../../../components/default/dialog/AccountDetailPage";
-import { Role } from "../../../../interfaces/role";
-import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
-import { getLabelFromOptions } from "../../../../utils/object";
-import { statusRole } from "../../../../utils/constants.utils";
 import { activeUser, blockUser } from "../../../../_apis/user.api";
-import { Lock, LockOpen } from "@mui/icons-material";
-import usePermission from "../../../../utils/hasPermission";
+import { StyledTableCell, StyledTableRow } from "../../../../components/custom/table-list/style";
+import { EnhancedTableHead } from "../../../../components/custom/table/TableHead";
+import { SearchAndFilter } from "../../../../components/custom/table/TableSearchAndFilter";
+import { DataType, HeadCell, Order } from "../../../../components/custom/table/type";
+import AlertConfirmDialog from "../../../../components/default/alert/confirmAlertDialog";
+import AccountDetailDialog from "../../../../components/default/dialog/AccountDetailPage";
+import AdminAccountDialog from "../../../../components/default/dialog/AdminAccountDialog";
+import { CsFlexRowBetween } from "../../../../components/default/flex";
+import CustomInput from "../../../../components/default/input/CustomInput";
+import GradientCircularProgressLoading from "../../../../components/default/loading/GradientCircularProgressLoading/GradientCircularProgressLoading";
 import { useAuth } from "../../../../contexts/JWTContext";
+import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
+import { useRoleBySuperAdminList } from "../../../../hooks/react-query/roleData";
+import { useDeleteUserSelected, useSoftDeleteUser, useUserList } from "../../../../hooks/react-query/userData";
+import useDebounce, { searchDelay } from "../../../../hooks/useDebounce";
+import { EntityResponse } from "../../../../interfaces/entityResponse";
+import { Role } from "../../../../interfaces/role";
+import { User } from "../../../../interfaces/user";
+import { TLibrary } from "../../../../types/models/library.type";
+import { statusRole } from "../../../../utils/constants.utils";
+import usePermission from "../../../../utils/hasPermission";
+import { getLabelFromOptions } from "../../../../utils/object";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -396,7 +389,7 @@ function TableAdminList<T extends DataType>({
                                                                         }}>
                                                                             <IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} />
                                                                             <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
-                                                                            <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
+                                                                            {/* <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} /> */}
                                                                             {
                                                                                 hasPermission([
                                                                                     { resource: "all", action: "manage" },

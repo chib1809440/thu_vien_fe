@@ -281,23 +281,27 @@ const LibMaterialPage = () => {
                     pagination={data?.data?.meta}
                 />
 
-                <ConfirmDeleteDialog
-                    key={"pullLink"}
-                    open={openConfirmPullLink}
-                    onClose={handleCloseConfirmRestoreDialog}
-                    onConfirm={handleConfirmPullLink}
-                    title="Xác nhận liên thông?"
-                    description={`Bạn có chắc chắn muốn liên thông mục "${materialPullLink?.name}"?`}
-                />
+                {openConfirmPullLink &&
+                    <ConfirmDeleteDialog
+                        key={"pullLink"}
+                        open={openConfirmPullLink}
+                        onClose={handleCloseConfirmRestoreDialog}
+                        onConfirm={handleConfirmPullLink}
+                        title="Xác nhận liên thông?"
+                        description={`Bạn có chắc chắn muốn liên thông mục "${materialPullLink?.name}"?`}
+                    />
+                }
 
-                <ConfirmDeleteDialog
-                    key={"pullLinkMultiple"}
-                    open={openConfirmPullLinkMultiple}
-                    onClose={() => setOpenConfirmPullLinkMultiple(false)}
-                    onConfirm={handleConfirmPullLinkMultiple}
-                    title="Xác nhận liên thông các mục đã chọn?"
-                    description={`Bạn có chắc chắn muốn liên thông các mục đã chọn?`}
-                />
+                {openConfirmPullLinkMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"pullLinkMultiple"}
+                        open={openConfirmPullLinkMultiple}
+                        onClose={() => setOpenConfirmPullLinkMultiple(false)}
+                        onConfirm={handleConfirmPullLinkMultiple}
+                        title="Xác nhận liên thông các mục đã chọn?"
+                        description={`Bạn có chắc chắn muốn liên thông các mục đã chọn?`}
+                    />
+                }
             </MainCard>
         </div>
     );

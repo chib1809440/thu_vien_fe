@@ -1,11 +1,15 @@
+import { Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { IconPencil } from "@tabler/icons";
-import { IconFileExcel } from "@tabler/icons-react";
+import { IconTransferIn } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
-import { useAddLiquidation } from "../../../hooks/services/liquidation/liquidation-mutation";
+import StyledButton from "../../../components/default/button/StyledButton";
+import { CsFlexRowBetween } from "../../../components/default/flex";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import {
     useUpdateShelvesQuantity,
     useUpdateStockQuantity
@@ -22,11 +26,9 @@ import { TPublications, TPublicationsCreate } from "../../../types/models/public
 import { TShelves } from "../../../types/models/shelves";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
+import usePermission from "../../../utils/hasPermission";
 import { parserParams } from "../../../utils/object";
 import FormEditWarehouse from "./ui-components/FormEditWarehouse";
-import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
-import usePermission from "../../../utils/hasPermission";
-import { Typography } from "@mui/material";
 
 const StockProductPage = () => {
     const queryString = useQueryString();
@@ -63,7 +65,7 @@ const StockProductPage = () => {
     const [checkedDelete, setCheckedDelete] = useState<string[]>([]);
     const mutationUpdateShelvesQty = useUpdateShelvesQuantity();
     const mutationUpdateStockQty = useUpdateStockQuantity();
-    const mutationCreateLiquidation = useAddLiquidation();
+    // const mutationCreateLiquidation = useAddLiquidation();
 
     const handleEditWarehouse = (row: TPublications) => {
         setSelectedEdit(row);
@@ -113,41 +115,42 @@ const StockProductPage = () => {
                     }
                 );
             }
-        } else if (values.statusWarehouse === "thanh lý") {
-            mutationCreateLiquidation.mutate(
-                {
-                    position: payload.position as TPositionLiquidation,
-                    publicationId: payload.id,
-                    quantity: payload.quantityLiquidation,
-                    status: "thanh lý",
-                    reason: payload.reason
-                },
-                {
-                    onSuccess: () => {
-                        revalidate();
-                        toast.success("Chuyển số lượng sách thanh lý thành công");
-                        handleClose();
-                    },
-                }
-            );
-        } else if (values.statusWarehouse === "hư hỏng") {
-            mutationCreateLiquidation.mutate(
-                {
-                    position: payload.position as TPositionLiquidation,
-                    publicationId: payload.id,
-                    quantity: payload.quantityLiquidation,
-                    status: "hư hỏng",
-                    reason: payload.reason
-                },
-                {
-                    onSuccess: () => {
-                        revalidate();
-                        toast.success("Chuyển số lượng sách hư hỏng thành công");
-                        handleClose();
-                    },
-                }
-            );
         }
+        // else if (values.statusWarehouse === "thanh lý") {
+        //     mutationCreateLiquidation.mutate(
+        //         {
+        //             position: payload.position as TPositionLiquidation,
+        //             publicationId: payload.id,
+        //             quantity: payload.quantityLiquidation,
+        //             status: "thanh lý",
+        //             reason: payload.reason
+        //         },
+        //         {
+        //             onSuccess: () => {
+        //                 revalidate();
+        //                 toast.success("Chuyển số lượng sách thanh lý thành công");
+        //                 handleClose();
+        //             },
+        //         }
+        //     );
+        // } else if (values.statusWarehouse === "hư hỏng") {
+        //     mutationCreateLiquidation.mutate(
+        //         {
+        //             position: payload.position as TPositionLiquidation,
+        //             publicationId: payload.id,
+        //             quantity: payload.quantityLiquidation,
+        //             status: "hư hỏng",
+        //             reason: payload.reason
+        //         },
+        //         {
+        //             onSuccess: () => {
+        //                 revalidate();
+        //                 toast.success("Chuyển số lượng sách hư hỏng thành công");
+        //                 handleClose();
+        //             },
+        //         }
+        //     );
+        // }
         return;
     };
 
@@ -201,12 +204,16 @@ const StockProductPage = () => {
                 sxRow: { paddingRight: 3, maxWidth: 200 },
             },
             {
-                id: "quantityLiquidationDamaged",
+                id: "quantityLiquidation",
                 disablePadding: "none",
-                label: "SL hư hỏng - thanh lý",
-                align: "left",
+                label: "SL thanh lý",
+                align: "center",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
-                render: (row) => row.quantityLiquidation + row.quantityDamaged,
+                render: (row) => {
+                    return (
+                        <Typography>{row.quantityLiquidation ?? 0}</Typography>
+                    )
+                },
             },
             {
                 id: "totalQuantity",
@@ -233,9 +240,6 @@ const StockProductPage = () => {
                             {
                                 hasPermission([
                                     { resource: "publications", action: "manage" },
-                                    { resource: "publications", action: "create" },
-                                    { resource: "publications", action: "update" },
-                                    { resource: "publications", action: "delete" },
                                 ]) &&
                                 <IconPencil
                                     onClick={() => handleEditWarehouse(row)}
@@ -279,7 +283,7 @@ const StockProductPage = () => {
     }, []);
 
     const initialValues = useMemo((): TPublicationsCreate => {
-        if (selectedEdit) {            
+        if (selectedEdit) {
             return {
                 name: selectedEdit.name,
                 quantity: selectedEdit.quantity,
@@ -307,9 +311,9 @@ const StockProductPage = () => {
     return (
         <div>
             <IBreadcrumsCustom
-                profile="Quản lý kho"
-                mainProfile="Danh sách kho"
-                link="/quan-ly-kho/kho"
+                profile="Quản lý kho ấn phẩm"
+                mainProfile="Danh sách kho ấn phẩm"
+                link="/quan-ly-kho/kho-an-pham"
             />
 
             {openAddEdit && (
@@ -324,6 +328,33 @@ const StockProductPage = () => {
             )}
 
             <MainCard>
+                <Stack
+                    spacing={2}
+                >
+                    <CsFlexRowBetween>
+                        <Box sx={{ ml: { xs: 0, sm: 0, md: 3 }, mb: { xs: 0, sm: 0, md: 2 } }}>
+                            <Link to="/quan-ly-nhap-kho/phieu-nhap-an-pham" style={{ textDecoration: 'none' }}>
+                                <StyledButton
+                                    sx={{
+                                        background: "#a36e21", color: "white",
+                                        //@ts-ignore
+                                        marginLeft: { xs: 0, sm: 0, md: "10px" },
+                                        //@ts-ignore
+                                        marginTop: { xs: 1, sm: 1, md: 0 }
+                                    }}
+                                    size="small"
+                                    startIcon={<IconTransferIn stroke={2} />}
+                                    variant="contained"
+                                >
+                                    Quản lý nhập ấn phẩm
+                                </StyledButton>
+                            </Link>
+                        </Box>
+
+                    </CsFlexRowBetween>
+
+                </Stack>
+
                 <ActionsForm
                     actions={actionMenus}
                     barcode={true}

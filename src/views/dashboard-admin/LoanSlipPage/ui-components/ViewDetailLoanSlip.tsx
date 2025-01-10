@@ -1,37 +1,16 @@
-import { Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, Table, TableBody, TableContainer, TableHead, TextField, Typography } from "@mui/material";
-import { Form, FormikProvider, useFormik } from "formik";
-import { FC, useEffect, useMemo, useRef, useState } from "react";
-import * as yup from "yup";
-import InputForm from "../../../../components/custom/form/InputForm";
-import SwitchForm from "../../../../components/custom/form/SwitchForm";
-import { CreatePublication, TLoanSlip, TLoanSlipCreate } from "../../../../types/models/loanSlip.type";
-import DatePicker from "react-datepicker";
-import { Label } from "@mui/icons-material";
-import { vi } from "date-fns/locale";
-import useDebounce, { searchDelay } from "../../../../hooks/useDebounce";
-import { getUserByBarCode } from "../../../../_apis/user.api";
-import { EntityResponse } from "../../../../interfaces/entityResponse";
-import { User } from "../../../../interfaces/user";
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import { styled } from '@mui/material/styles';
-import TableRow from '@mui/material/TableRow';
+import { Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Table, TableBody, TableContainer, TableHead, Typography } from "@mui/material";
 import Paper from '@mui/material/Paper';
-import { TPublications } from "../../../../types/models/publications.type";
-import { positions } from "@mui/system";
-import publicationsService from "../../../../_apis/services/publications.service";
-import useDebounceArray from "../../../../hooks/useDebounceArray";
-import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
-import { IconCirclePlusFilled } from "@tabler/icons-react";
-import PrintLoanSlip from "./PrintLoanSlip";
-import { useReactToPrint } from "react-to-print";
-import { toast } from "react-toastify";
-import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
-import { Role } from "../../../../interfaces/role";
-import { useAuth } from "../../../../contexts/JWTContext";
-import { formatDate } from "../../../../helpers/formatDate";
+import { styled } from '@mui/material/styles';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import { FC, useMemo } from "react";
 import Barcode from "react-barcode";
+import * as yup from "yup";
+import { useAuth } from "../../../../contexts/JWTContext";
+import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
+import { formatDate } from "../../../../helpers/formatDate";
 import { TLibrary } from "../../../../types/models/library.type";
+import { TLoanSlip } from "../../../../types/models/loanSlip.type";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: theme.palette.common.black,

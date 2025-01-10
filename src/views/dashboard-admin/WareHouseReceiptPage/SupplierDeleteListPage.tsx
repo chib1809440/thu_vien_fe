@@ -1,4 +1,3 @@
-import { Switch } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconArrowBack, IconArrowBackUp, IconTrash } from "@tabler/icons";
 import { IconRestore, IconTrashXFilled } from "@tabler/icons-react";
@@ -10,7 +9,7 @@ import TableList from "../../../components/custom/table-list/TableList";
 import StyledButton from "../../../components/default/button/StyledButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
 import { CsFlexRowBetween } from "../../../components/default/flex";
-import { useDeleteSupplier, useDeleteManySupplier, useRestoreManySupplier } from "../../../hooks/services/supplier/supplier-mutation";
+import { useDeleteManySupplier, useDeleteSupplier, useRestoreManySupplier } from "../../../hooks/services/supplier/supplier-mutation";
 import { useFetchSupplierDeleteList, useReFetchSupplierDeleteList } from "../../../hooks/services/supplier/supplier-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { TColumn, TMenuOption } from "../../../types/common/table";
@@ -271,41 +270,49 @@ const SupplierDeleteListPage = () => {
                     pagination={data?.data?.meta}
                 />
 
-                <ConfirmDeleteDialog
-                    key={"delete"}
-                    open={openConfirmDialog}
-                    onClose={handleCloseConfirmDialog}
-                    onConfirm={handleConfirmDelete}
-                    title="Xác nhận xóa?"
-                    description={`Bạn có chắc chắn muốn xóa "${supplierToDelete?.name}" ?`}
-                />
+                {openConfirmDialog &&
+                    <ConfirmDeleteDialog
+                        key={"delete"}
+                        open={openConfirmDialog}
+                        onClose={handleCloseConfirmDialog}
+                        onConfirm={handleConfirmDelete}
+                        title="Xác nhận xóa?"
+                        description={`Bạn có chắc chắn muốn xóa "${supplierToDelete?.name}" ?`}
+                    />
+                }
 
-                <ConfirmDeleteDialog
-                    key={"deleteMultiple"}
-                    open={openConfirmDeleteMultiple}
-                    onClose={() => setOpenConfirmDeleteMultiple(false)}
-                    onConfirm={handleConfirmDeleteMultiple}
-                    title="Xác nhận xóa các mục đã chọn?"
-                    description={`Bạn có chắc chắn muốn xóa?`}
-                />
+                {openConfirmDeleteMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"deleteMultiple"}
+                        open={openConfirmDeleteMultiple}
+                        onClose={() => setOpenConfirmDeleteMultiple(false)}
+                        onConfirm={handleConfirmDeleteMultiple}
+                        title="Xác nhận xóa các mục đã chọn?"
+                        description={`Bạn có chắc chắn muốn xóa?`}
+                    />
+                }
 
-                <ConfirmDeleteDialog
-                    key={"restore"}
-                    open={openConfirmRestoreDialog}
-                    onClose={handleCloseConfirmRestoreDialog}
-                    onConfirm={handleConfirmRestore}
-                    title="Xác nhận khôi phục?"
-                    description={`Bạn có chắc chắn muốn khôi phục nhà cung cấp "${supplierToRestore?.name}"?`}
-                />
+                {openConfirmRestoreDialog &&
+                    <ConfirmDeleteDialog
+                        key={"restore"}
+                        open={openConfirmRestoreDialog}
+                        onClose={handleCloseConfirmRestoreDialog}
+                        onConfirm={handleConfirmRestore}
+                        title="Xác nhận khôi phục?"
+                        description={`Bạn có chắc chắn muốn khôi phục nhà cung cấp "${supplierToRestore?.name}"?`}
+                    />
+                }
 
-                <ConfirmDeleteDialog
-                    key={"restoreMultiple"}
-                    open={openConfirmRestoreMultiple}
-                    onClose={() => setOpenConfirmRestoreMultiple(false)}
-                    onConfirm={handleConfirmRestoreMultiple}
-                    title="Xác nhận khôi phục các mục đã chọn?"
-                    description={`Bạn có chắc chắn muốn khôi phục các mục đã chọn?`}
-                />
+                {openConfirmRestoreMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"restoreMultiple"}
+                        open={openConfirmRestoreMultiple}
+                        onClose={() => setOpenConfirmRestoreMultiple(false)}
+                        onConfirm={handleConfirmRestoreMultiple}
+                        title="Xác nhận khôi phục các mục đã chọn?"
+                        description={`Bạn có chắc chắn muốn khôi phục các mục đã chọn?`}
+                    />
+                }
 
             </MainCard>
         </div>

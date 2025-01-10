@@ -529,11 +529,8 @@ const FormAddEditLoanSlip: FC<Props> = ({
 
         return _user?.data?.libraryDetail;
     }, [user]);
-    // console.log("sss", loanSlip.libraryId);
-    // console.log("sss", user);
     const isMd = useMediaQuery('(min-width: 900px)');
-    console.log("ádas trả về cái gì",loanSlip);
-    
+
     return (
         <FormikProvider value={formik}>
             <Dialog
@@ -1209,6 +1206,12 @@ const FormAddEditLoanSlip: FC<Props> = ({
                         </Button>
                         {
 
+                            isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button style={{ background: '#de524a', color: 'white' }} variant="contained"  >
+                                Báo mất
+                            </Button>
+                        }
+                        {
+
                             loanSlip && (libraryId === initialValues.libraryId) && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white' }} variant="contained"  >
                                 Trả sách
                             </Button>
@@ -1258,13 +1261,16 @@ const FormAddEditLoanSlip: FC<Props> = ({
                             </Button>
                         }
                     </Box>
-                    <AlertConfirmDialog
-                        openConfirm={openDialog}
-                        handleOpenConfirmDialog={handleCloseDialog}
-                        onHandleConfirm={handleConfirmAction}
-                        title="Vui lòng xác nhận"
-                        message={getConfirmationMessage()} // Truyền thông điệp động vào AlertDialog
-                    />
+                    {
+                        openDialog &&
+                        <AlertConfirmDialog
+                            openConfirm={openDialog}
+                            handleOpenConfirmDialog={handleCloseDialog}
+                            onHandleConfirm={handleConfirmAction}
+                            title="Vui lòng xác nhận"
+                            message={getConfirmationMessage()} // Truyền thông điệp động vào AlertDialog
+                        />
+                    }
                 </DialogActions>
             </Dialog>
         </FormikProvider >

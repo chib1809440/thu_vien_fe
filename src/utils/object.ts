@@ -21,3 +21,13 @@ export const getLabelFromOptions = (options, value) => {
     const foundOption = options.find(option => option.value === value);
     return foundOption ? foundOption.label : value;
 };
+
+export const formatPrice = (price: number, locale: string = 'vi-VN', currency: string = 'VND'): string => {
+    if (isNaN(price)) return '0 ₫';
+    return new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    }).format(price);
+};

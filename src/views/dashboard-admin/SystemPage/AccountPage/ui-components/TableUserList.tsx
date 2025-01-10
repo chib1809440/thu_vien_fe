@@ -1,44 +1,41 @@
-import { FormControl, MenuItem, Box, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme, CircularProgress, Alert, IconButton, Grid } from "@mui/material"
-import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconPencil, IconTrash } from "@tabler/icons-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Lock, LockOpen, LockReset } from "@mui/icons-material";
+import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, OutlinedInput, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme } from "@mui/material";
 import Checkbox from '@mui/material/Checkbox';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
+import { IconEye } from "@tabler/icons";
+import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconPencil } from "@tabler/icons-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
-import DeleteIcon from '@mui/icons-material/Delete';
-import CloseIcon from '@mui/icons-material/Close';
-import { DataType, HeadCell, Order } from "../../../../../components/custom/table/type";
-import { EntityResponse } from "../../../../../interfaces/entityResponse";
-import { User } from "../../../../../interfaces/user";
-import useDebounce, { searchDelay } from "../../../../../hooks/useDebounce";
-import { useDeleteUser, useDeleteUserSelected, useSoftDeleteUser, useUserList } from "../../../../../hooks/react-query/userData";
-import { SearchAndFilter } from "../../../../../components/custom/table/TableSearchAndFilter";
+import { activeUser, blockUser, importExcelUser } from "../../../../../_apis/user.api";
 import { EnhancedTableHead } from "../../../../../components/custom/table/TableHead";
+import { SearchAndFilter } from "../../../../../components/custom/table/TableSearchAndFilter";
 import { StyledTableCell, StyledTableRow } from "../../../../../components/custom/table/style";
-import GradientCircularProgressLoading from "../../../../../components/default/loading/GradientCircularProgressLoading/GradientCircularProgressLoading";
+import { DataType, HeadCell, Order } from "../../../../../components/custom/table/type";
+import AlertConfirmDialog from "../../../../../components/default/alert/confirmAlertDialog";
+import AccountDetailDialog from "../../../../../components/default/dialog/AccountDetailPage";
+import UserDialog from "../../../../../components/default/dialog/UserDialog";
 import { CsFlexRowBetween } from "../../../../../components/default/flex";
 import CustomInput from "../../../../../components/default/input/CustomInput";
-import AlertConfirmDialog from "../../../../../components/default/alert/confirmAlertDialog";
-import UserDialog from "../../../../../components/default/dialog/UserDialog";
+import GradientCircularProgressLoading from "../../../../../components/default/loading/GradientCircularProgressLoading/GradientCircularProgressLoading";
+import { useAuth } from "../../../../../contexts/JWTContext";
+import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
 import { formatDate } from "../../../../../helpers/formatDate";
 import { useRoleList } from "../../../../../hooks/react-query/roleData";
-import { filterBreakpointKeys } from "@mui/system/Unstable_Grid/traverseBreakpoints";
-import AccountDetailDialog from "../../../../../components/default/dialog/AccountDetailPage";
-import { IconEye } from "@tabler/icons";
+import { useDeleteUserSelected, useSoftDeleteUser, useUserList } from "../../../../../hooks/react-query/userData";
+import useDebounce, { searchDelay } from "../../../../../hooks/useDebounce";
+import { EntityResponse } from "../../../../../interfaces/entityResponse";
 import { Role } from "../../../../../interfaces/role";
-import { useReactToPrint } from "react-to-print";
-import PrintAccount from "../PrintAccount";
-import { getLabelFromOptions } from "../../../../../utils/object";
+import { ChangePasswordUserModel, User } from "../../../../../interfaces/user";
 import { statusRole } from "../../../../../utils/constants.utils";
-import { Lock, LockOpen } from "@mui/icons-material";
-import { activeUser, blockUser, importExcelUser } from "../../../../../_apis/user.api";
-import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
-import { useAuth } from "../../../../../contexts/JWTContext";
 import usePermission from "../../../../../utils/hasPermission";
-import DialogImportFile from "../../../PublicationsPage/ui-components/DialogImportFile ";
+import { getLabelFromOptions } from "../../../../../utils/object";
+import DialogImportFile from "../../../PublicationsPage/ui-components/DialogImportFile";
+import PrintAccount from "../PrintAccount";
+import FormChangePassword from "../../../../../layout/MainLayout/Header/ProfileSection/FormChangePassword";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -66,7 +63,8 @@ function TableUserList<T extends DataType>({
     const [rowsPerPage, setRowsPerPage] = useState<number>(Number(searchParams.get("limit")) || 10); // get rowsPerPage from URL or default to 10
     const [schools, setUsers] = useState<EntityResponse<User[]>>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isOpenUpdateDilog, setIsOpenUpdateDialog] = useState<boolean>(false);
+    const [isOpenUpdateDialog, setIsOpenUpdateDialog] = useState<boolean>(false);
+    const [isOpenResetPassDialog, setIsOpenResetPassDialog] = useState<boolean>(false);
     const [isOpenConfirmDialog, setIsOpenConfirmDialog] = useState(false);
     const [isOpenBlock, setIsOpenBlock] = useState(false);
     const [isOpenLibCard, setIsOpenLibCard] = useState(false);
@@ -172,9 +170,13 @@ function TableUserList<T extends DataType>({
     };
     const handleClickUpdate = (id: string) => {
         let user: User = users.data.result.find(x => x._id === id)
-        console.log(id);
         setUser(user)
         setIsOpenUpdateDialog(true)
+    }
+    const handleResetPass = (id: string) => {
+        let user: User = users.data.result.find(x => x._id === id)
+        setUser(user)
+        setIsOpenResetPassDialog(true)
     }
     const [user, setUser] = useState<User>();
     const pageCount = useMemo(() => {
@@ -337,7 +339,7 @@ function TableUserList<T extends DataType>({
             refetch();
             const duplicateBarcodeErrors = response?.data?.errors.filter(
                 (error) => error.error === "Username or email already exists"
-            );            
+            );
 
             if (duplicateBarcodeErrors.length > 0) {
                 const rows = duplicateBarcodeErrors.map(({ row }) => row);
@@ -374,12 +376,27 @@ function TableUserList<T extends DataType>({
         }
     };
 
+    const handleResetPasswordSubmit = (values: any) => {
+        console.log(values);
+
+    };
+
+    const initialValueResetPassword = useMemo((): ChangePasswordUserModel => {
+        if (user) {
+            return {
+                userId: user?._id,
+                newPassword: '',
+                confirmPassword: ''
+            };
+        }
+    }, [user]);
+
     return (
         <>
             {isOpenLibCard && <PrintAccount ref={componentRef} dataUsers={checkedUsers} />}
             <SearchAndFilter
-                onHandleDeleteSelectedItem={handleDeleteItemSelected}
-                actionDeleteSelectedItem={true}
+                // onHandleDeleteSelectedItem={handleDeleteItemSelected}
+                // actionDeleteSelectedItem={true}
                 contentSearch={contentSearch}
                 handleContentSearch={setContentSearch}
                 actionLibCardSelectedItem={handleOpenLibs}
@@ -387,7 +404,7 @@ function TableUserList<T extends DataType>({
                 actionImportFile={true}
                 onHandleImportFile={handleImportExcel}
                 actionDownLoadFile={true}
-                fileUrl={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/template-user.xlsx`}
+                fileUrl={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/mau_them_nhieu_tai_khoan.xlsx`}
             />
             <Grid container xs={12} sm={12} md={12} lg={12} gap={2} sx={{
                 display: "flex", mb: 1, flexWrap: "wrap",
@@ -494,7 +511,18 @@ function TableUserList<T extends DataType>({
                                                         <StyledTableCell padding="none" align="left" sx={{ paddingRight: 4 }}>{getLabelFromOptions(statusRole, (row?.roleId as Role)?.name)}</StyledTableCell>
                                                         {
                                                             (row?.roleId as Role)?.name === userRole ?
-                                                                <StyledTableCell padding="none" align="right" sx={{ paddingRight: 2 }}><IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} /></StyledTableCell>
+                                                                <StyledTableCell padding="none" align="center" sx={{ gap: 2 }}>
+                                                                    <Box sx={{
+                                                                        display: "flex",
+                                                                        justifyContent: "center",
+                                                                        alignItems: "center",
+                                                                        gap: 1
+                                                                    }}>
+
+                                                                        <IconEye onClick={() => handleClickDetail(row?._id)} size={22} stroke={1.5} />
+                                                                        <LockReset onClick={() => handleResetPass(row?._id)} />
+                                                                    </Box>
+                                                                </StyledTableCell>
                                                                 : row?.isActive ?
                                                                     (
                                                                         <StyledTableCell padding="none" align="center">
@@ -504,9 +532,10 @@ function TableUserList<T extends DataType>({
                                                                                 alignItems: "center",
                                                                                 gap: 1
                                                                             }}>
-                                                                                <IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} />
-                                                                                <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
-                                                                                <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
+                                                                                <IconEye onClick={() => handleClickDetail(row?._id)} size={22} stroke={1.5} />
+                                                                                <LockReset onClick={() => handleResetPass(row?._id)} />
+                                                                                <IconPencil onClick={() => handleClickUpdate(row?._id)} size={22} stroke={1.5} />
+                                                                                {/* <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} /> */}
                                                                                 {
                                                                                     hasPermission([
                                                                                         { resource: "all", action: "manage" },
@@ -625,12 +654,22 @@ function TableUserList<T extends DataType>({
             </Box>
 
             {
-                isOpenUpdateDilog && user && <UserDialog
+                isOpenUpdateDialog && user && <UserDialog
                     id={user._id}
                     title={"Cập nhật tài khoản"}
-                    open={isOpenUpdateDilog}
+                    open={isOpenUpdateDialog}
                     user={user}
                     handleOpen={setIsOpenUpdateDialog}
+                />
+            }
+            {
+                isOpenResetPassDialog && user &&
+                <FormChangePassword
+                    onClose={() => setIsOpenResetPassDialog(false)}
+                    open={isOpenResetPassDialog}
+                    onSubmit={handleResetPasswordSubmit}
+                    initialValues={initialValueResetPassword}
+                    isResetPass={true}
                 />
             }
             {

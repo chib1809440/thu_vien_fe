@@ -3,6 +3,7 @@ import { GridFilterListIcon } from "@mui/x-data-grid";
 import { FC, useState } from "react";
 import CustomInput from "../../../../components/default/input/CustomInput";
 import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
+import { TAsset } from "../../../../interfaces/asset";
 import { TApiMultipleRecords } from "../../../../types/api/api.type";
 import { TAuthor } from "../../../../types/models/author";
 import { TCategory } from "../../../../types/models/category";
@@ -29,6 +30,9 @@ type Props = {
     selectedTypeVoice?: number;
     handleTypeVoiceFilterChange?: (event: any) => void;
     typeVoiceData?: TApiMultipleRecords<TTypeVoice>;
+    selectedBelongAsset?: number;
+    handleBelongAssetFilterChange?: (event: any) => void;
+    assetData?: TAsset[];
 };
 
 const FilterByItems: FC<Props> = ({
@@ -50,6 +54,9 @@ const FilterByItems: FC<Props> = ({
     handleTypeVoiceFilterChange,
     typeOptions,
     typeVoiceData,
+    selectedBelongAsset,
+    handleBelongAssetFilterChange,
+    assetData,
 }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -62,7 +69,7 @@ const FilterByItems: FC<Props> = ({
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
-
+    
     return (
         <Grid
             container
@@ -366,6 +373,55 @@ const FilterByItems: FC<Props> = ({
                     >
                         <MenuItem value={0}>Tất cả loại voice</MenuItem>
                         {typeVoiceData?.data?.result?.map((item, index) => (
+                            <MenuItem key={index} value={item._id}>
+                                {capitalizeFirstLetter(item.name)}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </Grid>
+            )}
+            {assetData?.length > 0 && (
+                <Grid
+                    item
+                    xs={12}
+                    sm={12}
+                    md={4}
+                    lg={4}
+                    sx={{
+                        marginBottom: { xs: 0, sm: 0, md: 2, lg: 2 },
+                        display: { xs: "none", sm: "none", md: "flex" },
+                    }}
+                >
+                    <Select
+                        labelId="belong-select"
+                        label="Thuộc tài sản"
+                        value={selectedBelongAsset}
+                        onChange={handleBelongAssetFilterChange}
+                        input={<CustomInput size="small" label="Thuộc tài sản" />}
+                        MenuProps={{
+                            PaperProps: {
+                                sx: {
+                                    maxHeight: 200,
+                                    overflowY: 'auto',
+                                    '&::-webkit-scrollbar': {
+                                        width: '3px',
+                                    },
+                                    '&::-webkit-scrollbar-thumb': {
+                                        backgroundColor: '#888',
+                                        borderRadius: '10px',
+                                    },
+                                    '&::-webkit-scrollbar-thumb:hover': {
+                                        backgroundColor: '#555',
+                                    },
+                                    '&::-webkit-scrollbar-track': {
+                                        backgroundColor: '#f1f1f1',
+                                    },
+                                },
+                            },
+                        }}
+                    >
+                        <MenuItem value={0}>Tất cả tủ kệ</MenuItem>
+                        {assetData?.map((item, index) => (
                             <MenuItem key={index} value={item._id}>
                                 {capitalizeFirstLetter(item.name)}
                             </MenuItem>

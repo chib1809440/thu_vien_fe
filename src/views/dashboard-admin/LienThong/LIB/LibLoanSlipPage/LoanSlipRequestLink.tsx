@@ -271,9 +271,16 @@ const LoanSlipRequestLink = () => {
                                 <Box sx={{ mt: 0.5 }}>
                                     <Typography><strong>Danh sách ấn phẩm mượn:</strong></Typography>
                                     <ul style={{ margin: 0 }}>
-                                        {row?.publications.map((publication, idx) => (
+                                        {row?.publications.slice(0, 2).map((publication, idx) => (
                                             <li key={idx}>{capitalizeFirstLetter(publication?.name)} (SLM: {publication?.quantityLoan}, Đã trả: {publication?.quantityReturn ?? 0})</li>
                                         ))}
+                                        {row?.publications?.length > 2 && (
+                                            <Chip
+                                                label={`+${row?.publications?.length - 2} ấn phẩm khác`}
+                                                variant="outlined"
+                                                color="primary"
+                                            />
+                                        )}
                                     </ul>
                                 </Box>
                             )}
@@ -327,7 +334,7 @@ const LoanSlipRequestLink = () => {
             {
                 id: "isAgree",
                 disablePadding: "none",
-                label: "Duyệt",
+                label: "Quy trình thủ thư",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 200 },
                 render: (row) => {
@@ -335,10 +342,16 @@ const LoanSlipRequestLink = () => {
                         <Box
                         >
                             {
-                                row.isAgree === true ? (
+                                row?.status === "đang mượn" ? (
+                                    <Chip
+                                        style={{ color: 'white', background: '#204165' }}
+                                        label="Đã giao sách"
+                                        variant="filled"
+                                    />
+                                ) : row.isAgree && row.isReturn ? (
                                     <Chip
                                         style={{ color: 'white', background: '#096A5E' }}
-                                        label="Đã duyệt"
+                                        label="Đã nhận sách"
                                         variant="filled"
                                     />
                                 ) : row.status === "đã hủy" ? ( // Kiểm tra nếu status là 'đã hủy'
@@ -474,7 +487,7 @@ const LoanSlipRequestLink = () => {
             const worksheet = workbook.addWorksheet('Loan Slips');
 
             // Thêm hàng tiêu đề chính
-            worksheet.addRow(['Danh sách phiếu mượn']).font = { bold: true, size: 14 };
+            worksheet.addRow(['Danh sách trường liên thông mượn ấn phẩm']).font = { bold: true, size: 14 };
             worksheet.addRow([]); // Thêm hàng trống
 
             // Thêm hàng từ ngày đến ngày
@@ -610,12 +623,13 @@ const LoanSlipRequestLink = () => {
             });
 
             // Tạo file Excel và lưu
+            const formattedDate = currentDateTime.toLocaleDateString('vi-VN');
             workbook.xlsx.writeBuffer().then((buffer) => {
                 const blob = new Blob([buffer], { type: 'application/octet-stream' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'DanhsachphieumuonLT.xlsx'; // Tên file xuất
+                a.download = `Danhsach_TruongLT_MuonAnPham_${formattedDate}.xlsx`; // Tên file xuất
                 a.click();
                 URL.revokeObjectURL(url);
             });
@@ -655,10 +669,10 @@ const LoanSlipRequestLink = () => {
 
     const initialValues = useMemo((): TLoanSlipCreate => {
         if (selectedEdit) {
-               // Kiểm tra xem selectedEdit.libraryId có phải là đối tượng TLibrary không
-        const libraryId = typeof selectedEdit.libraryId === 'string' 
-        ? selectedEdit.libraryId // Nếu là chuỗi, sử dụng trực tiếp
-        : (selectedEdit.libraryId as TLibrary)._id; // Nếu là đối tượng, lấy _id
+            // Kiểm tra xem selectedEdit.libraryId có phải là đối tượng TLibrary không
+            const libraryId = typeof selectedEdit.libraryId === 'string'
+                ? selectedEdit.libraryId // Nếu là chuỗi, sử dụng trực tiếp
+                : (selectedEdit.libraryId as TLibrary)._id; // Nếu là đối tượng, lấy _id
             return {
                 note: selectedEdit.note,
                 borrowedDay: selectedEdit.borrowedDay,
@@ -890,22 +904,28 @@ const LoanSlipRequestLink = () => {
                     pagination={data?.data?.meta}
                 />
 
-                <ConfirmDeleteDialog
-                    key={"delete"}
-                    open={openConfirmDialog}
-                    onClose={handleCloseConfirmDialog}
-                    onConfirm={handleConfirmDelete}
-                    title="Xác nhận xóa?"
-                    description={`Bạn có chắc chắn muốn xóa "${loanSlipToDelete?._id}" ?`}
-                />
-                <ConfirmDeleteDialog
-                    key={"deleteMultiple"}
-                    open={openConfirmSoftDeleteMultiple}
-                    onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
-                    onConfirm={handleConfirmSoftDeleteMultiple}
-                    title="Xác nhận xóa các mục đã chọn?"
-                    description={`Bạn có chắc chắn muốn xóa?`}
-                />
+                {openConfirmDialog &&
+                    <ConfirmDeleteDialog
+                        key={"delete"}
+                        open={openConfirmDialog}
+                        onClose={handleCloseConfirmDialog}
+                        onConfirm={handleConfirmDelete}
+                        title="Xác nhận xóa?"
+                        description={`Bạn có chắc chắn muốn xóa "${loanSlipToDelete?._id}" ?`}
+                    />
+                }
+
+                {
+                    openConfirmSoftDeleteMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"deleteMultiple"}
+                        open={openConfirmSoftDeleteMultiple}
+                        onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
+                        onConfirm={handleConfirmSoftDeleteMultiple}
+                        title="Xác nhận xóa các mục đã chọn?"
+                        description={`Bạn có chắc chắn muốn xóa?`}
+                    />
+                }
             </MainCard>
         </div>
     );

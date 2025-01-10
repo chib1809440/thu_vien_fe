@@ -1,6 +1,8 @@
 import { EntityResponse } from '../interfaces/entityResponse';
 import { CreateAssetModel, Asset } from '../interfaces/asset';
 import axios from '../utils/axios';
+import { TFilter } from '../types/models/entity-common.type';
+import { TApiMultipleRecords } from '../types/api/api.type';
 
 const ASSET_API = '/asset';
 
@@ -11,7 +13,7 @@ export const createAsset = async (asset: CreateAssetModel): Promise<EntityRespon
 };
 
 // Read all
-export const getAllAssets = async (page?: number, limit?: number, search?: string, order: string = "ASC"): Promise<EntityResponse<Asset[]>> => {
+export const getAllAssets = async (page?: number, limit?: number, search?: string, typeAssetId?: string | number, order: string = "ASC",): Promise<EntityResponse<Asset[]>> => {
     let url = `${ASSET_API}?order=${order}`;
 
     if (page !== undefined && limit !== undefined) {
@@ -19,6 +21,9 @@ export const getAllAssets = async (page?: number, limit?: number, search?: strin
     }
     if (search && search.trim() !== '') {
         url += `&search=${encodeURIComponent(search.trim())}`;
+    }
+    if (typeAssetId !== undefined && typeAssetId != 0) {
+        url += `&typeAssetId=${typeAssetId.toString()}`;
     }
     const response = await axios.get<EntityResponse<Asset[]>>(url);
     return response.data;
@@ -34,6 +39,22 @@ export const getAllAssetsDeleted = async (page?: number, limit?: number, search?
     }
     const response = await axios.get<EntityResponse<Asset[]>>(url);
     return response.data;
+};
+export const getAllListAsset = async <DynamicType>(params?: TFilter): Promise<TApiMultipleRecords<DynamicType>> => {
+    const adjustedParams = {
+        ...params,
+        order: params?.order ?? 'ASC',
+    };
+
+    try {
+        const response = await axios.get(`${ASSET_API}`, {
+            params: adjustedParams,
+        });
+        return response.data as TApiMultipleRecords<DynamicType>;
+    } catch (error) {
+        console.error("Error fetching assets:", error);
+        throw error;
+    }
 };
 // Read by ID
 export const getAssetById = async (id: string): Promise<EntityResponse<Asset>> => {

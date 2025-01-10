@@ -255,10 +255,10 @@ const dashboardAdmin = {
                     ],
                 },
                 {
-                    id: "phieu-nhap-kho",
-                    title: "Phiếu nhập kho",
+                    id: "phieu-nhap-an-pham",
+                    title: "Phiếu nhập ấn phẩm",
                     type: "item",
-                    url: "/quan-ly-nhap-kho/phieu-nhap-kho",
+                    url: "/quan-ly-nhap-kho/phieu-nhap-an-pham",
                     icon: icons.IconReceipt2,
                     breadcrumbs: false,
                     permissions: [
@@ -267,6 +267,20 @@ const dashboardAdmin = {
                             action: "manage",
                         },
                     ],
+                },
+                {
+                    id: "phieu-nhap-tai-san",
+                    title: "Phiếu nhập tài sản",
+                    type: "item",
+                    url: "/quan-ly-nhap-kho/phieu-nhap-tai-san",
+                    icon: icons.IconBrowser,
+                    breadcrumbs: false,
+                    // permissions: [
+                    //     {
+                    //         resource: "warehousereceiptsassets",
+                    //         action: "manage",
+                    //     },
+                    // ],
                 },
             ],
         },
@@ -290,7 +304,7 @@ const dashboardAdmin = {
             children: [
                 {
                     id: "tu-ke",
-                    title: "Ấn phẩm trên Tủ - Kệ",
+                    title: "Ấn phẩm trên tủ - kệ",
                     type: "item",
                     url: "/quan-ly-kho/tu-ke",
                     icon: icons.IconBrandAirtable,
@@ -300,21 +314,87 @@ const dashboardAdmin = {
                     id: "kho",
                     title: "Ấn phẩm trong kho",
                     type: "item",
-                    url: "/quan-ly-kho/kho",
+                    url: "/quan-ly-kho/kho-an-pham",
                     icon: icons.IconBuildingWarehouse,
                     breadcrumbs: false,
                 },
+                // {
+                //     id: "kho-tai-san",
+                //     title: "Kho tài sản",
+                //     type: "item",
+                //     url: "/quan-ly-kho/kho-tai-san",
+                //     icon: icons.IconBuildingWarehouse,
+                //     breadcrumbs: false,
+                // },
+                
+                // {
+                //     id: "thanh-ly-hu-hong",
+                //     title: "Thanh lý - Hư hỏng",
+                //     type: "item",
+                //     url: "/quan-ly-kho/thanh-ly-hu-hong",
+                //     icon: icons.IconDevices,
+                //     breadcrumbs: false,
+                // },
+            ],
+        },
+
+        {
+            id: "tai-san-thu-vien",
+            title: "Quản lý số lượng tài sản",
+            type: "collapse",
+            url: "/tai-san-thu-vien",
+            icon: icons.IconBrowser,
+            breadcrumbs: false,
+            permissions: [
                 {
-                    id: "thanh-ly-hu-hong",
-                    title: "Ấn phẩm Thanh lý - Hư hỏng",
+                    resource: "assets",
+                    action: "manage",
+                },
+                {
+                    resource: "shelves",
+                    action: "manage",
+                },
+            ],
+            children: [
+                {
+                    id: "danh-sach-tai-san",
+                    title: "Danh sách tài sản",
                     type: "item",
-                    url: "/quan-ly-kho/thanh-ly-hu-hong",
-                    icon: icons.IconDevices,
+                    url: "/tai-san-thu-vien/danh-sach",
+                    icon: icons.IconBrandAirtable,
                     breadcrumbs: false,
+                },
+                {
+                    id: "tu-ke",
+                    title: "Quản lý tủ - kệ",
+                    type: "item",
+                    url: "/tai-san-thu-vien/tu-ke",
+                    icon: icons.IconHomeSearch,
+                    breadcrumbs: false,
+                    permissions: [
+                        {
+                            resource: "shelves",
+                            action: "manage",
+                        },
+                    ],
                 },
             ],
         },
 
+        {
+            id: "thanh-ly-tai-san-an-pham",
+            title: "Thanh lý tài sản & ấn phẩm",
+            type: "item",
+            url: "/thanh-ly-tai-san-an-pham",
+            icon: icons.IconDevices,
+            breadcrumbs: false,
+            permissions: [
+                {
+                    resource: "assets",
+                    action: "manage",
+                }
+            ],
+        },
         {
             id: "phieu-muon",
             title: "Thông tin phiếu mượn",
@@ -401,24 +481,24 @@ const dashboardAdmin = {
                         },
                     ],
                 },
-                {
-                    id: "tu-ke",
-                    title: "Tủ - Kệ",
-                    type: "item",
-                    url: "/quan-ly-danh-muc/tu-ke",
-                    icon: icons.IconHomeSearch,
-                    breadcrumbs: false,
-                    permissions: [
-                        {
-                            resource: "all",
-                            action: "manage",
-                        },
-                        {
-                            resource: "shelves",
-                            action: "manage",
-                        },
-                    ],
-                },
+                // {
+                //     id: "tu-ke",
+                //     title: "Tủ - Kệ",
+                //     type: "item",
+                //     url: "/quan-ly-danh-muc/tu-ke",
+                //     icon: icons.IconHomeSearch,
+                //     breadcrumbs: false,
+                //     permissions: [
+                //         {
+                //             resource: "all",
+                //             action: "manage",
+                //         },
+                //         {
+                //             resource: "shelves",
+                //             action: "manage",
+                //         },
+                //     ],
+                // },
                 {
                     id: "tac-gia",
                     title: "Tác giả",
@@ -507,20 +587,20 @@ const dashboardAdmin = {
                 },
             ],
         },
-        {
-            id: "tai-san-thu-vien",
-            title: "Quản lý tài sản",
-            type: "item",
-            url: "/tai-san-thu-vien",
-            icon: icons.IconBrowser,
-            breadcrumbs: false,
-            permissions: [
-                {
-                    resource: "assets",
-                    action: "manage",
-                },
-            ],
-        },
+        // {
+        //     id: "tai-san-thu-vien",
+        //     title: "Quản lý tài sản",
+        //     type: "item",
+        //     url: "/tai-san-thu-vien",
+        //     icon: icons.IconBrowser,
+        //     breadcrumbs: false,
+        //     permissions: [
+        //         {
+        //             resource: "assets",
+        //             action: "manage",
+        //         },
+        //     ],
+        // },
         // {
         //     id: 'ho-tro-ai',
         //     title: "Hỗ trợ AI",

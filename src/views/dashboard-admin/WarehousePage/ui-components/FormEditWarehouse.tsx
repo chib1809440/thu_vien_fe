@@ -21,6 +21,8 @@ import { useAddShelf } from "../../../../hooks/services/shelf/shelf-mutation";
 import { useReFetchShelf } from "../../../../hooks/services/shelf/shelf-query";
 import { toast } from "react-toastify";
 import FormAddEditShelf from "../../ShelfPage/ui-components/FormAddEditShelf";
+import { useFetchAsset } from "../../../../hooks/react-query/assetData";
+import { TTypeAsset } from "../../../../types/models/type-asset";
 
 const schema = (statusWarehouse: string) => {
     return yup.object().shape({
@@ -59,7 +61,7 @@ const FormEditWarehouse: FC<Props> = ({
     isEditMode = false,
 }) => {
     const [openAdd, setOpenAdd] = useState(false);
-    const [statusWarehouse, setStatusWarehouse] = useState("");
+    const [statusWarehouse, setStatusWarehouse] = useState("trên kệ");
     const [positionLD, setPositionLD] = useState("trong kho");
     const [reasonLD, setReasonLD] = useState("");
     const [touchedMount, setTouchedMount] = useState({ additionalQuantity: false });
@@ -72,6 +74,8 @@ const FormEditWarehouse: FC<Props> = ({
     const [liquidationQuantity, setLiquidationQuantity] = useState(0);
     const [liquidationTouched, setLiquidationTouched] = useState({ liquidationQuantity: false });
     const [liquidationErrors, setLiquidationErrors] = useState({ liquidationQuantity: "" });
+    const { data: assetData } = useFetchAsset();
+    const filteredData = assetData?.data?.result?.filter(item => (item?.typeAssetId as TTypeAsset)?.name === "tủ kệ");
 
     const formik = useFormik<TPublicationsCreate>({
         initialValues,
@@ -245,6 +249,7 @@ const FormEditWarehouse: FC<Props> = ({
                     initialValues={initialValuesShelves}
                     onSubmit={handleSubmitShelves}
                     isEditMode={false}
+                    assetData={filteredData}
                 />
             )}
             <FormikProvider value={formik}>
@@ -288,9 +293,9 @@ const FormEditWarehouse: FC<Props> = ({
                                     value={statusWarehouse}
                                     onChange={(event) => {
                                         setStatusWarehouse(event?.target?.value);
-                                        console.log(event?.target?.value);
-
+                                        // console.log(event?.target?.value);
                                     }}
+                                    disabled
                                 />
                             </Box>
 
@@ -317,7 +322,7 @@ const FormEditWarehouse: FC<Props> = ({
                                             {...getFieldProps("shelvesId")}
                                             error={touched.shelvesId && Boolean(errors.shelvesId)}
                                             helperText={touched.shelvesId && errors.shelvesId}
-                                            handleAdd={handleAddShelves}
+                                            handleAdd={filteredData?.length > 0 ? handleAddShelves : undefined}
                                         />
 
                                         <InputForm

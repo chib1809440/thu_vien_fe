@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
-import MainCard from '../../../../ui-component/cards/MainCard';
+import { useTheme } from '@mui/material';
 import { Box, Stack } from '@mui/system';
-import { CsFlexRowBetween } from '../../../../components/default/flex';
-import StyledButton from '../../../../components/default/button/StyledButton';
-import { IconArrowBack, IconPlus, IconTrash } from '@tabler/icons';
-import TableUserList from './ui-components/TableUserList';
-import { HeadCell } from '../../../../components/custom/table/type';
-import { Button, useTheme } from '@mui/material';
+import { IconArrowBack } from '@tabler/icons';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TableUserTrashList from './ui-components/TableUserTrashList';
+import { HeadCell } from '../../../../components/custom/table/type';
+import StyledButton from '../../../../components/default/button/StyledButton';
+import { CsFlexRowBetween } from '../../../../components/default/flex';
 import { User } from '../../../../interfaces/user';
+import MainCard from '../../../../ui-component/cards/MainCard';
+import TableUserTrashList from './ui-components/TableUserTrashList';
 const headCells: HeadCell[] = [
     {
         id: 'user_name',

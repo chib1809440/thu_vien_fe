@@ -1,31 +1,28 @@
-import { FormControl, MenuItem, Box, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme, CircularProgress, Alert, IconButton } from "@mui/material"
-import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconPencil, IconRestore, IconTrash } from "@tabler/icons-react";
-import { useEffect, useMemo, useState } from "react";
+import { Alert, Box, FormControl, MenuItem, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme } from "@mui/material";
 import Checkbox from '@mui/material/Checkbox';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
+import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconRestore } from "@tabler/icons-react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { toast } from "react-toastify";
-import DeleteIcon from '@mui/icons-material/Delete';
-import CloseIcon from '@mui/icons-material/Close';
 
-import { DataType, HeadCell, Order } from "../../../../../components/custom/table/type";
-import { EntityResponse } from "../../../../../interfaces/entityResponse";
-import { User } from "../../../../../interfaces/user";
-import useDebounce, { searchDelay } from "../../../../../hooks/useDebounce";
-import { SearchAndFilter } from "../../../../../components/custom/table/TableSearchAndFilter";
-import { EnhancedTableHead } from "../../../../../components/custom/table/TableHead";
 import { StyledTableCell, StyledTableRow } from "../../../../../components/custom/table-list/style";
-import GradientCircularProgressLoading from "../../../../../components/default/loading/GradientCircularProgressLoading/GradientCircularProgressLoading";
+import { EnhancedTableHead } from "../../../../../components/custom/table/TableHead";
+import { SearchAndFilter } from "../../../../../components/custom/table/TableSearchAndFilter";
+import { DataType, HeadCell, Order } from "../../../../../components/custom/table/type";
+import AlertConfirmDialog from "../../../../../components/default/alert/confirmAlertDialog";
+import UserDialog from "../../../../../components/default/dialog/UserDialog";
 import { CsFlexRowBetween } from "../../../../../components/default/flex";
 import CustomInput from "../../../../../components/default/input/CustomInput";
-import UserDialog from "../../../../../components/default/dialog/UserDialog";
-import AlertConfirmDialog from "../../../../../components/default/alert/confirmAlertDialog";
-import { useDeleteUser, useDeleteUserSelected, useRestoreUserSelected, useUserTrashList } from "../../../../../hooks/react-query/userData";
+import GradientCircularProgressLoading from "../../../../../components/default/loading/GradientCircularProgressLoading/GradientCircularProgressLoading";
 import { formatDate } from "../../../../../helpers/formatDate";
+import { useDeleteUser, useDeleteUserSelected, useRestoreUserSelected, useUserTrashList } from "../../../../../hooks/react-query/userData";
+import useDebounce, { searchDelay } from "../../../../../hooks/useDebounce";
+import { EntityResponse } from "../../../../../interfaces/entityResponse";
 import { Role } from "../../../../../interfaces/role";
+import { User } from "../../../../../interfaces/user";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,

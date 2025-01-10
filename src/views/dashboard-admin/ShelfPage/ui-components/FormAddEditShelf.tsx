@@ -5,6 +5,9 @@ import * as yup from "yup";
 import InputForm from "../../../../components/custom/form/InputForm";
 import { TShelvesCreate } from "../../../../types/models/shelves";
 import StyledButton from "../../../../components/default/button/StyledButton";
+import SelectForm from "../../../../components/custom/form/SelectForm";
+import { Asset } from "../../../../interfaces/asset";
+import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 
 type Props = {
     open: boolean;
@@ -13,13 +16,18 @@ type Props = {
     isFetching?: boolean;
     initialValues: TShelvesCreate;
     isEditMode?: boolean;
-
+    assetData?: Asset[];
+    selectedAsset?: Asset;
 };
 
 const schema = yup.object().shape({
     name: yup
         .string()
-        .required("Vui lòng nhập tên")
+        .required("Vui lòng nhập tên"),
+    assetId: yup
+        .string()
+        .required("Vui lòng chọn tài sản")
+        .nullable()
 });
 
 const FormAddEditShelf: FC<Props> = ({
@@ -30,9 +38,12 @@ const FormAddEditShelf: FC<Props> = ({
         name: "",
         description: "",
         note: "",
+        assetId: null
     },
     isFetching = false,
     isEditMode = false,
+    assetData,
+    selectedAsset
 }) => {
     const formik = useFormik<TShelvesCreate>({
         initialValues,
@@ -65,7 +76,7 @@ const FormAddEditShelf: FC<Props> = ({
                 disableEscapeKeyDown
             >
                 <DialogTitle>
-                    {isEditMode ? "Sửa thông tin tủ kệ" : "Thêm thông tin tủ kệ mới"}
+                    {isEditMode ? "Sửa thông tin tủ kệ" : "Tạo thông tin tủ kệ mới"}
                 </DialogTitle>
 
                 <DialogContent>
@@ -77,6 +88,24 @@ const FormAddEditShelf: FC<Props> = ({
                             error={touched.name && Boolean(errors.name)}
                             helperText={touched.name && errors.name}
                             {...getFieldProps("name")}
+                        />
+
+                        <SelectForm
+                            label="Tài sản"
+                            value={(values?.assetId as Asset)?._id}
+                            options={selectedAsset ? [
+                                {
+                                    value: selectedAsset?._id,
+                                    label: capitalizeFirstLetter(selectedAsset?.name),
+                                },
+                            ] : assetData?.map((item) => ({
+                                value: item._id,
+                                label: capitalizeFirstLetter(item.name),
+                            }))}
+                            error={touched.assetId && Boolean(errors.assetId)}
+                            {...getFieldProps("assetId")}
+                            helperText={touched.assetId && errors.assetId}
+                            disabled={isEditMode || !!selectedAsset}
                         />
                         <InputForm
                             label="Mô tả"

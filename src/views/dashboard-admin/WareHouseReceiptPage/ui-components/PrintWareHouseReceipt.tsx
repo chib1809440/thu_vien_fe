@@ -2,6 +2,8 @@ import React, { forwardRef } from "react";
 import { TWareHouseReceipt } from "../../../../types/models/warehouse-receipt";
 import Barcode from 'react-barcode';
 import { TSupplier } from "../../../../types/models/supplier.type";
+import { User } from "../../../../interfaces/user";
+import { formatPrice } from "../../../../utils/object";
 
 // Đảm bảo xuất component theo cách đúng
 const PrintWareHouseReceipt = forwardRef<HTMLDivElement, { wareHouseReceipt: TWareHouseReceipt }>(
@@ -13,12 +15,9 @@ const PrintWareHouseReceipt = forwardRef<HTMLDivElement, { wareHouseReceipt: TWa
 
         return (
             <div ref={ref} className="invoice-content" style={{ marginTop: 0, fontSize: '9px' }}>
-                <h2 style={{ textAlign: "center", marginTop: 0 }}>Phiếu nhập sách vào thư viện</h2>
+                <h2 style={{ textAlign: "center", marginTop: 0 }}>Phiếu nhập ấn phẩm vào thư viện</h2>
                 <p>
-                    <strong>Đơn vị:</strong> .........................................................................
-                </p>
-                <p>
-                    <strong>Bộ phận:</strong> .....................................................................
+                    <strong>Thư viện:</strong> {(wareHouseReceipt?.createBy as User)?.school}
                 </p>
                 <p>
                     <strong>Nhà cung cấp:</strong> {(wareHouseReceipt?.supplierId as TSupplier).name}
@@ -32,13 +31,19 @@ const PrintWareHouseReceipt = forwardRef<HTMLDivElement, { wareHouseReceipt: TWa
                 <p>
                     <strong>Địa chỉ:</strong>  {(wareHouseReceipt?.supplierId as TSupplier).address}
                 </p>
-                <h3 style={{ textAlign: "center", marginTop: '0px' }}>Sách nhập kho</h3>
+                <p>
+                    Ngày lập phiếu nhập: {new Date().toLocaleDateString('vi-VN')}
+                </p>
+                <h3 style={{ textAlign: "center", marginTop: '0px' }}>Ấn phẩm nhập kho</h3>
                 <table style={{ width: "100%", borderCollapse: "collapse", margin: "10px 0" }}>
                     <thead>
                         <tr>
                             <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>STT</th>
-                            <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Tên sách</th>
+                            <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Tên ấn phẩm</th>
                             <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Số lượng</th>
+                            <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Giá nhập</th>
+                            <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Giá niêm yết</th>
+                            <th style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>Tổng giá nhập</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,12 +51,17 @@ const PrintWareHouseReceipt = forwardRef<HTMLDivElement, { wareHouseReceipt: TWa
                             <tr key={index}>
                                 <td style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{index + 1}</td> {/* Hiển thị STT */}
                                 <td style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{publication.name}</td>
-                                <td width="30%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{publication.quantityWareHouse}</td>
+                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{publication.quantityWareHouse}</td>
+                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{formatPrice(publication.priceInput)}</td>
+                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{formatPrice(publication.priceOutput)}</td>
+                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{formatPrice(publication.quantityWareHouse * publication.priceInput)}</td>
                             </tr>
                         ))}
-                        <tr>
-                            <td colSpan={2} style={{ border: "1px solid black", padding: "8px", textAlign: "center", fontWeight: 'bold' }}>Tổng cộng</td>
-                            <td style={{ border: "1px solid black", padding: "8px", textAlign: "center", fontWeight: 'bold' }}>{totalQuantity}</td>
+                       <tr>
+                            <td colSpan={5} style={{ border: "1px solid black", padding: "8px", textAlign: "center", fontWeight: 'bold' }}>Tổng cộng</td>
+                            <td style={{ border: "1px solid black", padding: "8px", textAlign: "center", fontWeight: 'bold' }}>
+                                {formatPrice(wareHouseReceipt?.publications?.reduce((total, pub) => total + pub.quantityWareHouse * pub.priceInput, 0))}
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -65,9 +75,17 @@ const PrintWareHouseReceipt = forwardRef<HTMLDivElement, { wareHouseReceipt: TWa
                 </div>
                 {/* Phần ký tên */}
                 <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                    <p style={{ marginBottom: '0', marginLeft: '40px' }}>Hiệu trưởng</p>
-                    <p style={{ marginBottom: '0', marginLeft: '40px' }}>Thủ thư</p>
-                    <p style={{ marginBottom: '0', marginRight: '40px' }}>Các bộ nhập sách</p>
+                    <div style={{ marginBottom: '0', marginLeft: '40px', marginRight: "40px" }}>
+                        <br />
+                        <p style={{ fontWeight: "bold" }}>Hiệu trưởng</p>
+                    </div>
+                    <div style={{ textAlign: "center" }}>
+                        <p >.............., ngày ........tháng........năm {new Date().getFullYear()}</p>
+                        <p style={{ fontWeight: "bold" }}>Thủ thư</p>
+                        <p ><i>(Ký tên)</i></p>
+                        <br />
+                        <p >{(wareHouseReceipt?.createBy as User)?.fullname}</p>
+                    </div>
                 </div>
             </div>
         );

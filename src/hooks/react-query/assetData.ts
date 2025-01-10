@@ -5,9 +5,12 @@
 // import { ErrorResponse } from 'react-router-dom';
 
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createAsset, softDeleteAsset, softDeleteAssetSelected, getAllAssets, getAssetById, updateAsset, deleteAssetSelected, deleteAsset, restoreAssetSelected, getAllAssetsDeleted } from "../../_apis/asset.api";
+import { toast } from "react-toastify";
+import { createAsset, deleteAsset, deleteAssetSelected, getAllAssets, getAllAssetsDeleted, getAllListAsset, getAssetById, restoreAssetSelected, softDeleteAsset, softDeleteAssetSelected, updateAsset } from "../../_apis/asset.api";
+import { Asset, CreateAssetModel, TAsset, UpdateAssetModel } from "../../interfaces/asset";
+import { TFilter } from "../../types/models/entity-common.type";
+import { getQueryKeys } from "../../utils/object";
 import { RQ_ASSET, RQ_ASSETLIST, RQ_ASSETTRASHLIST } from "./constants_react_query";
-import { CreateAssetModel, Asset } from "../../interfaces/asset";
 
 // // useAssetsData Hook
 // export const useAssetsData = (
@@ -93,11 +96,11 @@ import { CreateAssetModel, Asset } from "../../interfaces/asset";
 //         }
 //     );
 // };
-export function useAssetList(page?: number, limit?: number, search?: string) {
+export function useAssetList(page?: number, limit?: number, search?: string, typeAssetId?: string | number) {
 
     return useQuery({
         queryKey: [RQ_ASSETLIST, { page, limit, search }],
-        queryFn: () => getAllAssets(page, limit, search),
+        queryFn: () => getAllAssets(page, limit, search, typeAssetId.toString()),
         placeholderData: keepPreviousData,  // Sử dụng dữ liệu trước đó để tránh loading
     });
 }
@@ -241,4 +244,48 @@ export function useRestoreAssetSelected() {
             }
         },
     });
+}
+
+export const useAddAsset = () => {
+    return useMutation({
+        mutationFn: async (data: CreateAssetModel) => {
+            return await createAsset(data)
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+}
+
+export const useEditAsset = () => {
+    return useMutation({
+        mutationFn: async (data: UpdateAssetModel) => {
+            return await updateAsset(data._id, data);
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    })
+}
+
+export const useFetchAsset = (params?:TFilter)=>{
+    return useQuery({
+        queryKey: getQueryKeys({ key: "GET_ASSETS", ...params }),
+        queryFn: async()=>{
+            return await getAllListAsset<TAsset>(params);
+        },
+        placeholderData: keepPreviousData,
+    })
+}
+
+export const useReFetchAsset = () => {
+    const queryClient = useQueryClient();
+
+    const revalidate = (params?: TFilter) => {
+        queryClient.invalidateQueries({
+            queryKey: getQueryKeys({ key: "GET_ASSETS", ...params }),
+        })
+    }
+
+    return revalidate;
 }

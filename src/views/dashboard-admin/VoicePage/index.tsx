@@ -83,7 +83,7 @@ const VoicePage = () => {
     const handleBarcodeSearch = (value) => {
         setBarcodeSearch(value);
     };
-    
+
     // loc
     const handleTypeVoiceFilterChange = (event) => {
         setSelectedTypeVoice(event.target.value);
@@ -294,7 +294,7 @@ const VoicePage = () => {
             />
 
             <MainCard>
-            <Stack spacing={2} sx={{
+                <Stack spacing={2} sx={{
                     paddingLeft: { xs: 0, sm: 0, md: 4 },
                     paddingBottom: { xs: 2, sm: 2 },
                     width: '100%'
@@ -308,7 +308,7 @@ const VoicePage = () => {
                             <Box>
                                 <Link to="/quan-ly-danh-muc/danh-sach-xoa-voice" style={{ textDecoration: 'none' }}>
                                     <StyledButton
-                                        sx={{ background: "#de524a", color: "white"}}
+                                        sx={{ background: "#de524a", color: "white" }}
                                         size="small"
                                         startIcon={<IconTrash stroke={2} />}
                                         variant="contained"
@@ -345,23 +345,29 @@ const VoicePage = () => {
                     keyChecked="_id"
                     pagination={data?.data?.meta}
                 />
+                {
+                    openConfirmDialog &&
+                    <ConfirmDeleteDialog
+                        key={"delete"}
+                        open={openConfirmDialog}
+                        onClose={handleCloseConfirmDialog}
+                        onConfirm={handleConfirmDelete}
+                        title="Xác nhận xóa?"
+                        description={`Bạn có chắc chắn muốn xóa voice giọng"${(voiceToDelete?.typeVoiceId as TTypeVoice)?.name}" ?`}
+                    />
+                }
 
-                <ConfirmDeleteDialog
-                    key={"delete"}
-                    open={openConfirmDialog}
-                    onClose={handleCloseConfirmDialog}
-                    onConfirm={handleConfirmDelete}
-                    title="Xác nhận xóa?"
-                    description={`Bạn có chắc chắn muốn xóa voice giọng"${(voiceToDelete?.typeVoiceId as TTypeVoice)?.name}" ?`}
-                />
-                <ConfirmDeleteDialog
-                    key={"deleteMultiple"}
-                    open={openConfirmSoftDeleteMultiple}
-                    onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
-                    onConfirm={handleConfirmSoftDeleteMultiple}
-                    title="Xác nhận xóa các mục đã chọn?"
-                    description={`Bạn có chắc chắn muốn xóa?`}
-                />
+                {
+                    openConfirmSoftDeleteMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"deleteMultiple"}
+                        open={openConfirmSoftDeleteMultiple}
+                        onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
+                        onConfirm={handleConfirmSoftDeleteMultiple}
+                        title="Xác nhận xóa các mục đã chọn?"
+                        description={`Bạn có chắc chắn muốn xóa?`}
+                    />
+                }
             </MainCard>
         </div>
     );

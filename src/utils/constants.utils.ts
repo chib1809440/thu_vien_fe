@@ -2,9 +2,21 @@ export const typeOptions = [
     { value: 'ấn phẩm cứng', label: 'Ấn phẩm truyền thống' },
     { value: 'ấn phẩm mềm', label: 'Ấn phẩm điện tử' },
 ];
+export const typeLiquidationOptions = [
+    { value: 'Publication', label: 'Ấn phẩm truyền thống' },
+    { value: 'Asset', label: 'Tài sản' },
+];
+export const typeLiquidationPosition = [
+    { value: 'trong kho', label: 'Trong kho' },
+    { value: 'trưng bày', label: 'Trưng bày' },
+];
 export const genderOptions = [
     { value: 'nữ', label: 'Nữ' },
     { value: 'nam', label: 'Nam' },
+];
+export const statusAssetOptions = [
+    { value: 'có sẵn', label: 'Có sẵn' },
+    { value: 'mới', label: 'Mới' },
 ];
 
 export const statusOptions = [
@@ -17,8 +29,8 @@ export const statusOptions = [
 
 export const stockStatusOptions = [
     { value: 'trên kệ', label: 'Chuyển lên tủ - kệ' },
-    { value: 'thanh lý', label: 'Ấn phẩm thanh lý' },
-    { value: 'hư hỏng', label: 'Ấn phẩm hư hỏng' },
+    // { value: 'thanh lý', label: 'Ấn phẩm thanh lý' },
+    // { value: 'hư hỏng', label: 'Ấn phẩm hư hỏng' },
 ];
 
 export const positionLiquidationDamaged = [

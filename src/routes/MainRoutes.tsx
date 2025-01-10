@@ -165,8 +165,14 @@ const SupplierDeleteListPage = Loadable(
 const WareHouseReceiptPage = Loadable(
   lazy(() => import("../views/dashboard-admin/WareHouseReceiptPage/WareHouseReceiptPage"))
 );
+const WareHouseReceiptAssetsPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/WareHouseReceiptPage/WareHouseReceiptAssetsPage"))
+);
 const WareHouseReceiptDeleteListPage = Loadable(
   lazy(() => import("../views/dashboard-admin/WareHouseReceiptPage/WareHouseDeleteListPage"))
+);
+const WareHouseAssetReceiptDeleteListPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/WareHouseReceiptPage/WareHouseAssetDeleteListPage"))
 );
 //Error Page
 const ForbiddenPage = Loadable(
@@ -226,8 +232,12 @@ const MainRoutes = {
       element: <RolePage />
     },
     {
-      path: "/tai-san-thu-vien",
+      path: "/tai-san-thu-vien/danh-sach",
       element: <AssetPage />,
+    },
+    {
+      path: "/tai-san-thu-vien/tu-ke",
+      element: <ShelfPage />,
     },
     {
       path: "quan-ly-danh-muc/dang-hoc-lieu",
@@ -260,10 +270,6 @@ const MainRoutes = {
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-dang-hoc-lieu",
       element: <MaterialDeleteListPage />,
-    },
-    {
-      path: "/quan-ly-danh-muc/tu-ke",
-      element: <ShelfPage />,
     },
     {
       path: "/quan-ly-danh-muc/danh-sach-xoa-tu-ke",
@@ -302,11 +308,11 @@ const MainRoutes = {
       element: <ShelvesProductPage />,
     },
     {
-      path: "/quan-ly-kho/kho",
+      path: "/quan-ly-kho/kho-an-pham",
       element: <StockProductPage />,
     },
     {
-      path: "/quan-ly-kho/thanh-ly-hu-hong",
+      path: "/thanh-ly-tai-san-an-pham",
       element: <LiquidationProductPage />,
     },
 
@@ -324,12 +330,20 @@ const MainRoutes = {
       element: <SupplierDeleteListPage />,
     },
     {
-      path: "/quan-ly-nhap-kho/phieu-nhap-kho",
+      path: "/quan-ly-nhap-kho/phieu-nhap-an-pham",
       element: <WareHouseReceiptPage />,
     },
     {
-      path: "/quan-ly-nhap-kho/phieu-nhap-kho/danh-sach-xoa-phieu-nhap-kho",
+      path: "/quan-ly-nhap-kho/phieu-nhap-tai-san",
+      element: <WareHouseReceiptAssetsPage />,
+    },
+    {
+      path: "/quan-ly-nhap-kho/phieu-nhap-an-pham/danh-sach-xoa-phieu-nhap-kho-an-pham",
       element: <WareHouseReceiptDeleteListPage />,
+    },
+    {
+      path: "/quan-ly-nhap-kho/phieu-nhap-tai-san/danh-sach-xoa-phieu-nhap-kho-tai-san",
+      element: <WareHouseAssetReceiptDeleteListPage />,
     },
     {
       path: "/quan-ly-muon-tra/phieu-muon",

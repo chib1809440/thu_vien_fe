@@ -1,4 +1,4 @@
-import { Button, Chip, Typography } from "@mui/material";
+import { Chip, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconEye, IconTrashXFilled } from "@tabler/icons-react";
@@ -36,7 +36,7 @@ const GroupPage = () => {
     const groupId = "";
 
     const { data, isLoading, isFetching } = useFetchGroup({ limit, page, search });
-    const { data: libsGroup } = useFetchLibrary({ groupId });    
+    const { data: libsGroup } = useFetchLibrary({ groupId });
     const { data: listRequestGroupFromAdmin } = useFetchRequestGroupFromAdmin();
     const [combinedLibraries, setCombinedLibraries] = useState<TLibrary[]>([]);
 
@@ -446,10 +446,10 @@ const GroupPage = () => {
             ...(userRole === 'Owner' ? [] : libsGroupRemoveSuper || []),
             ...(initialValues?.libraries || [])
         ].filter((item): item is TLibrary => typeof item !== 'string' && item !== null);
-        
+
         setCombinedLibraries(libraries);
     }, [libsGroup, initialValues, userRole]);
-    
+
     return (
         <div>
             <IBreadcrumsCustom
@@ -552,45 +552,62 @@ const GroupPage = () => {
                     pagination={data?.data?.meta}
                 />
 
-                <ConfirmDeleteDialog
-                    key={"delete"}
-                    open={openConfirmDialog}
-                    onClose={handleCloseConfirmDialog}
-                    onConfirm={handleConfirmDelete}
-                    title="Xác nhận xóa thư viện"
-                    description={`Bạn có chắc chắn muốn xóa "${groupToDelete?.name}" ?`}
-                />
-                <ConfirmDeleteDialog
-                    key={"deleteMultiple"}
-                    open={openConfirmDeleteMultiple}
-                    onClose={() => setOpenConfirmDeleteMultiple(false)}
-                    onConfirm={handleConfirmDeleteMultiple}
-                    title="Xác nhận xóa các mục đã chọn"
-                    description={`Bạn có chắc chắn muốn xóa?`}
-                />
+                {
+                    openConfirmDialog &&
+                    <ConfirmDeleteDialog
+                        key={"delete"}
+                        open={openConfirmDialog}
+                        onClose={handleCloseConfirmDialog}
+                        onConfirm={handleConfirmDelete}
+                        title="Xác nhận xóa nhóm"
+                        description={`Bạn có chắc chắn muốn xóa "${groupToDelete?.name}" ?`}
+                    />
+                }
 
-                <GroupDetailsDialog
-                    open={openViewDetails}
-                    onClose={handleCloseViewDetails}
-                    group={groupDetails}
-                />
+                {
+                    openConfirmDeleteMultiple &&
+                    <ConfirmDeleteDialog
+                        key={"deleteMultiple"}
+                        open={openConfirmDeleteMultiple}
+                        onClose={() => setOpenConfirmDeleteMultiple(false)}
+                        onConfirm={handleConfirmDeleteMultiple}
+                        title="Xác nhận xóa các mục đã chọn"
+                        description={`Bạn có chắc chắn muốn xóa?`}
+                    />
+                }
 
-                <ConfirmDeleteDialog
-                    key={"leave"}
-                    open={openConfirmLeaveDialog}
-                    onClose={handleCloseConfirmLeaveDialog}
-                    onConfirm={handleLeaveGroup}
-                    title="Xác nhận rời nhóm"
-                    description={`Bạn có chắc chắn muốn rời nhóm ?`}
-                />
-                <ConfirmDeleteDialog
-                    key={"join"}
-                    open={openConfirmJoinDialog}
-                    onClose={handleCloseConfirmJoinDialog}
-                    onConfirm={() => handleJoinGroup(selectedJoin)}
-                    title="Xác nhận yêu cầu vào nhóm"
-                    description={`Bạn có chắc chắn muốn yêu cầu nhóm ?`}
-                />
+                {
+                    openViewDetails &&
+                    <GroupDetailsDialog
+                        open={openViewDetails}
+                        onClose={handleCloseViewDetails}
+                        group={groupDetails}
+                    />
+                }
+
+                {
+                    openConfirmLeaveDialog &&
+                    <ConfirmDeleteDialog
+                        key={"leave"}
+                        open={openConfirmLeaveDialog}
+                        onClose={handleCloseConfirmLeaveDialog}
+                        onConfirm={handleLeaveGroup}
+                        title="Xác nhận rời nhóm"
+                        description={`Bạn có chắc chắn muốn rời nhóm ?`}
+                    />
+                }
+
+                {
+                    openConfirmJoinDialog &&
+                    <ConfirmDeleteDialog
+                        key={"join"}
+                        open={openConfirmJoinDialog}
+                        onClose={handleCloseConfirmJoinDialog}
+                        onConfirm={() => handleJoinGroup(selectedJoin)}
+                        title="Xác nhận yêu cầu vào nhóm"
+                        description={`Bạn có chắc chắn muốn yêu cầu nhóm ?`}
+                    />
+                }
             </MainCard>
         </div>
     );

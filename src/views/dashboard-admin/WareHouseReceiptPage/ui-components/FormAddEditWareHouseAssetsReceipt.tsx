@@ -324,19 +324,6 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
         setSelectedAsset(null);
     };
 
-    const handlePrint = useReactToPrint({
-        content: () => componentRef.current,
-        pageStyle: `
-            @page {
-                margin: 10mm; /* Thiết lập margin */
-                size: A4; /* Thiết lập kích thước */
-            }
-            body {
-                margin: 0; /* Đảm bảo không có margin thừa */
-            }
-        `,
-    });
-
     const handleAddSupplier = () => {
         setOpenAdd(true);
     };

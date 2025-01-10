@@ -94,7 +94,10 @@ const FormAddEditAsset: FC<Props> = ({
                     }, resetForm);
                 }
                 else {
-                    onSubmit(values, resetForm);
+                    onSubmit({
+                        ...values,
+                        quantityTotal: (values.quantityUsed + values.quantityWarehouse),
+                    }, resetForm);
                 }
             }
         },

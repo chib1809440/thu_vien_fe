@@ -285,6 +285,48 @@ const dashboardAdmin = {
             ],
         },
         {
+            id: "tai-san-thu-vien",
+            title: "Quản lý số lượng tài sản",
+            type: "collapse",
+            url: "/tai-san-thu-vien",
+            icon: icons.IconBrowser,
+            breadcrumbs: false,
+            permissions: [
+                {
+                    resource: "assets",
+                    action: "manage",
+                },
+                {
+                    resource: "shelves",
+                    action: "manage",
+                },
+            ],
+            children: [
+                {
+                    id: "danh-sach-tai-san",
+                    title: "Danh sách tài sản",
+                    type: "item",
+                    url: "/tai-san-thu-vien/danh-sach",
+                    icon: icons.IconBrandAirtable,
+                    breadcrumbs: false,
+                },
+                {
+                    id: "tu-ke",
+                    title: "Quản lý tủ - kệ",
+                    type: "item",
+                    url: "/tai-san-thu-vien/tu-ke",
+                    icon: icons.IconHomeSearch,
+                    breadcrumbs: false,
+                    permissions: [
+                        {
+                            resource: "shelves",
+                            action: "manage",
+                        },
+                    ],
+                },
+            ],
+        },
+        {
             id: "quan-ly-kho",
             title: "Quản lý số lượng ấn phẩm",
             type: "collapse",
@@ -335,49 +377,6 @@ const dashboardAdmin = {
                 //     icon: icons.IconDevices,
                 //     breadcrumbs: false,
                 // },
-            ],
-        },
-
-        {
-            id: "tai-san-thu-vien",
-            title: "Quản lý số lượng tài sản",
-            type: "collapse",
-            url: "/tai-san-thu-vien",
-            icon: icons.IconBrowser,
-            breadcrumbs: false,
-            permissions: [
-                {
-                    resource: "assets",
-                    action: "manage",
-                },
-                {
-                    resource: "shelves",
-                    action: "manage",
-                },
-            ],
-            children: [
-                {
-                    id: "danh-sach-tai-san",
-                    title: "Danh sách tài sản",
-                    type: "item",
-                    url: "/tai-san-thu-vien/danh-sach",
-                    icon: icons.IconBrandAirtable,
-                    breadcrumbs: false,
-                },
-                {
-                    id: "tu-ke",
-                    title: "Quản lý tủ - kệ",
-                    type: "item",
-                    url: "/tai-san-thu-vien/tu-ke",
-                    icon: icons.IconHomeSearch,
-                    breadcrumbs: false,
-                    permissions: [
-                        {
-                            resource: "shelves",
-                            action: "manage",
-                        },
-                    ],
-                },
             ],
         },
 
@@ -659,7 +658,7 @@ export const dashboardAdminV2 = {
         //     icon: icons.IconHome2,
         //     breadcrumbs: false
         // },
-        
+
         {
             id: "chia-se-danh-muc",
             title: "Chia sẻ danh mục",

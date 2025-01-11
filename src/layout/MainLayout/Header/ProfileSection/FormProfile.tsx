@@ -198,13 +198,12 @@ const FormProfile: FC<Props> = ({
                         <Box sx={{ display: "flex", gap: 2, flexDirection: { xs: "column", md: "row" } }}>
                             <Box sx={{ flex: 1 }}>
                                 <InputForm
-                                    type='number'
                                     label="Lớp"
                                     placeholder="Nhập tên lớp"
                                     error={touched.class && Boolean(errors.class)}
                                     helperText={touched.class && errors.class}
                                     {...getFieldProps("class")}
-                                    value={capitalizeFirstLetter(values?.class)}
+                                    value={values?.class}
                                 />
                             </Box>
                             <Box sx={{ flex: 1 }}>

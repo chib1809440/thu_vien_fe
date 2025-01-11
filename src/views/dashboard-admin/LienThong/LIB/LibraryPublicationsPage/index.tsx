@@ -322,7 +322,7 @@ const LibraryPublicationsPage = () => {
                                                     right: 0,
                                                     minWidth: 35, height: 35,
                                                     // margin: "8px",
-                                                    background: colorType(item?.mimetype),
+                                                    background: colorType(item?.mimetype, item?.type),
                                                     boxShadow: "5px 5px 7px rgba(0.1, 0.1, 0.1, 0.1)",
 
                                                 }}
@@ -334,7 +334,7 @@ const LibraryPublicationsPage = () => {
                                                         "image/gif",
                                                         "image/bmp",
                                                         "image/webp",
-                                                    ].includes(item?.mimetype) && item?.type === "ấn phẩm cứng") && (
+                                                    ].includes(item?.mimetype) || item?.type === "ấn phẩm cứng") && (
                                                         <IconBook
                                                             size={25}
                                                             stroke={1.5}
@@ -390,13 +390,13 @@ const LibraryPublicationsPage = () => {
                                                     )
                                                 }
                                                 {
-                                                    [
+                                                    ([
                                                         "image/jpeg",
                                                         "image/png",
                                                         "image/gif",
                                                         "image/bmp",
                                                         "image/webp",
-                                                    ].includes(item?.mimetype) && (
+                                                    ].includes(item?.mimetype) && item?.type === "ấn phẩm mềm") && (
                                                         <IconPhoto
                                                             size={25}
                                                             stroke={1.5}

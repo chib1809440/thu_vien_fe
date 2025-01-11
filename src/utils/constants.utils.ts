@@ -59,7 +59,13 @@ export const typeMaterial = [
     { value: "ppt", label: 'Kế hoạch bài giảng' },
 ]
 
-export function colorType(mimetype: string): string {
+export function colorType(mimetype: string, type: string): string {
+    if (type === "ấn phẩm cứng") {
+        switch (mimetype) {
+            default:
+                return '#007e43';
+        }
+    }
     switch (mimetype) {
         case "application/msword":
         case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":

@@ -45,6 +45,9 @@ const PrintAccount = forwardRef<HTMLDivElement, PrintAccountProps>(({ dataUsers 
                             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
                             border: "2px solid #000",
                             borderRadius: "8px",
+                            backgroundImage: `url("/images/bg-img.jpg")`,
+                            backgroundSize: 'cover',
+                            backgroundRepeat: 'no-repeat',
                         }}
                     >
                         {user?.school && (
@@ -60,6 +63,24 @@ const PrintAccount = forwardRef<HTMLDivElement, PrintAccountProps>(({ dataUsers 
                                 {user?.school}
                             </div>
                         )}
+                        <h4
+                            style={{
+                                textAlign: "center",
+                                textTransform: "uppercase",
+                                margin: "0 0 2px 0",
+                                fontSize: "14px",
+                                color: "red",
+                                fontWeight: "bold"
+                            }}
+                        >
+                            Thẻ thư viện
+                        </h4>
+                        <div style={{ textAlign: "center", fontSize: "11px", fontWeight: "bold" }}>
+                            {getLabelFromOptions(
+                                statusRole,
+                                (user?.roleId as Role)?.name
+                            )}
+                        </div>
                         <div
                             style={{
                                 display: "flex",
@@ -67,56 +88,43 @@ const PrintAccount = forwardRef<HTMLDivElement, PrintAccountProps>(({ dataUsers 
                                 gap: "14px"
                             }}
                         >
+
                             <div
                                 style={{
                                     display: "flex",
                                     justifyContent: "center",
                                     alignItems: "center",
-                                    height: "90px",
+                                    height: "120px",
+                                    width: "40%"
                                 }}
                             >
                                 <img
                                     src={process.env.REACT_APP_BASE_API_FILE_URL + user?.avatar}
                                     alt="Avatar"
-                                    style={{ width: "80px", height: "100%", borderRadius: "8px" }}
+                                    style={{ width: "100%", height: "100%", borderRadius: "8px" }}
                                 />
                             </div>
-                            <div style={{ textAlign: "left" }}>
-                                <h4
-                                    style={{
-                                        textAlign: "center",
-                                        textTransform: "uppercase",
-                                        margin: "0 0 2px 0",
-                                        fontSize: "14px",
-                                        color: "#fd6033",
-                                    }}
-                                >
-                                    Thẻ thư viện
-                                </h4>
-                                <div style={{ textAlign: "center", fontSize: "11px" }}>
-                                    {getLabelFromOptions(
-                                        statusRole,
-                                        (user?.roleId as Role)?.name
-                                    )}
-                                </div>
-                                <div style={{ fontSize: "12px" }}>
+                            <div style={{ textAlign: "left", width: "60%", marginTop: "16px" }}>
+
+                                <div style={{ fontSize: "12px", fontWeight: "bold", color: "blue" }}>
                                     <strong>Họ và tên:</strong> {user?.fullname}
                                 </div>
-                                <div style={{ display: "flex", gap: "2px", fontSize: "11px" }}>
+                                <div style={{ display: "flex", gap: "2px", fontSize: "11px", fontWeight: "bold", color: "blue" }}>
                                     <strong>Ngày sinh:</strong> {formatDate(user?.birthday)}
                                 </div>
                                 {user?.class && (
-                                    <div style={{ fontSize: "11px", margin: "0 0 1px 0" }}>
+                                    <div style={{ fontSize: "11px", margin: "0 0 1px 0", fontWeight: "bold", color: "blue" }}>
                                         <strong>Lớp:</strong> {user?.class}
                                     </div>
                                 )}
                                 {user?.barcode && (
-                                    <div style={{ textAlign: "center" }}>
+                                    <div>
                                         <Barcode
                                             value={user?.barcode}
                                             width={1}
                                             height={30}
                                             fontSize={6}
+                                            background="transparent"
                                         />
                                     </div>
                                 )}

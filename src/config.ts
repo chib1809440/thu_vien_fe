@@ -6,7 +6,7 @@ import { ConfigProps } from "./types/config";
 // like '/berry-material-react/react/default'
 export const VERSION = '2.0.0';
 
-export const BASE_PATH = '';
+export const BASE_PATH = '/';
 
 export const ROWSPERPAGE = 10;
 

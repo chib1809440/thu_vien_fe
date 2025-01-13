@@ -337,7 +337,10 @@ const FormAddEditPublications: FC<Props> = ({
                     imageRef.current.setImage(imageUrl);
                     return;
                 } else {
-                    imageRef.current.clearState();
+                    // imageRef.current.clearState();
+                    // console.log("hihihi");
+                    setFieldValue("file", file);
+                    
                 }
             }
 

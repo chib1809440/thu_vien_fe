@@ -61,6 +61,7 @@ import usePermission from "../../../../utils/hasPermission";
 import FormAddEditPublications from "../../PublicationsPage/ui-components/FormAddEditPublications";
 import FormAddEditSupplier from "./FormAddEditSupplier";
 import PrintWareHouseReceipt from "./PrintWareHouseReceipt";
+import { formatPrice } from "../../../../utils/object";
 
 type Props = {
     open: boolean;
@@ -103,9 +104,9 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
             const hasInvalidPrice = filteredPublications.some(
                 (item) => item.priceInput === 0 && item.publicationId !== ""
             );
-            const hasInvalidPriceOutput = filteredPublications.some(
-                (item) => item.priceOutput === 0 && item.publicationId !== ""
-            );
+            // const hasInvalidPriceOutput = filteredPublications.some(
+            //     (item) => item.priceOutput === 0 && item.publicationId !== ""
+            // );
             const hasInvalidQuantity = filteredPublications.some(
                 (item) => item.quantityWareHouse === 0 && item.publicationId !== ""
             );
@@ -114,10 +115,10 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                 toast.error("Vui lòng nhập số lượng lớn hơn 0.");
                 return;
             }
-            if (hasInvalidPriceOutput) {
-                toast.error("Vui lòng  nhập giá niêm yết lớn hơn 0.");
-                return;
-            }
+            // if (hasInvalidPriceOutput) {
+            //     toast.error("Vui lòng  nhập giá niêm yết lớn hơn 0.");
+            //     return;
+            // }
 
             if (hasInvalidPrice) {
                 toast.error("Vui lòng nhập giá nhập lớn hơn 0.");
@@ -215,6 +216,8 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                         quantity: pub.quantity || 0, // Giá trị mặc định
                         shelvesQuantity: pub.shelvesQuantity || 0, // Giá trị mặc định
                         barcode: pub.barcode || "", // Cung cấp giá trị mặc định nếu không có
+                        priceInput: pub.priceInput,
+                        priceOutput: pub.priceInput,
                     })
                 );
 
@@ -479,7 +482,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                 publicationId: value.publicationId,
                 quantityWareHouse: 1,
                 priceInput: 0,
-                priceOutput: 0,
+                priceOutput: value.priceInput,
             };
 
             updatedPublications[index] = newValue;
@@ -737,11 +740,11 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                                         Số lượng
                                                     </StyledTableCell>
                                                     <StyledTableCell align="center" width="15%">
-                                                        Giá nhập
+                                                        Giá nhập/Giá bìa
                                                     </StyledTableCell>
-                                                    <StyledTableCell align="center" width="15%">
+                                                    {/* <StyledTableCell align="center" width="15%">
                                                         Giá niêm yết
-                                                    </StyledTableCell>
+                                                    </StyledTableCell> */}
                                                     <StyledTableCell align="center" width="15%">
                                                         Tổng giá
                                                     </StyledTableCell>
@@ -853,6 +856,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                                                         if (newValue === "" || Number(newValue) > 0) {
                                                                             const updatedPublications = [...publications];
                                                                             updatedPublications[index].priceInput = Number(newValue);
+                                                                            updatedPublications[index].priceOutput = Number(newValue);
                                                                             setPublications(updatedPublications);
                                                                         }
                                                                     }}
@@ -865,7 +869,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                                                 />
                                                             </Box>
                                                         </StyledTableCell>
-                                                        <StyledTableCell align="center">
+                                                        {/* <StyledTableCell align="center">
                                                             <Box style={{ width: "100%" }}>
                                                                 <TextField
                                                                     variant="outlined"
@@ -877,6 +881,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                                                         if (newValue === "" || Number(newValue) > 0) {
                                                                             const updatedPublications = [...publications];
                                                                             updatedPublications[index].priceOutput = Number(newValue);
+                                                                            updatedPublications[index].priceInput = Number(newValue);
                                                                             setPublications(updatedPublications);
                                                                         }
                                                                     }}
@@ -885,24 +890,12 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                                                             e.preventDefault(); // Ngăn hành động mặc định khi nhấn Enter
                                                                         }
                                                                     }}
-                                                                    error={row?.name !== "" && Number(row.priceOutput) <= 0}
+                                                                    error={row?.name !== "" && Number(row.priceInput) <= 0}
                                                                 />
                                                             </Box>
-                                                        </StyledTableCell>
+                                                        </StyledTableCell> */}
                                                         <StyledTableCell align="center">
-                                                            <Box style={{ width: "100%" }}>
-                                                                <TextField
-                                                                    variant="outlined"
-                                                                    fullWidth
-                                                                    placeholder="Tổng giá"
-                                                                    value={
-                                                                        row.priceInput *
-                                                                        row.quantityWareHouse
-                                                                    }
-                                                                    InputProps={{ readOnly: true }}
-                                                                    disabled
-                                                                />
-                                                            </Box>
+                                                            {formatPrice(row.priceInput * row.quantityWareHouse) || "0"}
                                                         </StyledTableCell>
                                                         <StyledTableCell align="center">
                                                             <IconTrash

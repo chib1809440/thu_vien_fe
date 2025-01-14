@@ -41,93 +41,122 @@ const PrintAccount = forwardRef<HTMLDivElement, PrintAccountProps>(({ dataUsers 
                         style={{
                             width: "100%",
                             height: "220px",
-                            padding: "16px",
                             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
                             border: "2px solid #000",
                             borderRadius: "8px",
-                            backgroundImage: `url("/images/bg-img.jpg")`,
-                            backgroundSize: 'cover',
-                            backgroundRepeat: 'no-repeat',
+                            position: "relative",
+                            overflow: "hidden",
                         }}
                     >
-                        {user?.school && (
-                            <div
+                        <div style={{
+                            width: "100%",
+                            height: "220px"
+                        }}>
+                            <img
+                                src={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/bg-img.jpg`}
+                                alt="bg"
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "scale-down",
+                                    objectPosition: "center", // Căn ảnh ở giữa
+                                    zIndex: 0,
+                                    imageRendering: "pixelated", // Nếu muốn giữ hiệu ứng pixelated khi phóng to
+                                    filter: "grayscale(100%)",
+                                    opacity: 1
+                                    
+                                }}
+                            />
+                        </div>
+
+                        <div
+                            style={{
+                                position: "absolute",
+                                bottom: "10px",
+                                left: "26px",
+                                fontSize: "16px",
+                                color: "#fff",
+                                fontWeight: "bold",
+                            }}>
+                            {user?.school && (
+                                <div
+                                    style={{
+                                        textAlign: "center",
+                                        textTransform: "uppercase",
+                                        margin: "0 0 2px 0",
+                                        fontSize: "14px",
+                                        color: "#fd6033",
+                                    }}
+                                >
+                                    {user?.school}
+                                </div>
+                            )}
+                            <h4
                                 style={{
                                     textAlign: "center",
                                     textTransform: "uppercase",
                                     margin: "0 0 2px 0",
                                     fontSize: "14px",
-                                    color: "#fd6033",
+                                    color: "red",
+                                    fontWeight: "bold"
                                 }}
                             >
-                                {user?.school}
+                                Thẻ thư viện
+                            </h4>
+                            <div style={{ textAlign: "center", fontSize: "11px", fontWeight: "bold", color: "black" }}>
+                                {getLabelFromOptions(
+                                    statusRole,
+                                    (user?.roleId as Role)?.name
+                                )}
                             </div>
-                        )}
-                        <h4
-                            style={{
-                                textAlign: "center",
-                                textTransform: "uppercase",
-                                margin: "0 0 2px 0",
-                                fontSize: "14px",
-                                color: "red",
-                                fontWeight: "bold"
-                            }}
-                        >
-                            Thẻ thư viện
-                        </h4>
-                        <div style={{ textAlign: "center", fontSize: "11px", fontWeight: "bold" }}>
-                            {getLabelFromOptions(
-                                statusRole,
-                                (user?.roleId as Role)?.name
-                            )}
-                        </div>
-                        <div
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "14px"
-                            }}
-                        >
-
                             <div
                                 style={{
                                     display: "flex",
-                                    justifyContent: "center",
                                     alignItems: "center",
-                                    height: "120px",
-                                    width: "40%"
+                                    gap: "14px"
                                 }}
                             >
-                                <img
-                                    src={process.env.REACT_APP_BASE_API_FILE_URL + user?.avatar}
-                                    alt="Avatar"
-                                    style={{ width: "100%", height: "100%", borderRadius: "8px" }}
-                                />
-                            </div>
-                            <div style={{ textAlign: "left", width: "60%", marginTop: "16px" }}>
 
-                                <div style={{ fontSize: "12px", fontWeight: "bold", color: "blue" }}>
-                                    <strong>Họ và tên:</strong> {user?.fullname}
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        height: "120px",
+                                        width: "40%"
+                                    }}
+                                >
+                                    <img
+                                        src={process.env.REACT_APP_BASE_API_FILE_URL + user?.avatar}
+                                        alt="Avatar"
+                                        style={{ width: "100%", height: "100%", borderRadius: "8px" }}
+                                    />
                                 </div>
-                                <div style={{ display: "flex", gap: "2px", fontSize: "11px", fontWeight: "bold", color: "blue" }}>
-                                    <strong>Ngày sinh:</strong> {formatDate(user?.birthday)}
+                                <div style={{ textAlign: "left", width: "60%", marginTop: "16px" }}>
+
+                                    <div style={{ fontSize: "12px", fontWeight: "bold", color: "blue" }}>
+                                        <strong>Họ và tên:</strong> {user?.fullname}
+                                    </div>
+                                    <div style={{ display: "flex", gap: "2px", fontSize: "11px", fontWeight: "bold", color: "blue" }}>
+                                        <strong>Ngày sinh:</strong> {formatDate(user?.birthday)}
+                                    </div>
+                                    {user?.class && (
+                                        <div style={{ fontSize: "11px", margin: "0 0 1px 0", fontWeight: "bold", color: "blue" }}>
+                                            <strong>Lớp:</strong> {user?.class}
+                                        </div>
+                                    )}
+                                    {user?.barcode && (
+                                        <div>
+                                            <Barcode
+                                                value={user?.barcode}
+                                                width={1}
+                                                height={30}
+                                                fontSize={6}
+                                                background="transparent"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
-                                {user?.class && (
-                                    <div style={{ fontSize: "11px", margin: "0 0 1px 0", fontWeight: "bold", color: "blue" }}>
-                                        <strong>Lớp:</strong> {user?.class}
-                                    </div>
-                                )}
-                                {user?.barcode && (
-                                    <div>
-                                        <Barcode
-                                            value={user?.barcode}
-                                            width={1}
-                                            height={30}
-                                            fontSize={6}
-                                            background="transparent"
-                                        />
-                                    </div>
-                                )}
                             </div>
                         </div>
                     </div>

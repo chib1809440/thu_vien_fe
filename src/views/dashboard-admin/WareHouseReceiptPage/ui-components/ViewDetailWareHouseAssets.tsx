@@ -14,7 +14,7 @@ import PrintWareHouseAssetsReceipt from "./PrintWareHouseAssetsReceipt";
 import { formatPrice } from "../../../../utils/object";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-        backgroundColor: theme.palette.common.black,
+        backgroundColor: "#204165",
         color: theme.palette.common.white,
     },
     [`&.${tableCellClasses.body}`]: {
@@ -137,6 +137,30 @@ const ViewDetailWareHouseAssetsReceipt: FC<Props> = ({
                                                 </StyledTableCell>
                                             </StyledTableRow>
                                         ))}
+                                        <StyledTableRow sx={{ background: "#204165", color: "white" }}>
+                                            <StyledTableCell colSpan={2} align="center" sx={{ color: "white" }}>
+                                                <strong>Tổng cộng:</strong>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="left" colSpan={2} sx={{ color: "white" }}>
+                                                <strong style={{ marginLeft: 1 }}>
+                                                    {wareHouseAssetsReceipt?.assets
+                                                        ?.reduce((total, row) => {
+                                                            return total + (row?.quantity || 0);
+                                                        }, 0)
+                                                        .toLocaleString() || "0"}
+                                                </strong>
+                                            </StyledTableCell>
+                                            <StyledTableCell sx={{ color: "white" }}>
+                                                <strong>
+                                                    {formatPrice(
+                                                        wareHouseAssetsReceipt?.assets
+                                                            ?.reduce((total, row) => {
+                                                                return total + (row?.priceInput * row?.quantity || 0);
+                                                            }, 0)
+                                                    ) || "0"}
+                                                </strong>
+                                            </StyledTableCell>
+                                        </StyledTableRow>
                                     </TableBody>
                                 </Table>
                             </TableContainer>

@@ -41,6 +41,7 @@ import { TPublications } from "../../../../types/models/publications.type";
 import { typeLiquidationOptions, typeLiquidationPosition } from "../../../../utils/constants.utils";
 import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 import { toast } from "react-toastify";
+import { formatPrice } from "../../../../utils/object";
 
 type Props = {
     open: boolean;
@@ -57,10 +58,11 @@ type TOptions = {
     quatityUsed: number;
     name: string;
     value: string;
+    priceInput: number;
 };
 
 const schema = yup.object().shape({
-    reason: yup.string().required("Vui lòng nhập lý do thanh lý"),
+    reason: yup.string().required("Vui lòng nhập lý do thanh lọc/thanh lý"),
 });
 
 const FormAddEditLiquidation: FC<Props> = ({
@@ -95,26 +97,26 @@ const FormAddEditLiquidation: FC<Props> = ({
             const filteredData = selectedData.filter((item) => item.name !== "");
             console.log(filteredData);
 
-            const hasInvalidPrice = filteredData.some(
-                (item) => item.priceLiquidation === 0 && item.itemId !== ""
-            );
+            // const hasInvalidPrice = filteredData.some(
+            //     (item) => item.priceLiquidation === 0 && item.itemId !== ""
+            // );
 
             const hasInvalidQuantity = filteredData.some(
                 (item) => item.quantityLiquidation === 0 && item.itemId !== ""
             );
 
             if (hasInvalidQuantity) {
-                toast.error("Vui lòng nhập số lượng thanh lý lớn hơn 0.");
+                toast.error("Vui lòng nhập số lượng thanh lọc/thanh lý lớn hơn 0.");
                 return;
             }
 
-            if (hasInvalidPrice) {
-                toast.error("Vui lòng nhập giá thanh lý lớn hơn 0.");
-                return;
-            }
+            // if (hasInvalidPrice) {
+            //     toast.error("Vui lòng nhập giá thanh lọc/thanh lý lớn hơn 0.");
+            //     return;
+            // }
 
             if (filteredData?.length === 0) {
-                toast.error("Không có giá trị để thanh lý! Vui lòng kiểm tra thông tin.")
+                toast.error("Không có giá trị để thanh lọc/thanh lý! Vui lòng kiểm tra thông tin.")
                 return;
             }
 
@@ -129,7 +131,7 @@ const FormAddEditLiquidation: FC<Props> = ({
 
                 if (item.type === "Asset") {
                     if (item.position === "trong kho" && quantityLiquidation > quantityWarehouse) {
-                        errorMessages.push(`Số lượng thanh lý cho tài sản "<strong>${item.name}</strong>" vượt quá số lượng trong kho <strong>(${quantityWarehouse})</strong>`);
+                        errorMessages.push(`Số lượng thanh lọc cho tài sản "<strong>${item.name}</strong>" vượt quá số lượng trong kho <strong>(${quantityWarehouse})</strong>`);
                     }
                 } else if (item.type === "Publication") {
                     if (item.position === "trưng bày" && quantityLiquidation > shelvesQuantity) {
@@ -188,11 +190,13 @@ const FormAddEditLiquidation: FC<Props> = ({
                 if (selectedType === "Asset") {
                     // call api for asset
                     const response = await getAllAssets(undefined, undefined, valueSearchDebounce);
+                    
                     data = response?.data?.result?.filter((item) => item?.quantityTotal > 0)?.map((item) => ({
                         quatityUsed: item.quantityUsed,
                         quatity: item.quantityWarehouse,
                         name: item.name,
                         value: item._id,
+                        priceInput: item.priceInput
                     }));
                 } else {
                     // call api for publication
@@ -204,6 +208,7 @@ const FormAddEditLiquidation: FC<Props> = ({
                         quatity: item.quantity,
                         name: item.name,
                         value: item._id,
+                        priceInput: item.priceInput
                     }));
                 }
 
@@ -278,7 +283,7 @@ const FormAddEditLiquidation: FC<Props> = ({
                 itemId: value.value,
                 name: value.name,
                 position: selectedPosition,
-                priceLiquidation: 0,
+                priceLiquidation: value.priceInput,
                 quantityLiquidation: 1,
                 type: selectedType,
                 ...(selectedType === "Asset"
@@ -326,7 +331,7 @@ const FormAddEditLiquidation: FC<Props> = ({
                     disableEscapeKeyDown
                 >
                     <DialogTitle sx={{ p: { xs: 2, sm: 2, md: 4 } }}>
-                        {isEditMode ? "Sửa thông tin biên bản thanh lý" : "Tạo biên bản thanh lý"}
+                        {isEditMode ? "Sửa thông tin biên bản thanh lọc/thanh lý" : "Tạo biên bản thanh lọc/thanh lý"}
                     </DialogTitle>
                     <DialogContent sx={{ p: { xs: 3, sm: 3, md: 8 } }}>
                         <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
@@ -340,7 +345,7 @@ const FormAddEditLiquidation: FC<Props> = ({
                                         sx={{ background: "green", color: "white" }}
                                         type="button"
                                     >
-                                        Thêm thông tin thanh lý
+                                        Thêm thông tin thanh lọc/thanh lý
                                     </StyledButton>
                                 </Grid>
                                 <Grid item xs={12}>
@@ -352,7 +357,7 @@ const FormAddEditLiquidation: FC<Props> = ({
                                                         Phân loại
                                                     </StyledTableCell>
                                                     <StyledTableCell align="left" width="30%">
-                                                        Thông tin thanh lý
+                                                        Thông tin thanh lọc/thanh lý
                                                     </StyledTableCell>
                                                     <StyledTableCell align="center" width="10%">
                                                         Vị trí
@@ -474,7 +479,7 @@ const FormAddEditLiquidation: FC<Props> = ({
                                                             </Box>
                                                         </StyledTableCell>
                                                         <StyledTableCell align="center">
-                                                            <Box style={{ width: "100%" }}>
+                                                            {/* <Box style={{ width: "100%" }}>
                                                                 <TextField
                                                                     variant="outlined"
                                                                     fullWidth
@@ -493,12 +498,13 @@ const FormAddEditLiquidation: FC<Props> = ({
                                                                             e.preventDefault();
                                                                         }
                                                                     }}
-                                                                    error={row?.name !== "" && Number(row.priceLiquidation) <= 0}
+                                                                    disabled
                                                                 />
-                                                            </Box>
+                                                            </Box> */}
+                                                            {formatPrice(row?.priceLiquidation) || "0"}
                                                         </StyledTableCell>
                                                         <StyledTableCell align="center">
-                                                            <Box style={{ width: "100%" }}>
+                                                            {/* <Box style={{ width: "100%" }}>
                                                                 <TextField
                                                                     variant="outlined"
                                                                     fullWidth
@@ -509,7 +515,8 @@ const FormAddEditLiquidation: FC<Props> = ({
                                                                     InputProps={{ readOnly: true }}
                                                                     disabled
                                                                 />
-                                                            </Box>
+                                                            </Box> */}
+                                                            {formatPrice(row?.priceLiquidation * row?.quantityLiquidation) || "0"}
                                                         </StyledTableCell>
 
                                                         <StyledTableCell align="center">
@@ -530,7 +537,7 @@ const FormAddEditLiquidation: FC<Props> = ({
                                         </Table>
                                     </TableContainer>
                                     <Box sx={{ mt: 4 }}>
-                                        <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>Lý do thanh lý <span className="required_text">(*)</span></Typography>
+                                        <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>Lý do thanh lọc/thanh lý <span className="required_text">(*)</span></Typography>
                                         <TextField
                                             id="reason"
                                             name="reason"

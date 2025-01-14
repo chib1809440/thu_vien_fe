@@ -15,7 +15,7 @@ import PrintWareHouseReceipt from "./PrintWareHouseReceipt";
 import { formatPrice } from "../../../../utils/object";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-        backgroundColor: theme.palette.common.black,
+        backgroundColor: "#204165",
         color: theme.palette.common.white,
     },
     [`&.${tableCellClasses.body}`]: {
@@ -125,9 +125,8 @@ const ViewDetailWareHouseReceipt: FC<Props> = ({
                                             <StyledTableCell align="left" width='20%'>BarCode</StyledTableCell>
                                             <StyledTableCell align="left" width='30%'>Tên sách</StyledTableCell>
                                             <StyledTableCell align="left" width='15%'>Số lượng nhập</StyledTableCell>
-                                            <StyledTableCell align="left" width='15%'>Giá nhập</StyledTableCell>
-                                            <StyledTableCell align="left" width='15%'>Giá niêm yết</StyledTableCell>
-                                            <StyledTableCell align="left" width='20%'>Tổng giá nhập</StyledTableCell>
+                                            <StyledTableCell align="left" width='15%'>Giá nhập/Giá bìa</StyledTableCell>
+                                            <StyledTableCell align="left" width='20%'>Tổng giá</StyledTableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -148,13 +147,34 @@ const ViewDetailWareHouseReceipt: FC<Props> = ({
                                                     {formatPrice(row?.priceInput) || "0"}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left">
-                                                    {formatPrice(row?.priceOutput) || "0"}
-                                                </StyledTableCell>
-                                                <StyledTableCell align="left">
                                                     {formatPrice(row?.quantityWareHouse * row?.priceInput) || "0"}
                                                 </StyledTableCell>
                                             </StyledTableRow>
                                         ))}
+                                        <StyledTableRow sx={{ background: "#204165", color: "white" }}>
+                                            <StyledTableCell colSpan={2} align="center" sx={{ color: "white" }}>
+                                                <strong>Tổng cộng:</strong>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="left" colSpan={2} sx={{ color: "white" }}>
+                                                <strong style={{ marginLeft: 1 }}>
+                                                    {wareHouseReceipt?.publications
+                                                        ?.reduce((total, row) => {
+                                                            return total + (row?.quantityWareHouse || 0);
+                                                        }, 0)
+                                                        .toLocaleString() || "0"}
+                                                </strong>
+                                            </StyledTableCell>
+                                            <StyledTableCell sx={{ color: "white" }}>
+                                                <strong>
+                                                    {formatPrice(
+                                                        wareHouseReceipt?.publications
+                                                            ?.reduce((total, row) => {
+                                                                return total + (row?.priceInput * row?.quantityWareHouse || 0);
+                                                            }, 0)
+                                                    ) || "0"}
+                                                </strong>
+                                            </StyledTableCell>
+                                        </StyledTableRow>
                                     </TableBody>
                                 </Table>
                             </TableContainer>

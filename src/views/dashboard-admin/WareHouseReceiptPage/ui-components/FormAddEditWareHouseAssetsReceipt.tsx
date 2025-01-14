@@ -54,6 +54,7 @@ import {
 import usePermission from "../../../../utils/hasPermission";
 import FormAddEditAsset from "../../AssetPage/ui-components/FormAddEditAsset";
 import FormAddEditSupplier from "./FormAddEditSupplier";
+import { formatPrice } from "../../../../utils/object";
 
 type Props = {
     open: boolean;
@@ -128,7 +129,7 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
                     note: values.note,
                     supplierId: values.supplierId,
                     assets: filteredAssets,
-                };
+                };                
                 onSubmit(createLoanSlip, resetForm);
             }
         },
@@ -638,19 +639,7 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
                                                             </Box>
                                                         </StyledTableCell>
                                                         <StyledTableCell align="center">
-                                                            <Box style={{ width: "100%" }}>
-                                                                <TextField
-                                                                    variant="outlined"
-                                                                    fullWidth
-                                                                    placeholder="Tổng giá"
-                                                                    value={
-                                                                        row.price *
-                                                                        row.quantity
-                                                                    }
-                                                                    InputProps={{ readOnly: true }}
-                                                                    disabled
-                                                                />
-                                                            </Box>
+                                                            {formatPrice(row.price * row.quantity) || "0"}
                                                         </StyledTableCell>
                                                         <StyledTableCell align="center">
                                                             <IconTrash

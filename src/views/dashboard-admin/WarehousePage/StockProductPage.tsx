@@ -1,4 +1,4 @@
-import { Stack, Typography } from "@mui/material";
+import { Button, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { IconPencil } from "@tabler/icons";
 import { IconTransferIn } from "@tabler/icons-react";
@@ -56,6 +56,7 @@ const StockProductPage = () => {
         page,
         ...filter,
     });
+    const pubData = (data?.data?.result || []).filter((t) => t.totalQuantity !== t.quantityLiquidation);
     const { data: shelfData } = useFetchShelf();
     const revalidate = useReFetchPublications();
     const { hasPermission } = usePermission();
@@ -241,11 +242,9 @@ const StockProductPage = () => {
                                 hasPermission([
                                     { resource: "publications", action: "manage" },
                                 ]) &&
-                                <IconPencil
-                                    onClick={() => handleEditWarehouse(row)}
-                                    size={20}
-                                    stroke={1.5}
-                                />
+                                <Button size="small" onClick={() => handleEditWarehouse(row)}>
+                                    <img style={{ width: "25px", height: "25px" }} src="/images/icon-shelves.png" alt="" />
+                                </Button>
                             }
 
                         </Box>
@@ -308,6 +307,11 @@ const StockProductPage = () => {
         };
     }, [selectedEdit]);
 
+    const itemCount = data?.data?.meta?.itemCount || 0;
+    const pageCount = Math.ceil(itemCount / limit);
+    const hasNextPage = page < pageCount;
+    const hasPreviousPage = page > 1;
+
     return (
         <div>
             <IBreadcrumsCustom
@@ -365,13 +369,20 @@ const StockProductPage = () => {
                 <TableList
                     checked={checkedDelete}
                     columns={columns}
-                    rows={data?.data?.result || []}
+                    rows={pubData}
                     onChecked={handleCheckedDelete}
                     onToggleCheckedAll={handleCheckedDeleteAll}
                     checkedAll={checkedAll}
                     isLoading={isLoading || isFetching}
                     keyChecked="_id"
-                    pagination={data?.data?.meta}
+                    pagination={{
+                        itemCount,
+                        limit,
+                        page,
+                        pageCount,
+                        hasNextPage,
+                        hasPreviousPage,
+                    }}
                 />
             </MainCard>
         </div>

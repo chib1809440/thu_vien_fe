@@ -1,9 +1,9 @@
-import { Alert, Box, FormControl, Grid, MenuItem, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme } from "@mui/material";
+import { Alert, Box, Button, FormControl, Grid, MenuItem, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme } from "@mui/material";
 import Checkbox from '@mui/material/Checkbox';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
-import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconPencil, IconTrash } from "@tabler/icons-react";
+import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconPencil, IconSettings, IconTrash } from "@tabler/icons-react";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -387,7 +387,13 @@ function TableAssetList<T extends DataType>({
                                                                 alignItems: "center",
                                                                 gap: 1
                                                             }}>
-                                                                {row?.quantityTotal > 0 && <IconPencil onClick={() => handleClickUpdate(row)} size={20} stroke={1.5} />}
+                                                                {row?.quantityTotal > 0 && ((row?.typeAssetId as TTypeAsset)?.name !== "tủ kệ" ?
+                                                                    <IconSettings size={25} stroke={1.5} onClick={() => handleClickUpdate(row)} />
+                                                                    :
+                                                                    <Button size="small" onClick={() => handleClickUpdate(row)}>
+                                                                        <img style={{ width: "25px", height: "25px" }} src="/images/icon-shelves.png" alt="" />
+                                                                    </Button>
+                                                                )}
                                                                 {/* <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} /> */}
                                                             </Box>
                                                         </StyledTableCell>

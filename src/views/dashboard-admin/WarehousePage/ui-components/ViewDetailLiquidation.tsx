@@ -176,7 +176,7 @@ const ViewDetailLiquidation: FC<Props> = ({ open, onClose, onSubmitConfirmSignat
                 }}
                 disableEscapeKeyDown
             >
-                <DialogTitle sx={{ p: 4 }}>Chi tiết phiếu biên bản thanh lý</DialogTitle>
+                <DialogTitle sx={{ p: 4 }}>Chi tiết phiếu biên bản thanh lọc/thanh lý</DialogTitle>
 
                 <DialogContent sx={{ p: { xs: 3, sm: 3, md: 8 } }}>
                     <Box sx={{ display: "none" }}>
@@ -195,7 +195,7 @@ const ViewDetailLiquidation: FC<Props> = ({ open, onClose, onSubmitConfirmSignat
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
                                 <Box sx={{ mt: 4, display: "flex", alignItems: "center" }}>
-                                    <Chip color="primary" label="Thông tin thanh lý" variant="filled" />
+                                    <Chip color="primary" label="Thông tin thanh lọc/thanh lý" variant="filled" />
                                 </Box>
                                 <TableContainer component={Paper} sx={{ mt: 4 }}>
                                     <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -205,10 +205,10 @@ const ViewDetailLiquidation: FC<Props> = ({ open, onClose, onSubmitConfirmSignat
                                                     Mã barcode
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left" width="40%">
-                                                    Thông tin thanh lý
+                                                    Thông tin thanh lọc/thanh lý
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left" width="15%">
-                                                    Số lượng thanh lý
+                                                    Số lượng thanh lọc/thanh lý
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left" width="15%">
                                                     Giá

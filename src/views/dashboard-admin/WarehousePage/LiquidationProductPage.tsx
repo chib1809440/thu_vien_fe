@@ -141,7 +141,7 @@ const LiquidationProductPage = () => {
             {
                 id: "info",
                 disablePadding: "none",
-                label: "Thông tin thanh lý",
+                label: "Thông tin thanh lọc/thanh lý",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 250 },
                 render: (row) => {
@@ -153,7 +153,7 @@ const LiquidationProductPage = () => {
                                 aria-controls="panel1a-content"
                                 id="panel1a-header"
                             >
-                                <Typography>Chi tiết thanh lý</Typography>
+                                <Typography>Chi tiết thanh lọc/thanh lý</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
                                 {liquidations?.length > 0 && (
@@ -225,7 +225,7 @@ const LiquidationProductPage = () => {
             {
                 id: "reason",
                 disablePadding: "none",
-                label: "Lý do thanh lý",
+                label: "Lý do",
                 align: "left",
                 sxRow: { paddingRight: 3, maxWidth: 150 },
                 render: (row) => {
@@ -567,7 +567,7 @@ const LiquidationProductPage = () => {
         <div>
             <IBreadcrumsCustom
                 profile="Quản lý kho ấn phẩm"
-                mainProfile="Danh sách thanh lý"
+                mainProfile="Danh sách thanh lọc/thanh lý"
                 link="/quan-ly-kho/kho-an-pham"
             />
 
@@ -604,7 +604,7 @@ const LiquidationProductPage = () => {
                                         variant="contained"
                                         onClick={addLiquidation}
                                     >
-                                        Tạo phiếu thanh lý
+                                        Tạo phiếu
                                     </StyledButton>
                                 </Box>
                             )}

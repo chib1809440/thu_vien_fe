@@ -520,7 +520,7 @@ function TableUserList<T extends DataType>({
                                                                     }}>
 
                                                                         <IconEye onClick={() => handleClickDetail(row?._id)} size={22} stroke={1.5} />
-                                                                        <LockReset onClick={() => handleResetPass(row?._id)} />
+                                                                        {/* <LockReset onClick={() => handleResetPass(row?._id)} /> */}
                                                                     </Box>
                                                                 </StyledTableCell>
                                                                 : row?.isActive ?
@@ -533,7 +533,7 @@ function TableUserList<T extends DataType>({
                                                                                 gap: 1
                                                                             }}>
                                                                                 <IconEye onClick={() => handleClickDetail(row?._id)} size={22} stroke={1.5} />
-                                                                                <LockReset onClick={() => handleResetPass(row?._id)} />
+                                                                                {/* <LockReset onClick={() => handleResetPass(row?._id)} /> */}
                                                                                 <IconPencil onClick={() => handleClickUpdate(row?._id)} size={22} stroke={1.5} />
                                                                                 {/* <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} /> */}
                                                                                 {

@@ -5,7 +5,7 @@
 // import { ErrorResponse } from 'react-router-dom';
 
 import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { changeInfo, changePasswordUser, createUser, deleteUser, deleteUserSelected, getAllUsers, getAllUsersDeleted, getUserById, restoreUserSelected, softDeleteUser, softDeleteUserSelected, updateUser } from "../../_apis/user.api";
+import { changeInfo, changePasswordUser, createUser, deleteUser, deleteUserSelected, getAllUsers, getAllUsersDeleted, getUserById, restoreUserSelected, softDeleteUser, softDeleteUserSelected, updateCodeForgotPass, updateConfirmForgotPass, updateResetPass, updateUser } from "../../_apis/user.api";
 import { RQ_USER, RQ_USERLIST, RQ_USERTRASHLIST } from "./constants_react_query";
 import { ChangePasswordUserModel, CreateAdminModel, CreateUserModel, User } from "../../interfaces/user";
 import { createAdminAcount, updateAdminAcount } from "../../_apis/auth.api";
@@ -339,3 +339,40 @@ export const useChangeInfo = () => {
         },
     });
 };
+
+// 
+// useUpdateForgotPass
+export const useUpdateForgotPass = () => {
+    return useMutation({
+        mutationFn: async (data: {username: string;}) => {
+            return await updateCodeForgotPass(data);
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    });
+};
+// useUpdateConfirmForgotPass
+export const useUpdateConfirmForgotPass = () => {
+    return useMutation({
+        mutationFn: async (data: {username: string;  code: string}) => {
+            return await updateConfirmForgotPass(data);
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    });
+};
+// useUpdateResetPass
+export const useUpdateResetPass= () => {
+    return useMutation({
+        mutationFn: async (data: {username: string; token: string; password: string}) => {
+            return await updateResetPass(data);
+        },
+        onError: (error: any) => {
+            toast.error(error.message);
+        },
+    });
+};
+
+

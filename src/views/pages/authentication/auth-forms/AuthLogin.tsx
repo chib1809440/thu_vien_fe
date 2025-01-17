@@ -1,12 +1,8 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 // material-ui
 import {
     Box,
     Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
     FormControl,
     FormHelperText,
     Grid,
@@ -31,7 +27,12 @@ import AnimateButton from '../../../../ui-component/extended/AnimateButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { LoadingButton } from '@mui/lab';
+import { toast } from 'react-toastify';
 import { UN_AUTHORIZED } from '../../../../constant/authorization';
+import { useUpdateConfirmForgotPass, useUpdateForgotPass, useUpdateResetPass } from '../../../../hooks/react-query/userData';
+import ChangePassDialog from './ui-components/ChangePassDialog';
+import ConfirmForgotPassDialog from './ui-components/ConfirmForgotPassDialog';
+import ForgotPassDialog from './ui-components/ForgotPassDialog';
 
 // ===============================|| JWT LOGIN ||=============================== //
 
@@ -43,6 +44,17 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
     const [loginCount, setLoginCount] = React.useState(0);
     const [isCountdown, setCountdown] = React.useState(false);
     const [showPassword, setShowPassword] = React.useState(false);
+    const [timeLeft, setTimeLeft] = React.useState(30);
+    const timeCountdown = localStorage.getItem('timeCountdown');
+
+    const mutationUpdateForgotPass = useUpdateForgotPass();
+    const mutationUpdateConfirmForgotPass = useUpdateConfirmForgotPass();
+    const mutationUpdateResetPass = useUpdateResetPass();
+    const [accountName, setAccountName] = useState<{ username: string }>({ username: "" });
+    const [resetData, setResetData] = useState<{ username: string; token: string }>({ username: '', token: '' });
+    const [openDialog, setOpenDialog] = useState(false);
+    const [openDialogConfirm, setOpenDialogConfirm] = useState(false);
+    const [openDialogRessetPass, setOpenDialogRessetPass] = useState(false);
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -59,9 +71,6 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
             setCountdown(true)
         }
     };
-
-    const [timeLeft, setTimeLeft] = React.useState(30);
-    const timeCountdown = localStorage.getItem('timeCountdown');
 
     React.useEffect(() => {
         setTimeLeft(Number(timeCountdown));
@@ -86,13 +95,76 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
         return () => clearInterval(timer);
     }, [timeLeft]);
 
-    const [openDialog, setOpenDialog] = useState(false);
-
-    // Function to open the forgot password dialog
     const handleOpenDialog = () => setOpenDialog(true);
 
-    // Function to close the dialog
     const handleCloseDialog = () => setOpenDialog(false);
+
+    const handleSubmitForgotPass = (values: any) => {
+        mutationUpdateForgotPass.mutate(
+            { ...values },
+            {
+                onSuccess: () => {
+                    toast.success("Gửi yêu cầu quên mật khẩu thành công! Vui lòng kiểm tra email.");
+                    handleCloseDialog();
+                    setAccountName({ username: values.username });
+                    setOpenDialogConfirm(true);
+                },
+            }
+        );
+
+    }
+
+    const handleSubmitConfirmForgotPass = (values: any) => {
+        mutationUpdateConfirmForgotPass.mutate(
+            { username: accountName.username, ...values },
+            {
+                onSuccess: (data) => {
+                    const token = data?.data?.result?.token;
+                    if (token) {
+                        setResetData({
+                            username: accountName.username,
+                            token: token,
+                        });
+                        toast.success("Nhập mã xác thực thành công.");
+                        setOpenDialogConfirm(false);
+                        setOpenDialogRessetPass(true);
+                    } else {
+                        toast.error("Không tìm thấy token. Vui lòng thử lại.");
+                    }
+                },
+            }
+        );
+    };
+
+    const handleResetPasswordSubmit = (value: any) => {
+        mutationUpdateResetPass.mutate(
+            { username: resetData.username, token: resetData.token, ...value },
+            {
+                onSuccess: () => {
+                    toast.success("Thay đổi mật khẩu thành công.");
+                    setOpenDialogRessetPass(false);
+                },
+            }
+        );
+    };
+
+    const initialValuesForgotPass = useMemo((): any => {
+        return {
+            username: "",
+        };
+    }, []);
+    const initialValuesConfirmForgotPass = useMemo((): any => {
+        return {
+            code: "",
+        };
+    }, []);
+
+    const initialValuesResetPass = useMemo((): any => {
+        return {
+            password: "",
+            confirmPassword: "",
+        };
+    }, []);
 
     return (
         <Formik
@@ -179,36 +251,8 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
                     </FormControl>
 
                     <Grid container alignItems="center" justifyContent="space-between">
-                        {/* <Grid item>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={checked}
-                                        onChange={(event) => setChecked(event.target.checked)}
-                                        name="checked"
-                                        color="primary"
-                                    />
-                                }
-                                label="Keep me logged in"
-                            />
-                        </Grid>
-                        <Grid item>
-                            <Typography
-                                variant="subtitle1"
-                                component={Link}
-                                to={
-                                    loginProp
-                                        ? `/pages/forgot-password/forgot-password${loginProp}`
-                                        : '/pages/forgot-password/forgot-password3'
-                                }
-                                color="secondary"
-                                sx={{ textDecoration: 'none' }}
-                            >
-                                Forgot Password?
-                            </Typography>
-                        </Grid> */}
-                        {/* <Grid item xs={12}>
-                            <Button sx={{ float: "right" }} onClick={handleOpenDialog}>
+                        <Grid item xs={12}>
+                            <Button sx={{ float: "right", textTransform: "inherit" }} onClick={handleOpenDialog}>
                                 <Typography
                                     variant="caption"
                                     fontSize="14px"
@@ -217,13 +261,13 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
                                     Quên mật khẩu?
                                 </Typography>
                             </Button>
-                        </Grid> */}
+                        </Grid>
                     </Grid>
 
                     <Box sx={{ mt: 2 }}>
                         <AnimateButton>
                             {!isCountdown ?
-                                <LoadingButton loading={isSubmitting} color="secondary" onClick={handleLogin} disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained">
+                                <LoadingButton loading={isSubmitting} color="secondary" onClick={handleLogin} disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" sx={{ textTransform: "inherit" }}>
                                     Đăng Nhập
                                 </LoadingButton>
                                 :
@@ -231,10 +275,6 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
                                     {timeLeft}
                                 </Button>
                             }
-                            {/* :
-                                <Button endIcon={<CircularProgress />} color="secondary" disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained">
-                                    Đăng Nhập
-                                </Button> */}
                         </AnimateButton>
                     </Box>
                     {isCountdown &&
@@ -248,32 +288,33 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
                             <FormHelperText error>{errors.submit}</FormHelperText>
                         </Box>
                     )}
-                    <Dialog open={openDialog} onClose={handleCloseDialog}>
-                        <DialogTitle>Quên mật khẩu</DialogTitle>
-                        <DialogContent>
-                            <Typography variant="body2">
-                                Nhập địa chỉ tài khoản đăng nhập của bạn để nhận hướng dẫn lấy lại mật khẩu.
-                            </Typography>
-                            <FormControl fullWidth sx={{ mt: 2 }}>
-                                <InputLabel htmlFor="email-reset">Tài khoản đăng nhập</InputLabel>
-                                <OutlinedInput
-                                    id="username"
-                                    type="username"
-                                    // value={resetEmail}
-                                    // onChange={handleResetEmailChange}
-                                    label="Tài khoản đăng nhập"
-                                />
-                            </FormControl>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleCloseDialog} color="error">
-                                Hủy
-                            </Button>
-                            <Button onClick={handleCloseDialog} color="primary" sx={{ textTransform: "inherit" }}>
-                                Gửi yêu cầu
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
+                    {
+                        openDialog &&
+                        <ForgotPassDialog
+                            open={openDialog}
+                            onClose={handleCloseDialog}
+                            initialValues={initialValuesForgotPass}
+                            onSubmit={handleSubmitForgotPass}
+                        />
+                    }
+                    {
+                        openDialogConfirm &&
+                        <ConfirmForgotPassDialog
+                            open={openDialogConfirm}
+                            onClose={() => setOpenDialogConfirm(false)}
+                            initialValues={initialValuesConfirmForgotPass}
+                            onSubmit={handleSubmitConfirmForgotPass}
+                        />
+                    }
+                    {
+                        openDialogRessetPass &&
+                        <ChangePassDialog
+                            open={openDialogRessetPass}
+                            onClose={() => setOpenDialogRessetPass(false)}
+                            initialValues={initialValuesResetPass}
+                            onSubmit={handleResetPasswordSubmit}
+                        />
+                    }
                 </form>
             )}
 

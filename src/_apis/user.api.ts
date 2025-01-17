@@ -203,3 +203,21 @@ export const importExcelUser = async (file: File) => {
     });
     return response.data as TApiModifyRecord<{ users: any; errors?: any }>;
 }
+
+// forgot password
+export const updateCodeForgotPass = async (data: { username: string; }) => {
+    const response = await axios.patch(`${USER_API}/code-forgot-password`, data);
+    return response.data;
+}
+
+// forgot password
+export const updateConfirmForgotPass = async (data: { username: string; code: string }) => {
+    const response = await axios.patch(`${USER_API}/confirm-forgot-password`, data);
+    return response.data;
+}
+
+// forgot password
+export const updateResetPass = async (data: { username: string; token: string; password: string }) => {
+    const response = await axios.patch(`${USER_API}/reset-password`, data);
+    return response.data;
+}

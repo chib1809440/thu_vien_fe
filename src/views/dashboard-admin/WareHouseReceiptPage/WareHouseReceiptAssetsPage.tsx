@@ -157,7 +157,7 @@ const WareHouseReceiptAssetsPage = () => {
                         <Box>
                             <Typography mt={0.5}>
                                 Nhà cung cấp:
-                                <strong>
+                                <strong style={{ marginLeft: 5 }}>
                                     {capitalizeFirstLetter((row.supplierId as TSupplier)?.name)}
                                 </strong>
                             </Typography>

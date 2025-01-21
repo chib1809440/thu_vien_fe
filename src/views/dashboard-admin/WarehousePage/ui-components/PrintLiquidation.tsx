@@ -22,7 +22,7 @@ const PrintLiquidation = forwardRef<HTMLDivElement, { liquidationData: TLiquidat
                 </div>
                 <br />
                 <br />
-                <h2 style={{ textAlign: "center", marginTop: '10px', textTransform: "uppercase" }}>Biên bản xin thanh lý</h2>
+                <h2 style={{ textAlign: "center", marginTop: '10px', textTransform: "uppercase" }}>Phiếu thông tin thanh lý</h2>
                 <br />
                 <h2 style={{ textAlign: "center", marginTop: '11px', textTransform: "uppercase" }}>DANH MỤC TÀI NGUYÊN THÔNG TIN ĐỦ ĐIỀU KIỆN THANH LỌC TÀI SẢN VÀ THANH LÝ ẤN PHẨM</h2>
                 <br />

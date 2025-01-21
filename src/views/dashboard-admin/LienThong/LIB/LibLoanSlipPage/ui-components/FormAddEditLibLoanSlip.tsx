@@ -1204,12 +1204,12 @@ const FormAddEditLoanSlip: FC<Props> = ({
                         <Button disabled={isFetching} onClick={onClose} color="error">
                             Đóng
                         </Button>
-                        {
+                        {/* {
 
                             isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button style={{ background: '#de524a', color: 'white' }} variant="contained"  >
                                 Báo mất
                             </Button>
-                        }
+                        } */}
                         {
 
                             loanSlip && (libraryId === initialValues.libraryId) && isEditMode && !loanSlip?.isReturn && loanSlip?.isAgree && <Button onClick={() => handleOpenDialog('return')} style={{ background: '#07624e', color: 'white' }} variant="contained"  >

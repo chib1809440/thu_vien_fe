@@ -96,7 +96,7 @@ export default function AccountDetailDialog({ title, maxWidth, id, content, acti
                                 <Typography sx={{ mb: 3 }}><strong>Tên đăng nhập:</strong> {userDetail?.data?.result?.username}</Typography>
                                 {
                                     userDetail?.data?.result?.passwordFirst === "" ?
-                                        <Typography sx={{ mb: 3 }}><strong>Mật khẩu đầu tiên:</strong> <strong style={{ color: "red" }}>Mật khẩu người đã thay đổi</strong></Typography>
+                                        <Typography sx={{ mb: 3 }}><strong>Mật khẩu đầu tiên:</strong> <strong style={{ color: "red" }}>Mật khẩu đã thay đổi</strong></Typography>
                                         :
                                         <Typography sx={{ mb: 3 }}><strong>Mật khẩu đầu tiên:</strong> {userDetail?.data?.result?.passwordFirst}</Typography>
                                 }

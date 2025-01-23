@@ -377,15 +377,14 @@ function TableUserList<T extends DataType>({
     };
 
     const handleResetPass = (id: string) => {
-        console.log("id", id);
-        
+        // console.log("id", id);
         setIsOpenResetPassDialog(true);
         setSelectedResetPassID(id);
     }
 
     const handleResetPasswordSubmit = async() => {
         if (selectedResetPassID) {
-            console.log(selectedResetPassID);
+            // console.log(selectedResetPassID);
             try {
                 await updateResetPassFromAdmin(selectedResetPassID);
                 setIsOpenResetPassDialog(false);

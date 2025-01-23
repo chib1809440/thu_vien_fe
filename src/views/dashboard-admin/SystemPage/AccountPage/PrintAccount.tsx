@@ -5,6 +5,7 @@ import { Role } from "../../../../interfaces/role";
 import { User } from "../../../../interfaces/user";
 import { statusRole } from "../../../../utils/constants.utils";
 import { getLabelFromOptions } from "../../../../utils/object";
+import { TLibrary } from "../../../../types/models/library.type";
 interface PrintAccountProps {
     dataUsers: User | User[];
 }
@@ -48,72 +49,99 @@ const PrintAccount = forwardRef<HTMLDivElement, PrintAccountProps>(({ dataUsers 
                             overflow: "hidden",
                         }}
                     >
-                        <div style={{
-                            width: "100%",
-                            height: "220px"
-                        }}>
+                        <div style={{ width: "100%", height: "220px", position: "relative" }}>
                             <img
-                                src={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/bg-img.jpg`}
+                                src={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/bg-img.png`}
                                 alt="bg"
                                 style={{
                                     width: "100%",
                                     height: "100%",
-                                    objectFit: "scale-down",
-                                    objectPosition: "center", // Căn ảnh ở giữa
-                                    zIndex: 0,
-                                    imageRendering: "pixelated", // Nếu muốn giữ hiệu ứng pixelated khi phóng to
-                                    filter: "grayscale(100%)",
-                                    opacity: 1
-                                    
+                                    objectFit: "cover",
+                                    objectPosition: "center",
+                                    imageRendering: "pixelated",
+                                    opacity: 1,
+                                    position: "absolute",
+                                    top: "0",
+                                    left: "0",
+                                    filter: "blur(1px)"
+                                }}
+                            />
+                            <div
+                                style={{
+                                    position: "absolute",
+                                    top: "0",
+                                    left: "0",
+                                    right: "0",
+                                    bottom: "0",
+                                    background: "rgba(243, 217, 178, 0.4)",
+                                    zIndex: 1,
                                 }}
                             />
                         </div>
 
-                        <div
-                            style={{
-                                position: "absolute",
-                                bottom: "10px",
-                                left: "26px",
-                                fontSize: "16px",
-                                color: "#fff",
-                                fontWeight: "bold",
-                            }}>
-                            {user?.school && (
-                                <div
+                        <div style={{
+                            position: "absolute",
+                            top: "6px",
+                            left: "26px",
+                            fontSize: "16px",
+                            color: "#fff",
+                            fontWeight: "bold",
+                            zIndex: 2
+                        }}>
+                            <div>
+                                {user?.libraryId && (
+                                    <div
+                                        style={{
+                                            textAlign: "center",
+                                            textTransform: "uppercase",
+                                            margin: "0 0 2px 0",
+                                            fontSize: "12px",
+                                            color: "blue",
+                                        }}
+                                    >
+                                        Sở Giáo Dục & Đào Tạo {(user?.libraryId as TLibrary)?.managementAgency}
+                                    </div>
+                                )}
+                                {user?.school && (
+                                    <div
+                                        style={{
+                                            textAlign: "center",
+                                            textTransform: "uppercase",
+                                            margin: "0 0 4px 0",
+                                            fontSize: "13px",
+                                            color: "#75ba75",
+                                            fontWeight: "bold"
+                                        }}
+                                    >
+                                        Trường {user?.school}
+                                    </div>
+                                )}
+                                <h4
                                     style={{
                                         textAlign: "center",
                                         textTransform: "uppercase",
                                         margin: "0 0 2px 0",
-                                        fontSize: "14px",
-                                        color: "#fd6033",
+                                        fontSize: "16px",
+                                        color: "red",
+                                        fontWeight: "bold"
                                     }}
                                 >
-                                    {user?.school}
+                                    Thẻ thư viện
+                                </h4>
+                                <div style={{ textAlign: "center", fontSize: "11px", fontWeight: "bold", color: "black" }}>
+                                    {getLabelFromOptions(
+                                        statusRole,
+                                        (user?.roleId as Role)?.name
+                                    )}
                                 </div>
-                            )}
-                            <h4
-                                style={{
-                                    textAlign: "center",
-                                    textTransform: "uppercase",
-                                    margin: "0 0 2px 0",
-                                    fontSize: "14px",
-                                    color: "red",
-                                    fontWeight: "bold"
-                                }}
-                            >
-                                Thẻ thư viện
-                            </h4>
-                            <div style={{ textAlign: "center", fontSize: "11px", fontWeight: "bold", color: "black" }}>
-                                {getLabelFromOptions(
-                                    statusRole,
-                                    (user?.roleId as Role)?.name
-                                )}
                             </div>
+
                             <div
                                 style={{
                                     display: "flex",
+                                    justifyContent: "space-between",
                                     alignItems: "center",
-                                    gap: "14px"
+                                    gap: "14px",
                                 }}
                             >
 
@@ -123,16 +151,16 @@ const PrintAccount = forwardRef<HTMLDivElement, PrintAccountProps>(({ dataUsers 
                                         justifyContent: "center",
                                         alignItems: "center",
                                         height: "120px",
-                                        width: "40%"
+                                        width: "40%",
                                     }}
                                 >
                                     <img
                                         src={process.env.REACT_APP_BASE_API_FILE_URL + user?.avatar}
                                         alt="Avatar"
-                                        style={{ width: "100%", height: "100%", borderRadius: "8px" }}
+                                        style={{ width: "100%", height: "100%", borderRadius: "8px", marginBottom: 5 }}
                                     />
                                 </div>
-                                <div style={{ textAlign: "left", width: "60%", marginTop: "16px" }}>
+                                <div style={{ textAlign: "left", width: "60%" }}>
 
                                     <div style={{ fontSize: "12px", fontWeight: "bold", color: "blue" }}>
                                         <strong>Họ và tên:</strong> {user?.fullname}
@@ -141,7 +169,7 @@ const PrintAccount = forwardRef<HTMLDivElement, PrintAccountProps>(({ dataUsers 
                                         <strong>Ngày sinh:</strong> {formatDate(user?.birthday)}
                                     </div>
                                     {user?.class && (
-                                        <div style={{ fontSize: "11px", margin: "0 0 1px 0", fontWeight: "bold", color: "blue" }}>
+                                        <div style={{ fontSize: "11px", fontWeight: "bold", color: "blue" }}>
                                             <strong>Lớp:</strong> {user?.class}
                                         </div>
                                     )}

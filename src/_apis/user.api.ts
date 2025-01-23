@@ -210,14 +210,20 @@ export const updateCodeForgotPass = async (data: { username: string; }) => {
     return response.data;
 }
 
-// forgot password
+// confirm-forgot-password
 export const updateConfirmForgotPass = async (data: { username: string; code: string }) => {
     const response = await axios.patch(`${USER_API}/confirm-forgot-password`, data);
     return response.data;
 }
 
-// forgot password
+// reset-password
 export const updateResetPass = async (data: { username: string; token: string; password: string }) => {
     const response = await axios.patch(`${USER_API}/reset-password`, data);
+    return response.data;
+}
+
+// reset-password-admin
+export const updateResetPassFromAdmin = async (id: string): Promise<EntityResponse<User>> => {
+    const response = await axios.patch<EntityResponse<User>>(`${USER_API}/reset-password-admin/${id}`);
     return response.data;
 }

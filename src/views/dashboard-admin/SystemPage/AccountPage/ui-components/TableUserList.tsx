@@ -1,5 +1,5 @@
 import { Lock, LockOpen, LockReset } from "@mui/icons-material";
-import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, OutlinedInput, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme } from "@mui/material";
+import { Alert, Box, FormControl, Grid, MenuItem, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme } from "@mui/material";
 import Checkbox from '@mui/material/Checkbox';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,7 +10,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
-import { activeUser, blockUser, importExcelUser } from "../../../../../_apis/user.api";
+import { activeUser, blockUser, importExcelUser, updateResetPassFromAdmin } from "../../../../../_apis/user.api";
 import { EnhancedTableHead } from "../../../../../components/custom/table/TableHead";
 import { SearchAndFilter } from "../../../../../components/custom/table/TableSearchAndFilter";
 import { StyledTableCell, StyledTableRow } from "../../../../../components/custom/table/style";
@@ -29,13 +29,12 @@ import { useDeleteUserSelected, useSoftDeleteUser, useUserList } from "../../../
 import useDebounce, { searchDelay } from "../../../../../hooks/useDebounce";
 import { EntityResponse } from "../../../../../interfaces/entityResponse";
 import { Role } from "../../../../../interfaces/role";
-import { ChangePasswordUserModel, User } from "../../../../../interfaces/user";
+import { User } from "../../../../../interfaces/user";
 import { statusRole } from "../../../../../utils/constants.utils";
 import usePermission from "../../../../../utils/hasPermission";
 import { getLabelFromOptions } from "../../../../../utils/object";
 import DialogImportFile from "../../../PublicationsPage/ui-components/DialogImportFile";
 import PrintAccount from "../PrintAccount";
-import FormChangePassword from "../../../../../layout/MainLayout/Header/ProfileSection/FormChangePassword";
 
 interface TableProps<T extends DataType> {
     orderByKey: keyof T,
@@ -64,7 +63,6 @@ function TableUserList<T extends DataType>({
     const [schools, setUsers] = useState<EntityResponse<User[]>>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isOpenUpdateDialog, setIsOpenUpdateDialog] = useState<boolean>(false);
-    const [isOpenResetPassDialog, setIsOpenResetPassDialog] = useState<boolean>(false);
     const [isOpenConfirmDialog, setIsOpenConfirmDialog] = useState(false);
     const [isOpenBlock, setIsOpenBlock] = useState(false);
     const [isOpenLibCard, setIsOpenLibCard] = useState(false);
@@ -73,6 +71,8 @@ function TableUserList<T extends DataType>({
     const [selectedActiveUserID, setSelectedActiveUserID] = useState<string>()
     const [isBlock, setIsBlock] = useState(false);
     const [selectedBlockUserID, setSelectedBlockUserID] = useState<string>()
+    const [isOpenResetPassDialog, setIsOpenResetPassDialog] = useState<boolean>(false);
+    const [selectedResetPassID, setSelectedResetPassID] = useState<string>()
     const [filterRoleId, setFilterRoleId] = useState<string | number>(0)
     const debouncedSearch = useDebounce<string>(contentSearch, searchDelay);
     const [isOpenDetailDialog, setIsOpenDetailDialog] = useState<boolean>(false);
@@ -173,11 +173,11 @@ function TableUserList<T extends DataType>({
         setUser(user)
         setIsOpenUpdateDialog(true)
     }
-    const handleResetPass = (id: string) => {
-        let user: User = users.data.result.find(x => x._id === id)
-        setUser(user)
-        setIsOpenResetPassDialog(true)
-    }
+    // const handleResetPass = (id: string) => {
+    //     let user: User = users.data.result.find(x => x._id === id)
+    //     setUser(user)
+    //     setIsOpenResetPassDialog(true)
+    // }
     const [user, setUser] = useState<User>();
     const pageCount = useMemo(() => {
         // Check if rowsPerPage is 0 to prevent division by zero
@@ -376,20 +376,27 @@ function TableUserList<T extends DataType>({
         }
     };
 
-    const handleResetPasswordSubmit = (values: any) => {
-        console.log(values);
+    const handleResetPass = (id: string) => {
+        console.log("id", id);
+        
+        setIsOpenResetPassDialog(true);
+        setSelectedResetPassID(id);
+    }
 
-    };
-
-    const initialValueResetPassword = useMemo((): ChangePasswordUserModel => {
-        if (user) {
-            return {
-                userId: user?._id,
-                newPassword: '',
-                confirmPassword: ''
-            };
+    const handleResetPasswordSubmit = async() => {
+        if (selectedResetPassID) {
+            console.log(selectedResetPassID);
+            try {
+                await updateResetPassFromAdmin(selectedResetPassID);
+                setIsOpenResetPassDialog(false);
+                setSelectedResetPassID(selectedResetPassID);
+                toast.success("Đặt lại mật khẩu thành công");
+                refetch();
+            } catch (error) {
+                toast.error("Lỗi khi đặt lại mật khẩu")
+            }
         }
-    }, [user]);
+    };
 
     return (
         <>
@@ -520,7 +527,7 @@ function TableUserList<T extends DataType>({
                                                                     }}>
 
                                                                         <IconEye onClick={() => handleClickDetail(row?._id)} size={22} stroke={1.5} />
-                                                                        {/* <LockReset onClick={() => handleResetPass(row?._id)} /> */}
+                                                                        <LockReset onClick={() => handleResetPass(row?._id)} />
                                                                     </Box>
                                                                 </StyledTableCell>
                                                                 : row?.isActive ?
@@ -533,7 +540,7 @@ function TableUserList<T extends DataType>({
                                                                                 gap: 1
                                                                             }}>
                                                                                 <IconEye onClick={() => handleClickDetail(row?._id)} size={22} stroke={1.5} />
-                                                                                {/* <LockReset onClick={() => handleResetPass(row?._id)} /> */}
+                                                                                <LockReset onClick={() => handleResetPass(row?._id)} />
                                                                                 <IconPencil onClick={() => handleClickUpdate(row?._id)} size={22} stroke={1.5} />
                                                                                 {/* <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} /> */}
                                                                                 {
@@ -662,14 +669,13 @@ function TableUserList<T extends DataType>({
                     handleOpen={setIsOpenUpdateDialog}
                 />
             }
-            {
-                isOpenResetPassDialog && user &&
-                <FormChangePassword
-                    onClose={() => setIsOpenResetPassDialog(false)}
-                    open={isOpenResetPassDialog}
-                    onSubmit={handleResetPasswordSubmit}
-                    initialValues={initialValueResetPassword}
-                    isResetPass={true}
+             {
+                isOpenResetPassDialog &&
+                <AlertConfirmDialog
+                    title="Xác nhận đặt lại mật khẩu?"
+                    onHandleConfirm={handleResetPasswordSubmit}
+                    openConfirm={isOpenResetPassDialog}
+                    handleOpenConfirmDialog={setIsOpenResetPassDialog}
                 />
             }
             {

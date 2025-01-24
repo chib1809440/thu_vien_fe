@@ -160,18 +160,18 @@ const LoanSlipPage = () => {
         if (returnDate < currentDate) {
             toast.error("Ngày trả không hợp lệ! Vui lòng cập nhật lại.")
             return;
-        } else {
-            mutationEdit.mutate(
-                { ...row as any, _id: row._id, userId: row.userId._id, libraryId: (row.libraryId as TLibrary)?._id },
-                {
-                    onSuccess: () => {
-                        revalidate();
-                        toast.success('Duyệt phiếu mượn thành công.');
-                        handleClose();
-                    },
-                }
-            );
-        };
+        }
+        mutationEdit.mutate(
+            { ...row as any, _id: row._id, userId: row.userId._id, libraryId: (row.libraryId as TLibrary)?._id },
+            {
+                onSuccess: () => {
+                    revalidate();
+                    toast.success('Duyệt phiếu mượn thành công.');
+                    handleClose();
+                },
+            }
+        );
+
     }
     const handleReturnLoanSlip = (row: TLoanSlip, publications: CreatePublication[]) => {
         mutationReturn.mutate(

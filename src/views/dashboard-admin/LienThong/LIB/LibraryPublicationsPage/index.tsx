@@ -1,7 +1,7 @@
 import { Button, Grid, Paper, Tooltip, Typography, useTheme } from "@mui/material";
 import { Box, useMediaQuery } from "@mui/system";
 import { IconBook } from "@tabler/icons";
-import { IconFileDescription, IconFileWord, IconPdf, IconPhoto, IconPresentation, IconShoppingBag, IconVideo } from "@tabler/icons-react";
+import { IconFileDescription, IconFileWord, IconPdf, IconPhoto, IconPresentation, IconVideo } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -9,6 +9,8 @@ import ImageCard from "../../../../../components/custom/card/ImageCard";
 import ActionsForm from "../../../../../components/custom/form/ActionForm";
 import PaginationForm from "../../../../../components/custom/form/PaginationForm";
 import StyledIconButton from "../../../../../components/default/button/StyledIconButton";
+import GradientCircularProgressLoading from "../../../../../components/default/loading/GradientCircularProgressLoading/GradientCircularProgressLoading";
+import { useAuth } from "../../../../../contexts/JWTContext";
 import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
 import { useFetchAuthorLink } from "../../../../../hooks/services/author/author-query";
 import { useFetchCategoryLink } from "../../../../../hooks/services/category/category-query";
@@ -17,6 +19,7 @@ import { useFetchMaterialLink } from "../../../../../hooks/services/material/mat
 import { useFetchPublicationsLink } from "../../../../../hooks/services/publications/publications-query";
 import { useFetchPublisherLink } from "../../../../../hooks/services/publisher/publisher-query";
 import useQueryString from "../../../../../hooks/services/useQueryString";
+import { Role } from "../../../../../interfaces/role";
 import { addItem } from "../../../../../store/slices/cartLoanSlip";
 import { TMenuOption } from "../../../../../types/common/table";
 import { TLibrary } from "../../../../../types/models/library.type";
@@ -28,9 +31,6 @@ import { colorType, typeOptions } from "../../../../../utils/constants.utils";
 import { parserParams } from "../../../../../utils/object";
 import FilterByItems from "../../../PublicationsPage/ui-components/FilterByItems";
 import PublicationsDetailsDialog from "../../../PublicationsPage/ui-components/PublicationsDetailsDialog";
-import { useAuth } from "../../../../../contexts/JWTContext";
-import { Role } from "../../../../../interfaces/role";
-import GradientCircularProgressLoading from "../../../../../components/default/loading/GradientCircularProgressLoading/GradientCircularProgressLoading";
 
 const BreakpointsColumn = {
     xs: 12,
@@ -80,7 +80,6 @@ const LibraryPublicationsPage = () => {
         const _user = { ...user } as any;
         return (_user?.data?.roleId as Role)?.name;
     }, [user]);
-
 
     const filter = useMemo(
         () =>
@@ -324,17 +323,20 @@ const LibraryPublicationsPage = () => {
                                                     // margin: "8px",
                                                     background: colorType(item?.mimetype, item?.type),
                                                     boxShadow: "5px 5px 7px rgba(0.1, 0.1, 0.1, 0.1)",
-
+                                                    "&:hover": {
+                                                        background: colorType(item?.mimetype, item?.type),
+                                                        boxShadow: "5px 5px 7px rgba(0.1, 0.1, 0.1, 0.1)",
+                                                    },
                                                 }}
                                             >
                                                 {
-                                                    (!item?.mimetype || [
+                                                    (!item?.mimetype || ([
                                                         "image/jpeg",
                                                         "image/png",
                                                         "image/gif",
                                                         "image/bmp",
                                                         "image/webp",
-                                                    ].includes(item?.mimetype) || item?.type === "ấn phẩm cứng") && (
+                                                    ].includes(item?.mimetype) && item?.type === "ấn phẩm cứng")) && (
                                                         <IconBook
                                                             size={25}
                                                             stroke={1.5}

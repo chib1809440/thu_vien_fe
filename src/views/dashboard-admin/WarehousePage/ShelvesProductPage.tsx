@@ -1,10 +1,10 @@
+import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { IconPencil } from "@tabler/icons";
-import { IconFileExcel } from "@tabler/icons-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
+import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import {
     useEditPublications
 } from "../../../hooks/services/publications/publications-mutation";
@@ -19,11 +19,9 @@ import { TPublications, TPublicationsCreate } from "../../../types/models/public
 import { TShelves } from "../../../types/models/shelves";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
+import usePermission from "../../../utils/hasPermission";
 import { parserParams } from "../../../utils/object";
 import FormEditShelves from "./ui-components/FormEditShelves";
-import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
-import usePermission from "../../../utils/hasPermission";
-import { Typography } from "@mui/material";
 
 const ShelvesProductPage = () => {
     const queryString = useQueryString();
@@ -160,11 +158,21 @@ const ShelvesProductPage = () => {
                                     { resource: "publications", action: "update" },
                                     { resource: "publications", action: "delete" },
                                 ]) &&
-                                <IconPencil
-                                    onClick={() => handleEditWarehouse(row)}
-                                    size={20}
-                                    stroke={1.5}
-                                />
+                                <Button
+                                    size="small"
+                                    sx={{
+                                        textTransform: "inherit",
+                                        background: "#086c5c",
+                                        color: "white",
+                                        "&:hover": {
+                                            background: "#086c5c",
+                                            color: "white",
+                                        },
+                                        borderRadius: "8px"
+                                    }}
+                                    onClick={() => handleEditWarehouse(row)}>
+                                    Chuyển sang kệ khác
+                                </Button>
                             }
                         </Box>
                     );
@@ -263,12 +271,12 @@ const ShelvesProductPage = () => {
                     isLoading={isLoading || isFetching}
                     keyChecked="_id"
                     pagination={{
-                        itemCount, 
-                        limit, 
-                        page, 
-                        pageCount, 
-                        hasNextPage, 
-                        hasPreviousPage, 
+                        itemCount,
+                        limit,
+                        page,
+                        pageCount,
+                        hasNextPage,
+                        hasPreviousPage,
                     }}
                 />
             </MainCard>

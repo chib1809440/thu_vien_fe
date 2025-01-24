@@ -1,43 +1,40 @@
 
 
-import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, Table, TableBody, TableContainer, TableHead, TextField, Typography } from "@mui/material";
+import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
+import { ExpandMore } from "@mui/icons-material";
+import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormHelperText, Grid, InputAdornment, MenuItem, Select, Table, TableBody, TableContainer, TableHead, TextField, Typography } from "@mui/material";
+import Paper from '@mui/material/Paper';
+import { styled } from '@mui/material/styles';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import { useMediaQuery } from "@mui/system";
+import { IconTrash } from "@tabler/icons";
+import { IconCirclePlusFilled } from "@tabler/icons-react";
+import { vi } from "date-fns/locale";
 import { Form, FormikProvider, useFormik } from "formik";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
-import * as yup from "yup";
-import InputForm from "../../../../components/custom/form/InputForm";
-import SwitchForm from "../../../../components/custom/form/SwitchForm";
-import { CreatePublication, TLoanSlip, TLoanSlipCreate } from "../../../../types/models/loanSlip.type";
 import DatePicker from "react-datepicker";
-import { ExpandMore, Label } from "@mui/icons-material";
-import { vi } from "date-fns/locale";
-import useDebounce, { searchDelay } from "../../../../hooks/useDebounce";
-import { getUserByBarCode } from "../../../../_apis/user.api";
-import { EntityResponse } from "../../../../interfaces/entityResponse";
-import { User } from "../../../../interfaces/user";
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import { styled } from '@mui/material/styles';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { TPublications } from "../../../../types/models/publications.type";
-import { positions, useMediaQuery } from "@mui/system";
-import publicationsService from "../../../../_apis/services/publications.service";
-import useDebounceArray from "../../../../hooks/useDebounceArray";
-import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { IconPencil, IconPlus, IconTrash } from "@tabler/icons";
-import { IconCirclePlusFilled } from "@tabler/icons-react";
-import PrintLoanSlip from "./PrintLoanSlip";
+import { useDispatch, useSelector } from "react-redux";
 import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
-import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
-import { Role } from "../../../../interfaces/role";
-import { useAuth } from "../../../../contexts/JWTContext";
-import { formatDate } from "../../../../helpers/formatDate";
-import StyledButton from "../../../../components/default/button/StyledButton";
-import { useDispatch, useSelector } from "react-redux";
-import { removeInternalItem } from "../../../../store/slices/cartInternalLoanSlip";
+import * as yup from "yup";
+import publicationsService from "../../../../_apis/services/publications.service";
+import { getUserByBarCode } from "../../../../_apis/user.api";
 import AlertConfirmDialog from "../../../../components/default/alert/confirmAlertDialog";
-import { getLabelFromOptions } from "../../../../utils/object";
+import StyledButton from "../../../../components/default/button/StyledButton";
+import { useAuth } from "../../../../contexts/JWTContext";
+import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
+import { formatDate } from "../../../../helpers/formatDate";
+import useDebounce from "../../../../hooks/useDebounce";
+import { EntityResponse } from "../../../../interfaces/entityResponse";
+import { Role } from "../../../../interfaces/role";
+import { User } from "../../../../interfaces/user";
+import { removeInternalItem } from "../../../../store/slices/cartInternalLoanSlip";
+import { CreatePublication, TLoanSlip, TLoanSlipCreate } from "../../../../types/models/loanSlip.type";
+import { TPublications } from "../../../../types/models/publications.type";
 import { statusRole } from "../../../../utils/constants.utils";
+import { getLabelFromOptions } from "../../../../utils/object";
+import PrintLoanSlip from "./PrintLoanSlip";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -139,6 +136,12 @@ const FormAddEditLoanSlip: FC<Props> = ({
         validationSchema: schema,
         enableReinitialize: true,
         onSubmit: (values, { resetForm }) => {
+
+            // Kiểm tra ngày trả (returnDay) phải lớn hơn hoặc bằng ngày hiện tại
+            if (new Date(returnDay).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0)) {
+                toast.error('Ngày trả phải bằng hoặc lớn hơn ngày hiện tại!');
+                return;
+            }       
 
             let filteredPublications = publications.filter(
                 (publication) => publication.publicationId !== ''
@@ -555,7 +558,7 @@ const FormAddEditLoanSlip: FC<Props> = ({
         setPublications(updatedPublications);
     };
 
-    const handleReportLoss = ()=>{
+    const handleReportLoss = () => {
         console.log("hihihi");
     }
 

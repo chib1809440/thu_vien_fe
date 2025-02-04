@@ -1,6 +1,7 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, InputAdornment } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
-import { FC, useMemo } from "react";
+import { FC, useMemo, useState } from "react";
 import * as yup from "yup";
 import InputForm from "../../../../../components/custom/form/InputForm";
 import StyledButton from "../../../../../components/default/button/StyledButton";
@@ -32,6 +33,11 @@ const ChangePassDialog: FC<Props> = ({
         confirmPassword: "",
     },
 }) => {
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const toggleShowNewPassword = () => setShowNewPassword(!showNewPassword);
+    const toggleShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
     const formik = useFormik<any>({
         initialValues,
         validationSchema: schema,
@@ -65,7 +71,13 @@ const ChangePassDialog: FC<Props> = ({
                 <DialogTitle>Đặt lại mật khẩu</DialogTitle>
 
                 <DialogContent>
-                    <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
+                    <Form autoComplete="none" noValidate onSubmit={handleSubmit}
+                        onKeyDown={(event) => {
+                            if (event.key === 'Enter') {
+                                handleSubmit();
+                            }
+                        }}
+                    >
                         <InputForm
                             label="Mật khẩu mới"
                             placeholder="Nhập mật khẩu"
@@ -73,6 +85,14 @@ const ChangePassDialog: FC<Props> = ({
                             error={touched.password && Boolean(errors.password)}
                             helperText={touched.password && errors.password}
                             {...getFieldProps("password")}
+                            type={showNewPassword ? "text" : "password"}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton onClick={toggleShowNewPassword} edge="end">
+                                        {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
                         />
                         <InputForm
                             label="Xác nhận mật khẩu"
@@ -81,6 +101,14 @@ const ChangePassDialog: FC<Props> = ({
                             error={touched.confirmPassword && Boolean(errors.confirmPassword)}
                             helperText={touched.confirmPassword && errors.confirmPassword}
                             {...getFieldProps("confirmPassword")}
+                            type={showConfirmPassword ? "text" : "password"}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton onClick={toggleShowConfirmPassword} edge="end">
+                                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
                         />
                     </Form>
                 </DialogContent>

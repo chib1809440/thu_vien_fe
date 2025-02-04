@@ -130,14 +130,15 @@ const ViewDetailWareHouseAssetsReceipt: FC<Props> = ({
                                                     {row?.quantity || "0"}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left">
-                                                    {formatPrice(row?.priceInput) || "0"}
+                                                    {/* {formatPrice(row?.priceInput) || "0"} */}
+                                                    {formatPrice(row?.price) || "0"}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="left">
-                                                    {formatPrice(row?.quantity * row?.priceInput) || "0"}
+                                                    {formatPrice(row?.quantity * row?.price) || "0"}
                                                 </StyledTableCell>
                                             </StyledTableRow>
                                         ))}
-                                        <StyledTableRow sx={{ background: "#204165", color: "white" }}>
+                                        <StyledTableRow sx={{ background: "#204165 !important", color: "white" }}>
                                             <StyledTableCell colSpan={2} align="center" sx={{ color: "white" }}>
                                                 <strong>Tổng cộng:</strong>
                                             </StyledTableCell>
@@ -155,7 +156,7 @@ const ViewDetailWareHouseAssetsReceipt: FC<Props> = ({
                                                     {formatPrice(
                                                         wareHouseAssetsReceipt?.assets
                                                             ?.reduce((total, row) => {
-                                                                return total + (row?.priceInput * row?.quantity || 0);
+                                                                return total + (row?.price * row?.quantity || 0);
                                                             }, 0)
                                                     ) || "0"}
                                                 </strong>

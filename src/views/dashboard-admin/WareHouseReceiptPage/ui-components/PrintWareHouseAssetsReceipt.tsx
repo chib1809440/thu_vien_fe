@@ -50,14 +50,14 @@ const PrintWareHouseAssetsReceipt = forwardRef<HTMLDivElement, { wareHouseAssets
                                 <td style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{index + 1}</td> {/* Hiển thị STT */}
                                 <td style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{asset.name}</td>
                                 <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{asset.quantity}</td>
-                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{formatPrice(asset.priceInput)}</td>
-                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{formatPrice(asset.quantity * asset.priceInput)}</td>
+                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{formatPrice(asset.price)}</td>
+                                <td width="15%" style={{ border: "1px solid black", padding: "8px", textAlign: "center" }}>{formatPrice(asset.quantity * asset.price)}</td>
                             </tr>
                         ))}
                         <tr>
                             <td colSpan={4} style={{ border: "1px solid black", padding: "8px", textAlign: "center", fontWeight: 'bold' }}>Tổng cộng</td>
                             <td style={{ border: "1px solid black", padding: "8px", textAlign: "center", fontWeight: 'bold' }}>
-                                {formatPrice(wareHouseAssetsReceipt?.assets?.reduce((total, asset) => total + asset.quantity * asset.priceInput, 0))}
+                                {formatPrice(wareHouseAssetsReceipt?.assets?.reduce((total, asset) => total + asset.quantity * asset.price, 0))}
                             </td>
                         </tr>
                     </tbody>

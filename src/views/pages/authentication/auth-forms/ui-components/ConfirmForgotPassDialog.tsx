@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, Grid, TextField } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField, Typography } from "@mui/material";
 import { Form, FormikProvider, useFormik } from "formik";
 import { FC, useMemo, useRef } from "react";
 import * as yup from "yup";
@@ -64,7 +64,7 @@ const ConfirmForgotPassDialog: FC<Props> = ({
                 value={values.code[index] || ""}
                 onChange={(event) => handlePinChange(event, index)}
                 error={touched.code && Boolean(errors.code)}
-                helperText={touched.code && errors.code}
+                // helperText={touched.code && errors.code}
                 fullWidth
                 variant="outlined"
                 inputProps={{
@@ -95,7 +95,13 @@ const ConfirmForgotPassDialog: FC<Props> = ({
                     <Typography variant="body2">
                         Nhập mã xác thực được gửi đến email của bạn để tiếp tục quá trình lấy lại mật khẩu.
                     </Typography>
-                    <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
+                    <Form autoComplete="none" noValidate onSubmit={handleSubmit}
+                        onKeyDown={(event) => {
+                            if (event.key === 'Enter') {
+                                handleSubmit();
+                            }
+                        }}
+                    >
                         <Grid container spacing={2} justifyContent="center" alignItems="center">
                             {pinInputs}
                         </Grid>

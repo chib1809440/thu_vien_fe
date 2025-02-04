@@ -8,7 +8,7 @@ export type TWareHouseAssetsReceipt = TEntityAbstract & {
     supplierId: string | TSupplier;
     createBy?: string | User;
     isAccept: boolean;
-    assets: (Asset & { quantity: number })[];
+    assets: (Asset & { quantity: number, price?: number; })[];
     barcode?: string;
 };
 

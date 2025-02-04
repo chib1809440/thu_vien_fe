@@ -14,6 +14,7 @@ type Props = {
     sxBox?: SxProps<Theme>;
     disabled?: boolean;
     type?: string;
+    endAdornment?: ReactNode;
 };
 
 const InputForm: FC<Props> = ({
@@ -29,6 +30,7 @@ const InputForm: FC<Props> = ({
     onBlur,
     disabled,
     type = "text",
+    endAdornment
 }) => {
     return (
         <FormControl
@@ -59,6 +61,9 @@ const InputForm: FC<Props> = ({
                     },
                 }}
                 disabled={disabled}
+                InputProps={{
+                    endAdornment: endAdornment,
+                }}
 
             />
         </FormControl>

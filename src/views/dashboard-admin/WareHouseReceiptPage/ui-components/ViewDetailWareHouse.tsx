@@ -151,7 +151,7 @@ const ViewDetailWareHouseReceipt: FC<Props> = ({
                                                 </StyledTableCell>
                                             </StyledTableRow>
                                         ))}
-                                        <StyledTableRow sx={{ background: "#204165", color: "white" }}>
+                                        <StyledTableRow sx={{ background: "#204165 !important", color: "white" }}>
                                             <StyledTableCell colSpan={2} align="center" sx={{ color: "white" }}>
                                                 <strong>Tổng cộng:</strong>
                                             </StyledTableCell>

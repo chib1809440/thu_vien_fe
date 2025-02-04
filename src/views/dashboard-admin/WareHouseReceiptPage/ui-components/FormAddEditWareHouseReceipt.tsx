@@ -652,9 +652,11 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                                             Boolean(formik.errors.supplierId)
                                         }
                                     >
-                                        <MenuItem value="0" disabled>
-                                            Chọn nhà cung cấp
-                                        </MenuItem>
+                                        {data?.data?.result?.length > 0 && (
+                                            <MenuItem value="0" disabled>
+                                                Chọn nhà cung cấp
+                                            </MenuItem>
+                                        )}
                                         {data?.data?.result?.length > 0 ? (
                                             data.data.result.map((item, index) => (
                                                 <MenuItem key={index} value={item._id}>

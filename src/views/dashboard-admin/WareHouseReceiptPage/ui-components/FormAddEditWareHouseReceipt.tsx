@@ -949,15 +949,6 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                         <Button disabled={isFetching} onClick={onClose} color="error">
                             Huỷ
                         </Button>
-                        {isEditMode && (
-                            <Button
-                                onClick={() => handlePrint()}
-                                style={{ background: "#212121", color: "white" }}
-                                variant="contained"
-                            >
-                                In
-                            </Button>
-                        )}
                         <StyledButton
                             disableHoverEffect
                             color="primary"
@@ -965,6 +956,7 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                             variant="contained"
                             onClick={handleSubmit as () => void}
                             sx={{ paddingTop: 1.3, paddingBottom: 1.3 }}
+                            disabled={isFetching}
                         >
                             {isFetching
                                 ? "Đang thực hiện..."

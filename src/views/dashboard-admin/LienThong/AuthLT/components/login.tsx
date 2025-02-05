@@ -136,8 +136,8 @@ export default function LoginLienThong(props: {
                         }
                     } catch (err: any) {
                         const errMessage = err && err.message == UN_AUTHORIZED ?
-                            "Tài khoản hoặc mật khẩu không đúng !" :
-                            "Không thể đăng nhập, hãy kiểm tra server!";
+                            "Không thể đăng nhập, hãy kiểm tra server!" :
+                            "Tài khoản hoặc mật khẩu không đúng !";
 
                         if (scriptedRef.current) {
                             setStatus({ success: false });
@@ -213,7 +213,7 @@ export default function LoginLienThong(props: {
                         </FormControl>
                         <Grid container justifyContent='space-between'>
                             <CsTypography onClick={() => setOpenModal(true)}>Thêm trung tâm liên thông</CsTypography>
-                            <CsTypography  onClick={() => setOpenModalControl(true)}>Cài đặt trung tâm liên thông</CsTypography>
+                            <CsTypography onClick={() => setOpenModalControl(true)}>Cài đặt trung tâm liên thông</CsTypography>
                         </Grid>
 
                         <Box sx={{ mt: 2 }}>
@@ -234,7 +234,7 @@ export default function LoginLienThong(props: {
                 )}
             </Formik>
             <ModalAddApi isOpen={isOpenModal} isClose={(e) => setOpenModal(e)} />
-            <ModalControlApi isOpen={isOpenModalControl} isClose={(e) => setOpenModalControl(e)} data={props.apiConnection}/>
+            <ModalControlApi isOpen={isOpenModalControl} isClose={(e) => setOpenModalControl(e)} data={props.apiConnection} />
         </>
     );
 }

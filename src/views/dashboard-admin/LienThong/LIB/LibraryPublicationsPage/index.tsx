@@ -28,7 +28,7 @@ import { TPublications } from "../../../../../types/models/publications.type";
 import IBreadcrumsCustom from "../../../../../ui-component/breadcrums";
 import MainCard from "../../../../../ui-component/cards/MainCard";
 import { colorType, typeOptions } from "../../../../../utils/constants.utils";
-import { parserParams } from "../../../../../utils/object";
+import { getLabelFromOptions, parserParams } from "../../../../../utils/object";
 import FilterByItems from "../../../PublicationsPage/ui-components/FilterByItems";
 import PublicationsDetailsDialog from "../../../PublicationsPage/ui-components/PublicationsDetailsDialog";
 
@@ -415,7 +415,7 @@ const LibraryPublicationsPage = () => {
                                                     sx={{
                                                         position: "absolute",
                                                         zIndex: 999,
-                                                        bottom: -90,
+                                                        bottom: -105,
                                                         right: -15,
                                                         margin: "8px",
                                                         background: "none",
@@ -460,7 +460,7 @@ const LibraryPublicationsPage = () => {
 
                                             </Box>
                                         </Paper>
-                                        <Box sx={{ display: "flex", alignItems: "flex-start", height: "100%", minHeight: "75px", width: "200px" }}>
+                                        {/* <Box sx={{ display: "flex", alignItems: "flex-start", height: "100%", minHeight: "75px", width: "200px" }}>
                                             <Typography pt={2} color={theme.palette.info.dark} textAlign={"center"} variant="h6" fontSize={"16px !important"}
                                                 sx={{
                                                     whiteSpace: "nowrap",
@@ -469,8 +469,59 @@ const LibraryPublicationsPage = () => {
                                                     width: "100%"
                                                 }}
                                             >{capitalizeFirstLetter(item.name)}</Typography>
-                                        </Box>
+                                        </Box> */}
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "flex-start",
+                                                height: "100%",
+                                                minHeight: "75px",
+                                                width: "200px",
+                                                mb: 2
+                                            }}
+                                        >
+                                            <Typography
+                                                pt={2}
+                                                color={theme.palette.info.dark}
+                                                textAlign={"center"}
+                                                variant="h6"
+                                                fontSize={"16px !important"}
+                                                sx={{
+                                                    whiteSpace: "normal",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                    width: "100%",
+                                                    display: "-webkit-box",
+                                                    WebkitLineClamp: 2,
+                                                    WebkitBoxOrient: "vertical",
+                                                }}
+                                            >
+                                                {item?.type === "ấn phẩm mềm" ? (
+                                                    (item?.mimetype === "image/jpeg" ||
+                                                        item?.mimetype === "image/png" ||
+                                                        item?.mimetype === "image/gif" ||
+                                                        item?.mimetype === "image/bmp" ||
+                                                        item?.mimetype === "image/webp")
+                                                        ? `Tranh: ${capitalizeFirstLetter(item?.name)}`
+                                                        : (item?.mimetype === "application/pdf"
+                                                            ? `PDF: ${capitalizeFirstLetter(item?.name)}`
+                                                            : (item?.mimetype === "application/msword" ||
+                                                                item?.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                                                                ? `Word: ${capitalizeFirstLetter(item?.name)}`
+                                                                : (item?.mimetype === "application/vnd.ms-powerpoint" ||
+                                                                    item?.mimetype === "application/vnd.openxmlformats-officedocument.presentationml.presentation")
+                                                                    ? `PPT: ${capitalizeFirstLetter(item?.name)}`
+                                                                    : (item?.mimetype === "video/mp4" ||
+                                                                        item?.mimetype === "video/x-msvideo" ||
+                                                                        item?.mimetype === "video/x-matroska" ||
+                                                                        item?.mimetype === "video/webm")
+                                                                        ? `Video: ${capitalizeFirstLetter(item?.name)}` : ""
 
+                                                        )
+                                                ) : `${getLabelFromOptions(typeOptions, item?.type)}: ${capitalizeFirstLetter(item?.name)}`
+                                                }
+                                            </Typography>
+                                        </Box>
                                     </Box>
                                 </Paper>
                             </Grid>

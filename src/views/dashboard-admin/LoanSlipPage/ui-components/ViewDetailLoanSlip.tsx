@@ -95,11 +95,11 @@ const ViewDetailLoanSlip: FC<Props> = ({
                         <strong>Lớp:</strong> {loanSlip?.userId?.class}
                     </Typography>
                 )}
-                {loanSlip?.userId?.school && (
+                {/* {loanSlip?.userId?.libraryId && (
                     <Typography variant="body1" sx={{ mt: 1 }}>
-                        <strong>Trường:</strong> {loanSlip?.userId?.school}
+                        <strong>Trường:</strong> {(loanSlip?.userId?.libraryId as TLibrary)?.name}
                     </Typography>
-                )}
+                )} */}
                 <Typography variant="body1" sx={{ mt: 1 }}>
                     <p>
                         <strong>Ngày mượn:</strong> {formatDate(loanSlip?.borrowedDay)}

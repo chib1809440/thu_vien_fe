@@ -702,6 +702,7 @@ const FormAddEditWareHouseAssetsReceipt: FC<Props> = ({
                             variant="contained"
                             onClick={handleSubmit as () => void}
                             sx={{ paddingTop: 1.3, paddingBottom: 1.3 }}
+                            disabled={isFetching}
                         >
                             {isFetching
                                 ? "Đang thực hiện..."

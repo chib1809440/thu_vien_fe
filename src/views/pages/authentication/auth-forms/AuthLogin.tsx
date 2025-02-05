@@ -187,8 +187,8 @@ const JWTLogin = ({ loginProp, ...others }: { loginProp?: number }) => {
                     }
                 } catch (err: any) {
                     const errMessage = err && err.message == UN_AUTHORIZED ?
-                        "Tài khoản hoặc mật khẩu không đúng !" :
-                        "Không thể đăng nhập, hãy kiểm tra server!";
+                        "Không thể đăng nhập, hãy kiểm tra server!" :
+                        "Tài khoản hoặc mật khẩu không đúng !";
 
                     if (scriptedRef.current) {
                         setStatus({ success: false });

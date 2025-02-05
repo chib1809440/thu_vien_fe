@@ -33,7 +33,7 @@ const WareHouseReceiptPage = () => {
     const search = queryString?.q ?? "";
     const theme = useTheme();
 
-    const { data, isLoading } = useFetchWareHouseReceipt({ limit, page, search });
+    const { data, isLoading, isFetching } = useFetchWareHouseReceipt({ limit, page, search });
     const mutationAdd = useAddWareHouseReceipt();
     const mutationEdit = useEditWareHouseReceipt();
     const mutationSoftDelete = useDeleteSoftWareHouseReceipt();
@@ -549,6 +549,7 @@ const WareHouseReceiptPage = () => {
                     initialValues={initialValues}
                     onSubmit={handleSubmit}
                     isEditMode={selectedEdit ? true : false}
+                    isFetching={mutationAdd.isPending || mutationEdit.isPending}
                 />
             )}
 

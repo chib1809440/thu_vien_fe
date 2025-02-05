@@ -42,7 +42,7 @@ const WareHouseReceiptAssetsPage = () => {
     const search = queryString?.q ?? "";
     const theme = useTheme();
 
-    const { data, isLoading } = useFetchWareHouseAssetsReceipt({ limit, page, search });
+    const { data, isLoading, isFetching} = useFetchWareHouseAssetsReceipt({ limit, page, search });
     const mutationAdd = useAddWareHouseAssetsReceipt();
     const mutationEdit = useEditWareHouseAssetsReceipt();
     const mutationSoftDelete = useDeleteSoftWareHouseAssetsReceipt();
@@ -552,6 +552,7 @@ const WareHouseReceiptAssetsPage = () => {
                     initialValues={initialValues}
                     onSubmit={handleSubmit}
                     isEditMode={selectedEdit ? true : false}
+                    isFetching={mutationAdd.isPending || mutationEdit.isPending}
                 />
             )}
 

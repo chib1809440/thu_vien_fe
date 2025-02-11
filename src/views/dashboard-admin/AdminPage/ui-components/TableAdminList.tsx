@@ -1,4 +1,4 @@
-import { Lock, LockOpen } from "@mui/icons-material";
+import { Lock, LockOpen, LockReset } from "@mui/icons-material";
 import { Alert, Box, FormControl, Grid, MenuItem, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme } from "@mui/material";
 import Checkbox from '@mui/material/Checkbox';
 import Table from '@mui/material/Table';
@@ -8,7 +8,7 @@ import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight,
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { activeUser, blockUser } from "../../../../_apis/user.api";
+import { activeUser, blockUser, updateResetPassFromAdmin } from "../../../../_apis/user.api";
 import { StyledTableCell, StyledTableRow } from "../../../../components/custom/table-list/style";
 import { EnhancedTableHead } from "../../../../components/custom/table/TableHead";
 import { SearchAndFilter } from "../../../../components/custom/table/TableSearchAndFilter";
@@ -60,6 +60,8 @@ function TableAdminList<T extends DataType>({
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isOpenUpdateDialog, setIsOpenUpdateDialog] = useState<boolean>(false);
     const [isOpenDetailDialog, setIsOpenDetailDialog] = useState<boolean>(false);
+    const [isOpenResetPassDialog, setIsOpenResetPassDialog] = useState<boolean>(false);
+    const [selectedResetPassID, setSelectedResetPassID] = useState<string>()
     const [isOpenConfirmDialog, setIsOpenConfirmDialog] = useState(false);
     const [isOpenConfirmDeleteSelectedDialog, setIsOpenConfirmDeleteSelectedDialog] = useState(false);
     const [selectedDeleteID, setSelectedDeleteID] = useState<string>()
@@ -171,6 +173,13 @@ function TableAdminList<T extends DataType>({
         setRowsPerPage(Number(event.target.value));
         setPage(1)
     };
+
+    const handleResetPass = (id: string) => {
+        // console.log("id", id);
+        setIsOpenResetPassDialog(true);
+        setSelectedResetPassID(id);
+    }
+
     const handleClickUpdate = (id: string) => {
         let user: User = users.data.result.find(x => x._id === id)
         console.log(id);
@@ -273,9 +282,24 @@ function TableAdminList<T extends DataType>({
         }
     }
 
+    const handleResetPasswordSubmit = async () => {
+        if (selectedResetPassID) {
+            // console.log(selectedResetPassID);
+            try {
+                await updateResetPassFromAdmin(selectedResetPassID);
+                setIsOpenResetPassDialog(false);
+                setSelectedResetPassID(selectedResetPassID);
+                toast.success("Đặt lại mật khẩu thành công");
+                refetch();
+            } catch (error) {
+                toast.error("Lỗi khi đặt lại mật khẩu")
+            }
+        }
+    };
+
     return (
         <>
-            <SearchAndFilter onHandleDeleteSelectedItem={handleDeleteItemSelected} actionDeleteSelectedItem={true} contentSearch={contentSearch} handleContentSearch={setContentSearch} />
+            <SearchAndFilter isOperation={false} onHandleDeleteSelectedItem={handleDeleteItemSelected} actionDeleteSelectedItem={true} contentSearch={contentSearch} handleContentSearch={setContentSearch} />
             {/* Table */}
             <Grid container xs={12} sm={12} md={12} lg={12} gap={2} sx={{
                 display: "flex", mb: 1, flexWrap: "wrap",
@@ -303,7 +327,7 @@ function TableAdminList<T extends DataType>({
                     </Select>
                 </Grid>
             </Grid>
-            <Box sx={{ px: { xs: 0, sm: 0, md: 4 }, pt:{ xs: 0, sm: 0, md: 2 } }}>
+            <Box sx={{ px: { xs: 0, sm: 0, md: 4 }, pt: { xs: 0, sm: 0, md: 2 } }}>
                 {
                     checked && checked.length > 0 && (
                         <Alert severity="info" sx={{ mb: 3 }}>
@@ -388,6 +412,7 @@ function TableAdminList<T extends DataType>({
                                                                             gap: 1
                                                                         }}>
                                                                             <IconEye onClick={() => handleClickDetail(row?._id)} size={20} stroke={1.5} />
+                                                                            <LockReset onClick={() => handleResetPass(row?._id)} />
                                                                             <IconPencil onClick={() => handleClickUpdate(row?._id)} size={20} stroke={1.5} />
                                                                             {/* <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} /> */}
                                                                             {
@@ -523,6 +548,15 @@ function TableAdminList<T extends DataType>({
                     user={user}
                     roleId={filterRoleId as string}
                     handleOpen={setIsOpenUpdateDialog}
+                />
+            }
+            {
+                isOpenResetPassDialog &&
+                <AlertConfirmDialog
+                    title="Xác nhận đặt lại mật khẩu?"
+                    onHandleConfirm={handleResetPasswordSubmit}
+                    openConfirm={isOpenResetPassDialog}
+                    handleOpenConfirmDialog={setIsOpenResetPassDialog}
                 />
             }
             {

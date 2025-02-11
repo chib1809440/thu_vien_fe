@@ -97,9 +97,9 @@ const LibInformationPage = () => {
             )}
 
             <MainCard>
-                <Grid md={12} container justifyContent="flex-end">
+                {/* <Grid md={12} container justifyContent="flex-end">
                     <ButtonGD title="Cập nhật" onClick={handleClickUpdate} />
-                </Grid>
+                </Grid> */}
                 <Grid container md={12} justifyContent="space-around">
                     <Grid md={3} container>
                         <Grid lg={12}>

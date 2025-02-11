@@ -89,7 +89,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
     const [formData, setFormData] = useState<User>();
     const [loading, setLoading] = useState<boolean>(false);
     const [entityError, setEntityError] = useState<string | string[]>(null);
-    const [birthday, setBirthday] = useState(new Date());
+    // const [birthday, setBirthday] = useState(new Date());
     const [avatarPreview, setAvatarPreview] = useState<string | ArrayBuffer | null>(null); // State cho ảnh xem trước
     const [avatarFile, setAvatarFile] = useState<File>(null); // State cho ảnh xem trước
     // Hàm để xử lý khi người dùng chọn ảnh
@@ -155,7 +155,8 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
             address: user?.address ?? "",
             gender: user?.gender ?? "",
             roleId: (user?.roleId as Role)?._id ?? '0',
-            birthday: (new Date().toDateString()),
+            // birthday: (new Date().toDateString()),
+            birthday: (user?.birthday) ?? new Date().toDateString(),
             class: user?.class ?? "",
             school: user?.school ?? "",
 
@@ -432,17 +433,17 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                                 <DatePicker
                                                     locale={vi}
                                                     className="react-date-picker"
-                                                    selected={birthday}
+                                                    selected={formik.values.birthday ? new Date(formik.values.birthday) : new Date()}
                                                     onChange={(date: Date) => {
-                                                        setBirthday(date);
+                                                        // setBirthday(date);
                                                         formik.setFieldValue("birthday", date);
                                                     }}
                                                     onYearChange={(date: Date) => {
-                                                        setBirthday(date);
+                                                        // setBirthday(date);
                                                         formik.setFieldValue("birthday", date);
                                                     }}
                                                     onMonthChange={(date: Date) => {
-                                                        setBirthday(date);
+                                                        // setBirthday(date);
                                                         formik.setFieldValue("birthday", date);
                                                     }}
                                                     dateFormat="dd/MM/yyyy" // Định dạng ngày tháng năm
@@ -528,7 +529,7 @@ export default function UserDialog({ title, maxWidth, id, content, action, fullS
                                                     <span style={{ marginRight: '8px' }}>Vai trò</span>
                                                     <span className="required_text">(*)</span>
                                                 </Typography>
-                                                <FormControl fullWidth>
+                                                <FormControl fullWidth> 
                                                     <Select
                                                         labelId="demo-simple-select-label"
                                                         id="roleId"

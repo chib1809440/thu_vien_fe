@@ -119,20 +119,16 @@ const LibraryPublicationsPage = () => {
 
     const { data: libraryData } = useFetchLibrariesFromGroup();
     const { data: categoryData } = useFetchCategoryLink({
-        limit,
-        page, ...filterByLibId
+        ...filterByLibId
     });
     const { data: materialData } = useFetchMaterialLink({
-        limit,
-        page, ...filterByLibId
+        ...filterByLibId
     });
     const { data: authorData } = useFetchAuthorLink({
-        limit,
-        page, ...filterByLibId
+        ...filterByLibId
     });
     const { data: publisherData } = useFetchPublisherLink({
-        limit,
-        page, ...filterByLibId
+        ...filterByLibId
     });
     const [openViewDetails, setOpenViewDetails] = useState(false);
     const [publicationsDetails, setPublicationsDetails] = useState<TPublications | null>(null);

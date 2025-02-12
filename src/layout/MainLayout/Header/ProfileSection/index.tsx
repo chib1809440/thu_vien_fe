@@ -460,6 +460,7 @@ const ProfileSection = () => {
                     isEditMode={selectedEdit ? true : false}
                     onSubmit={handleSubmitChangeInfo}
                     imageUrl={`${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.avatar}`}
+                    roleName={roleName}
                 />
             )}
             {openChangePasswordDialog && (

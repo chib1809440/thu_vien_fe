@@ -1,16 +1,17 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField } from "@mui/material";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField, Typography } from "@mui/material";
+// import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { vi } from "date-fns/locale";
 import { Form, FormikProvider, useFormik } from "formik";
 import { FC, useCallback, useMemo, useRef, useState } from "react";
+import DatePicker from "react-datepicker";
 import * as yup from "yup";
 import InputForm from "../../../../components/custom/form/InputForm";
 import SelectForm from '../../../../components/custom/form/SelectForm';
 import Uploadimage, { UploadAvatarRefProps } from '../../../../components/custom/form/UploadImage';
 import StyledButton from '../../../../components/default/button/StyledButton';
-import { capitalizeFirstLetter } from '../../../../helpers/capitalizeFirstLetter';
 import { CreateUserModel } from "../../../../interfaces/user";
 import { genderOptions } from '../../../../utils/constants.utils';
 
@@ -22,6 +23,7 @@ type Props = {
     initialValues: CreateUserModel;
     isEditMode?: boolean;
     imageUrl?: string;
+    roleName?: string;
 };
 
 const schema = yup.object().shape({
@@ -52,6 +54,7 @@ const FormProfile: FC<Props> = ({
     isFetching = false,
     isEditMode = false,
     imageUrl,
+    roleName
 }) => {
     const formik = useFormik<CreateUserModel>({
         initialValues,
@@ -98,7 +101,6 @@ const FormProfile: FC<Props> = ({
         const selectedGender = e.target.value;
         setFieldValue("gender", selectedGender);
     };
-
 
     return (
         <FormikProvider value={formik}>
@@ -162,6 +164,7 @@ const FormProfile: FC<Props> = ({
                                     helperText={touched.username && errors.username}
                                     {...getFieldProps("username")}
                                 />
+
                                 <InputForm
                                     label="Họ tên"
                                     error={touched.fullname && Boolean(errors.fullname)}
@@ -169,15 +172,18 @@ const FormProfile: FC<Props> = ({
                                     {...getFieldProps("fullname")}
                                 />
 
+                                <SelectForm
+                                    label="Giới tính"
+                                    options={genderOptions}
+                                    {...getFieldProps("gender")}
+                                    onChange={handleGenderChange}
+                                    error={touched.gender && Boolean(errors.gender)}
+                                    helperText={touched.gender && errors.gender}
+                                />
+
                             </Box>
                         </Box>
-                        <InputForm
-                            label="Địa chỉ"
-                            placeholder="Nhập địa chỉ"
-                            error={touched.address && Boolean(errors.address)}
-                            helperText={touched.address && errors.address}
-                            {...getFieldProps("address")}
-                        />
+
                         <Box sx={{ display: "flex", gap: 2 }}>
                             <InputForm
                                 label="Email"
@@ -193,32 +199,24 @@ const FormProfile: FC<Props> = ({
                                 helperText={touched.phoneNumber && errors.phoneNumber}
                                 {...getFieldProps("phoneNumber")}
                             />
+                            {
+                                roleName === "Student" &&
+                                (
+                                    <InputForm
+                                        label="Lớp"
+                                        placeholder="Nhập tên lớp"
+                                        error={touched.class && Boolean(errors.class)}
+                                        helperText={touched.class && errors.class}
+                                        {...getFieldProps("class")}
+                                        value={values?.class}
+                                    />
+                                )
+                            }
                         </Box>
 
-                        <Box sx={{ display: "flex", gap: 2, flexDirection: { xs: "column", md: "row" } }}>
-                            <Box sx={{ flex: 1 }}>
-                                <InputForm
-                                    label="Lớp"
-                                    placeholder="Nhập tên lớp"
-                                    error={touched.class && Boolean(errors.class)}
-                                    helperText={touched.class && errors.class}
-                                    {...getFieldProps("class")}
-                                    value={values?.class}
-                                />
-                            </Box>
-                            <Box sx={{ flex: 1 }}>
-                                <SelectForm
-                                    label="Giới tính"
-                                    options={genderOptions}
-                                    {...getFieldProps("gender")}
-                                    onChange={handleGenderChange}
-                                    error={touched.gender && Boolean(errors.gender)}
-                                    helperText={touched.gender && errors.gender}
-                                />
-                            </Box>
-                            <Box sx={{ flex: 1 }}>
-                                <Box sx={{ mt: { xs: 0, md: 5 } }}>
-                                    <LocalizationProvider dateAdapter={AdapterMoment}>
+                        <Box sx={{ mt: 1, mb: 1 }}>
+
+                            {/* <LocalizationProvider dateAdapter={AdapterMoment}>
                                         <DatePicker
                                             label="Ngày sinh"
                                             value={values.birthday ? new Date(values.birthday) : null}
@@ -239,10 +237,52 @@ const FormProfile: FC<Props> = ({
                                                 />
                                             )}
                                         />
-                                    </LocalizationProvider>
-                                </Box>
-                            </Box>
+                                    </LocalizationProvider> */}
+                            <Typography sx={{ mt: 1, mb: 1, fontWeight: "bold" }}>
+                                Ngày sinh <span className="required_text">(*)</span>{" "}
+                            </Typography>
+                            <DatePicker
+                                locale={vi}
+                                className="react-date-picker"
+                                selected={values.birthday ? new Date(values.birthday) : null}
+                                onChange={(newValue) => {
+                                    console.log("Old Birthday: ", values.birthday); // Kiểm tra giá trị cũ
+                                    if (newValue) {
+                                        setFieldValue("birthday", newValue.toISOString());
+                                    }
+                                    console.log("New Birthday: ", newValue); // Kiểm tra giá trị mới
+                                }}
+                                onYearChange={(date: Date) => {
+                                    // setBirthday(date);
+                                    setFieldValue("birthday", date);
+                                }}
+                                onMonthChange={(date: Date) => {
+                                    // setBirthday(date);
+                                    setFieldValue("birthday", date);
+                                }}
+
+                                dateFormat="dd/MM/yyyy" // Định dạng ngày tháng năm
+                                showMonthDropdown // Hiển thị dropdown chọn tháng
+                                dropdownMode="select"
+                                showYearDropdown // Hiển thị dropdown chọn năm
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        fullWidth
+                                        error={touched.birthday && Boolean(errors.birthday)}
+                                        helperText={touched.birthday && errors.birthday}
+                                    />
+                                )}
+                            />
                         </Box>
+
+                        <InputForm
+                            label="Địa chỉ"
+                            placeholder="Nhập địa chỉ"
+                            error={touched.address && Boolean(errors.address)}
+                            helperText={touched.address && errors.address}
+                            {...getFieldProps("address")}
+                        />
 
 
                         {/* <Box sx={{ display: "flex", gap: 2 }}>

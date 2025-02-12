@@ -86,14 +86,14 @@ const ImageDetailPage = ({
                             <ImageCard
                                 id={publications?._id}
                                 photo={
-                                    publications?.priviewImage
-                                        ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}`
-                                        : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`
+                                    publications?.path
+                                        ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`
+                                        : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}`
                                 }
                                 isViewPhoto={
-                                    publications?.priviewImage
-                                        ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}`
-                                        : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`
+                                    publications?.path
+                                        ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`
+                                        : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}`
                                 }
                                 aspectRatio={"16/9"}
                                 objectFit="contain"

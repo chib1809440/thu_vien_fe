@@ -27,6 +27,7 @@ import FormAddEditLibLoanSlip from "./ui-components/FormAddEditLibLoanSlip";
 import { ExpandMore } from "@mui/icons-material";
 import PaginationForm from "../../../../../components/custom/form/PaginationForm";
 import { TLibrary } from "../../../../../types/models/library.type";
+import { useSearchParams } from "react-router-dom";
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -62,6 +63,7 @@ const LoanSlipPage = () => {
     const [filterStatus, setFilterStatus] = useState<string | number>(0);
     const [openViewDetail, setOpenViewDetail] = useState(false);
     const { user } = useAuth();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const roleName = useMemo(() => {
         if (!user) return null;
@@ -131,8 +133,6 @@ const LoanSlipPage = () => {
     const addLoanSlip = () => {
         setOpenAddEdit(true);
     };
-
-
 
     const handleEditLoanSlip = (row: TLoanSlip) => {
         setSelectedEdit(row);
@@ -630,8 +630,6 @@ const LoanSlipPage = () => {
         }
     };
 
-
-
     const actionMenus = useMemo((): TMenuOption[] => {
         return [];
     }, [handleDeleteMultiple, handleExportLoanSlipExcel]);
@@ -782,7 +780,13 @@ const LoanSlipPage = () => {
                                     locale={vi}
                                     selected={startDate}
                                     dateFormat="dd/MM/yyyy" // Định dạng ngày tháng năm
-                                    onChange={(date: Date | null) => setStartDate(date)}
+                                    onChange={(date: Date | null) => {
+                                        setStartDate(date);
+                                        if (searchParams.get("page")) {
+                                            searchParams.set("page", "1");
+                                        }
+                                        setSearchParams(searchParams)
+                                    }}
                                     customInput={<CustomInput value={startDate ? startDate.toLocaleDateString() : ''} onClick={() => { }} />
                                     }
                                 />
@@ -803,7 +807,13 @@ const LoanSlipPage = () => {
                                 <DatePicker
                                     selected={endDate}
                                     dateFormat="dd/MM/yyyy" // Định dạng ngày tháng năm
-                                    onChange={(date: Date | null) => setEndDate(date)}
+                                    onChange={(date: Date | null) => {
+                                        setEndDate(date);
+                                        if (searchParams.get("page")) {
+                                            searchParams.set("page", "1");
+                                        }
+                                        setSearchParams(searchParams)
+                                    }}
                                     customInput={<CustomInput value={endDate ? endDate.toLocaleDateString() : ''} onClick={() => { }} />}
                                 />
                                 {
@@ -830,6 +840,10 @@ const LoanSlipPage = () => {
                                         value={filterStatus}
                                         onChange={(event) => {
                                             setFilterStatus(event.target.value); // Lấy giá trị từ event
+                                            if (searchParams.get("page")) {
+                                                searchParams.set("page", "1");
+                                            }
+                                            setSearchParams(searchParams)
                                         }}
                                         sx={{ height: '40px', fontSize: '0.875rem' }}
                                     >

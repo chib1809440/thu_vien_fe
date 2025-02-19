@@ -262,18 +262,22 @@ const LibraryPage = () => {
         });
     }, [checkedDelete]);
 
+    // const actionMenus = useMemo((): TMenuOption[] => {
+    //     return hasPermission([
+    //         { resource: "all", action: "manage" },
+    //         { resource: "libraries", action: "manage" },
+    //     ])
+    //         ? [
+    //             {
+    //                 label: "Xóa các dữ liệu đã chọn",
+    //                 icon: <IconTrashXFilled size={20} stroke={1.5} />,
+    //                 onClick: handleDeleteMultiple,
+    //             },
+    //         ] : [];
+    // }, [handleDeleteMultiple]);
+
     const actionMenus = useMemo((): TMenuOption[] => {
-        return hasPermission([
-            { resource: "all", action: "manage" },
-            { resource: "libraries", action: "manage" },
-        ])
-            ? [
-                {
-                    label: "Xóa các dữ liệu đã chọn",
-                    icon: <IconTrashXFilled size={20} stroke={1.5} />,
-                    onClick: handleDeleteMultiple,
-                },
-            ] : [];
+        return [];
     }, [handleDeleteMultiple]);
 
     const initialValues = useMemo((): TLibraryCreate => {

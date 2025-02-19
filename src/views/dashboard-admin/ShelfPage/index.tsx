@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Tooltip, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { IconPencil, IconPlus } from "@tabler/icons";
 import { IconDoorExit, IconTrashXFilled } from "@tabler/icons-react";
@@ -23,6 +23,7 @@ import usePermission from "../../../utils/hasPermission";
 import { parserParams } from "../../../utils/object";
 import FilterByItems from "../PublicationsPage/ui-components/FilterByItems";
 import FormAddEditShelf from "./ui-components/FormAddEditShelf";
+import { useSearchParams } from "react-router-dom";
 
 
 const ShelfPage = () => {
@@ -30,6 +31,7 @@ const ShelfPage = () => {
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const [selectedBelongAsset, setSelectedBelongAsset] = useState(0);
 
@@ -184,11 +186,13 @@ const ShelfPage = () => {
                                 { resource: "shelves", action: "manage" },
                                 { resource: "shelves", action: "delete" },
                             ]) &&
-                                <IconDoorExit
-                                    size={20}
-                                    stroke={1.5}
-                                    onClick={() => handleOpenConfirmDialog(row)}
-                                />
+                                <Tooltip title={"Chuyển về kho"} arrow placement="top">
+                                    <IconDoorExit
+                                        size={20}
+                                        stroke={1.5}
+                                        onClick={() => handleOpenConfirmDialog(row)}
+                                    />
+                                </Tooltip>
                             }
                         </Box>
                     );
@@ -266,6 +270,10 @@ const ShelfPage = () => {
     // loc
     const handleAssetsFilterChange = (event) => {
         setSelectedBelongAsset(event.target.value);
+        if (searchParams.get("page")) {
+            searchParams.set("page", "1");
+        }
+        setSearchParams(searchParams)
     };
 
     return (

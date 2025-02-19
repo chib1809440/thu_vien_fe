@@ -22,7 +22,7 @@ import {
 import ExcelJS from "exceljs";
 import { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import publicationsService from "../../../_apis/services/publications.service";
 import ImageCard from "../../../components/custom/card/ImageCard";
@@ -91,6 +91,7 @@ const PublicationsPage = () => {
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? _limitDisplay;
     const search = queryString?.q ?? "";
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const [selectedMaterial, setSelectedMaterial] = useState(0);
     const [selectedPublications, setSelectedPublications] = useState(0);
@@ -369,36 +370,50 @@ const PublicationsPage = () => {
     };
 
     // lọc
+    const handleResetPage = () => {
+        if (searchParams.get("page")) {
+            searchParams.set("page", "1");
+        }
+        setSearchParams(searchParams)
+    }
     const handlePublicationsFilterChange = (event) => {
         setSelectedPublications(event.target.value);
+        handleResetPage();
     };
     const handleMaterialFilterChange = (event) => {
         setSelectedMaterial(event.target.value);
+        handleResetPage();
     };
 
     const handleAuthorFilterChange = (event) => {
         setSelectedAuthor(event.target.value);
+        handleResetPage();
     };
 
     const handleCategoryFilterChange = (event) => {
         setSelectedCategory(event.target.value);
+        handleResetPage();
     };
 
     const handlePublisherFilterChange = (event) => {
         setSelectedPublisher(event.target.value);
         console.log(event.target.value);
+        handleResetPage();
     };
 
     const handleBarcodeSearch = (value) => {
         setBarcodeSearch(value);
+        handleResetPage();
     };
 
     const handleValuePublication = (event) => {
         setSelectedValue(event.target.value);
+        handleResetPage();
     };
 
     const handleLibraryFilterChange = (event) => {
         setSelectedLibrary(event.target.value);
+        handleResetPage();
     };
     const dispatch = useDispatch();
     const items = useSelector((state: { cartLoanSlip: { items: CreatePublication[] } }) => state.cartLoanSlip.items);
@@ -1232,20 +1247,6 @@ const PublicationsPage = () => {
                                         )}
 
                                         <Paper sx={{ width: "100%", position: "relative" }}>
-                                            <Box onClick={() => handleViewDetails(item)}>
-                                                <ImageCard
-                                                    id={item._id}
-                                                    photo={
-                                                        item?.priviewImage
-                                                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
-                                                            : item?.path
-                                                                ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
-                                                                : ""
-                                                    }
-                                                    aspectRatio={"16/9"}
-                                                    objectFit="contain"
-                                                />
-                                            </Box>
                                             {userRole === "Teacher" &&
                                                 item?.createBy === userId &&
                                                 hasPermission([
@@ -1276,7 +1277,8 @@ const PublicationsPage = () => {
                                                             onClick={() => handleOpenConfirmDialog(item)}
                                                         />
                                                     </StyledIconButton>
-                                                )}
+                                                )
+                                            }
                                             {userRole !== "Teacher" &&
                                                 hasPermission([
                                                     { resource: "publications", action: "manage" },
@@ -1306,7 +1308,80 @@ const PublicationsPage = () => {
                                                             onClick={() => handleOpenConfirmDialog(item)}
                                                         />
                                                     </StyledIconButton>
-                                                )}
+                                                )
+                                            }
+
+                                            <Tooltip title={"Nhấn vào để xem chi tiết"} arrow placement="top" sx={{ cursor: "ponter" }}>
+                                                <Box onClick={() => handleViewDetails(item)} sx={{ cursor: "pointer" }}>
+                                                    <ImageCard
+                                                        id={item._id}
+                                                        photo={
+                                                            item?.priviewImage
+                                                                ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
+                                                                : item?.path
+                                                                    ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
+                                                                    : ""
+                                                        }
+                                                        aspectRatio={"16/9"}
+                                                        objectFit="contain"
+                                                    />
+
+                                                    <Box
+                                                        sx={{
+                                                            display: "flex",
+                                                            alignItems: "flex-start",
+                                                            height: "100%",
+                                                            minHeight: "75px",
+                                                            width: "200px",
+                                                            margin: "auto",
+                                                            mb: 5,
+                                                        }}
+                                                    >
+                                                        <Typography
+                                                            pt={2}
+                                                            color={theme.palette.info.dark}
+                                                            textAlign={"center"}
+                                                            variant="h6"
+                                                            fontSize={"16px !important"}
+                                                            sx={{
+                                                                whiteSpace: "normal",
+                                                                overflow: "hidden",
+                                                                textOverflow: "ellipsis",
+                                                                width: "100%",
+                                                                display: "-webkit-box",
+                                                                WebkitLineClamp: 2,
+                                                                WebkitBoxOrient: "vertical",
+                                                            }}
+                                                        >
+                                                            {item?.type === "ấn phẩm mềm" ? (
+                                                                (item?.mimetype === "image/jpeg" ||
+                                                                    item?.mimetype === "image/png" ||
+                                                                    item?.mimetype === "image/gif" ||
+                                                                    item?.mimetype === "image/bmp" ||
+                                                                    item?.mimetype === "image/webp")
+                                                                    ? `Tranh: ${capitalizeFirstLetter(item?.name)}`
+                                                                    : (item?.mimetype === "application/pdf"
+                                                                        ? `PDF: ${capitalizeFirstLetter(item?.name)}`
+                                                                        : (item?.mimetype === "application/msword" ||
+                                                                            item?.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                                                                            ? `Word: ${capitalizeFirstLetter(item?.name)}`
+                                                                            : (item?.mimetype === "application/vnd.ms-powerpoint" ||
+                                                                                item?.mimetype === "application/vnd.openxmlformats-officedocument.presentationml.presentation")
+                                                                                ? `PPT: ${capitalizeFirstLetter(item?.name)}`
+                                                                                : (item?.mimetype === "video/mp4" ||
+                                                                                    item?.mimetype === "video/x-msvideo" ||
+                                                                                    item?.mimetype === "video/x-matroska" ||
+                                                                                    item?.mimetype === "video/webm")
+                                                                                    ? `Video: ${capitalizeFirstLetter(item?.name)}` : ""
+
+                                                                    )
+                                                            ) : `${getLabelFromOptions(typeOptions, item?.type)}: ${capitalizeFirstLetter(item?.name)}`
+                                                            }
+                                                        </Typography>
+                                                    </Box>
+                                                </Box>
+                                            </Tooltip>
+
 
                                             <Box sx={{ position: "relative" }}>
                                                 <StyledIconButton
@@ -1314,7 +1389,7 @@ const PublicationsPage = () => {
                                                     sx={{
                                                         position: "absolute",
                                                         zIndex: 999,
-                                                        bottom: -120,
+                                                        bottom: -10,
                                                         left: -20,
                                                         background: "none",
                                                         display: "flex",
@@ -1376,7 +1451,7 @@ const PublicationsPage = () => {
                                                     sx={{
                                                         position: "absolute",
                                                         zIndex: 999,
-                                                        bottom: -120,
+                                                        bottom: -10,
                                                         right:
                                                             userRole === "Super Admin" ||
                                                                 userRole === "Student" ||
@@ -1442,7 +1517,7 @@ const PublicationsPage = () => {
                                                             sx={{
                                                                 position: "absolute",
                                                                 zIndex: 999,
-                                                                bottom: -120,
+                                                                bottom: -10,
                                                                 right: -15,
                                                                 margin: "8px",
                                                                 background: "none",
@@ -1485,7 +1560,7 @@ const PublicationsPage = () => {
                                                             sx={{
                                                                 position: "absolute",
                                                                 zIndex: 999,
-                                                                bottom: -120,
+                                                                bottom: -10,
                                                                 right: -15,
                                                                 margin: "8px",
                                                                 background: "none",
@@ -1518,59 +1593,9 @@ const PublicationsPage = () => {
                                                         </StyledIconButton>
                                                     )}
                                             </Box>
+
                                         </Paper>
-                                        <Box
-                                            sx={{
-                                                display: "flex",
-                                                alignItems: "flex-start",
-                                                height: "100%",
-                                                minHeight: "75px",
-                                                width: "200px",
-                                                mb: 5
-                                            }}
-                                        >
-                                            <Typography
-                                                pt={2}
-                                                color={theme.palette.info.dark}
-                                                textAlign={"center"}
-                                                variant="h6"
-                                                fontSize={"16px !important"}
-                                                sx={{
-                                                    whiteSpace: "normal",
-                                                    overflow: "hidden",
-                                                    textOverflow: "ellipsis",
-                                                    width: "100%",
-                                                    display: "-webkit-box",
-                                                    WebkitLineClamp: 2,
-                                                    WebkitBoxOrient: "vertical",
-                                                }}
-                                            >
-                                                {item?.type === "ấn phẩm mềm" ? (
-                                                    (item?.mimetype === "image/jpeg" ||
-                                                        item?.mimetype === "image/png" ||
-                                                        item?.mimetype === "image/gif" ||
-                                                        item?.mimetype === "image/bmp" ||
-                                                        item?.mimetype === "image/webp")
-                                                        ? `Tranh: ${capitalizeFirstLetter(item?.name)}`
-                                                        : (item?.mimetype === "application/pdf"
-                                                            ? `PDF: ${capitalizeFirstLetter(item?.name)}`
-                                                            : (item?.mimetype === "application/msword" ||
-                                                                item?.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-                                                                ? `Word: ${capitalizeFirstLetter(item?.name)}`
-                                                                : (item?.mimetype === "application/vnd.ms-powerpoint" ||
-                                                                    item?.mimetype === "application/vnd.openxmlformats-officedocument.presentationml.presentation")
-                                                                    ? `PPT: ${capitalizeFirstLetter(item?.name)}`
-                                                                    : (item?.mimetype === "video/mp4" ||
-                                                                        item?.mimetype === "video/x-msvideo" ||
-                                                                        item?.mimetype === "video/x-matroska" ||
-                                                                        item?.mimetype === "video/webm")
-                                                                        ? `Video: ${capitalizeFirstLetter(item?.name)}` : ""
-                                                                        
-                                                        )
-                                                ) : `${getLabelFromOptions(typeOptions, item?.type)}: ${capitalizeFirstLetter(item?.name)}`
-                                                }
-                                            </Typography>
-                                        </Box>
+
                                     </Box>
                                 </Paper>
                             </Grid>

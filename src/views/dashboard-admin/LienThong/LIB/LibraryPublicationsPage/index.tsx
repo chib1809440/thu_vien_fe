@@ -31,6 +31,7 @@ import { colorType, typeOptions } from "../../../../../utils/constants.utils";
 import { getLabelFromOptions, parserParams } from "../../../../../utils/object";
 import FilterByItems from "../../../PublicationsPage/ui-components/FilterByItems";
 import PublicationsDetailsDialog from "../../../PublicationsPage/ui-components/PublicationsDetailsDialog";
+import { useSearchParams } from "react-router-dom";
 
 const BreakpointsColumn = {
     xs: 12,
@@ -58,6 +59,7 @@ const LibraryPublicationsPage = () => {
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? _limitDisplay;
     const search = queryString?.q ?? "";
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const [selectedLibrary, setSelectedLibrary] = useState(0);
     const [selectedMaterial, setSelectedMaterial] = useState(0);
@@ -144,32 +146,47 @@ const LibraryPublicationsPage = () => {
     };
 
     // lọc
+    const handleResetPage = ()=>{
+        if (searchParams.get("page")) {
+            searchParams.set("page", "1");
+        }
+        setSearchParams(searchParams);
+    }
+
     const handlePublicationsFilterChange = (event) => {
         setSelectedPublications(event.target.value);
+        handleResetPage();
     };
     const handleMaterialFilterChange = (event) => {
         setSelectedMaterial(event.target.value);
+        handleResetPage();
     };
 
     const handleAuthorFilterChange = (event) => {
         setSelectedAuthor(event.target.value);
+        handleResetPage();
     };
 
     const handleCategoryFilterChange = (event) => {
         setSelectedCategory(event.target.value);
+        handleResetPage();
     };
 
     const handlePublisherFilterChange = (event) => {
         setSelectedPublisher(event.target.value);
+        handleResetPage();
     };
 
     const handleBarcodeSearch = (value) => {
         setBarcodeSearch(value);
+        handleResetPage();
     };
 
     const handleLibraryFilterChange = (event) => {
         setSelectedLibrary(event.target.value);
+        handleResetPage();
     };
+
     const handleAddItem = (item: TPublications & { libraryDetails?: TLibrary }) => {
         if (item.type === "ấn phẩm mềm") {
             toast.warning(`Không thể mượn ấn phẩm mềm`, {

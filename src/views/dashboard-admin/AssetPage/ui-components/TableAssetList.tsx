@@ -1,4 +1,4 @@
-import { Alert, Box, Button, FormControl, Grid, MenuItem, Pagination, PaginationItem, Select, SelectChangeEvent, Typography, useTheme } from "@mui/material";
+import { Alert, Box, Button, FormControl, Grid, MenuItem, Pagination, PaginationItem, Select, SelectChangeEvent, Tooltip, Typography, useTheme } from "@mui/material";
 import Checkbox from '@mui/material/Checkbox';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -388,11 +388,15 @@ function TableAssetList<T extends DataType>({
                                                                 gap: 1
                                                             }}>
                                                                 {row?.quantityTotal > 0 && ((row?.typeAssetId as TTypeAsset)?.name !== "tủ kệ" ?
-                                                                    <IconSettings size={25} stroke={1.5} onClick={() => handleClickUpdate(row)} />
+                                                                    <Tooltip title={"Đưa lên sử dụng"} arrow placement="top">
+                                                                        <IconSettings size={25} stroke={1.5} onClick={() => handleClickUpdate(row)} />
+                                                                    </Tooltip>
                                                                     :
-                                                                    <Button size="small" onClick={() => handleClickUpdate(row)}>
-                                                                        <img style={{ width: "25px", height: "25px" }} src="/images/icon-shelves.png" alt="" />
-                                                                    </Button>
+                                                                    <Tooltip title={"Tạo kệ sách thư viện"} arrow placement="top">
+                                                                        <Button size="small" onClick={() => handleClickUpdate(row)}>
+                                                                            <img style={{ width: "25px", height: "25px" }} src="/images/icon-shelves.png" alt="" />
+                                                                        </Button>
+                                                                    </Tooltip>
                                                                 )}
                                                                 {/* <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} /> */}
                                                             </Box>

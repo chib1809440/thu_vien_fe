@@ -17,6 +17,7 @@ import IBreadcrumsCustom from "../../../../../ui-component/breadcrums";
 import MainCard from "../../../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../../../utils/object";
 import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
+import { useSearchParams } from "react-router-dom";
 
 
 const LibMaterialPage = () => {
@@ -25,6 +26,7 @@ const LibMaterialPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
     const [selectedLibrary, setSelectedLibrary] = useState(0);
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const filter = useMemo(
         () =>
@@ -96,6 +98,10 @@ const LibMaterialPage = () => {
     // lọc
     const handleLibraryFilterChange = (event) => {
         setSelectedLibrary(event.target.value);
+        if (searchParams.get("page")) {
+            searchParams.set("page", "1");
+        }
+        setSearchParams(searchParams)
     };
 
     const columns: TColumn<TMaterial & { libraryDetails?: TLibrary }>[] = useMemo(

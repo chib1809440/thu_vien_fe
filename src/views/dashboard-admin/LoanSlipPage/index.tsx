@@ -6,7 +6,7 @@ import { vi } from "date-fns/locale";
 import ExcelJS from 'exceljs';
 import { useCallback, useMemo, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
@@ -55,6 +55,7 @@ const LoanSlipPage = () => {
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
+    const [searchParams, setSearchParams] = useSearchParams();
     const [barcodeSearch, setBarcodeSearch] = useState("");
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
@@ -874,7 +875,13 @@ const LoanSlipPage = () => {
                                     locale={vi}
                                     selected={startDate}
                                     dateFormat="dd/MM/yyyy" // Định dạng ngày tháng năm
-                                    onChange={(date: Date | null) => setStartDate(date)}
+                                    onChange={(date: Date | null) => {
+                                        setStartDate(date);
+                                        if (searchParams.get("page")) {
+                                            searchParams.set("page", "1");
+                                        }
+                                        setSearchParams(searchParams)
+                                    }}
                                     customInput={<CustomInput value={startDate ? startDate.toLocaleDateString() : ''} onClick={() => { }} />}
                                 />
                                 {
@@ -894,7 +901,13 @@ const LoanSlipPage = () => {
                                 <DatePicker
                                     selected={endDate}
                                     dateFormat="dd/MM/yyyy" // Định dạng ngày tháng năm
-                                    onChange={(date: Date | null) => setEndDate(date)}
+                                    onChange={(date: Date | null) => {
+                                        setEndDate(date);
+                                        if (searchParams.get("page")) {
+                                            searchParams.set("page", "1");
+                                        }
+                                        setSearchParams(searchParams)
+                                    }}
                                     customInput={<CustomInput value={endDate ? endDate.toLocaleDateString() : ''} onClick={() => { }} />}
                                 />
                                 {
@@ -921,6 +934,10 @@ const LoanSlipPage = () => {
                                         value={filterStatus}
                                         onChange={(event) => {
                                             setFilterStatus(event.target.value); // Lấy giá trị từ event
+                                            if (searchParams.get("page")) {
+                                                searchParams.set("page", "1");
+                                            }
+                                            setSearchParams(searchParams)
                                         }}
                                         sx={{ height: '40px', fontSize: '0.875rem' }}
                                     >

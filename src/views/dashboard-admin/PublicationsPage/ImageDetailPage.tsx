@@ -43,7 +43,6 @@ const ImageDetailPage = ({
     };
 
     const handleClose = () => {
-
         setAnchorEl(null);
     };
 
@@ -51,7 +50,6 @@ const ImageDetailPage = ({
         if (reason === "backdropClick") {
             return;
         }
-
         menuAddVoiceRef.current?.muteAudio();
         onClose();
 
@@ -61,6 +59,8 @@ const ImageDetailPage = ({
         menuAddVoiceRef.current?.muteAudio();
         onClose();
     }
+
+    const hasImageEnglish = publications?.categoryIds?.map(item => item.name)?.some(name => name.includes('ngoại ngữ'));
 
     return (
         <>
@@ -110,41 +110,52 @@ const ImageDetailPage = ({
                                 handleClickChangeMenu={handleClickChangeMenu}
                             />
                         </Box>
-                        <Box >
-                            <Button
-                                onClick={handleClickChangeMenu}
-                                sx={{
-                                    position: "absolute",
-                                    top: { xs: -4, sm: -4, md: 10 },
-                                    right: { xs: -12, sm: -12, md: 10 },
-                                }}
-                            >
-                                <IconVolume
-                                    style={{
-                                        color: theme.palette.text.primary,
-                                        width: isSmallScreen ? 18 : 24,
-                                        height: isSmallScreen ? 18 : 24,
-                                    }}
+                        {
+                            publications?.type === "ấn phẩm mềm" && (
+                                (publications?.mimetype === "image/jpeg" ||
+                                    publications?.mimetype === "image/png" ||
+                                    publications?.mimetype === "image/gif" ||
+                                    publications?.mimetype === "image/bmp" ||
+                                    publications?.mimetype === "image/webp")) && hasImageEnglish &&
+                            <Box>
+                                <Box >
+                                    <Button
+                                        onClick={handleClickChangeMenu}
+                                        sx={{
+                                            position: "absolute",
+                                            top: { xs: -4, sm: -4, md: 10 },
+                                            right: { xs: -12, sm: -12, md: 10 },
+                                        }}
+                                    >
+                                        <IconVolume
+                                            style={{
+                                                color: theme.palette.text.primary,
+                                                width: isSmallScreen ? 18 : 24,
+                                                height: isSmallScreen ? 18 : 24,
+                                            }}
+                                        />
+                                        <MoreVertIcon sx={{ color: theme.palette.text.primary, width: isSmallScreen ? 18 : 24 }} />
+                                    </Button>
+                                </Box>
+                                <MenuAddVoice
+                                    ref={menuAddVoiceRef}
+                                    anchorEl={anchorEl}
+                                    onClose={handleClose}
+                                    voiceData={
+                                        voiceData?.data?.result.filter(
+                                            (voice) =>
+                                                (voice?.publicationId as TPublications)?._id ===
+                                                publications._id && voice?.isPublic
+                                        ) || []
+                                    }
+                                    publicationsData={publications}
+                                    typeVoiceData={typeVoiceData?.data?.result}
+                                    currentUserId={userId}
+                                    userRole={userRole}
                                 />
-                                <MoreVertIcon sx={{ color: theme.palette.text.primary, width: isSmallScreen ? 18 : 24 }} />
-                            </Button>
-                        </Box>
-                        <MenuAddVoice
-                            ref={menuAddVoiceRef}
-                            anchorEl={anchorEl}
-                            onClose={handleClose}
-                            voiceData={
-                                voiceData?.data?.result.filter(
-                                    (voice) =>
-                                        (voice?.publicationId as TPublications)?._id ===
-                                        publications._id && voice?.isPublic
-                                ) || []
-                            }
-                            publicationsData={publications}
-                            typeVoiceData={typeVoiceData?.data?.result}
-                            currentUserId={userId}
-                            userRole={userRole}
-                        />
+                            </Box>
+                        }
+
                     </Paper>
                 </DialogContent>
             </Dialog>

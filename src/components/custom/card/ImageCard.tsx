@@ -43,6 +43,7 @@ const ImageCard: React.FC<ImageCardProps> = ({
     limitDescription,
     aspectRatio = "16/9",
     handleClickChangeMenu,
+    publications,
 }) => {
     const [currentImage, setCurrentImage] = useState(0);
     const [isViewerOpen, setIsViewerOpen] = useState(false);
@@ -84,7 +85,7 @@ const ImageCard: React.FC<ImageCardProps> = ({
 
     const handleMouseDown = (event: React.MouseEvent) => {
         // Kiểm tra nếu scale > 1 thì mới cho phép kéo ảnh
-        if (scale > 1) {      
+        if (scale > 1) {
             event.preventDefault();
             setIsDragging(true);
             setStartPos({ x: event.clientX - translate.x, y: event.clientY - translate.y });
@@ -189,6 +190,9 @@ const ImageCard: React.FC<ImageCardProps> = ({
         newAudio.play();
         setCurrentAudio(newAudio);
     };
+
+    const hasImageEnglish = publications?.categoryIds?.map(item => item.name)?.some(name => name.includes('ngoại ngữ'));
+
     return (
         <>
             <Paper
@@ -211,25 +215,25 @@ const ImageCard: React.FC<ImageCardProps> = ({
                         <GradientLoading />
                     </div>
                 )}
-                <Tooltip title={"Nhấn vào để xem chi tiết"} arrow placement="top">
-                    <Box sx={{ display: loading ? "none" : "block" }}>
-                        <img
-                            src={photo}
-                            alt="Example"
-                            onClick={() => openImageViewer(0)}
-                            onLoad={handleImageLoaded}
-                            style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: objectFit,
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                borderRadius: `${!isBorderRadius ? 0 : "16px"}`,
-                            }}
-                        />
-                    </Box>
-                </Tooltip>
+                {/* <Tooltip title={"Nhấn vào để xem chi tiết"} arrow placement="top"> */}
+                <Box sx={{ display: loading ? "none" : "block" }}>
+                    <img
+                        src={photo}
+                        alt="Example"
+                        onClick={() => openImageViewer(0)}
+                        onLoad={handleImageLoaded}
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: objectFit,
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            borderRadius: `${!isBorderRadius ? 0 : "16px"}`,
+                        }}
+                    />
+                </Box>
+                {/* </Tooltip> */}
             </Paper>
             {title && (
                 <Typography
@@ -331,20 +335,28 @@ const ImageCard: React.FC<ImageCardProps> = ({
                         >
                             <ZoomOutIcon />
                         </IconButton>
-                        <IconButton
-                            sx={{
-                                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                                color: "white",
-                                zIndex: 1,
-                                ":hover": {
-                                    backgroundColor: "rgba(0, 0, 0, 0.7)",
-                                },
-                            }}
-                            onClick={handleClickChangeMenu}
-                        >
-                            <IconVolume fontSize="small" />
-                            <MoreVertIcon />
-                        </IconButton>
+                        {
+                            publications?.type === "ấn phẩm mềm" && (
+                                (publications?.mimetype === "image/jpeg" ||
+                                    publications?.mimetype === "image/png" ||
+                                    publications?.mimetype === "image/gif" ||
+                                    publications?.mimetype === "image/bmp" ||
+                                    publications?.mimetype === "image/webp")) && hasImageEnglish &&
+                            <IconButton
+                                sx={{
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    color: "white",
+                                    zIndex: 1,
+                                    ":hover": {
+                                        backgroundColor: "rgba(0, 0, 0, 0.7)",
+                                    },
+                                }}
+                                onClick={handleClickChangeMenu}
+                            >
+                                <IconVolume fontSize="small" />
+                                <MoreVertIcon />
+                            </IconButton>
+                        }
                     </Box>
 
                     <img

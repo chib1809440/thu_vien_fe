@@ -424,7 +424,8 @@ function TableUserList<T extends DataType>({
                         label="Vai trò"
                         value={filterRoleId}
                         onChange={(event) => {
-                            setFilterRoleId(event.target.value)
+                            setFilterRoleId(event.target.value);
+                            setPage(1);
                         }}
                         input={<CustomInput size="small" label="Vai trò" />}
                     >

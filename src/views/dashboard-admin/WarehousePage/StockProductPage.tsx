@@ -1,4 +1,4 @@
-import { Button, Stack, Typography } from "@mui/material";
+import { Button, Stack, Tooltip, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { IconPencil } from "@tabler/icons";
 import { IconTransferIn } from "@tabler/icons-react";
@@ -242,9 +242,11 @@ const StockProductPage = () => {
                                 hasPermission([
                                     { resource: "publications", action: "manage" },
                                 ]) &&
-                                <Button size="small" onClick={() => handleEditWarehouse(row)}>
-                                    <img style={{ width: "25px", height: "25px" }} src="/images/icon-shelves.png" alt="" />
-                                </Button>
+                                <Tooltip title={"Thêm ấn phẩm lên thư viện"} arrow placement="top">
+                                    <Button size="small" onClick={() => handleEditWarehouse(row)}>
+                                        <img style={{ width: "25px", height: "25px" }} src="/images/icon-shelves.png" alt="" />
+                                    </Button>
+                                </Tooltip>
                             }
 
                         </Box>

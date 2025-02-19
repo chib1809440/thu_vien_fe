@@ -349,54 +349,67 @@ const DialogAddEditVoice: FC<Props> = ({
                         <Box sx={{ mt: 2 }}>
                             <Form autoComplete="none" noValidate onSubmit={handleSubmit}>
                                 <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                                    <SelectForm
-                                        label="Chọn loại voice"
-                                        text="Loại voice:"
-                                        required
-                                        options={
-                                            typeVoiceData?.data?.result?.map((item) => ({
-                                                value: item._id,
-                                                label: capitalizeFirstLetter(item.name),
-                                            })) || []
-                                        }
-                                        {...getFieldProps("typeVoiceId")}
-                                        error={touched.typeVoiceId && Boolean(errors.typeVoiceId)}
-                                        helperText={touched.typeVoiceId && errors.typeVoiceId}
-                                        handleAdd={handleAddTypeVoice}
-                                    />
+                                    <Grid container spacing={2} justifyContent="flex-start">
+                                        <Grid item xs={12} md={4}>
+                                            <SelectForm
+                                                label="Chọn loại voice"
+                                                text="Loại voice:"
+                                                required
+                                                options={
+                                                    typeVoiceData?.data?.result?.map((item) => ({
+                                                        value: item._id,
+                                                        label: capitalizeFirstLetter(item.name),
+                                                    })) || []
+                                                }
+                                                {...getFieldProps("typeVoiceId")}
+                                                error={touched.typeVoiceId && Boolean(errors.typeVoiceId)}
+                                                helperText={touched.typeVoiceId && errors.typeVoiceId}
+                                                handleAdd={handleAddTypeVoice}
+                                            />
+                                        </Grid>
 
-                                    <SelectForm
-                                        label="Chọn loại hội thoại"
-                                        options={
-                                            statusVoiceImage?.map((item) => ({
-                                                value: item.value ? "true" : "false",
-                                                label: item.label,
-                                            })) || []
-                                        }
-                                        {...getFieldProps("isPrivate")}
-                                        value={
-                                            typeof values.isPrivate === "boolean" &&
-                                                values.isPrivate === true
-                                                ? "true"
-                                                : typeof values.isPrivate === "string" &&
-                                                    values.isPrivate === "true"
-                                                    ? "true"
-                                                    : "false"
-                                        }
-                                        error={touched.isPrivate && Boolean(errors.isPrivate)}
-                                        helperText={touched.isPrivate && errors.isPrivate}
-                                        sx={{ mt: { xs: 0, sm: 0, md: 2.5 } }}
-                                    />
+                                        <Grid item xs={12} md={4}>
+                                            <SelectForm
+                                                label="Chọn loại hội thoại"
+                                                options={
+                                                    statusVoiceImage?.map((item) => ({
+                                                        value: item.value ? "true" : "false",
+                                                        label: item.label,
+                                                    })) || []
+                                                }
+                                                {...getFieldProps("isPrivate")}
+                                                value={
+                                                    typeof values.isPrivate === "boolean" &&
+                                                        values.isPrivate === true
+                                                        ? "true"
+                                                        : typeof values.isPrivate === "string" &&
+                                                            values.isPrivate === "true"
+                                                            ? "true"
+                                                            : "false"
+                                                }
+                                                error={touched.isPrivate && Boolean(errors.isPrivate)}
+                                                helperText={touched.isPrivate && errors.isPrivate}
+                                                sx={{ mt: { xs: 0, sm: 0, md: 2.5 } }}
+                                            />
+                                        </Grid>
 
-                                    <InputForm
-                                        label="Số thứ tự"
-                                        placeholder="Nhập số thứ tự"
-                                        required
-                                        error={touched.order && Boolean(errors.order)}
-                                        helperText={touched.order && errors.order}
-                                        {...getFieldProps("order")}
-                                        sxBox={{ mt: { xs: 0, sm: 0, md: 2.5 } }}
-                                    />
+                                        <Grid item xs={12} md={4}>
+                                            <InputForm
+                                                label="Số thứ tự"
+                                                placeholder="Nhập số thứ tự"
+                                                required
+                                                error={touched.order && Boolean(errors.order)}
+                                                helperText={touched.order && errors.order}
+                                                {...getFieldProps("order")}
+                                                onChange={(e) => {
+                                                    // Xử lý để loại bỏ số 0 đầu tiên
+                                                    const value = e.target.value.replace(/^0+/, ''); // Loại bỏ các số 0 ở đầu
+                                                    setFieldValue("order", value); // Cập nhật giá trị vào form
+                                                }}
+                                                sxBox={{ mt: { xs: 0, sm: 0, md: 2.5 } }}
+                                            />
+                                        </Grid>
+                                    </Grid>
                                 </Box>
 
                                 <InputForm
@@ -488,7 +501,7 @@ const DialogAddEditVoice: FC<Props> = ({
                                                                             <Typography mt={0.5}>STT: <strong>{row?.order}</strong></Typography>
 
 
-                                                                            <Button variant="outlined" style={{ marginTop: 5}}>
+                                                                            <Button variant="outlined" style={{ marginTop: 5 }}>
                                                                                 <IconPencil
                                                                                     onClick={() => handleEditVoice(row)}
                                                                                     size={22}
@@ -497,7 +510,7 @@ const DialogAddEditVoice: FC<Props> = ({
                                                                                 />
                                                                             </Button>
 
-                                                                            <Button variant="outlined" color="error" style={{ marginLeft: 5, marginTop: 5}}>
+                                                                            <Button variant="outlined" color="error" style={{ marginLeft: 5, marginTop: 5 }}>
                                                                                 <IconTrash
                                                                                     size={22}
                                                                                     stroke={1.5}

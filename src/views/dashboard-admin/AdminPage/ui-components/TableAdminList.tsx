@@ -98,7 +98,7 @@ function TableAdminList<T extends DataType>({
             // Tìm đối tượng có item.name là "Admin"
             const adminRole = roles.data.result.find(item => item.name.trim() === "Admin");
             if (adminRole) {
-                setFilterRoleId(adminRole._id)
+                setFilterRoleId(adminRole._id);
                 // Làm gì đó với adminRole ở đây
             } else {
             }
@@ -211,6 +211,7 @@ function TableAdminList<T extends DataType>({
                 if (page !== 1 && users.data.result.length === 1) {
                     setPage(page - 1);
                 }
+                refetch();
                 setIsOpenConfirmDialog(false);
                 toast.success("Xóa dữ liệu thành công", {});
             } catch (error) {
@@ -235,6 +236,7 @@ function TableAdminList<T extends DataType>({
             if (page !== 1 && users.data.result.length === checked.length) {
                 setPage(page - 1)
             }
+            refetch();
             toast.success(`Xóa dữ liệu  thành công`, {});
             setIsOpenConfirmDeleteSelectedDialog(false);
 
@@ -310,10 +312,11 @@ function TableAdminList<T extends DataType>({
                 <Grid item xs={12} sm={12} md={2} lg={2}>
                     <Select
                         labelId="roles-select"
-                        label="Vai trof"
+                        label="Vai trò"
                         value={filterRoleId}
                         onChange={(event) => {
-                            setFilterRoleId(event.target.value)
+                            setFilterRoleId(event.target.value);
+                            setPage(1);
                         }}
                         input={<CustomInput size="small" label="Vai trò" />}
                     >

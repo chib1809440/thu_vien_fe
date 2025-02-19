@@ -218,7 +218,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                     }}
                                                                 />
                                                             ))}
-                                                            {publications?.materialIds?.length > 2 && (
+                                                            {publications?.materialIds?.length > 1 && (
                                                                 <Chip
                                                                     variant="filled"
                                                                     label={`+${publications?.materialIds?.length - 1} học liệu khác`}
@@ -262,7 +262,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                     }}
                                                                 />
                                                             ))}
-                                                            {publications?.categoryIds?.length > 2 && (
+                                                            {publications?.categoryIds?.length > 1 && (
                                                                 <Chip
                                                                     variant="filled"
                                                                     label={`+${publications?.categoryIds?.length - 1} lĩnh vực khác`}
@@ -306,7 +306,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                     }}
                                                                 />
                                                             ))}
-                                                            {publications?.authorIds?.length > 2 && (
+                                                            {publications?.authorIds?.length > 1 && (
                                                                 <Chip
                                                                     variant="filled"
                                                                     label={`+${publications?.authorIds?.length - 1} tác giả khác`}
@@ -350,7 +350,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                     }}
                                                                 />
                                                             ))}
-                                                            {publications?.publisherIds?.length > 2 && (
+                                                            {publications?.publisherIds?.length > 1 && (
                                                                 <Chip
                                                                     variant="filled"
                                                                     label={`+${publications?.publisherIds?.length - 1} nhà xuất bản khác`}
@@ -574,7 +574,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                 }}
                                                             />
                                                         ))}
-                                                        {publications?.materialIds?.length > 2 && (
+                                                        {publications?.materialIds?.length > 1 && (
                                                             <Chip
                                                                 variant="filled"
                                                                 label={`+${publications?.materialIds?.length - 1} học liệu khác`}
@@ -618,7 +618,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                 }}
                                                             />
                                                         ))}
-                                                        {publications?.categoryIds?.length > 2 && (
+                                                        {publications?.categoryIds?.length > 1 && (
                                                             <Chip
                                                                 variant="filled"
                                                                 label={`+${publications?.categoryIds?.length - 1} lĩnh vực khác`}
@@ -662,7 +662,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                 }}
                                                             />
                                                         ))}
-                                                        {publications?.authorIds?.length > 2 && (
+                                                        {publications?.authorIds?.length > 1 && (
                                                             <Chip
                                                                 variant="filled"
                                                                 label={`+${publications?.authorIds?.length - 1} tác giả khác`}
@@ -706,7 +706,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                 }}
                                                             />
                                                         ))}
-                                                        {publications?.publisherIds?.length > 2 && (
+                                                        {publications?.publisherIds?.length > 1 && (
                                                             <Chip
                                                                 variant="filled"
                                                                 label={`+${publications?.publisherIds?.length - 1} nhà xuất bản khác`}

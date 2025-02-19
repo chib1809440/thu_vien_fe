@@ -18,6 +18,7 @@ import MainCard from "../../../../../ui-component/cards/MainCard";
 import { parserParams } from "../../../../../utils/object";
 import { capitalizeFirstLetter } from "../../../../../helpers/capitalizeFirstLetter";
 import { textTransform } from "@mui/system";
+import { useSearchParams } from "react-router-dom";
 
 
 const LibAuthorPage = () => {
@@ -26,6 +27,7 @@ const LibAuthorPage = () => {
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
     const [selectedLibrary, setSelectedLibrary] = useState(0);
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const filter = useMemo(
         () =>
@@ -96,6 +98,10 @@ const LibAuthorPage = () => {
     // lọc
     const handleLibraryFilterChange = (event) => {
         setSelectedLibrary(event.target.value);
+        if (searchParams.get("page")) {
+            searchParams.set("page", "1");
+        }
+        setSearchParams(searchParams)
     };
 
     const columns: TColumn<TAuthor & { libraryDetails?: TLibrary }>[] = useMemo(

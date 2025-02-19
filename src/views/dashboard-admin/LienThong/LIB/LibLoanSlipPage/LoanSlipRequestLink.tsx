@@ -23,6 +23,7 @@ import { parserParams } from "../../../../../utils/object";
 import ViewDetailLoanSlip from "../../../LoanSlipPage/ui-components/ViewDetailLoanSlip";
 import FormAddEditLibLoanSlip from "./ui-components/FormAddEditLibLoanSlip";
 import { TLibrary } from "../../../../../types/models/library.type";
+import { useSearchParams } from "react-router-dom";
 interface CustomInputProps {
     value: string;
     onClick: () => void;
@@ -51,6 +52,7 @@ const LoanSlipRequestLink = () => {
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
+    const [searchParams, setSearchParams] = useSearchParams();
     const [barcodeSearch, setBarcodeSearch] = useState("");
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
@@ -812,7 +814,13 @@ const LoanSlipRequestLink = () => {
                                     locale={vi}
                                     selected={startDate}
                                     dateFormat="dd/MM/yyyy" // Định dạng ngày tháng năm
-                                    onChange={(date: Date | null) => setStartDate(date)}
+                                    onChange={(date: Date | null) => {
+                                        setStartDate(date);
+                                        if (searchParams.get("page")) {
+                                            searchParams.set("page", "1");
+                                        }
+                                        setSearchParams(searchParams)
+                                    }}
                                     customInput={<CustomInput value={startDate ? startDate.toLocaleDateString() : ''} onClick={() => { }} />}
                                 />
                                 {
@@ -832,7 +840,13 @@ const LoanSlipRequestLink = () => {
                                 <DatePicker
                                     selected={endDate}
                                     dateFormat="dd/MM/yyyy" // Định dạng ngày tháng năm
-                                    onChange={(date: Date | null) => setEndDate(date)}
+                                    onChange={(date: Date | null) => {
+                                        setEndDate(date);
+                                        if (searchParams.get("page")) {
+                                            searchParams.set("page", "1");
+                                        }
+                                        setSearchParams(searchParams)
+                                    }}
                                     customInput={<CustomInput value={endDate ? endDate.toLocaleDateString() : ''} onClick={() => { }} />}
                                 />
                                 {
@@ -859,6 +873,10 @@ const LoanSlipRequestLink = () => {
                                         value={filterStatus}
                                         onChange={(event) => {
                                             setFilterStatus(event.target.value); // Lấy giá trị từ event
+                                            if (searchParams.get("page")) {
+                                                searchParams.set("page", "1");
+                                            }
+                                            setSearchParams(searchParams)
                                         }}
                                         sx={{ height: '40px', fontSize: '0.875rem' }}
                                     >

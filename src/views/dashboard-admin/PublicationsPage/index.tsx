@@ -92,6 +92,7 @@ const PublicationsPage = () => {
     const limit = queryString?.limit ?? _limitDisplay;
     const search = queryString?.q ?? "";
     const [searchParams, setSearchParams] = useSearchParams();
+    const order = "ASC";
 
     const [selectedMaterial, setSelectedMaterial] = useState(0);
     const [selectedPublications, setSelectedPublications] = useState(0);
@@ -144,6 +145,7 @@ const PublicationsPage = () => {
     const { data, isLoading, isFetching } = useFetchPublications({
         limit,
         page,
+        // order,
         ...filter,
         ...(selectedValuePublication === "thuvien"
             ? { isPublic: true }
@@ -378,9 +380,10 @@ const PublicationsPage = () => {
     }
     const handlePublicationsFilterChange = (event) => {
         setSelectedPublications(event.target.value);
-        handleResetPage();
+        // handleResetPage();
     };
     const handleMaterialFilterChange = (event) => {
+        console.log(event.target.value);
         setSelectedMaterial(event.target.value);
         handleResetPage();
     };
@@ -403,17 +406,14 @@ const PublicationsPage = () => {
 
     const handleBarcodeSearch = (value) => {
         setBarcodeSearch(value);
-        handleResetPage();
     };
 
     const handleValuePublication = (event) => {
         setSelectedValue(event.target.value);
-        handleResetPage();
     };
 
     const handleLibraryFilterChange = (event) => {
         setSelectedLibrary(event.target.value);
-        handleResetPage();
     };
     const dispatch = useDispatch();
     const items = useSelector((state: { cartLoanSlip: { items: CreatePublication[] } }) => state.cartLoanSlip.items);
@@ -1364,10 +1364,10 @@ const PublicationsPage = () => {
                                                                         ? `PDF: ${capitalizeFirstLetter(item?.name)}`
                                                                         : (item?.mimetype === "application/msword" ||
                                                                             item?.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-                                                                            ? `Word: ${capitalizeFirstLetter(item?.name)}`
+                                                                            ? `KHBD: ${capitalizeFirstLetter(item?.name)}`
                                                                             : (item?.mimetype === "application/vnd.ms-powerpoint" ||
                                                                                 item?.mimetype === "application/vnd.openxmlformats-officedocument.presentationml.presentation")
-                                                                                ? `PPT: ${capitalizeFirstLetter(item?.name)}`
+                                                                                ? `KHBG: ${capitalizeFirstLetter(item?.name)}`
                                                                                 : (item?.mimetype === "video/mp4" ||
                                                                                     item?.mimetype === "video/x-msvideo" ||
                                                                                     item?.mimetype === "video/x-matroska" ||

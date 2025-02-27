@@ -480,6 +480,24 @@ const dashboardAdmin = {
                         },
                     ],
                 },
+                {
+                    id: "chu-de",
+                    title: "Chủ đề",
+                    type: "item",
+                    url: "/quan-ly-danh-muc/chu-de",
+                    icon: icons.IconCategory,
+                    breadcrumbs: false,
+                    permissions: [
+                        {
+                            resource: "all",
+                            action: "manage",
+                        },
+                        {
+                            resource: "topics",
+                            action: "manage",
+                        },
+                    ],
+                },
                 // {
                 //     id: "tu-ke",
                 //     title: "Tủ - Kệ",

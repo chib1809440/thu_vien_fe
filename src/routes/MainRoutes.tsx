@@ -53,6 +53,9 @@ const MaterialPage = Loadable(
 const CategoryPage = Loadable(
   lazy(() => import("../views/dashboard-admin/CategoryPage"))
 );
+const TopicPage = Loadable(
+  lazy(() => import("../views/dashboard-admin/TopicPage"))
+);
 const AuthorPage = Loadable(
   lazy(() => import("../views/dashboard-admin/AuthorPage"))
 );
@@ -246,6 +249,10 @@ const MainRoutes = {
     {
       path: "quan-ly-danh-muc/linh-vuc",
       element: <CategoryPage />
+    },
+    {
+      path: "quan-ly-danh-muc/chu-de",
+      element: <TopicPage />
     },
     {
       path: "/quan-ly-danh-muc/tac-gia",

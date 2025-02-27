@@ -59,9 +59,9 @@ const ActionsForm: FC<Props> = ({
             return;
         }
 
-        if (searchParams.get("page")) {
-            searchParams.set("page", "1");
-        }
+        // if (searchParams.get("page")) {
+        //     searchParams.set("page", "1");
+        // }
 
         searchParams.set("q", debounceSearch);
         setSearchParams(searchParams);
@@ -91,6 +91,12 @@ const ActionsForm: FC<Props> = ({
     }, []);
 
     const handleContentSearch = useCallback((value: string) => {
+        if (searchParams.get("page")) {
+            searchParams.set("page", "1");
+        }
+
+        searchParams.set("q", debounceSearch);
+        setSearchParams(searchParams);
         setContentSearch(value);
     }, []);
 

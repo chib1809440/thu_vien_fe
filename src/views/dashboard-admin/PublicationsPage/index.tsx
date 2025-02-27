@@ -405,6 +405,11 @@ const PublicationsPage = () => {
     };
 
     const handleBarcodeSearch = (value) => {
+        if (searchParams.get("page")) {
+            searchParams.set("page", "1");
+        }
+
+        setSearchParams(searchParams);
         setBarcodeSearch(value);
     };
 
@@ -1359,23 +1364,23 @@ const PublicationsPage = () => {
                                                                     item?.mimetype === "image/gif" ||
                                                                     item?.mimetype === "image/bmp" ||
                                                                     item?.mimetype === "image/webp")
-                                                                    ? `Tranh: ${capitalizeFirstLetter(item?.name)}`
+                                                                    ? `Tranh: ${item?.name.toLowerCase()}`
                                                                     : (item?.mimetype === "application/pdf"
-                                                                        ? `PDF: ${capitalizeFirstLetter(item?.name)}`
+                                                                        ? `Sách: ${item?.name.toLowerCase()}`
                                                                         : (item?.mimetype === "application/msword" ||
                                                                             item?.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-                                                                            ? `KHBD: ${capitalizeFirstLetter(item?.name)}`
+                                                                            ? `Khbd: ${item?.name.toLowerCase()}`
                                                                             : (item?.mimetype === "application/vnd.ms-powerpoint" ||
                                                                                 item?.mimetype === "application/vnd.openxmlformats-officedocument.presentationml.presentation")
-                                                                                ? `KHBG: ${capitalizeFirstLetter(item?.name)}`
+                                                                                ? `Khbg: ${item?.name.toLowerCase()}`
                                                                                 : (item?.mimetype === "video/mp4" ||
                                                                                     item?.mimetype === "video/x-msvideo" ||
                                                                                     item?.mimetype === "video/x-matroska" ||
                                                                                     item?.mimetype === "video/webm")
-                                                                                    ? `Video: ${capitalizeFirstLetter(item?.name)}` : ""
+                                                                                    ? `Video: ${item?.name.toLowerCase()}` : ""
 
                                                                     )
-                                                            ) : `${getLabelFromOptions(typeOptions, item?.type)}: ${capitalizeFirstLetter(item?.name)}`
+                                                            ) : `${getLabelFromOptions(typeOptions, item?.type)}: ${item?.name.toLowerCase()}`
                                                             }
                                                         </Typography>
                                                     </Box>

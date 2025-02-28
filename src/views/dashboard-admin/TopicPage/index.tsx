@@ -48,8 +48,6 @@ const TopicPage = () => {
         ...filter,
     });
 
-    console.log("topic", data);
-
     const { data: libraryData } = useFetchLibrary();
     const mutationAdd = useAddTopic();
     const mutationEdit = useEditTopic();
@@ -88,8 +86,11 @@ const TopicPage = () => {
 
     const handleSubmit = (values: TTopicCreate) => {
         const categoryIds = values?.categoryIds.map(category => category._id);
-        console.log(values);
-        // return
+
+        const payload = {
+            ...values,
+            categoryIds
+        }
 
         if (selectedEdit) {
             mutationEdit.mutate(
@@ -105,7 +106,7 @@ const TopicPage = () => {
             return;
         }
 
-        mutationAdd.mutate(values, {
+        mutationAdd.mutate(payload, {
             onSuccess: (data) => {
                 revalidate();
                 toast.success('Thêm thành công.');

@@ -9,6 +9,7 @@ import { TAuthor } from "../../../../types/models/author";
 import { TCategory } from "../../../../types/models/category";
 import { TMaterial } from "../../../../types/models/material";
 import { TPublisher } from "../../../../types/models/publisher";
+import { TTopic } from "../../../../types/models/topic";
 import { TTypeVoice } from "../../../../types/models/type-voice";
 
 type Props = {
@@ -33,6 +34,9 @@ type Props = {
     selectedBelongAsset?: number;
     handleBelongAssetFilterChange?: (event: any) => void;
     assetData?: TAsset[];
+    selectedTopic?: number;
+    handleTopicFilterChange?: (event: any) => void;
+    filteredTopics?: TTopic[];
 };
 
 const FilterByItems: FC<Props> = ({
@@ -57,9 +61,12 @@ const FilterByItems: FC<Props> = ({
     selectedBelongAsset,
     handleBelongAssetFilterChange,
     assetData,
+    selectedTopic,
+    handleTopicFilterChange,
+    filteredTopics,
 }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
+    
     // Mở menu lọc
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -69,7 +76,6 @@ const FilterByItems: FC<Props> = ({
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
-    
     return (
         <Grid
             container
@@ -230,6 +236,59 @@ const FilterByItems: FC<Props> = ({
                                 {capitalizeFirstLetter(item.name)}
                             </MenuItem>
                         ))}
+                    </Select>
+                </Grid>
+            )}
+            {selectedCategory != 0 && (
+                <Grid
+                    item
+                    xs={12}
+                    sm={12}
+                    md={2}
+                    lg={2}
+                    sx={{
+                        marginBottom: { xs: 0, sm: 0, md: 2, lg: 2 },
+                        display: { xs: "none", sm: "none", md: "flex" },
+                    }}
+                >
+                    <Select
+                        labelId="topic-select"
+                        label="Chủ đề"
+                        value={selectedTopic}
+                        onChange={handleTopicFilterChange}
+                        input={<CustomInput size="small" label="Lĩnh vực" />}
+                        MenuProps={{
+                            PaperProps: {
+                                sx: {
+                                    maxHeight: 200,
+                                    overflowY: 'auto',
+                                    '&::-webkit-scrollbar': {
+                                        width: '3px',
+                                    },
+                                    '&::-webkit-scrollbar-thumb': {
+                                        backgroundColor: '#888',
+                                        borderRadius: '10px',
+                                    },
+                                    '&::-webkit-scrollbar-thumb:hover': {
+                                        backgroundColor: '#555',
+                                    },
+                                    '&::-webkit-scrollbar-track': {
+                                        backgroundColor: '#f1f1f1',
+                                    },
+                                },
+                            },
+                        }}
+                    >
+                        <MenuItem value={0}>Tất cả chủ đề</MenuItem>
+                        {filteredTopics?.length > 0 ? (
+                            filteredTopics.map((item, index) => (
+                                <MenuItem key={index} value={item._id}>
+                                    {capitalizeFirstLetter(item.name)}
+                                </MenuItem>
+                            ))
+                        ) : (
+                            <MenuItem disabled>Chưa có chủ đề</MenuItem>
+                        )}
                     </Select>
                 </Grid>
             )}
@@ -554,6 +613,50 @@ const FilterByItems: FC<Props> = ({
                                     {capitalizeFirstLetter(item.name)}
                                 </MenuItem>
                             ))}
+                        </Select>
+                    </MenuItem>
+                )}
+                {selectedCategory != 0 && (
+                    <MenuItem>
+                        <Select
+                            labelId="topic-select"
+                            label="Chủ đề"
+                            value={selectedTopic}
+                            onChange={handleTopicFilterChange}
+                            fullWidth
+                            size="small"
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        maxHeight: 200,
+                                        overflowY: 'auto',
+                                        '&::-webkit-scrollbar': {
+                                            width: '3px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb': {
+                                            backgroundColor: '#888',
+                                            borderRadius: '10px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb:hover': {
+                                            backgroundColor: '#555',
+                                        },
+                                        '&::-webkit-scrollbar-track': {
+                                            backgroundColor: '#f1f1f1',
+                                        },
+                                    },
+                                },
+                            }}
+                        >
+                            <MenuItem value={0}>Tất cả chủ đề</MenuItem>
+                            {filteredTopics?.length > 0 ? (
+                                filteredTopics.map((item, index) => (
+                                    <MenuItem key={index} value={item._id}>
+                                        {capitalizeFirstLetter(item.name)}
+                                    </MenuItem>
+                                ))
+                            ) : (
+                                <MenuItem disabled>Chưa có chủ đề</MenuItem>
+                            )}
                         </Select>
                     </MenuItem>
                 )}

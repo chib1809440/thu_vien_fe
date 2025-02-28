@@ -8,23 +8,28 @@ import InputForm from "../../../../components/custom/form/InputForm";
 import SelectForm from "../../../../components/custom/form/SelectForm";
 import SwitchForm from "../../../../components/custom/form/SwitchForm";
 import Uploadimage, { UploadAvatarRefProps } from "../../../../components/custom/form/UploadImage";
+import StyledButton from "../../../../components/default/button/StyledButton";
+import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter";
 import { useAddAuthor } from "../../../../hooks/services/author/author-mutation";
 import { useReFetchAuthor } from "../../../../hooks/services/author/author-query";
 import { useAddCategory } from "../../../../hooks/services/category/category-mutation";
-import { useReFetchCategory } from "../../../../hooks/services/category/category-query";
+import { useFetchCategory, useReFetchCategory } from "../../../../hooks/services/category/category-query";
 import { useAddMaterial } from "../../../../hooks/services/material/material-mutation";
 import { useReFetchMaterial } from "../../../../hooks/services/material/material-query";
 import { useAddPublisher } from "../../../../hooks/services/publisher/publisher-mutation";
 import { useReFetchPublisher } from "../../../../hooks/services/publisher/publisher-query";
+import { useAddTopic } from "../../../../hooks/services/topic/topic-mutation";
+import { useReFetchTopic } from "../../../../hooks/services/topic/topic-query";
 import { TAuthor } from "../../../../types/models/author";
 import { TCategory } from "../../../../types/models/category";
 import { TMaterial } from "../../../../types/models/material";
 import { TPublicationsCreate } from "../../../../types/models/publications.type";
 import { TPublisher } from "../../../../types/models/publisher";
+import { TTopic } from "../../../../types/models/topic";
 import { statusOptions, typeOptions } from "../../../../utils/constants.utils";
-import FormAddCommonDialog from "./FormAddCommonDialog";
 import usePermission from "../../../../utils/hasPermission";
-import StyledButton from "../../../../components/default/button/StyledButton";
+import FormAddEditTopic from "../../TopicPage/ui-components/FormAddEditTopic";
+import FormAddCommonDialog from "./FormAddCommonDialog";
 
 type Props = {
     open: boolean;
@@ -39,6 +44,7 @@ type Props = {
     publisherOptions?: TPublisher[];
     imageUrl?: string;
     wareHouseReceipt?: boolean;
+    topicOptions?: TTopic[];
 };
 
 const schema = (isEditMode: boolean) =>
@@ -105,6 +111,7 @@ const FormAddEditPublications: FC<Props> = ({
     materialOptions,
     authorOptions,
     publisherOptions,
+    topicOptions,
     imageUrl,
     initialValues = {
         name: "",
@@ -143,7 +150,7 @@ const FormAddEditPublications: FC<Props> = ({
 
     const [openAdd, setOpenAdd] = useState(false);
     const [typeToAdd, setTypeToAdd] = useState<
-        "publisher" | "author" | "category" | "material" | null
+        "publisher" | "author" | "category" | "material" | "topic" | null
     >(null);
     const imageRef = useRef<UploadAvatarRefProps>(null);
     const [defaultImage, setDefaultImage] = useState<string>("");
@@ -152,13 +159,16 @@ const FormAddEditPublications: FC<Props> = ({
 
     const mutationAddPublisher = useAddPublisher();
     const mutationAddCategory = useAddCategory();
+    const mutationAddTopic = useAddTopic();
     const mutationAddMaterial = useAddMaterial();
     const mutationAddAuthor = useAddAuthor();
     const revalidatePublisher = useReFetchPublisher();
     const revalidateCategory = useReFetchCategory();
     const revalidateMaterial = useReFetchMaterial();
     const revalidateAuthor = useReFetchAuthor();
+    const revalidateTopic = useReFetchTopic();
     const { hasPermission } = usePermission();
+    const { data: categoryData } = useFetchCategory();
 
     const isMounted = useRef(true);
 
@@ -195,6 +205,11 @@ const FormAddEditPublications: FC<Props> = ({
         setOpenAdd(true);
     };
 
+    const handleAddTopic = () => {
+        setTypeToAdd("topic");
+        setOpenAdd(true);
+    };
+
     const handleAddMaterial = () => {
         setTypeToAdd("material");
         setOpenAdd(true);
@@ -207,6 +222,11 @@ const FormAddEditPublications: FC<Props> = ({
     const handleAddSubmit = (values) => {
         let mutation;
         let revalidate;
+        const categoryIds = values?.categoryIds.map(category => category._id);
+        const payload = {
+            ...values,
+            categoryIds
+        }
 
         // Xác định loại đối tượng dựa trên một trường trong values
         if (values.type === "publisher") {
@@ -221,21 +241,40 @@ const FormAddEditPublications: FC<Props> = ({
         } else if (values.type === "author") {
             mutation = mutationAddAuthor;
             revalidate = revalidateAuthor;
+        } else if (values.type === "topic") {
+            mutation = mutationAddTopic;
+            revalidate = revalidateTopic;
         }
 
         if (mutation) {
-            mutation.mutate(values, {
-                onSuccess: (data) => {
-                    if (revalidate) {
-                        revalidate();
-                    }
-                    toast.success("Thêm thành công.");
-                    setOpenAdd(false);
-                },
-                onError: (error) => {
-                    toast.error("Thêm thất bại: " + error.message);
-                },
-            });
+            if (values.type === "topic") {
+                mutationAddTopic.mutate(payload, {
+                    onSuccess: (data) => {
+                        revalidateTopic();
+                        toast.success("Thêm thành công.");
+                        setOpenAdd(false);
+                    },
+                    onError: (error) => {
+                        toast.error("Thêm thất bại: " + error.message);
+                    },
+                });
+                return;
+            }
+            else {
+                mutation.mutate(values, {
+                    onSuccess: (data) => {
+                        if (revalidate) {
+                            revalidate();
+                        }
+                        toast.success("Thêm thành công.");
+                        setOpenAdd(false);
+                    },
+                    onError: (error) => {
+                        toast.error("Thêm thất bại: " + error.message);
+                    },
+                });
+                return;
+            }
         }
     };
 
@@ -259,6 +298,11 @@ const FormAddEditPublications: FC<Props> = ({
             type: "material",
             name: "",
             description: "",
+        },
+        topic: {
+            type: "topic",
+            name: "",
+            categoryIds: [],
         },
     };
 
@@ -340,7 +384,7 @@ const FormAddEditPublications: FC<Props> = ({
                     // imageRef.current.clearState();
                     // console.log("hihihi");
                     setFieldValue("file", file);
-                    
+
                 }
             }
 
@@ -506,6 +550,24 @@ const FormAddEditPublications: FC<Props> = ({
                                 noOptionsText="Vui lòng thêm lĩnh vực mới"
                             />
 
+                            <SelectForm
+                                sx={{ mt: 1.6, fontWeight: 300 }}
+                                label="Chọn chủ đề"
+                                options={
+                                    topicOptions?.map((item) => ({
+                                        value: item._id,
+                                        label: capitalizeFirstLetter(item.name),
+                                    })) || []
+                                }
+                                {...getFieldProps("topicId")}
+                                error={touched.topicId && Boolean(errors.topicId)}
+                                helperText={touched.topicId && errors.topicId}
+                                handleAdd={hasPermission([
+                                    { resource: "topics", action: "manage" },
+                                    { resource: "topics", action: "create" },
+                                ]) ? handleAddTopic : null}
+                            />
+
                             <AutocompleteForm
                                 label="Chọn tác giả"
                                 required={values.type === "ấn phẩm cứng"}
@@ -626,6 +688,16 @@ const FormAddEditPublications: FC<Props> = ({
                     />
                 )
             }
+
+            {openAdd && typeToAdd === "topic" && (
+                <FormAddEditTopic
+                    open={openAdd}
+                    onClose={handleClose}
+                    initialValues={getInitialValuesAdd}
+                    onSubmit={handleAddSubmit}
+                    cateOptions={categoryData?.data?.result || []}
+                />
+            )}
         </FormikProvider >
     );
 };

@@ -20,7 +20,7 @@ import {
     IconWorldShare,
 } from "@tabler/icons-react";
 import ExcelJS from "exceljs";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -31,6 +31,7 @@ import PaginationForm from "../../../components/custom/form/PaginationForm";
 import StyledButton from "../../../components/default/button/StyledButton";
 import StyledIconButton from "../../../components/default/button/StyledIconButton";
 import ConfirmDeleteDialog from "../../../components/default/dialog/ConfirmDeleteDialog";
+import GradientCircularProgressLoading from "../../../components/default/loading/GradientCircularProgressLoading/GradientCircularProgressLoading";
 import { useAuth } from "../../../contexts/JWTContext";
 import { capitalizeFirstLetter } from "../../../helpers/capitalizeFirstLetter";
 import { useFetchAuthor } from "../../../hooks/services/author/author-query";
@@ -47,6 +48,7 @@ import {
 } from "../../../hooks/services/publications/publications-mutation";
 import { useFetchPublications, useReFetchPublications } from "../../../hooks/services/publications/publications-query";
 import { useFetchPublisher } from "../../../hooks/services/publisher/publisher-query";
+import { useFetchTopic } from "../../../hooks/services/topic/topic-query";
 import useQueryString from "../../../hooks/services/useQueryString";
 import { addInternalItem } from "../../../store/slices/cartInternalLoanSlip";
 import { TColumn, TMenuOption } from "../../../types/common/table";
@@ -54,6 +56,7 @@ import { TLibrary } from "../../../types/models/library.type";
 import { CreatePublication } from "../../../types/models/loanSlip.type";
 import { TPublications, TPublicationsCreate } from "../../../types/models/publications.type";
 import { TShelves } from "../../../types/models/shelves";
+import { TTopic } from "../../../types/models/topic";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
 import { statusOptions, typeOptions } from "../../../utils/constants.utils";
@@ -63,7 +66,6 @@ import DialogImportFile from "./ui-components/DialogImportFile";
 import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
-import GradientCircularProgressLoading from "../../../components/default/loading/GradientCircularProgressLoading/GradientCircularProgressLoading";
 
 const BreakpointsColumn = {
     xs: 12,
@@ -98,6 +100,7 @@ const PublicationsPage = () => {
     const [selectedPublications, setSelectedPublications] = useState(0);
     const [selectedAuthor, setSelectedAuthor] = useState(0);
     const [selectedCategory, setSelectedCategory] = useState(0);
+    const [selectedTopic, setSelectedTopic] = useState(0);
     const [selectedPublisher, setSelectedPublisher] = useState(0);
     const [barcodeSearch, setBarcodeSearch] = useState("");
     const [selectedValuePublication, setSelectedValue] = useState("thuvien");
@@ -181,6 +184,10 @@ const PublicationsPage = () => {
     // });
 
     const { data: categoryData } = useFetchCategory();
+    const { data: topicData } = useFetchTopic();
+
+    console.log("data", topicData);
+
     const { data: materialData } = useFetchMaterial();
     const { data: authorData } = useFetchAuthor();
     const { data: publisherData } = useFetchPublisher();
@@ -395,6 +402,12 @@ const PublicationsPage = () => {
 
     const handleCategoryFilterChange = (event) => {
         setSelectedCategory(event.target.value);
+        setSelectedTopic(0);
+        handleResetPage();
+    };
+
+    const handleTopicFilterChange = (event) => {
+        setSelectedTopic(event.target.value);
         handleResetPage();
     };
 
@@ -420,6 +433,19 @@ const PublicationsPage = () => {
     const handleLibraryFilterChange = (event) => {
         setSelectedLibrary(event.target.value);
     };
+
+    const [filteredTopics, setFilteredTopics] = useState([]);
+    useEffect(() => {
+        if (selectedCategory === 0) {
+            setFilteredTopics(topicData?.data?.result);
+        } else {
+            const filtered = topicData?.data?.result?.filter((item) =>
+                item.categoryIds?.some((category) => category._id === selectedCategory.toString())
+            );
+            setFilteredTopics(filtered);
+        }
+    }, [selectedCategory, topicData]);
+
     const dispatch = useDispatch();
     const items = useSelector((state: { cartLoanSlip: { items: CreatePublication[] } }) => state.cartLoanSlip.items);
     const handleAddItem = (item: TPublications & { libraryDetails?: TLibrary }) => {
@@ -984,6 +1010,7 @@ const PublicationsPage = () => {
                 categoryIds: selectedEdit.categoryIds || [],
                 authorIds: selectedEdit.authorIds || [],
                 shelvesId: (selectedEdit.shelvesId as TShelves)?._id || null,
+                topicId: (selectedEdit.topicId as TTopic)?._id || null,
                 publisherIds: selectedEdit.publisherIds || [],
                 materialIds: selectedEdit.materialIds || [],
                 mimetype: selectedEdit.mimetype,
@@ -1032,6 +1059,7 @@ const PublicationsPage = () => {
                     authorOptions={authorData?.data?.result || []}
                     materialOptions={materialData?.data?.result || []}
                     publisherOptions={publisherData?.data?.result || []}
+                    topicOptions={filteredTopics}
                     imageUrl={
                         selectedEdit?.priviewImage
                             ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.priviewImage}`
@@ -1148,6 +1176,9 @@ const PublicationsPage = () => {
                             selectedCategory: selectedCategory,
                             handleCategoryFilterChange: handleCategoryFilterChange,
                             categoryData: categoryData,
+                            selectedTopic: selectedTopic,
+                            handleTopicFilterChange: handleTopicFilterChange,
+                            filteredTopics: filteredTopics,
                             selectedAuthor: selectedAuthor,
                             handleAuthorFilterChange: handleAuthorFilterChange,
                             authorData: authorData,

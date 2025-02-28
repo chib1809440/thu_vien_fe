@@ -4,6 +4,7 @@ import { TEntityAbstract } from "./entity-common.type";
 import { TMaterial } from "./material";
 import { TPublisher } from "./publisher";
 import { TShelves } from "./shelves";
+import { TTopic } from "./topic";
 
 export type TTypePublications = 'ấn phẩm cứng' | 'ấn phẩm mềm';
 export type TStatusPublications = 'trên kệ' | 'thanh lý' | 'bị hư hại' | 'có sẵn' | 'không có sẵn';
@@ -36,12 +37,14 @@ export type TPublications = TEntityAbstract & {
     mimetype?: string,
     priceInput?: number;
     priceOutput?: number;
+    topicId ?: TTopic | string;
 };
 
 export type TPublicationsCreate = Partial<Pick<TPublications, "isPublic" | "isLink" | "name" | "barcode" | "description" | "note" | "quantity" | "shelvesQuantity" | "status" | "type" | "file" | "quantityLiquidation" | "quantityDamaged" | "totalQuantity" | "quantityLoan" | "mimetype">> & {
     categoryIds?: string[] | TCategory[] | null;
     authorIds?: string[] | TAuthor[] | null;
     shelvesId?: string | null;
+    topicId?: string | null;
     publisherIds?: string[] | TPublisher[] | null;
     materialIds?: string[] | TMaterial[] | null;
 };
@@ -50,6 +53,7 @@ export type TPublicationsEdit = Partial<Pick<TPublications, "isPublic" | "isLink
     categoryIds?: string[] | TCategory[] | null;
     authorIds?: string[] | TAuthor[] | null;
     shelvesId?: string | null;
+    topicId?: string | null;
     publisherIds?: string[] | TPublisher[] | null;
     materialIds?: string[] | TMaterial[] | null;
 };

@@ -61,11 +61,11 @@ const FormAddEditTopic: FC<Props> = ({
     );
 
     const handleChangedCate = useCallback((value: TCategory[]) => {
-        const categoryIds = value.map(category => category._id);
+        // const categoryIds = value.map(category => category._id);
 
-        console.log(categoryIds);
+        // console.log(categoryIds);
 
-        setFieldValue?.("categoryIds", categoryIds);
+        setFieldValue?.("categoryIds", value);
     }, []);
 
     return (

@@ -13,7 +13,7 @@ import { capitalizeFirstLetter } from "../../../../helpers/capitalizeFirstLetter
 import { useAddAuthor } from "../../../../hooks/services/author/author-mutation";
 import { useReFetchAuthor } from "../../../../hooks/services/author/author-query";
 import { useAddCategory } from "../../../../hooks/services/category/category-mutation";
-import { useFetchCategory, useReFetchCategory } from "../../../../hooks/services/category/category-query";
+import { useReFetchCategory } from "../../../../hooks/services/category/category-query";
 import { useAddMaterial } from "../../../../hooks/services/material/material-mutation";
 import { useReFetchMaterial } from "../../../../hooks/services/material/material-query";
 import { useAddPublisher } from "../../../../hooks/services/publisher/publisher-mutation";
@@ -148,6 +148,7 @@ const FormAddEditPublications: FC<Props> = ({
         [formik]
     );
 
+    const [filteredTopics, setFilteredTopics] = useState([]);
     const [openAdd, setOpenAdd] = useState(false);
     const [typeToAdd, setTypeToAdd] = useState<
         "publisher" | "author" | "category" | "material" | "topic" | null
@@ -168,8 +169,6 @@ const FormAddEditPublications: FC<Props> = ({
     const revalidateAuthor = useReFetchAuthor();
     const revalidateTopic = useReFetchTopic();
     const { hasPermission } = usePermission();
-    const { data: categoryData } = useFetchCategory();
-
     const isMounted = useRef(true);
 
     useEffect(() => {
@@ -327,11 +326,15 @@ const FormAddEditPublications: FC<Props> = ({
         setTypeHardPublications(selectedType === "ấn phẩm cứng");
     };
 
+    const [selectedCategoryIds, setSelectedCategoryIds] = useState([]);
+    const [filteredTopicOptions, setFilteredTopicOptions] = useState([]);
+
     const handleChangedMaterial = useCallback((value: TMaterial[]) => {
         setFieldValue?.("materialIds", value);
     }, []);
     const handleChangedCategory = useCallback((value: TCategory[]) => {
         setFieldValue?.("categoryIds", value);
+        setSelectedCategoryIds(value.map((category) => category._id));
     }, []);
     const handleChangedAuthor = useCallback((value: TAuthor[]) => {
         setFieldValue?.("authorIds", value);
@@ -402,6 +405,22 @@ const FormAddEditPublications: FC<Props> = ({
         [initialValues, setFieldValue, defaultImage, typeHardPublications]
     );
 
+    useEffect(() => {
+        const categoryIdsToUse = selectedCategoryIds?.map(id => typeof id === 'string' ? id : id._id) || [];
+    
+        if ((categoryIdsToUse.length > 0 || values?.categoryIds?.length > 0) && topicOptions.length > 0) {
+      
+            const filteredTopics = topicOptions.filter((topic) =>
+                topic.categoryIds?.some((category) =>
+                    categoryIdsToUse.includes(category._id) || values?.categoryIds?.map(cate => typeof cate === 'string' ? cate : cate._id).includes(category._id)
+                )
+            );
+            setFilteredTopicOptions(filteredTopics);
+        } else {
+            setFilteredTopicOptions([]);
+        }
+    }, [selectedCategoryIds, values?.categoryIds, topicOptions]);
+    
     return (
         <FormikProvider value={formik}>
             <Dialog
@@ -510,101 +529,116 @@ const FormAddEditPublications: FC<Props> = ({
                         <Box
                             sx={{
                                 display: "flex",
-                                flexDirection: { xs: "column", md: "row" },
-                                gap: { xs: 0, md: 2, xl: 2 },
+                                flexDirection: "column",
                             }}
                         >
-                            <AutocompleteForm
-                                label="Chọn dạng học liệu"
-                                required={values.type === "ấn phẩm cứng"}
-                                value={(values.materialIds as unknown as TMaterial[]) || []}
-                                options={materialOptions}
-                                keyLabel={"name"}
-                                onChange={handleChangedMaterial}
-                                error={touched.materialIds && Boolean(errors.materialIds)}
-                                helperText={touched.materialIds && errors.materialIds}
-                                handleAdd={hasPermission([
-                                    { resource: "materials", action: "manage" },
-                                    { resource: "materials", action: "create" },
-                                ]) ? handleAddMaterial : null}
-                                limitTags={1}
-                                limitText={10}
-                                noOptionsText="Vui lòng thêm dạng học liệu mới"
-                            />
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: { xs: "column", md: "row" },
+                                    gap: { xs: 0, md: 2, xl: 2 },
+                                }}
+                            >
+                                <AutocompleteForm
+                                    label="Chọn dạng học liệu"
+                                    required={values.type === "ấn phẩm cứng"}
+                                    value={(values.materialIds as unknown as TMaterial[]) || []}
+                                    options={materialOptions}
+                                    keyLabel={"name"}
+                                    onChange={handleChangedMaterial}
+                                    error={touched.materialIds && Boolean(errors.materialIds)}
+                                    helperText={touched.materialIds && errors.materialIds}
+                                    handleAdd={hasPermission([
+                                        { resource: "materials", action: "manage" },
+                                        { resource: "materials", action: "create" },
+                                    ]) ? handleAddMaterial : null}
+                                    limitTags={1}
+                                    limitText={10}
+                                    noOptionsText="Vui lòng thêm dạng học liệu mới"
+                                />
 
-                            <AutocompleteForm
-                                label="Chọn lĩnh vực"
-                                required={values.type === "ấn phẩm cứng"}
-                                value={(values.categoryIds as unknown as TCategory[]) || []}
-                                options={cateOptions}
-                                keyLabel={"name"}
-                                onChange={handleChangedCategory}
-                                error={touched.categoryIds && Boolean(errors.categoryIds)}
-                                helperText={touched.categoryIds && errors.categoryIds}
-                                handleAdd={hasPermission([
-                                    { resource: "categories", action: "manage" },
-                                    { resource: "categories", action: "create" },
-                                ]) ? handleAddCategory : null}
-                                limitTags={1}
-                                limitText={10}
-                                noOptionsText="Vui lòng thêm lĩnh vực mới"
-                            />
+                                <AutocompleteForm
+                                    label="Chọn lĩnh vực"
+                                    required={values.type === "ấn phẩm cứng"}
+                                    value={(values.categoryIds as unknown as TCategory[]) || []}
+                                    options={cateOptions}
+                                    keyLabel={"name"}
+                                    onChange={handleChangedCategory}
+                                    error={touched.categoryIds && Boolean(errors.categoryIds)}
+                                    helperText={touched.categoryIds && errors.categoryIds}
+                                    handleAdd={hasPermission([
+                                        { resource: "categories", action: "manage" },
+                                        { resource: "categories", action: "create" },
+                                    ]) ? handleAddCategory : null}
+                                    limitTags={1}
+                                    limitText={10}
+                                    noOptionsText="Vui lòng thêm lĩnh vực mới"
+                                />
 
-                            <SelectForm
-                                sx={{ mt: 1.6, fontWeight: 300 }}
-                                label="Chọn chủ đề"
-                                options={
-                                    topicOptions?.map((item) => ({
-                                        value: item._id,
-                                        label: capitalizeFirstLetter(item.name),
-                                    })) || []
-                                }
-                                {...getFieldProps("topicId")}
-                                error={touched.topicId && Boolean(errors.topicId)}
-                                helperText={touched.topicId && errors.topicId}
-                                handleAdd={hasPermission([
-                                    { resource: "topics", action: "manage" },
-                                    { resource: "topics", action: "create" },
-                                ]) ? handleAddTopic : null}
-                            />
+                                <SelectForm
+                                    sx={{ mt: 1.6, fontWeight: 300 }}
+                                    label="Chọn chủ đề"
+                                    options={
+                                        filteredTopicOptions?.map((item) => ({
+                                            value: item._id,
+                                            label: capitalizeFirstLetter(item.name),
+                                        })) || []
+                                    }
+                                    {...getFieldProps("topicId")}
+                                    error={touched.topicId && Boolean(errors.topicId)}
+                                    helperText={touched.topicId && errors.topicId}
+                                    handleAdd={hasPermission([
+                                        { resource: "topics", action: "manage" },
+                                        { resource: "topics", action: "create" },
+                                    ]) ? handleAddTopic : null}
+                                />
+                            </Box>
 
-                            <AutocompleteForm
-                                label="Chọn tác giả"
-                                required={values.type === "ấn phẩm cứng"}
-                                value={(values.authorIds as unknown as TAuthor[]) || []}
-                                options={authorOptions}
-                                keyLabel={"name"}
-                                onChange={handleChangedAuthor}
-                                error={touched.authorIds && Boolean(errors.authorIds)}
-                                helperText={touched.authorIds && errors.authorIds}
-                                handleAdd={hasPermission([
-                                    { resource: "authors", action: "manage" },
-                                    { resource: "authors", action: "create" },
-                                ]) ? handleAddAuthor : null}
-                                limitTags={1}
-                                limitText={10}
-                                noOptionsText="Vui lòng thêm tác giả mới"
-                                isCapitalize={true}
-                            />
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: { xs: "column", md: "row" },
+                                    gap: { xs: 0, md: 2, xl: 2 },
+                                }}
+                            >
+                                <AutocompleteForm
+                                    label="Chọn tác giả"
+                                    required={values.type === "ấn phẩm cứng"}
+                                    value={(values.authorIds as unknown as TAuthor[]) || []}
+                                    options={authorOptions}
+                                    keyLabel={"name"}
+                                    onChange={handleChangedAuthor}
+                                    error={touched.authorIds && Boolean(errors.authorIds)}
+                                    helperText={touched.authorIds && errors.authorIds}
+                                    handleAdd={hasPermission([
+                                        { resource: "authors", action: "manage" },
+                                        { resource: "authors", action: "create" },
+                                    ]) ? handleAddAuthor : null}
+                                    limitTags={1}
+                                    limitText={10}
+                                    noOptionsText="Vui lòng thêm tác giả mới"
+                                    isCapitalize={true}
+                                />
 
-                            <AutocompleteForm
-                                label="Chọn nhà xuất bản"
-                                required={values.type === "ấn phẩm cứng"}
-                                value={(values.publisherIds as unknown as TPublisher[]) || []}
-                                options={publisherOptions}
-                                keyLabel={"name"}
-                                onChange={handleChangedPublisher}
-                                error={touched.publisherIds && Boolean(errors.publisherIds)}
-                                helperText={touched.publisherIds && errors.publisherIds}
-                                handleAdd={hasPermission([
-                                    { resource: "publishers", action: "manage" },
-                                    { resource: "publishers", action: "create" },
-                                ]) ? handleAddPublisher : null}
-                                limitTags={1}
-                                limitText={10}
-                                noOptionsText="Vui lòng thêm nhà xuất bản mới"
-                                isCapitalize={true}
-                            />
+                                <AutocompleteForm
+                                    label="Chọn nhà xuất bản"
+                                    required={values.type === "ấn phẩm cứng"}
+                                    value={(values.publisherIds as unknown as TPublisher[]) || []}
+                                    options={publisherOptions}
+                                    keyLabel={"name"}
+                                    onChange={handleChangedPublisher}
+                                    error={touched.publisherIds && Boolean(errors.publisherIds)}
+                                    helperText={touched.publisherIds && errors.publisherIds}
+                                    handleAdd={hasPermission([
+                                        { resource: "publishers", action: "manage" },
+                                        { resource: "publishers", action: "create" },
+                                    ]) ? handleAddPublisher : null}
+                                    limitTags={1}
+                                    limitText={10}
+                                    noOptionsText="Vui lòng thêm nhà xuất bản mới"
+                                    isCapitalize={true}
+                                />
+                            </Box>
                         </Box>
 
                         <InputForm
@@ -695,7 +729,7 @@ const FormAddEditPublications: FC<Props> = ({
                     onClose={handleClose}
                     initialValues={getInitialValuesAdd}
                     onSubmit={handleAddSubmit}
-                    cateOptions={categoryData?.data?.result || []}
+                    cateOptions={cateOptions}
                 />
             )}
         </FormikProvider >

@@ -127,6 +127,7 @@ const PublicationsPage = () => {
                 { compare: 0, target: { materialIds: selectedMaterial } },
                 { compare: 0, target: { authorIds: selectedAuthor } },
                 { compare: 0, target: { categoryIds: selectedCategory } },
+                { compare: 0, target: { topicId: selectedTopic } },
                 { compare: 0, target: { publisherIds: selectedPublisher } },
                 { compare: "", target: { search } },
                 { compare: 0, target: { type: selectedPublications } },
@@ -137,13 +138,14 @@ const PublicationsPage = () => {
             selectedMaterial,
             selectedAuthor,
             selectedCategory,
+            selectedTopic,
             selectedPublisher,
             selectedPublications,
             selectedLibrary,
             barcodeSearch,
             search,
         ]
-    );
+    );    
 
     const { data, isLoading, isFetching } = useFetchPublications({
         limit,
@@ -157,37 +159,8 @@ const PublicationsPage = () => {
                 : {}),
     });
 
-    // const filterByLibId = useMemo(
-    //     () => parserParams([{ compare: 0, target: { libraryId: selectedLibrary } }]),
-    //     [selectedLibrary]
-    // );
-
-    // const { data: categoryData } = useFetchCategory({
-    //     limit,
-    //     page,
-    //     ...filterByLibId,
-    // });
-    // const { data: materialData } = useFetchMaterial({
-    //     limit,
-    //     page,
-    //     ...filterByLibId,
-    // });
-    // const { data: authorData } = useFetchAuthor({
-    //     limit,
-    //     page,
-    //     ...filterByLibId,
-    // });
-    // const { data: publisherData } = useFetchPublisher({
-    //     limit,
-    //     page,
-    //     ...filterByLibId,
-    // });
-
     const { data: categoryData } = useFetchCategory();
     const { data: topicData } = useFetchTopic();
-
-    console.log("data", topicData);
-
     const { data: materialData } = useFetchMaterial();
     const { data: authorData } = useFetchAuthor();
     const { data: publisherData } = useFetchPublisher();
@@ -215,6 +188,7 @@ const PublicationsPage = () => {
     const [openViewDetails, setOpenViewDetails] = useState(false);
     const [publicationsDetails, setPublicationsDetails] = useState<TPublications | null>(null);
     const [openImportFile, setOpenImportFile] = useState(false);
+    const [filteredTopics, setFilteredTopics] = useState([]);
 
     const addPublications = () => {
         setOpenAddEdit(true);
@@ -334,24 +308,12 @@ const PublicationsPage = () => {
         setSelectedIsPublic(row);
         setOpenPublic(true);
     };
+
     const handleClosePublic = () => {
         setOpenPublic(false);
         setSelectedIsPublic(null);
     };
 
-    // const handleChangePublic = (row: TPublications, checked: boolean) => {
-    //     // TODO: update
-    //     mutationEdit.mutate(
-    //         { isPublic: checked, _id: row._id },
-    //         {
-    //             onSuccess: (data) => {
-    //                 revalidate();
-    //                 toast.success("Cập nhật trạng thái thành công.");
-    //             },
-    //         }
-    //     );
-    //     return;
-    // };
     const handleChangePublic = async () => {
         if (selectedEditIsPublic?.isPublic === false) {
             mutationEdit.mutate(
@@ -387,7 +349,6 @@ const PublicationsPage = () => {
     }
     const handlePublicationsFilterChange = (event) => {
         setSelectedPublications(event.target.value);
-        // handleResetPage();
     };
     const handleMaterialFilterChange = (event) => {
         console.log(event.target.value);
@@ -434,7 +395,6 @@ const PublicationsPage = () => {
         setSelectedLibrary(event.target.value);
     };
 
-    const [filteredTopics, setFilteredTopics] = useState([]);
     useEffect(() => {
         if (selectedCategory === 0) {
             setFilteredTopics(topicData?.data?.result);
@@ -1033,7 +993,7 @@ const PublicationsPage = () => {
             publisherIds: [],
             materialIds: [],
         };
-    }, [selectedEdit]);
+    }, [selectedEdit]);    
 
     return (
         <div>
@@ -1059,7 +1019,7 @@ const PublicationsPage = () => {
                     authorOptions={authorData?.data?.result || []}
                     materialOptions={materialData?.data?.result || []}
                     publisherOptions={publisherData?.data?.result || []}
-                    topicOptions={filteredTopics}
+                    topicOptions={topicData?.data?.result || []}
                     imageUrl={
                         selectedEdit?.priviewImage
                             ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.priviewImage}`

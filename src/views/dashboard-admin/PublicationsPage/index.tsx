@@ -1,9 +1,10 @@
-import BackspaceIcon from "@mui/icons-material/Backspace";
-import { Alert, Checkbox, Chip, Grid, IconButton, Paper, Switch, Tooltip, Typography, useTheme } from "@mui/material";
-import { Box, Stack, useMediaQuery } from "@mui/system";
+import { Delete } from "@mui/icons-material";
+import { Alert, Button, Checkbox, Chip, Grid, IconButton, ListItemIcon, Menu, MenuItem, Paper, Switch, Tooltip, Typography, useTheme, useMediaQuery } from "@mui/material";
+import { Box, Stack } from "@mui/system";
 import { IconBook, IconFileExport, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import {
     IconBuildingWarehouse,
+    IconDotsVertical,
     IconEye,
     IconFileDescription,
     IconFileDownload,
@@ -17,7 +18,7 @@ import {
     IconShareOff,
     IconTrashXFilled,
     IconVideo,
-    IconWorldShare,
+    IconWorldShare
 } from "@tabler/icons-react";
 import ExcelJS from "exceljs";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -59,13 +60,18 @@ import { TShelves } from "../../../types/models/shelves";
 import { TTopic } from "../../../types/models/topic";
 import IBreadcrumsCustom from "../../../ui-component/breadcrums";
 import MainCard from "../../../ui-component/cards/MainCard";
-import { statusOptions, typeOptions } from "../../../utils/constants.utils";
+import { colorType, statusOptions, typeOptions } from "../../../utils/constants.utils";
 import usePermission from "../../../utils/hasPermission";
 import { getLabelFromOptions, parserParams } from "../../../utils/object";
 import DialogImportFile from "./ui-components/DialogImportFile";
 import FilterByItems from "./ui-components/FilterByItems";
 import FormAddEditPublications from "./ui-components/FormAddEditPublications";
 import PublicationsDetailsDialog from "./ui-components/PublicationsDetailsDialog";
+
+const SPACING_H = 170;
+const SPACING_W = 230;
+const SPACING_W_CHILD = 230 - 16;
+const SPACING_H_CHILD = 170 - 16;
 
 const BreakpointsColumn = {
     xs: 12,
@@ -145,7 +151,7 @@ const PublicationsPage = () => {
             barcodeSearch,
             search,
         ]
-    );    
+    );
 
     const { data, isLoading, isFetching } = useFetchPublications({
         limit,
@@ -993,7 +999,28 @@ const PublicationsPage = () => {
             publisherIds: [],
             materialIds: [],
         };
-    }, [selectedEdit]);    
+    }, [selectedEdit]);
+
+    const [anchorEls, setAnchorEls] = useState<Record<string, HTMLElement | null>>({});
+
+    const handleClick = (event: React.MouseEvent<HTMLElement>, itemId: string) => {
+        setAnchorEls(prevState => ({
+            ...prevState,
+            [itemId]: event.currentTarget,
+        }));
+    };
+
+    const handleCloseList = (itemId: string) => {
+        setAnchorEls(prevState => ({
+            ...prevState,
+            [itemId]: null,
+        }));
+    };
+
+    const isLargeScreen = useMediaQuery('(min-width: 1400px)');
+    const isSmallScreen = useMediaQuery('(max-width: 1199px)');
+    const isMediumScreen = useMediaQuery('(min-width: 600px) and (max-width: 1199px)');
+    const shouldShowImageCard = isLargeScreen || isSmallScreen;
 
     return (
         <div>
@@ -1231,8 +1258,8 @@ const PublicationsPage = () => {
                                                     display: { xs: "none", sm: "none", md: "flex" },
                                                     position: "absolute",
                                                     zIndex: 99,
-                                                    top: -25,
-                                                    left: -25,
+                                                    top: -15,
+                                                    left: -15,
                                                 }}
                                             >
                                                 <Checkbox
@@ -1243,94 +1270,195 @@ const PublicationsPage = () => {
                                         )}
 
                                         <Paper sx={{ width: "100%", position: "relative" }}>
-                                            {userRole === "Teacher" &&
-                                                item?.createBy === userId &&
-                                                hasPermission([
-                                                    { resource: "publications", action: "manage" },
-                                                    { resource: "publications", action: "delete" },
-                                                ]) && (
-                                                    <StyledIconButton
-                                                        disableHoverEffect
-                                                        sx={{
-                                                            position: "absolute",
-                                                            zIndex: 999,
-                                                            top: -30,
-                                                            right: -30,
-                                                            margin: "8px",
-                                                            background: "none",
-                                                            [theme.breakpoints.down("md")]: {
-                                                                width: "10%",
-                                                            },
-                                                            [theme.breakpoints.down("sm")]: {
-                                                                width: "10%",
-                                                            },
-                                                        }}
-                                                    >
-                                                        <BackspaceIcon
-                                                            sx={{
-                                                                color: theme.palette.error.dark,
-                                                            }}
-                                                            onClick={() => handleOpenConfirmDialog(item)}
-                                                        />
-                                                    </StyledIconButton>
-                                                )
-                                            }
-                                            {userRole !== "Teacher" &&
-                                                hasPermission([
-                                                    { resource: "publications", action: "manage" },
-                                                    { resource: "publications", action: "delete" },
-                                                ]) && (
-                                                    <StyledIconButton
-                                                        disableHoverEffect
-                                                        sx={{
-                                                            position: "absolute",
-                                                            zIndex: 999,
-                                                            top: -30,
-                                                            right: -30,
-                                                            margin: "8px",
-                                                            background: "none",
-                                                            [theme.breakpoints.down("md")]: {
-                                                                width: "10%",
-                                                            },
-                                                            [theme.breakpoints.down("sm")]: {
-                                                                width: "10%",
-                                                            },
-                                                        }}
-                                                    >
-                                                        <BackspaceIcon
-                                                            sx={{
-                                                                color: theme.palette.error.dark,
-                                                            }}
-                                                            onClick={() => handleOpenConfirmDialog(item)}
-                                                        />
-                                                    </StyledIconButton>
-                                                )
-                                            }
-
                                             <Tooltip title={"Nhấn vào để xem chi tiết"} arrow placement="top" sx={{ cursor: "ponter" }}>
-                                                <Box onClick={() => handleViewDetails(item)} sx={{ cursor: "pointer" }}>
-                                                    <ImageCard
-                                                        id={item._id}
-                                                        photo={
-                                                            item?.priviewImage
-                                                                ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
-                                                                : item?.path
-                                                                    ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
-                                                                    : ""
+                                                <Box onClick={() => handleViewDetails(item)} sx={{ cursor: "pointer" }}
+                                                >
+                                                    <Box
+                                                        sx={{
+                                                            ...(isMediumScreen && { minHeight: "196px" })
+                                                        }}
+                                                    >
+                                                        {
+                                                            shouldShowImageCard ?
+                                                                <ImageCard
+                                                                    id={item._id}
+                                                                    photo={
+                                                                        item?.priviewImage
+                                                                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
+                                                                            : item?.path
+                                                                                ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
+                                                                                : ""
+                                                                    }
+                                                                    aspectRatio={"4/3"}
+                                                                    objectFit="contain"
+                                                                />
+                                                                :
+                                                                item?.type === "ấn phẩm mềm" && ![
+                                                                    "application/msword",
+                                                                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                                                    "video/mp4",
+                                                                    "video/x-matroska",
+                                                                    "video/webm",
+                                                                    "video/x-msvideo",
+                                                                    "application/vnd.ms-powerpoint",
+                                                                    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                                                                ].includes(item?.mimetype) ?
+                                                                    <ImageCard
+                                                                        id={item._id}
+                                                                        photo={
+                                                                            item?.priviewImage
+                                                                                ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
+                                                                                : item?.path
+                                                                                    ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
+                                                                                    : ""
+                                                                        }
+                                                                        aspectRatio={"4/3"}
+                                                                        objectFit="contain"
+                                                                    />
+                                                                    :
+                                                                    <Box display={"flex"}
+                                                                        justifyContent={"center"}
+                                                                        alignItems={"center"}>
+                                                                        <Box
+                                                                            width={SPACING_W}
+                                                                            height={SPACING_H}
+                                                                            borderRadius={3}
+                                                                            border={(theme) => `1px dashed ${theme.palette.grey[300]}`}
+                                                                            p={1}
+                                                                            display={"flex"}
+                                                                            justifyContent={"center"}
+                                                                            alignItems={"center"}
+                                                                        >
+                                                                            <Box
+                                                                                textAlign={"center"}
+                                                                                width={SPACING_W_CHILD}
+                                                                                height={SPACING_H_CHILD}
+                                                                                borderRadius="12px"
+                                                                            >
+                                                                                <img
+                                                                                    src={item?.priviewImage
+                                                                                        ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
+                                                                                        : item?.path
+                                                                                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
+                                                                                            : ""
+                                                                                    }
+                                                                                    alt="Uploaded"
+                                                                                    style={{
+                                                                                        width: "100%",
+                                                                                        height: "100%",
+                                                                                        borderRadius: "12px",
+                                                                                        objectFit: "cover",
+                                                                                    }}
+                                                                                />
+                                                                            </Box>
+                                                                        </Box>
+                                                                    </Box>
                                                         }
-                                                        aspectRatio={"16/9"}
-                                                        objectFit="contain"
-                                                    />
+                                                    </Box>
+
+                                                    <Button
+                                                        onClick={() => handleViewDetails(item)}
+                                                        sx={{
+                                                            position: "absolute",
+                                                            top: 0,
+                                                            right: 0,
+                                                            minWidth: 35, height: 35,
+                                                            // margin: "8px",
+                                                            background: colorType(item?.mimetype, item?.type),
+                                                            boxShadow: "5px 5px 7px rgba(0.1, 0.1, 0.1, 0.1)",
+                                                            "&:hover": {
+                                                                background: colorType(item?.mimetype, item?.type),
+                                                                boxShadow: "5px 5px 7px rgba(0.1, 0.1, 0.1, 0.1)",
+                                                            },
+                                                        }}
+                                                    >
+                                                        {
+                                                            (!item?.mimetype || ([
+                                                                "image/jpeg",
+                                                                "image/png",
+                                                                "image/gif",
+                                                                "image/bmp",
+                                                                "image/webp",
+                                                            ].includes(item?.mimetype) && item?.type === "ấn phẩm cứng")) && (
+                                                                <IconBook
+                                                                    size={25}
+                                                                    stroke={1.5}
+                                                                    color="white"
+                                                                />
+                                                            )
+                                                        }
+                                                        {
+                                                            (item?.mimetype === "application/pdf") && (
+                                                                <IconBook
+                                                                    size={25}
+                                                                    stroke={1.5}
+                                                                    color="white"
+                                                                />
+                                                            )
+                                                        }
+                                                        {
+                                                            [
+                                                                "application/msword",
+                                                                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                                            ].includes(item?.mimetype) && (
+                                                                <IconFileWord
+                                                                    size={25}
+                                                                    stroke={1.5}
+                                                                    color="white"
+                                                                />
+                                                            )
+                                                        }
+                                                        {
+                                                            [
+                                                                "video/mp4",
+                                                                "video/x-matroska",
+                                                                "video/webm",
+                                                                "video/x-msvideo",
+                                                            ].includes(item?.mimetype) && (
+                                                                <IconVideo
+                                                                    size={25}
+                                                                    stroke={1.5}
+                                                                    color="white"
+                                                                />
+                                                            )
+                                                        }
+                                                        {
+                                                            [
+                                                                "application/vnd.ms-powerpoint",
+                                                                "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                                                            ].includes(item?.mimetype) && (
+                                                                <IconPresentation
+                                                                    size={25}
+                                                                    stroke={1.5}
+                                                                    color="white"
+                                                                />
+                                                            )
+                                                        }
+                                                        {
+                                                            ([
+                                                                "image/jpeg",
+                                                                "image/png",
+                                                                "image/gif",
+                                                                "image/bmp",
+                                                                "image/webp",
+                                                            ].includes(item?.mimetype) && item?.type === "ấn phẩm mềm") && (
+                                                                <IconPhoto
+                                                                    size={25}
+                                                                    stroke={1.5}
+                                                                    color="white"
+                                                                />
+                                                            )
+                                                        }
+                                                    </Button>
 
                                                     <Box
                                                         sx={{
                                                             display: "flex",
                                                             alignItems: "flex-start",
                                                             height: "100%",
-                                                            minHeight: "75px",
                                                             width: "200px",
                                                             margin: "auto",
-                                                            mb: 5,
+                                                            mb: 2,
                                                         }}
                                                     >
                                                         <Typography
@@ -1345,253 +1473,216 @@ const PublicationsPage = () => {
                                                                 textOverflow: "ellipsis",
                                                                 width: "100%",
                                                                 display: "-webkit-box",
-                                                                WebkitLineClamp: 2,
+                                                                WebkitLineClamp: 1,
                                                                 WebkitBoxOrient: "vertical",
+                                                                minHeight: "40px"
                                                             }}
                                                         >
-                                                            {item?.type === "ấn phẩm mềm" ? (
-                                                                (item?.mimetype === "image/jpeg" ||
-                                                                    item?.mimetype === "image/png" ||
-                                                                    item?.mimetype === "image/gif" ||
-                                                                    item?.mimetype === "image/bmp" ||
-                                                                    item?.mimetype === "image/webp")
-                                                                    ? `Tranh: ${item?.name.toLowerCase()}`
-                                                                    : (item?.mimetype === "application/pdf"
-                                                                        ? `Sách: ${item?.name.toLowerCase()}`
-                                                                        : (item?.mimetype === "application/msword" ||
-                                                                            item?.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-                                                                            ? `Khbd: ${item?.name.toLowerCase()}`
-                                                                            : (item?.mimetype === "application/vnd.ms-powerpoint" ||
-                                                                                item?.mimetype === "application/vnd.openxmlformats-officedocument.presentationml.presentation")
-                                                                                ? `Khbg: ${item?.name.toLowerCase()}`
-                                                                                : (item?.mimetype === "video/mp4" ||
-                                                                                    item?.mimetype === "video/x-msvideo" ||
-                                                                                    item?.mimetype === "video/x-matroska" ||
-                                                                                    item?.mimetype === "video/webm")
-                                                                                    ? `Video: ${item?.name.toLowerCase()}` : ""
-
-                                                                    )
-                                                            ) : `${getLabelFromOptions(typeOptions, item?.type)}: ${item?.name.toLowerCase()}`
-                                                            }
+                                                            {capitalizeFirstLetter(item?.name)}
                                                         </Typography>
                                                     </Box>
                                                 </Box>
                                             </Tooltip>
 
-
-                                            <Box sx={{ position: "relative" }}>
-                                                <StyledIconButton
-                                                    disableHoverEffect
-                                                    sx={{
-                                                        position: "absolute",
-                                                        zIndex: 999,
-                                                        bottom: -10,
-                                                        left: -20,
-                                                        background: "none",
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        justifyContent: "start",
-                                                        [theme.breakpoints.down("md")]: {
-                                                            width: "20%",
-                                                        },
-                                                        [theme.breakpoints.down("sm")]: {
-                                                            width: "40%",
-                                                        },
-                                                    }}
-                                                >
-                                                    {!(item?.type === "ấn phẩm cứng") &&
-                                                        userRole !== "Student" &&
-                                                        item?.createBy === userId &&
-                                                        !item?.isLink && (
-                                                            <Tooltip title="Chia sẻ lên thư viện" arrow placement="top">
-                                                                <IconButton
-                                                                    onClick={() => handleOpenConfirmPublic(item)}
+                                            {userRole === "Student" ?
+                                                <Box sx={{ position: "relative" }}>
+                                                    <StyledIconButton
+                                                        disableHoverEffect
+                                                        sx={{
+                                                            position: "absolute",
+                                                            zIndex: 999,
+                                                            bottom: -10,
+                                                            right: -15,
+                                                            margin: "8px",
+                                                            background: "none",
+                                                            [theme.breakpoints.down("sm")]: {
+                                                                width: "7%",
+                                                            },
+                                                            [theme.breakpoints.down("md")]: {
+                                                                width: "10%",
+                                                            },
+                                                        }}
+                                                    >
+                                                        {item?.type === "ấn phẩm cứng" && (
+                                                            <Tooltip
+                                                                title={
+                                                                    item?.status === "có sẵn"
+                                                                        ? "Mượn ấn phẩm"
+                                                                        : "Ấn phẩm không có sẵn"
+                                                                }
+                                                                arrow
+                                                                placement="top"
+                                                            >
+                                                                <Box
+                                                                    sx={{
+                                                                        background:
+                                                                            item?.status === "có sẵn" ? "green" : "gray",
+                                                                        color: "white",
+                                                                        borderRadius: 2,
+                                                                        display: "flex",
+                                                                        alignItems: "center",
+                                                                        justifyContent: "center",
+                                                                        p: 0.5,
+                                                                        opacity: item?.status === "có sẵn" ? 1 : 0.5,
+                                                                    }}
                                                                 >
-                                                                    {item?.isPublic ? (
-                                                                        <IconHomeOff
-                                                                            stroke={2}
-                                                                            color="green"
-                                                                            size={24}
-                                                                        />
-                                                                    ) : (
-                                                                        <IconHomeLink
-                                                                            stroke={2}
-                                                                            color="gray"
-                                                                            size={24}
-                                                                        />
-                                                                    )}
-                                                                </IconButton>
+                                                                    <IconFileDescription
+                                                                        size={20}
+                                                                        stroke={2}
+                                                                        onClick={() => {
+                                                                            if (item?.status === "có sẵn") {
+                                                                                handleAddItem(item);
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </Box>
                                                             </Tooltip>
                                                         )}
-
-                                                    {item?.isPublic && userRole !== "Student" && (
-                                                        <Tooltip title="Chia sẻ liên thông" arrow placement="top">
-                                                            <IconButton
-                                                                onClick={() => handleOpenConfirmLink(item)}
-                                                                disabled={
-                                                                    userRole === "Super Admin" || userRole === "Student"
-                                                                }
-                                                            >
-                                                                {item?.isLink ? (
-                                                                    <IconShareOff stroke={2} color="blue" size={24} />
-                                                                ) : (
-                                                                    <IconWorldShare stroke={2} color="gray" size={24} />
-                                                                )}
-                                                            </IconButton>
-                                                        </Tooltip>
-                                                    )}
-                                                </StyledIconButton>
-
-                                                <StyledIconButton
-                                                    disableHoverEffect
-                                                    sx={{
-                                                        position: "absolute",
-                                                        zIndex: 999,
-                                                        bottom: -10,
-                                                        right:
-                                                            userRole === "Super Admin" ||
-                                                                userRole === "Student" ||
-                                                                userRole === "Teacher"
-                                                                ? -15
-                                                                : 15,
-                                                        margin: "8px",
-                                                        background: "none",
-                                                        [theme.breakpoints.down("sm")]: {
-                                                            width: "7%",
-                                                        },
-                                                        [theme.breakpoints.down("md")]: {
-                                                            width: "10%",
-                                                        },
-                                                    }}
-                                                >
-                                                    {item?.type === "ấn phẩm cứng" && (
-                                                        <Tooltip
-                                                            title={
-                                                                item?.status === "có sẵn"
-                                                                    ? "Mượn ấn phẩm"
-                                                                    : "Ấn phẩm không có sẵn"
-                                                            }
-                                                            arrow
-                                                            placement="top"
+                                                    </StyledIconButton>
+                                                </Box>
+                                                :
+                                                <>
+                                                    <Box
+                                                        sx={{
+                                                            display: { xs: "none", sm: "none", md: "flex" },
+                                                            position: "absolute",
+                                                            zIndex: 99,
+                                                            bottom: -15,
+                                                            right: -15,
+                                                        }}
+                                                    >
+                                                        <IconButton
+                                                            onClick={(e) => handleClick(e, item._id)}
+                                                            size="small"
+                                                            sx={{ ml: 2 }}
+                                                            aria-controls={anchorEls[item._id] ? 'account-menu' : undefined}
+                                                            aria-haspopup="true"
+                                                            aria-expanded={anchorEls[item._id] ? 'true' : undefined}
                                                         >
-                                                            <Box
-                                                                sx={{
-                                                                    background:
-                                                                        item?.status === "có sẵn" ? "green" : "gray",
-                                                                    color: "white",
-                                                                    borderRadius: 2,
-                                                                    display: "flex",
-                                                                    alignItems: "center",
-                                                                    justifyContent: "center",
-                                                                    p: 0.5,
-                                                                    // pointerEvents: item?.status === "có sẵn" ? "auto" : "none",
-                                                                    opacity: item?.status === "có sẵn" ? 1 : 0.5,
+                                                            <IconDotsVertical />
+                                                        </IconButton>
+                                                    </Box>
+                                                    <Menu
+                                                        anchorEl={anchorEls[item._id]}
+                                                        id="account-menu"
+                                                        open={Boolean(anchorEls[item._id])}
+                                                        onClose={() => handleCloseList(item._id)}
+                                                        onClick={() => handleCloseList(item._id)}
+                                                        slotProps={{
+                                                            paper: {
+                                                                elevation: 0,
+                                                                sx: {
+                                                                    overflow: 'visible',
+                                                                    boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.17)',
+                                                                    mt: 1.5,
+                                                                    '& .MuiAvatar-root': {
+                                                                        width: 32,
+                                                                        height: 32,
+                                                                        ml: -0.5,
+                                                                        mr: 1,
+                                                                    },
+                                                                    '&::before': {
+                                                                        content: '""',
+                                                                        display: 'block',
+                                                                        position: 'absolute',
+                                                                        top: 0,
+                                                                        right: 14,
+                                                                        width: 10,
+                                                                        height: 10,
+                                                                        bgcolor: 'background.paper',
+                                                                        transform: 'translateY(-50%) rotate(45deg)',
+                                                                        zIndex: 0,
+                                                                    },
+                                                                },
+                                                            },
+                                                        }}
+                                                        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                                                        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                                                    >
+                                                        {
+                                                            (userRole === "Teacher" && item?.createBy === userId || userRole !== "Teacher") &&
+                                                            hasPermission([
+                                                                { resource: "publications", action: "manage" },
+                                                                { resource: "publications", action: "update" },
+                                                            ]) &&
+                                                            <MenuItem onClick={() => handleEditPublications(item)}>
+                                                                <ListItemIcon sx={{ fontSize: 16, color: "blue" }}>
+                                                                    <IconPencil />
+                                                                </ListItemIcon>
+                                                                <Typography sx={{ fontSize: 16, color: "black" }}>
+                                                                    Cập nhật thông tin
+                                                                </Typography>
+                                                            </MenuItem>
+                                                        }
+
+                                                        {
+                                                            item?.type === "ấn phẩm cứng" && item?.status === "có sẵn" && userRole !== "Student" &&
+                                                            <MenuItem
+                                                                onClick={() => {
+                                                                    if (item?.status === "có sẵn") {
+                                                                        handleAddItem(item);
+                                                                    }
                                                                 }}
                                                             >
-                                                                <IconFileDescription
-                                                                    size={20}
-                                                                    stroke={2}
-                                                                    onClick={() => {
-                                                                        if (item?.status === "có sẵn") {
-                                                                            handleAddItem(item);
-                                                                        }
-                                                                    }}
-                                                                />
-                                                            </Box>
-                                                        </Tooltip>
-                                                    )}
-                                                </StyledIconButton>
+                                                                <ListItemIcon sx={{ fontSize: 16, color: "#f5945c" }}>
+                                                                    <IconFileDescription fontSize="small" />
+                                                                </ListItemIcon>
+                                                                <Typography sx={{ fontSize: 16, color: "black" }}>
+                                                                    Mượn ấn phẩm
+                                                                </Typography>
+                                                            </MenuItem>
+                                                        }
 
-                                                {userRole === "Teacher" &&
-                                                    item?.createBy === userId &&
-                                                    hasPermission([
-                                                        { resource: "publications", action: "manage" },
-                                                        { resource: "publications", action: "update" },
-                                                    ]) && (
-                                                        <StyledIconButton
-                                                            disableHoverEffect
-                                                            sx={{
-                                                                position: "absolute",
-                                                                zIndex: 999,
-                                                                bottom: -10,
-                                                                right: -15,
-                                                                margin: "8px",
-                                                                background: "none",
-                                                                [theme.breakpoints.down("sm")]: {
-                                                                    width: "7%",
-                                                                },
-                                                                [theme.breakpoints.down("md")]: {
-                                                                    width: "10%",
-                                                                },
-                                                            }}
-                                                        >
-                                                            <Box
-                                                                bgcolor={"red"}
-                                                                sx={{
-                                                                    background: "#3078ec",
-                                                                    color: "white",
-                                                                    borderRadius: 2,
-                                                                    display: "flex",
-                                                                    alignItems: "center",
-                                                                    justifyContent: "center",
-                                                                    p: 0.5,
-                                                                }}
+                                                        {item?.isPublic && userRole !== "Student" &&
+                                                            <MenuItem onClick={() => handleOpenConfirmLink(item)}>
+                                                                <ListItemIcon>
+                                                                    {item?.isLink ? (
+                                                                        <IconShareOff fontSize="small" stroke={2} color="#086c5c" />
+                                                                    ) : (
+                                                                        <IconWorldShare fontSize="small" stroke={2} color="gray" />
+                                                                    )}
+                                                                </ListItemIcon>
+                                                                <Typography sx={{ fontSize: 16, color: "black" }}>
+                                                                    {item?.isLink ? 'Hủy chia sẻ liên thông' : 'Chia sẻ liên thông'}
+                                                                </Typography>
+                                                            </MenuItem>
+                                                        }
+
+                                                        {!(item?.type === "ấn phẩm cứng") && userRole !== "Student" && (item?.createBy === userId && !item?.isLink) &&
+                                                            < MenuItem
+                                                                onClick={() => handleOpenConfirmPublic(item)}
                                                             >
-                                                                <IconPencil
-                                                                    onClick={() => handleEditPublications(item)}
-                                                                    size={20}
-                                                                    stroke={2}
-                                                                />
-                                                            </Box>
-                                                        </StyledIconButton>
-                                                    )}
+                                                                <ListItemIcon>
+                                                                    {item?.isPublic ? (
+                                                                        <IconHomeOff fontSize="small" color="green" />
+                                                                    ) : (
+                                                                        <IconHomeLink fontSize="small" color="gray" />
+                                                                    )}
+                                                                </ListItemIcon>
+                                                                <Typography sx={{ fontSize: 16, color: "black" }}>
+                                                                    {item?.isPublic ? 'Hủy chia sẻ lên thư viện' : 'Chia sẻ lên thư viện'}
+                                                                </Typography>
+                                                            </MenuItem>
+                                                        }
 
-                                                {userRole !== "Teacher" &&
-                                                    hasPermission([
-                                                        { resource: "publications", action: "manage" },
-                                                        { resource: "publications", action: "update" },
-                                                    ]) && (
-                                                        <StyledIconButton
-                                                            disableHoverEffect
-                                                            sx={{
-                                                                position: "absolute",
-                                                                zIndex: 999,
-                                                                bottom: -10,
-                                                                right: -15,
-                                                                margin: "8px",
-                                                                background: "none",
-                                                                [theme.breakpoints.down("sm")]: {
-                                                                    width: "7%",
-                                                                },
-                                                                [theme.breakpoints.down("md")]: {
-                                                                    width: "10%",
-                                                                },
-                                                            }}
-                                                        >
-                                                            <Box
-                                                                bgcolor={"red"}
-                                                                sx={{
-                                                                    background: "#3078ec",
-                                                                    color: "white",
-                                                                    borderRadius: 2,
-                                                                    display: "flex",
-                                                                    alignItems: "center",
-                                                                    justifyContent: "center",
-                                                                    p: 0.5,
-                                                                }}
-                                                            >
-                                                                <IconPencil
-                                                                    onClick={() => handleEditPublications(item)}
-                                                                    size={20}
-                                                                    stroke={2}
-                                                                />
-                                                            </Box>
-                                                        </StyledIconButton>
-                                                    )}
-                                            </Box>
-
+                                                        {(userRole === "Teacher" && item?.createBy === userId || userRole !== "Teacher") &&
+                                                            hasPermission([
+                                                                { resource: "publications", action: "manage" },
+                                                                { resource: "publications", action: "delete" },
+                                                            ]) &&
+                                                            <MenuItem onClick={() => handleOpenConfirmDialog(item)}>
+                                                                <ListItemIcon sx={{ fontSize: 16, color: "red" }}>
+                                                                    <Delete fontSize="small" />
+                                                                </ListItemIcon>
+                                                                <Typography sx={{ fontSize: 16, color: "black" }}>
+                                                                    Xóa học liệu
+                                                                </Typography>
+                                                            </MenuItem>
+                                                        }
+                                                    </Menu>
+                                                </>
+                                            }
                                         </Paper>
-
                                     </Box>
                                 </Paper>
                             </Grid>
@@ -1616,75 +1707,85 @@ const PublicationsPage = () => {
                     </Grid>
                 </Grid>
 
-                {openConfirmDialog && (
-                    <ConfirmDeleteDialog
-                        key={"delete"}
-                        open={openConfirmDialog}
-                        onClose={handleCloseConfirmDialog}
-                        onConfirm={handleConfirmDelete}
-                        title="Xác nhận xóa ấn phẩm"
-                        description={`Bạn có chắc chắn muốn xóa "${publicationsToDelete?.name}" ?`}
-                    />
-                )}
-                {openConfirmSoftDeleteMultiple && (
-                    <ConfirmDeleteDialog
-                        key={"deleteMultiple"}
-                        open={openConfirmSoftDeleteMultiple}
-                        onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
-                        onConfirm={handleConfirmSoftDeleteMultiple}
-                        title="Xác nhận xóa các mục đã chọn?"
-                        description={`Bạn có chắc chắn muốn xóa?`}
-                    />
-                )}
+                {
+                    openConfirmDialog && (
+                        <ConfirmDeleteDialog
+                            key={"delete"}
+                            open={openConfirmDialog}
+                            onClose={handleCloseConfirmDialog}
+                            onConfirm={handleConfirmDelete}
+                            title="Xác nhận xóa ấn phẩm"
+                            description={`Bạn có chắc chắn muốn xóa "${publicationsToDelete?.name}" ?`}
+                        />
+                    )
+                }
+                {
+                    openConfirmSoftDeleteMultiple && (
+                        <ConfirmDeleteDialog
+                            key={"deleteMultiple"}
+                            open={openConfirmSoftDeleteMultiple}
+                            onClose={() => setOpenConfirmSoftDeleteMultiple(false)}
+                            onConfirm={handleConfirmSoftDeleteMultiple}
+                            title="Xác nhận xóa các mục đã chọn?"
+                            description={`Bạn có chắc chắn muốn xóa?`}
+                        />
+                    )
+                }
 
-                {selectedEditIsLink?.isLink === true ? (
-                    <ConfirmDeleteDialog
-                        key={"isUnLink"}
-                        open={openLink}
-                        onClose={() => setOpenLink(false)}
-                        onConfirm={handleChangeShareConnect}
-                        title="Xác nhận hủy chia sẻ?"
-                        description={`Bạn có chắc chắn muốn hủy?`}
-                    />
-                ) : (
-                    <ConfirmDeleteDialog
-                        key={"isLink"}
-                        open={openLink}
-                        onClose={() => setOpenLink(false)}
-                        onConfirm={handleChangeShareConnect}
-                        title="Xác nhận liên thông?"
-                        description={`Bạn có chắc chắn muốn chia sẻ?`}
-                    />
-                )}
-                {selectedEditIsPublic?.isPublic === true ? (
-                    <ConfirmDeleteDialog
-                        key={"isUnPublic"}
-                        open={openPublic}
-                        onClose={() => setOpenPublic(false)}
-                        onConfirm={handleChangePublic}
-                        title="Xác nhận hủy chia sẻ lên thư viện?"
-                        description={`Bạn có chắc chắn muốn hủy?`}
-                    />
-                ) : (
-                    <ConfirmDeleteDialog
-                        key={"isPublic"}
-                        open={openPublic}
-                        onClose={() => setOpenPublic(false)}
-                        onConfirm={handleChangePublic}
-                        title="Xác nhận chia sẻ thư viện?"
-                        description={`Bạn có chắc chắn muốn chia sẻ?`}
-                    />
-                )}
+                {
+                    selectedEditIsLink?.isLink === true ? (
+                        <ConfirmDeleteDialog
+                            key={"isUnLink"}
+                            open={openLink}
+                            onClose={() => setOpenLink(false)}
+                            onConfirm={handleChangeShareConnect}
+                            title="Xác nhận hủy chia sẻ?"
+                            description={`Bạn có chắc chắn muốn hủy?`}
+                        />
+                    ) : (
+                        <ConfirmDeleteDialog
+                            key={"isLink"}
+                            open={openLink}
+                            onClose={() => setOpenLink(false)}
+                            onConfirm={handleChangeShareConnect}
+                            title="Xác nhận liên thông?"
+                            description={`Bạn có chắc chắn muốn chia sẻ?`}
+                        />
+                    )
+                }
+                {
+                    selectedEditIsPublic?.isPublic === true ? (
+                        <ConfirmDeleteDialog
+                            key={"isUnPublic"}
+                            open={openPublic}
+                            onClose={() => setOpenPublic(false)}
+                            onConfirm={handleChangePublic}
+                            title="Xác nhận hủy chia sẻ lên thư viện?"
+                            description={`Bạn có chắc chắn muốn hủy?`}
+                        />
+                    ) : (
+                        <ConfirmDeleteDialog
+                            key={"isPublic"}
+                            open={openPublic}
+                            onClose={() => setOpenPublic(false)}
+                            onConfirm={handleChangePublic}
+                            title="Xác nhận chia sẻ thư viện?"
+                            description={`Bạn có chắc chắn muốn chia sẻ?`}
+                        />
+                    )
+                }
 
-                {openViewDetails && (
-                    <PublicationsDetailsDialog
-                        open={openViewDetails}
-                        onClose={handleCloseViewDetails}
-                        publications={publicationsDetails}
-                    />
-                )}
-            </MainCard>
-        </div>
+                {
+                    openViewDetails && (
+                        <PublicationsDetailsDialog
+                            open={openViewDetails}
+                            onClose={handleCloseViewDetails}
+                            publications={publicationsDetails}
+                        />
+                    )
+                }
+            </MainCard >
+        </div >
     );
 };
 export default PublicationsPage;

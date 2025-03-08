@@ -407,9 +407,9 @@ const FormAddEditPublications: FC<Props> = ({
 
     useEffect(() => {
         const categoryIdsToUse = selectedCategoryIds?.map(id => typeof id === 'string' ? id : id._id) || [];
-    
+
         if ((categoryIdsToUse.length > 0 || values?.categoryIds?.length > 0) && topicOptions.length > 0) {
-      
+
             const filteredTopics = topicOptions.filter((topic) =>
                 topic.categoryIds?.some((category) =>
                     categoryIdsToUse.includes(category._id) || values?.categoryIds?.map(cate => typeof cate === 'string' ? cate : cate._id).includes(category._id)
@@ -420,7 +420,7 @@ const FormAddEditPublications: FC<Props> = ({
             setFilteredTopicOptions([]);
         }
     }, [selectedCategoryIds, values?.categoryIds, topicOptions]);
-    
+
     return (
         <FormikProvider value={formik}>
             <Dialog
@@ -458,7 +458,7 @@ const FormAddEditPublications: FC<Props> = ({
                                     display: "flex",
                                     flexDirection: "column",
                                     width: "100%",
-                                    ml: { xs: 0, md: 2, xl: 5 },
+                                    // ml: { xs: 0, md: 2, xl: 5 },
                                 }}
                             >
                                 <Box
@@ -575,23 +575,27 @@ const FormAddEditPublications: FC<Props> = ({
                                     noOptionsText="Vui lòng thêm lĩnh vực mới"
                                 />
 
-                                <SelectForm
-                                    sx={{ mt: 1.6, fontWeight: 300 }}
-                                    label="Chọn chủ đề"
-                                    options={
-                                        filteredTopicOptions?.map((item) => ({
-                                            value: item._id,
-                                            label: capitalizeFirstLetter(item.name),
-                                        })) || []
-                                    }
-                                    {...getFieldProps("topicId")}
-                                    error={touched.topicId && Boolean(errors.topicId)}
-                                    helperText={touched.topicId && errors.topicId}
-                                    handleAdd={hasPermission([
-                                        { resource: "topics", action: "manage" },
-                                        { resource: "topics", action: "create" },
-                                    ]) ? handleAddTopic : null}
-                                />
+                                {
+                                    values.type === "ấn phẩm mềm" &&
+                                    <SelectForm
+                                        sx={{ mt: 1.6, fontWeight: 300 }}
+                                        label="Chọn chủ đề"
+                                        options={
+                                            filteredTopicOptions?.map((item) => ({
+                                                value: item._id,
+                                                label: capitalizeFirstLetter(item.name),
+                                            })) || []
+                                        }
+                                        {...getFieldProps("topicId")}
+                                        error={touched.topicId && Boolean(errors.topicId)}
+                                        helperText={touched.topicId && errors.topicId}
+                                        handleAdd={hasPermission([
+                                            { resource: "topics", action: "manage" },
+                                            { resource: "topics", action: "create" },
+                                        ]) ? handleAddTopic : null}
+                                    />
+                                }
+
                             </Box>
 
                             <Box

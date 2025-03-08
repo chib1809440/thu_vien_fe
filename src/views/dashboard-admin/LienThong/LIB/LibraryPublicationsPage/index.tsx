@@ -359,7 +359,7 @@ const LibraryPublicationsPage = () => {
                                                 }
                                                 {
                                                     (item?.mimetype === "application/pdf") && (
-                                                        <IconPdf
+                                                        <IconBook
                                                             size={25}
                                                             stroke={1.5}
                                                             color="white"

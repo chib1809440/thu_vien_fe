@@ -268,14 +268,149 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
 
                     {canAddVoice && <Divider sx={{ margin: 0 }} />}
 
-                    {currentPath === "/lien-thong" ? (
-                        filterByTypeVoiceIdPullLink?.length > 0 ? (
-                            filterByTypeVoiceIdPullLink.map((type) => (
-                                <li
-                                    key={type._id}
-                                // onMouseEnter={() => setHoveredTypeId(type._id)}
-                                // onMouseLeave={() => setHoveredTypeId(null)}
-                                >
+                    {
+                        // currentPath === "/lien-thong" ? (
+                        // filterByTypeVoiceIdPullLink?.length > 0 ? (
+                        //     filterByTypeVoiceIdPullLink.map((type) => (
+                        //         <li
+                        //             key={type._id}
+                        //         // onMouseEnter={() => setHoveredTypeId(type._id)}
+                        //         // onMouseLeave={() => setHoveredTypeId(null)}
+                        //         >
+                        //             <Box
+                        //                 sx={{
+                        //                     display: "flex",
+                        //                     justifyContent: "space-between",
+                        //                     alignItems: "center",
+                        //                     backgroundColor: "white",
+                        //                 }}
+                        //             >
+                        //                 {type?.voices?.length > 0 && (
+                        //                     <MenuItem
+                        //                         onClick={() => handleClickTypeVoice(type)}
+                        //                         key={type._id}
+                        //                         selected={activeTypeVoiceId === type._id}
+                        //                         sx={{
+                        //                             '&:hover': {
+                        //                                 color: "#1791e2",
+                        //                                 backgroundColor: "rgba(248, 248, 248, 0.5)",
+                        //                                 transition: "all 0.3s",
+                        //                             },
+                        //                             '&.Mui-selected': {
+                        //                                 color: "#1791e2",
+                        //                                 backgroundColor: "rgba(248, 248, 248, 0.5)",
+                        //                                 transition: "all 0.3s",
+                        //                             },
+                        //                             '& .MuiListItemIcon-root': {
+                        //                                 color: 'inherit',
+                        //                             }
+                        //                         }}
+                        //                     >
+                        //                         <ListItemIcon sx={{
+                        //                             display: { xs: "none", sm: "none", md: "flex" },
+                        //                         }}>
+                        //                             <IconFlag />
+                        //                         </ListItemIcon>
+                        //                         {type.name}
+                        //                     </MenuItem>
+                        //                 )}
+                        //                 {/* {hoveredTypeId === type._id && type?.voices?.length > 0 && ( */}
+                        //                 {openVoices === type._id && type?.voices?.length > 0 && (
+                        //                     <ul
+                        //                         style={{
+                        //                             position: "absolute",
+                        //                             maxWidth: isMd ? "200px" : "300px",
+                        //                             backgroundColor: "white",
+                        //                             boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                        //                             zIndex: 10,
+                        //                             right: "100%",
+                        //                             top: canAddVoice ? "48%" : "90%",
+                        //                             listStyle: "none",
+                        //                             padding: 0,
+                        //                             margin: 0,
+                        //                         }}
+                        //                     >
+                        //                         {type?.voices?.map((child) => (
+                        //                             <Box
+                        //                                 key={child._id}
+                        //                             // onMouseEnter={() => setHoveredTypeId(type._id)}
+                        //                             // onMouseLeave={() => setHoveredTypeId(null)}
+                        //                             >
+                        //                                 <Box
+                        //                                     sx={{
+                        //                                         display: "flex",
+                        //                                         justifyContent: "space-between",
+                        //                                         alignItems: "center",
+                        //                                         padding: { xs: 0.5, sm: 0.5, md: 1.5 },
+                        //                                         backgroundColor: "white",
+                        //                                     }}
+                        //                                 >
+                        //                                     <MenuItem
+                        //                                         key={child._id}
+                        //                                         onClick={() =>
+                        //                                             handleClickVoice(
+                        //                                                 child.path,
+                        //                                                 child._id,
+                        //                                                 type._id
+                        //                                             )
+                        //                                         }
+                        //                                         selected={playingVoiceId === child._id}
+                        //                                         sx={{
+                        //                                             '&:hover': {
+                        //                                                 color: "#1791e2",
+                        //                                                 backgroundColor: "rgba(248, 248, 248, 0.5)",
+                        //                                                 transition: "all 0.3s",
+                        //                                             },
+                        //                                             '&.Mui-selected': {
+                        //                                                 color: "#1791e2",
+                        //                                                 backgroundColor: "rgba(248, 248, 248, 0.5)",
+                        //                                                 transition: "all 0.3s",
+                        //                                             },
+                        //                                             '& .MuiListItemIcon-root': {
+                        //                                                 color: 'inherit',
+                        //                                             }
+                        //                                         }}
+                        //                                     >
+                        //                                         <ListItemIcon>
+                        //                                             {playingVoiceId === child._id ? (
+                        //                                                 <IconVolume
+                        //                                                     fontSize="small"
+                        //                                                     className="animate"
+                        //                                                 />
+                        //                                             ) : (
+                        //                                                 <IconVolumeOff fontSize="small" />
+                        //                                             )}
+                        //                                         </ListItemIcon>
+                        //                                         <Typography
+                        //                                             sx={{
+                        //                                                 overflow: "hidden",
+                        //                                                 whiteSpace: "nowrap",
+                        //                                                 textOverflow: "ellipsis",
+                        //                                                 maxWidth: isMd ? "200px" : "120px",
+                        //                                                 display: "inline-block"
+                        //                                             }}
+                        //                                         >
+                        //                                             Hội thoại {child?.name}
+                        //                                         </Typography>
+
+                        //                                     </MenuItem>
+                        //                                 </Box>
+                        //                             </Box>
+                        //                         ))}
+                        //                     </ul>
+                        //                 )}
+                        //             </Box>
+
+
+                        //         </li>
+                        //     ))
+                        // ) : (
+                        //     <Typography p={1}>Không có âm thanh cho tranh</Typography>
+                        // )
+                        // ) : 
+                        filterByTypeVoiceId?.length > 0 ? (
+                            filterByTypeVoiceId.map((type) => (
+                                <li key={type._id}>
                                     <Box
                                         sx={{
                                             display: "flex",
@@ -313,28 +448,23 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                                                 {type.name}
                                             </MenuItem>
                                         )}
-                                        {/* {hoveredTypeId === type._id && type?.voices?.length > 0 && ( */}
                                         {openVoices === type._id && type?.voices?.length > 0 && (
                                             <ul
                                                 style={{
                                                     position: "absolute",
-                                                    maxWidth: isMd ? "200px" : "300px",
+                                                    maxWidth: isMd ? "300px" : "200px",
                                                     backgroundColor: "white",
                                                     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
                                                     zIndex: 10,
                                                     right: "100%",
-                                                    top: canAddVoice ? "48%" : "90%",
+                                                    top: "20%",
                                                     listStyle: "none",
                                                     padding: 0,
                                                     margin: 0,
                                                 }}
                                             >
                                                 {type?.voices?.map((child) => (
-                                                    <Box
-                                                        key={child._id}
-                                                    // onMouseEnter={() => setHoveredTypeId(type._id)}
-                                                    // onMouseLeave={() => setHoveredTypeId(null)}
-                                                    >
+                                                    <Box key={child._id}>
                                                         <Box
                                                             sx={{
                                                                 display: "flex",
@@ -391,7 +521,6 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                                                                 >
                                                                     Hội thoại {child?.name}
                                                                 </Typography>
-
                                                             </MenuItem>
                                                         </Box>
                                                     </Box>
@@ -405,134 +534,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                             ))
                         ) : (
                             <Typography p={1}>Không có âm thanh cho tranh</Typography>
-                        )
-                    ) : filterByTypeVoiceId?.length > 0 ? (
-                        filterByTypeVoiceId.map((type) => (
-                            <li key={type._id}>
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        backgroundColor: "white",
-                                    }}
-                                >
-                                    {type?.voices?.length > 0 && (
-                                        <MenuItem
-                                            onClick={() => handleClickTypeVoice(type)}
-                                            key={type._id}
-                                            selected={activeTypeVoiceId === type._id}
-                                            sx={{
-                                                '&:hover': {
-                                                    color: "#1791e2",
-                                                    backgroundColor: "rgba(248, 248, 248, 0.5)",
-                                                    transition: "all 0.3s",
-                                                },
-                                                '&.Mui-selected': {
-                                                    color: "#1791e2",
-                                                    backgroundColor: "rgba(248, 248, 248, 0.5)",
-                                                    transition: "all 0.3s",
-                                                },
-                                                '& .MuiListItemIcon-root': {
-                                                    color: 'inherit',
-                                                }
-                                            }}
-                                        >
-                                            <ListItemIcon sx={{
-                                                display: { xs: "none", sm: "none", md: "flex" },
-                                            }}>
-                                                <IconFlag />
-                                            </ListItemIcon>
-                                            {type.name}
-                                        </MenuItem>
-                                    )}
-                                    {openVoices === type._id && type?.voices?.length > 0 && (
-                                        <ul
-                                            style={{
-                                                position: "absolute",
-                                                maxWidth: isMd ? "300px" : "200px",
-                                                backgroundColor: "white",
-                                                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                                                zIndex: 10,
-                                                right: "100%",
-                                                top: "20%",
-                                                listStyle: "none",
-                                                padding: 0,
-                                                margin: 0,
-                                            }}
-                                        >
-                                            {type?.voices?.map((child) => (
-                                                <Box key={child._id}>
-                                                    <Box
-                                                        sx={{
-                                                            display: "flex",
-                                                            justifyContent: "space-between",
-                                                            alignItems: "center",
-                                                            padding: { xs: 0.5, sm: 0.5, md: 1.5 },
-                                                            backgroundColor: "white",
-                                                        }}
-                                                    >
-                                                        <MenuItem
-                                                            key={child._id}
-                                                            onClick={() =>
-                                                                handleClickVoice(
-                                                                    child.path,
-                                                                    child._id,
-                                                                    type._id
-                                                                )
-                                                            }
-                                                            selected={playingVoiceId === child._id}
-                                                            sx={{
-                                                                '&:hover': {
-                                                                    color: "#1791e2",
-                                                                    backgroundColor: "rgba(248, 248, 248, 0.5)",
-                                                                    transition: "all 0.3s",
-                                                                },
-                                                                '&.Mui-selected': {
-                                                                    color: "#1791e2",
-                                                                    backgroundColor: "rgba(248, 248, 248, 0.5)",
-                                                                    transition: "all 0.3s",
-                                                                },
-                                                                '& .MuiListItemIcon-root': {
-                                                                    color: 'inherit',
-                                                                }
-                                                            }}
-                                                        >
-                                                            <ListItemIcon>
-                                                                {playingVoiceId === child._id ? (
-                                                                    <IconVolume
-                                                                        fontSize="small"
-                                                                        className="animate"
-                                                                    />
-                                                                ) : (
-                                                                    <IconVolumeOff fontSize="small" />
-                                                                )}
-                                                            </ListItemIcon>
-                                                            <Typography
-                                                                sx={{
-                                                                    overflow: "hidden",
-                                                                    whiteSpace: "nowrap",
-                                                                    textOverflow: "ellipsis",
-                                                                    maxWidth: isMd ? "200px" : "120px",
-                                                                    display: "inline-block"
-                                                                }}
-                                                            >
-                                                                Hội thoại {child?.name}
-                                                            </Typography>
-                                                        </MenuItem>
-                                                    </Box>
-                                                </Box>
-                                            ))}
-                                        </ul>
-                                    )}
-                                </Box>
-
-
-                            </li>
-                        ))
-                    ) : (
-                        <Typography p={1}>Không có âm thanh cho tranh</Typography>
-                    )}
+                        )}
 
                     {openAddEdit && (
                         <DialogAddEditVoice

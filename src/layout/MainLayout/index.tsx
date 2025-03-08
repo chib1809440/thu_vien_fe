@@ -3,13 +3,13 @@ import { Outlet } from "react-router-dom";
 
 // material-ui
 import {
-  AppBar,
-  Box,
-  Container,
-  CssBaseline,
-  Toolbar,
-  Typography,
-  useMediaQuery,
+    AppBar,
+    Box,
+    Container,
+    CssBaseline,
+    Toolbar,
+    Typography,
+    useMediaQuery,
 } from "@mui/material";
 import { Theme, styled, useTheme } from "@mui/material/styles";
 
@@ -27,200 +27,216 @@ import Sidebar, { SidebarV2 } from "./Sidebar";
 import { IconChevronRight } from "@tabler/icons";
 import Footer from "./Footer";
 interface MainStyleProps {
-  theme: Theme;
-  open: boolean;
+    theme: Theme;
+    open: boolean;
 }
 
 // styles
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<MainStyleProps>(
-  ({ theme, open }) => ({
-    ...theme.typography.mainContent,
-    ...(!open && {
-      borderBottomLeftRadius: 0,
-      borderBottomRightRadius: 0,
-      transition: theme.transitions.create('margin', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.shorter,
-      }),
-      [theme.breakpoints.up('md')]: {
-        // marginLeft: -(drawerWidth - 20),
-        marginLeft: -(drawerWidth),
-        width: `calc(100% - ${drawerWidth}px)`,
-      },
-      [theme.breakpoints.down('md')]: {
-        marginLeft: '20px',
-        width: `calc(100% - ${drawerWidth}px)`,
-        padding: '16px',
-      },
-      [theme.breakpoints.down('sm')]: {
-        marginLeft: '10px',
-        width: `calc(100% - ${drawerWidth}px)`,
-        padding: '16px',
-        marginRight: '10px',
-      },
-    }),
-    ...(open && {
-      transition: theme.transitions.create('margin', {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.shorter,
-      }),
-      marginLeft: 0,
-      borderBottomLeftRadius: 0,
-      borderBottomRightRadius: 0,
-      width: `calc(100% - ${drawerWidth}px)`,
-      [theme.breakpoints.down('md')]: {
-        marginLeft: '20px',
-      },
-      [theme.breakpoints.down('sm')]: {
-        marginLeft: '10px',
-      },
-    }),
-  })
+    ({ theme, open }) => ({
+        ...theme.typography.mainContent,
+        ...(!open && {
+            borderBottomLeftRadius: 0,
+            borderBottomRightRadius: 0,
+            transition: theme.transitions.create('margin', {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.shorter,
+            }),
+            [theme.breakpoints.up('md')]: {
+                // marginLeft: -(drawerWidth - 20),
+                marginLeft: -(drawerWidth),
+                width: `calc(100% - ${drawerWidth}px)`,
+            },
+            [theme.breakpoints.down('md')]: {
+                marginLeft: '20px',
+                width: `calc(100% - ${drawerWidth}px)`,
+                padding: '16px',
+            },
+            [theme.breakpoints.down('sm')]: {
+                marginLeft: '10px',
+                width: `calc(100% - ${drawerWidth}px)`,
+                padding: '16px',
+                marginRight: '10px',
+            },
+        }),
+        ...(open && {
+            transition: theme.transitions.create('margin', {
+                easing: theme.transitions.easing.easeOut,
+                duration: theme.transitions.duration.shorter,
+            }),
+            marginLeft: 0,
+            borderBottomLeftRadius: 0,
+            borderBottomRightRadius: 0,
+            width: `calc(100% - ${drawerWidth}px)`,
+            [theme.breakpoints.down('md')]: {
+                marginLeft: '20px',
+            },
+            [theme.breakpoints.down('sm')]: {
+                marginLeft: '10px',
+            },
+        }),
+    })
 );
 
 // ==============================|| MAIN LAYOUT ||============================== //
 
 const MainLayout = () => {
-  const theme = useTheme();
-  const matchDownMd = useMediaQuery(theme.breakpoints.down("lg"));
+    const theme = useTheme();
+    const matchDownMd = useMediaQuery(theme.breakpoints.down("lg"));
 
-  const dispatch = useDispatch();
-  const { drawerOpen } = useSelector((state) => state.menu);
-  const barcode = useSelector((state) => state.barcode);
-  const { userID, openBC } = barcode;
-  const { container } = useConfig();
+    const dispatch = useDispatch();
+    const { drawerOpen } = useSelector((state) => state.menu);
+    const barcode = useSelector((state) => state.barcode);
+    const { userID, openBC } = barcode;
+    const { container } = useConfig();
 
-  React.useEffect(() => {
-    dispatch(openDrawer(!matchDownMd));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [matchDownMd]);
+    React.useEffect(() => {
+        dispatch(openDrawer(!matchDownMd));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [matchDownMd]);
 
-  const header = useMemo(
-    () => (
-      <Toolbar
-      >
-        <Header />
-      </Toolbar>
-    ),
-    []
-  );
+    const header = useMemo(
+        () => (
+            <Toolbar
+            >
+                <Header />
+            </Toolbar>
+        ),
+        []
+    );
 
-  return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      {/* header */}
-      <AppBar
-        enableColorOnDark
-        position="fixed"
-        color="inherit"
-        elevation={0}
-        sx={{
-          bgcolor: theme.palette.background.default,
-          transition: drawerOpen ? theme.transitions.create('width') : 'none',
-          backgroundColor: '#c1eafe'
-        }}
-      >
-        {header}
-      </AppBar>
+    return (
+        <Box sx={{ display: 'flex' }}>
+            <CssBaseline />
+            {/* header */}
+            <AppBar
+                enableColorOnDark
+                position="fixed"
+                color="inherit"
+                elevation={0}
+                sx={{
+                    bgcolor: theme.palette.background.default,
+                    transition: drawerOpen ? theme.transitions.create('width') : 'none',
+                    backgroundColor: '#c1eafe'
+                }}
+            >
+                {header}
+            </AppBar>
 
-      {/* drawer */}
-      <Sidebar />
-      {/* main content */}
-      <>
-        <Main theme={theme} open={drawerOpen} sx={{ pt: 5, marginTop: '80px', background: "#f2fcfe" }} >
-          {/* breadcrumb */}
-            {container && (
-              <Container maxWidth="lg">
-                <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
-                <Outlet />
-              </Container>
-            )}
-            {!container && (
-              <>
-                <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
-                <Outlet />
-              </>
-            )}
-          <Footer />
-        </Main>
-        {/* {openBC && <ModalUser isOpen={openBC} userID={userID}/>} */}
-      </>
-      {/* <Customization /> */}
-      {/* <ModalTraSach isOpen={isOpenV2} userID={props.userID} isClose={(newIs) => setOpenV2(newIs)} /> */}
-    </Box>
-  );
+            {/* drawer */}
+            <Sidebar />
+            {/* main content */}
+            <>
+                <Main theme={theme} open={drawerOpen} sx={{ pt: 5, marginTop: '80px', background: "#f2fcfe" }} >
+                    {/* breadcrumb */}
+                    {container && (
+                        <Container maxWidth="lg">
+                            <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
+                            <Box sx={{
+                                minHeight: "80vh"
+                            }}>
+                                <Outlet />
+                            </Box>
+                        </Container>
+                    )}
+                    {!container && (
+                        <>
+                            <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
+                            <Box sx={{
+                                minHeight: "80vh"
+                            }}>
+                                <Outlet />
+                            </Box>
+                        </>
+                    )}
+                    <Footer />
+                </Main>
+                {/* {openBC && <ModalUser isOpen={openBC} userID={userID}/>} */}
+            </>
+            {/* <Customization /> */}
+            {/* <ModalTraSach isOpen={isOpenV2} userID={props.userID} isClose={(newIs) => setOpenV2(newIs)} /> */}
+        </Box>
+    );
 };
 
 export const MainLayoutV2 = () => {
-  const theme = useTheme();
-  const matchDownMd = useMediaQuery(theme.breakpoints.down("lg"));
+    const theme = useTheme();
+    const matchDownMd = useMediaQuery(theme.breakpoints.down("lg"));
 
-  const dispatch = useDispatch();
-  const { drawerOpen } = useSelector((state) => state.menu);
-  const { container } = useConfig();
+    const dispatch = useDispatch();
+    const { drawerOpen } = useSelector((state) => state.menu);
+    const { container } = useConfig();
 
 
-  React.useEffect(() => {
-    dispatch(openDrawer(!matchDownMd));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [matchDownMd]);
+    React.useEffect(() => {
+        dispatch(openDrawer(!matchDownMd));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [matchDownMd]);
 
-  const header = useMemo(
-    () => (
-      <Toolbar
-      >
-        <Header />
-      </Toolbar>
-    ),
-    []
-  );
+    const header = useMemo(
+        () => (
+            <Toolbar
+            >
+                <Header />
+            </Toolbar>
+        ),
+        []
+    );
 
-  return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      {/* header */}
-      <AppBar
-        enableColorOnDark
-        position="fixed"
-        color="inherit"
-        elevation={0}
-        sx={{
-          bgcolor: theme.palette.background.default,
-          transition: drawerOpen ? theme.transitions.create('width') : 'none',
-          backgroundColor: '#c1eafe'
-        }}
-      >
-        {header}
-      </AppBar>
+    return (
+        <Box sx={{ display: 'flex' }}>
+            <CssBaseline />
+            {/* header */}
+            <AppBar
+                enableColorOnDark
+                position="fixed"
+                color="inherit"
+                elevation={0}
+                sx={{
+                    bgcolor: theme.palette.background.default,
+                    transition: drawerOpen ? theme.transitions.create('width') : 'none',
+                    backgroundColor: '#c1eafe'
+                }}
+            >
+                {header}
+            </AppBar>
 
-      {/* drawer */}
-      <SidebarV2 />
-      {/* <ProviderLoader> */}
-      {/* main content */}
-      <>
-        <Main theme={theme} open={drawerOpen} sx={{ pt: 5, marginTop: '80px' }}>
-          {/* breadcrumb */}
-            {container && (
-              <Container maxWidth="lg">
-                <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
-                <Outlet />
-              </Container>
-            )}
-            {!container && (
-              <>
-                <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
-                <Outlet />
-              </>
-            )}
-          <Footer />
-        </Main>
-      </>
-      {/* </ProviderLoader> */}
+            {/* drawer */}
+            <SidebarV2 />
+            {/* <ProviderLoader> */}
+            {/* main content */}
+            <>
+                <Main theme={theme} open={drawerOpen} sx={{ pt: 5, marginTop: '80px' }}>
+                    {/* breadcrumb */}
+                    {container && (
+                        <Container maxWidth="lg">
+                            <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
+                            <Box sx={{
+                                minHeight: "80vh"
+                            }}>
+                                <Outlet />
+                            </Box>
+                        </Container>
+                    )}
+                    {!container && (
+                        <>
+                            <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
+                            <Box sx={{
+                                minHeight: "80vh"
+                            }}>
+                                <Outlet />
+                            </Box>
+                        </>
+                    )}
+                    <Footer />
+                </Main>
+            </>
+            {/* </ProviderLoader> */}
 
-      {/* <Customization /> */}
-      {/* <ModalTraSach isOpen={isOpenV2} userID={props.userID} isClose={(newIs) => setOpenV2(newIs)} /> */}
-    </Box>
-  );
+            {/* <Customization /> */}
+            {/* <ModalTraSach isOpen={isOpenV2} userID={props.userID} isClose={(newIs) => setOpenV2(newIs)} /> */}
+        </Box>
+    );
 };
 
 export default MainLayout;

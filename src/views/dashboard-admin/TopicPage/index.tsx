@@ -325,7 +325,7 @@ const TopicPage = () => {
             <IBreadcrumsCustom
                 profile="Quản lý chủ đề"
                 mainProfile="Danh sách chủ đề"
-                link="/quan-ly-danh-muc/linh-vuc"
+                link="/quan-ly-danh-muc/chu-de"
             />
 
             {openAddEdit && (

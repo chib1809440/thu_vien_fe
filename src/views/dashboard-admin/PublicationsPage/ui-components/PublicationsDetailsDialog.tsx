@@ -1,8 +1,8 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Button, Chip, Grid, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Chip, Grid, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
-import { IconFileWord, IconPdf, IconPhoto, IconPresentation, IconVideo } from '@tabler/icons-react';
+import { IconBook, IconFileWord, IconPhoto, IconPresentation, IconVideo } from '@tabler/icons-react';
 import { useState } from 'react';
 import Barcode from 'react-barcode';
 import StyledButton from '../../../../components/default/button/StyledButton';
@@ -10,13 +10,12 @@ import { StyledHeading } from '../../../../components/default/typography';
 import { capitalizeFirstLetter } from '../../../../helpers/capitalizeFirstLetter';
 import { TPublications } from '../../../../types/models/publications.type';
 import { TShelves } from '../../../../types/models/shelves';
-import { getRandomPastelGradient, statusOptions, typeOptions } from '../../../../utils/constants.utils';
+import { statusOptions, typeOptions } from '../../../../utils/constants.utils';
 import { getLabelFromOptions } from '../../../../utils/object';
 import ImageDetailPage from '../ImageDetailPage';
 import VideoDetailPage from '../VideoDetailPage';
 import WordDetailPage from '../WordDetailPage';
 import BookViewDialog from './BookViewDialog';
-import CoverCard from '../../../../components/custom/card/CoverCard';
 
 const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { open: boolean; onClose: () => void; publications: TPublications | null, openLT?: boolean }) => {
     const [showBook, setShowBook] = useState(false);
@@ -375,7 +374,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                 <StyledButton
                                                                     color="primary"
                                                                     size="small"
-                                                                    startIcon={<IconPdf stroke={2} />}
+                                                                    startIcon={<IconBook stroke={2} />}
                                                                     variant="contained"
                                                                     sx={{ marginTop: 1, width: "150px" }}
                                                                     onClick={handleOpenView}
@@ -731,7 +730,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                             <StyledButton
                                                                 color="primary"
                                                                 size="small"
-                                                                startIcon={<IconPdf stroke={2} />}
+                                                                startIcon={<IconBook stroke={2} />}
                                                                 variant="contained"
                                                                 sx={{ marginTop: 1, width: "150px" }}
                                                                 onClick={handleOpenView}

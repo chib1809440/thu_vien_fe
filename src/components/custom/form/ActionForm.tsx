@@ -53,6 +53,7 @@ const ActionsForm: FC<Props> = ({
     const actionsMenuOpen = useMemo(() => Boolean(actionsMenuAnchorEl), [actionsMenuAnchorEl]);
 
     useEffect(() => {
+        
         if (!debounceSearch) {
             searchParams.delete("q");
             setSearchParams(searchParams);
@@ -91,14 +92,16 @@ const ActionsForm: FC<Props> = ({
     }, []);
 
     const handleContentSearch = useCallback((value: string) => {
+        
         if (searchParams.get("page")) {
             searchParams.set("page", "1");
+            setSearchParams(searchParams);
         }
 
-        searchParams.set("q", debounceSearch);
-        setSearchParams(searchParams);
+        // searchParams.set("q", debounceSearch);
+        // setSearchParams(searchParams);
         setContentSearch(value);
-    }, []);
+    }, [searchParams]);
 
     return (
         <>

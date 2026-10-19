@@ -1,6 +1,5 @@
 // material-ui
-import { Box, Typography, useTheme } from '@mui/material'
-import logo from '../assets/logoGDVN.png'
+import { Box, Typography } from '@mui/material'
 import { FC } from 'react'
 
 interface Props {
@@ -12,7 +11,6 @@ interface Props {
 }
 
 const Logo: FC<Props> = ({ onClick, variant, isInBox, title, size }) => {
-    const theme = useTheme()
     return (
         <Box onClick={onClick} sx={{ width: "auto", display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 1, py: 2 }}>
             <Box sx={{ bgcolor: "white", px: 2, py: 1, borderRadius: "32px" }}>

@@ -4,7 +4,7 @@ import { IconEye, IconPencil, IconPlus, IconTrash } from "@tabler/icons";
 import { IconFileExport, IconTrashXFilled } from "@tabler/icons-react";
 import ExcelJS from 'exceljs';
 import { useCallback, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import ActionsForm from "../../../components/custom/form/ActionForm";
 import TableList from "../../../components/custom/table-list/TableList";
@@ -33,16 +33,36 @@ import MainCard from "../../../ui-component/cards/MainCard";
 import usePermission from "../../../utils/hasPermission";
 import FormAddEditWareHouseAssetsReceipt from "./ui-components/FormAddEditWareHouseAssetsReceipt";
 import ViewDetailWareHouseAssetsReceipt from "./ui-components/ViewDetailWareHouseAssets";
-import { formatPrice } from "../../../utils/object";
+import { formatPrice, parserParams } from "../../../utils/object";
 
 const WareHouseReceiptAssetsPage = () => {
+    // const queryString = useQueryString();
+    // const page = queryString?.page ?? 1;
+    // const limit = queryString?.limit ?? 5;
+    // const search = queryString?.q ?? "";
+    const theme = useTheme();
     const queryString = useQueryString();
     const page = queryString?.page ?? 1;
     const limit = queryString?.limit ?? 5;
     const search = queryString?.q ?? "";
-    const theme = useTheme();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const order = "ASC";
+    const [barcodeSearch, setBarcodeSearch] = useState("");
 
-    const { data, isLoading, isFetching} = useFetchWareHouseAssetsReceipt({ limit, page, search });
+    const filter = useMemo(
+        () =>
+            parserParams([
+                { compare: "", target: { search } },
+                { compare: "", target: { barcode: barcodeSearch } },
+            ]),
+        [
+            barcodeSearch,
+            search,
+        ]
+    );
+
+
+    const { data, isLoading, isFetching } = useFetchWareHouseAssetsReceipt({ limit, page, ...filter });
     const mutationAdd = useAddWareHouseAssetsReceipt();
     const mutationEdit = useEditWareHouseAssetsReceipt();
     const mutationSoftDelete = useDeleteSoftWareHouseAssetsReceipt();
@@ -60,6 +80,15 @@ const WareHouseReceiptAssetsPage = () => {
     const [wareHouseAssetsReceiptsDetails, setWareHouseAssetsReceiptDetails] =
         useState<TWareHouseAssetsReceipt | null>(null);
     const [openViewDetail, setOpenViewDetail] = useState(false);
+
+    const handleBarcodeSearch = (value) => {
+        if (searchParams.get("page")) {
+            searchParams.set("page", "1");
+        }
+
+        setSearchParams(searchParams);
+        setBarcodeSearch(value);
+    };
 
     const addWareHouseReceipt = () => {
         setOpenAddEdit(true);
@@ -492,9 +521,9 @@ const WareHouseReceiptAssetsPage = () => {
             { resource: "stockassets", action: "manage" },
             { resource: "stockassets", action: "delete" },
         ]);
-        
+
         const hasUnacceptedData = data?.data?.result?.some(item => item.isAccept === false);
-    
+
         if (canManageOrDelete && hasUnacceptedData) {
             return [
                 {
@@ -509,7 +538,7 @@ const WareHouseReceiptAssetsPage = () => {
                 },
             ];
         }
-    
+
         if (canManageOrDelete) {
             return [
                 {
@@ -521,7 +550,7 @@ const WareHouseReceiptAssetsPage = () => {
         }
         return [];
     }, [handleDeleteMultiple, handleExportWareHouseReceiptExcel, data?.data?.result]);
-    
+
 
     const initialValues = useMemo((): TWareHouseAssetsReceiptCreate => {
         if (selectedEdit) {
@@ -588,7 +617,7 @@ const WareHouseReceiptAssetsPage = () => {
                                 hasPermission([
                                     { resource: "stockassets", action: "manage" },
                                     { resource: "stockassets", action: "delete" },
-                                ]) && 
+                                ]) &&
                                 <Link to="/quan-ly-nhap-kho/phieu-nhap-tai-san/danh-sach-xoa-phieu-nhap-kho-tai-san" style={{ textDecoration: 'none' }}>
                                     <StyledButton
                                         sx={{ background: "#de524a", color: "white", marginLeft: "10px" }}
@@ -604,7 +633,11 @@ const WareHouseReceiptAssetsPage = () => {
                     </Box>
                 </Stack>
 
-                <ActionsForm actions={actionMenus} />
+                <ActionsForm actions={actionMenus}
+                    barcode={true}
+                    barcodeSearch={barcodeSearch}
+                    handleBarcodeSearch={handleBarcodeSearch}
+                />
 
                 <TableList
                     checked={checkedDelete}

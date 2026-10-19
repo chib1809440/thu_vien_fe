@@ -398,7 +398,9 @@ function TableAssetList<T extends DataType>({
                                                                         </Button>
                                                                     </Tooltip>
                                                                 )}
-                                                                {/* <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} /> */}
+                                                                {row?.quantityUsed === 0 && row?.quantityWarehouse === 0 &&
+                                                                    <IconTrash size={20} stroke={1.5} onClick={(e: any) => handleDeleteItem(e, row._id)} />
+                                                                }
                                                             </Box>
                                                         </StyledTableCell>
                                                     </StyledTableRow>

@@ -122,7 +122,7 @@ export default function ModalDetails(props: {
                                         >
                                             <Grid container justifyContent=''>
                                                 <Grid sx={{ width: '120px' }}>
-                                                    <img src={`${process.env.REACT_APP_BASE_API_URL}${items?.supply?.listMedia[items?.supply?.listMedia.length - 1]?.url}`} height='60px' alt='ảnh sách' />
+                                                    <img src={`${import.meta.env.REACT_APP_BASE_API_URL}${items?.supply?.listMedia[items?.supply?.listMedia.length - 1]?.url}`} height='60px' alt='ảnh sách' />
                                                 </Grid>
                                                 <Grid sx={{ width: '250px' }}>
                                                     <CsTypographyContent alignItems='center' sx={{ display: 'flex' }} height='70px' color='#2196F3' key={i}>{`${items?.supply?.supplyName}\u00a0`}</CsTypographyContent>
@@ -166,7 +166,7 @@ export default function ModalDetails(props: {
                                         {data?.supplies.map((items, i) => (
                                             // <CsTypographyContent pl={1} key={i}>{`${items?.supply?.supplyName}\u00a0`}</CsTypographyContent>
                                             <Grid container alignItems='center' pl={1} height='70px' sx={{ borderBottom: '1px solid #CCCCCC' }}>
-                                                <img src={`${process.env.REACT_APP_BASE_API_URL}${items?.supply?.listMedia[0]?.url}`} height='60px' alt='ảnh sách' />
+                                                <img src={`${import.meta.env.REACT_APP_BASE_API_URL}${items?.supply?.listMedia[0]?.url}`} height='60px' alt='ảnh sách' />
                                             </Grid>
                                         ))}
                                     </>

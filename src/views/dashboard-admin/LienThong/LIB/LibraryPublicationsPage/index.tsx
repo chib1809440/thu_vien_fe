@@ -321,9 +321,9 @@ const LibraryPublicationsPage = () => {
                                         <Paper sx={{ width: "100%", position: "relative" }}>
                                             <Box onClick={() => handleViewDetails(item)}>
                                                 <ImageCard id={item._id} photo={item?.priviewImage
-                                                    ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
+                                                    ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
                                                     : item?.path
-                                                        ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
+                                                        ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
                                                         : ""} aspectRatio={"16/9"} objectFit="contain" />
                                             </Box>
                                             <Button

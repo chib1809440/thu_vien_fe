@@ -44,10 +44,10 @@ interface BookProps {
 
 const BookViewPage = ({ title, pages }: BookProps) => {
     const fullUrlPages = pages?.map(page =>
-        `${process.env.REACT_APP_BASE_API_FILE_URL}/${page}`
+        `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${page}`
     );
     // const fullUrlPages = pages?.slice(0, 10).map(page =>
-    //     `${process.env.REACT_APP_BASE_API_FILE_URL}/${page}`
+    //     `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${page}`
     // );
     const [page, setPage] = useState(0);
     const [totalPage, setTotalPage] = useState(0);

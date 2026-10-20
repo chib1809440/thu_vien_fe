@@ -186,7 +186,7 @@ const ImageCard: React.FC<ImageCardProps> = ({
             currentAudio.currentTime = 0;
         }
 
-        const newAudio = new Audio(process.env.REACT_APP_BASE_API_URL_FILE + audioUrl);
+        const newAudio = new Audio(import.meta.env.REACT_APP_BASE_API_URL_FILE + audioUrl);
         newAudio.play();
         setCurrentAudio(newAudio);
     };

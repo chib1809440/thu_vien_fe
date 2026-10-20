@@ -633,7 +633,7 @@ export default function AdminAccountDialog({ title, maxWidth, id, content, actio
                                                         <span className="required_text">(*)</span>
                                                     </Typography>
                                                     <img
-                                                        src={process.env.REACT_APP_BASE_API_FILE_URL + user?.avatar}
+                                                        src={import.meta.env.REACT_APP_BASE_API_FILE_URL + user?.avatar}
                                                         alt="Xem trước"
                                                         style={{ width: '30%', height: 'auto' }}
                                                     />

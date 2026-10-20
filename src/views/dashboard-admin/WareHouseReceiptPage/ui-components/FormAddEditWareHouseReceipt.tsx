@@ -588,9 +588,9 @@ const FormAddEditWareHouseReceipt: FC<Props> = ({
                             publisherOptions={publisherData?.data?.result || []}
                             imageUrl={
                                 selectedEdit?.priviewImage
-                                    ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.priviewImage}`
+                                    ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.priviewImage}`
                                     : selectedEdit?.path
-                                        ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
+                                        ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
                                         : ""
                             }
                             wareHouseReceipt={true}

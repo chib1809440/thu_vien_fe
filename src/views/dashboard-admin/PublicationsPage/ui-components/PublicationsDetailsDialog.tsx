@@ -94,14 +94,14 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                     //         categoryNames={publications?.categoryIds?.length > 0 ? publications?.categoryIds.map(category => category?.name) : []}
                                     //         authorNames={publications?.authorIds?.length > 0 ? publications?.authorIds.map(author => author?.name) : []}
                                     //         publisherNames={publications?.publisherIds?.length > 0 ? publications?.publisherIds.map(publisher => publisher?.name) : []}
-                                    //         photo={publications?.priviewImage ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}` : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
+                                    //         photo={publications?.priviewImage ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}` : `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
                                     //         handleOpenView={handleOpenView}
                                     //         nameShelves={(publications?.shelvesId as TShelves)?.name}
                                     //         quantityShelves={publications?.shelvesQuantity > 0 ? publications?.shelvesQuantity : 0}
                                     //         handleOpenVideo={handleOpenVideo}
                                     //         handleOpenImage={handleOpenImage}
                                     //         handleOpenWord={handleOpenWord}
-                                    //         path={`${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
+                                    //         path={`${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
                                     //         openLT={openLT}
                                     //     />
 
@@ -109,7 +109,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                     <Grid item container spacing={3}>
                                         <Grid item xs={5} display={"flex"} justifyContent={"center"}>
                                             <img
-                                                src={publications?.priviewImage ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}` : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
+                                                src={publications?.priviewImage ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}` : `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
                                                 alt="Uploaded"
                                                 style={{
                                                     width: "100%",
@@ -396,7 +396,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                             variant="contained"
                                                                             sx={{ marginTop: 1, width: "150px" }}
                                                                         >
-                                                                            <a href={`${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`} download style={{ color: "white" }}>
+                                                                            <a href={`${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`} download style={{ color: "white" }}>
                                                                                 Tải xuống
                                                                             </a>
                                                                         </StyledButton>
@@ -432,7 +432,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                         variant="contained"
                                                                         sx={{ marginTop: 1, width: "150px" }}
                                                                     >
-                                                                        <a href={`${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`} download style={{ color: "white" }}>
+                                                                        <a href={`${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`} download style={{ color: "white" }}>
                                                                             Tải xuống
                                                                         </a>
                                                                     </StyledButton>
@@ -466,7 +466,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                     <Grid item container spacing={1}>
                                         <Grid item xs={12} display={"flex"} justifyContent={"center"}>
                                             <img
-                                                src={publications?.priviewImage ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}` : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
+                                                src={publications?.priviewImage ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}` : `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
                                                 alt="Uploaded"
                                                 style={{
                                                     width: publications?.mimetype === "application/pdf" ? "65%" : "100%",
@@ -751,7 +751,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                     variant="contained"
                                                                     sx={{ marginTop: 1, width: "150px" }}
                                                                 >
-                                                                    <a href={`${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`} download style={{ color: "white" }}>
+                                                                    <a href={`${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`} download style={{ color: "white" }}>
                                                                         Tải xuống
                                                                     </a>
                                                                 </StyledButton>
@@ -786,7 +786,7 @@ const PublicationsDetailsDialog = ({ open, onClose, publications, openLT }: { op
                                                                     variant="contained"
                                                                     sx={{ marginTop: 1, width: "150px" }}
                                                                 >
-                                                                    <a href={`${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`} download style={{ color: "white" }}>
+                                                                    <a href={`${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`} download style={{ color: "white" }}>
                                                                         Tải xuống
                                                                     </a>
                                                                 </StyledButton>

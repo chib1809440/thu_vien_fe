@@ -24,9 +24,9 @@ function ViewWord({ path }: Props) {
       const richEditInstance = create(document.getElementById("richEdit"), options);
       richRef.current = richEditInstance;
 
-      console.log(`Fetching document from: ${process.env.REACT_APP_BASE_API_FILE_URL}/${path}`);
+      console.log(`Fetching document from: ${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${path}`);
 
-      axios.get(`${process.env.REACT_APP_BASE_API_FILE_URL}/${path}`, { responseType: 'blob' })
+      axios.get(`${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${path}`, { responseType: 'blob' })
         .then(response => {
           console.log('Response received:', response);
           if (response.status === 200) {

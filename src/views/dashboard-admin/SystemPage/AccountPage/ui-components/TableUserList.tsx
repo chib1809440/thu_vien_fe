@@ -410,7 +410,7 @@ function TableUserList<T extends DataType>({
                 actionImportFile={true}
                 onHandleImportFile={handleImportExcel}
                 actionDownLoadFile={true}
-                fileUrl={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/mau_them_nhieu_tai_khoan.xlsx`}
+                fileUrl={`${import.meta.env.REACT_APP_BASE_API_FILE_URL}/default/mau_them_nhieu_tai_khoan.xlsx`}
             />
             <Grid container xs={12} sm={12} md={12} lg={12} gap={2} sx={{
                 display: "flex", mb: 1, flexWrap: "wrap",

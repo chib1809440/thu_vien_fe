@@ -38,7 +38,7 @@ export default function TopLoanShip(props: {
                 {/* <TableCell align="left"><img width='70px' src={imgSach} alt="anh" /></TableCell> */}
                 <TableCell align="left">
                 {row.listMedia !== null ?
-                  <img style={{borderRadius:'5px'}} width='auto' height='100px' src={`${process.env.REACT_APP_BASE_API_URL}${row.listMedia[row.listMedia.length - 1]?.url}`} alt="ảnh sách" />
+                  <img style={{borderRadius:'5px'}} width='auto' height='100px' src={`${import.meta.env.REACT_APP_BASE_API_URL}${row.listMedia[row.listMedia.length - 1]?.url}`} alt="ảnh sách" />
                   :
                   <img style={{borderRadius:'5px'}} width='auto' height='100%' src={imgSach} alt="avata" />
                 }

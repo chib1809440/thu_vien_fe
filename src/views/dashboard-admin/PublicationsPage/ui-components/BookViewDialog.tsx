@@ -49,7 +49,7 @@ const BookViewDialog = ({ open, onClose, publications }: { open: boolean; onClos
                                 categoryNames={publications.categoryIds.length > 0 ? publications.categoryIds.map(category => category.name) : []}
                                 authorNames={publications.authorIds.length > 0 ? publications.authorIds.map(author => author.name) : []}
                                 publisherNames={publications.publisherIds.length > 0 ? publications.publisherIds.map(publisher => publisher.name) : []}
-                                photo={publications?.priviewImage ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}` : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
+                                photo={publications?.priviewImage ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}` : `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
 
                             />
                         </Grid> */}

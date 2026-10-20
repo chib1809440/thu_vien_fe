@@ -107,7 +107,7 @@ const LibInformationPage = () => {
                                 style={{ borderRadius: "5px" }}
                                 width="256px"
                                 height="256px"
-                                src={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/logo_tong_gdvn_2024.jpg`}
+                                src={`${import.meta.env.REACT_APP_BASE_API_FILE_URL}/default/logo_tong_gdvn_2024.jpg`}
                             />
                             {/* {preview === '' ? <img style={{ borderRadius: '5px' }} width='256px' height='256px' src="../../logo.png" /> : <img style={{ borderRadius: '5px' }} width='256px' height='auto' src={preview} />} */}
                         </Grid>

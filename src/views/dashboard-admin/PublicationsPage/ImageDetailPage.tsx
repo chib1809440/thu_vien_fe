@@ -87,13 +87,13 @@ const ImageDetailPage = ({
                                 id={publications?._id}
                                 photo={
                                     publications?.path
-                                        ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`
-                                        : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}`
+                                        ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`
+                                        : `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}`
                                 }
                                 isViewPhoto={
                                     publications?.path
-                                        ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`
-                                        : `${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}`
+                                        ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`
+                                        : `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.priviewImage}`
                                 }
                                 aspectRatio={"16/9"}
                                 objectFit="contain"

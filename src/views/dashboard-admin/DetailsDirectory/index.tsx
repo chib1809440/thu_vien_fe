@@ -158,7 +158,7 @@ export default function DetailProduct() {
                   >
                     <Grid xs={12} container justifyContent='center' alignItems='center'>
                       {items.listMedia !== null ?
-                        <img width='100%' style={{borderRadius:'5px'}} src={`${process.env.REACT_APP_BASE_API_URL}/${items?.listMedia[items?.listMedia.length - 1]['url']}`} alt="ảnh ấn phẩm" />
+                        <img width='100%' style={{borderRadius:'5px'}} src={`${import.meta.env.REACT_APP_BASE_API_URL}/${items?.listMedia[items?.listMedia.length - 1]['url']}`} alt="ảnh ấn phẩm" />
                         :
                         <img width='100%' style={{borderRadius:'5px'}} src={sachSimple} alt="ảnh ấn phẩm" />
                       }

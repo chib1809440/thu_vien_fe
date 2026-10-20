@@ -76,7 +76,7 @@ export default function BasicTable(props: {
     //             return <img style={{ borderRadius: '5px' }} width='60px' height='auto' src={imageVodeo} alt="ảnh ấn phẩm" />
     //         }
     //         if (lastChar === '.png' || lastChar === '.jpg' || lastChar === '.jpeg') {
-    //             return <img style={{ borderRadius: '5px' }} width='50px' height='auto' src={`${process.env.REACT_APP_BASE_API_URL}/${dataDetails?.listMedia[0]['url']}`} alt="ảnh ấn phẩm" />
+    //             return <img style={{ borderRadius: '5px' }} width='50px' height='auto' src={`${import.meta.env.REACT_APP_BASE_API_URL}/${dataDetails?.listMedia[0]['url']}`} alt="ảnh ấn phẩm" />
     //         }
     //     } else {
     //         return <img style={{ borderRadius: '5px' }} width='50px' height='auto' src={sachSimple} alt="ảnh ấn phẩm" />

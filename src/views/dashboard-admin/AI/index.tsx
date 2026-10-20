@@ -108,7 +108,7 @@ export default function AIBOX() {
                                         //         </>
                                         //         :
                                         //         // <img src='https://tiemanhsky.com/wp-content/uploads/2020/03/61103071_2361422507447925_6222318223514140672_n_1.jpg' width='80px' />
-                                        //         <img width='80px' src={`${process.env.REACT_APP_BASE_API_URL}/${item?.imageUser}`} alt="ảnh thành viên" />
+                                        //         <img width='80px' src={`${import.meta.env.REACT_APP_BASE_API_URL}/${item?.imageUser}`} alt="ảnh thành viên" />
                                         //     }
                                         // </>
                                     }

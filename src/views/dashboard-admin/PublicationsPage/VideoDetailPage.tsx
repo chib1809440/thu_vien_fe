@@ -50,7 +50,7 @@ const VideoDetailPage = ({ open, onClose, publications }: { open: boolean; onClo
                                 <Box sx={{ display: "flex", width: "100%", flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
                                     <Paper sx={{ width: "100%", aspectRatio: 16 / 9, backgroundColor: "transparent" }}>
                                         {
-                                            publications?.path && <VideoJS src={`${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`} key={reloadKey} handleDuration={setDuration} />
+                                            publications?.path && <VideoJS src={`${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`} key={reloadKey} handleDuration={setDuration} />
                                         }
 
                                     </Paper>

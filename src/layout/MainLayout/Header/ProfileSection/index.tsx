@@ -398,7 +398,7 @@ const ProfileSection = () => {
                         cursor: "pointer"
                     }} >
                     <IconButton sx={{ p: 0, }}>
-                        <img style={{ borderRadius: "50%" }} width="32px" height="32px" alt="Remy Sharp" src={avatar !== '' ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${avatar}` : "/image/boy.png"} />
+                        <img style={{ borderRadius: "50%" }} width="32px" height="32px" alt="Remy Sharp" src={avatar !== '' ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${avatar}` : "/image/boy.png"} />
                     </IconButton>
                     <Typography variant="body2">{getLabelFromOptions(statusRole, roleId?.name)}</Typography>
                     <IconChevronDown size={"18px"} stroke={1.5} />
@@ -459,7 +459,7 @@ const ProfileSection = () => {
                     initialValues={initialValues}
                     isEditMode={selectedEdit ? true : false}
                     onSubmit={handleSubmitChangeInfo}
-                    imageUrl={`${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.avatar}`}
+                    imageUrl={`${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.avatar}`}
                     roleName={roleName}
                 />
             )}

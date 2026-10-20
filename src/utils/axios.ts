@@ -6,7 +6,7 @@ import { LOGIN, LOGOUT } from '../store/actions';
 import { useNavigate } from 'react-router-dom';
 // Tạo instance axios
 const axiosServices = axios.create({
-	baseURL: process.env.REACT_APP_BASE_API_URL,
+	baseURL: import.meta.env.REACT_APP_BASE_API_URL,
 	headers: {
 		'Content-Type': 'application/json',
 	},
@@ -42,7 +42,7 @@ axiosServices.interceptors.response.use((response) => {
 				const refreshToken = localStorage.getItem('refreshToken');
 
 				// Gửi yêu cầu refresh token
-				const { data } = await axios.post(`${process.env.REACT_APP_BASE_API_URL}/auth/refresh-token`, {
+				const { data } = await axios.post(`${import.meta.env.REACT_APP_BASE_API_URL}/auth/refresh-token`, {
 					refreshToken,
 				});
 

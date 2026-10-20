@@ -1,5 +1,5 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField, Typography } from "@mui/material";
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from "@mui/material";
 // import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 // import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 // import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -246,11 +246,9 @@ const FormProfile: FC<Props> = ({
                                 className="react-date-picker"
                                 selected={values.birthday ? new Date(values.birthday) : null}
                                 onChange={(newValue) => {
-                                    console.log("Old Birthday: ", values.birthday); // Kiểm tra giá trị cũ
-                                    if (newValue) {
+                                    if (newValue instanceof Date) {
                                         setFieldValue("birthday", newValue.toISOString());
                                     }
-                                    console.log("New Birthday: ", newValue); // Kiểm tra giá trị mới
                                 }}
                                 onYearChange={(date: Date) => {
                                     // setBirthday(date);
@@ -265,12 +263,10 @@ const FormProfile: FC<Props> = ({
                                 showMonthDropdown // Hiển thị dropdown chọn tháng
                                 dropdownMode="select"
                                 showYearDropdown // Hiển thị dropdown chọn năm
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        fullWidth
-                                        error={touched.birthday && Boolean(errors.birthday)}
-                                        helperText={touched.birthday && errors.birthday}
+                                customInput={(
+                                    <input
+                                        className="react-date-picker"
+                                        aria-label="Ngày sinh"
                                     />
                                 )}
                             />

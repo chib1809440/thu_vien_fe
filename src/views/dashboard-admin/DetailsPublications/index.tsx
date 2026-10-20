@@ -29,9 +29,9 @@ export default function DetailProduct() {
 
   const docs = [
     {
-      uri: `${process.env.REACT_APP_BASE_API_URL}${dataDetails?.listMedia?.[0]?.['url']}`,
+      uri: `${import.meta.env.REACT_APP_BASE_API_URL}${dataDetails?.listMedia?.[0]?.['url']}`,
       fileType: typeFile,
-      fileName: `${process.env.REACT_APP_BASE_API_URL}/${dataDetails?.listMedia?.[0]?.['url']}`
+      fileName: `${import.meta.env.REACT_APP_BASE_API_URL}/${dataDetails?.listMedia?.[0]?.['url']}`
     },
   ];
 
@@ -43,13 +43,13 @@ export default function DetailProduct() {
 
       if (lastChar === '.mp4') {
         return <video controls width='500px' style={{ borderRadius: '5px' }}>
-          <source src={`${process.env.REACT_APP_BASE_API_URL}/${dataDetails?.listMedia?.[0]?.['url']}?autoplay=1`} type="video/mp4" />
+          <source src={`${import.meta.env.REACT_APP_BASE_API_URL}/${dataDetails?.listMedia?.[0]?.['url']}?autoplay=1`} type="video/mp4" />
         </video >
-        // <iframe width='100%' height='auto' style={{ minHeight: '515px' }} src={`${process.env.REACT_APP_BASE_API_URL}/${dataDetails?.listMedia[0]['url']}?autoplay=1`} allowFullScreen allow='autoplay' title="Video" />
+        // <iframe width='100%' height='auto' style={{ minHeight: '515px' }} src={`${import.meta.env.REACT_APP_BASE_API_URL}/${dataDetails?.listMedia[0]['url']}?autoplay=1`} allowFullScreen allow='autoplay' title="Video" />
       }
       if (lastChar === '.mp3') {
         return <audio controls style={{ borderRadius: '5px' }}>
-          <source src={`${process.env.REACT_APP_BASE_API_URL}/${dataDetails?.listMedia?.[0]?.['url']}?autoplay=1`} type="video/mp4" />
+          <source src={`${import.meta.env.REACT_APP_BASE_API_URL}/${dataDetails?.listMedia?.[0]?.['url']}?autoplay=1`} type="video/mp4" />
         </audio >
       }
       if (lastChar === '.pdf') {
@@ -89,7 +89,7 @@ export default function DetailProduct() {
         </>
       }
       if (lastChar === '.png' || lastChar === '.jpg' || lastChar === '.jpeg') {
-        return <img style={{ borderRadius: '5px', maxWidth: '400px' }} width='100%' src={`${process.env.REACT_APP_BASE_API_URL}/${dataDetails?.listMedia?.[0]?.['url']}`} alt="ảnh ấn phẩm" />
+        return <img style={{ borderRadius: '5px', maxWidth: '400px' }} width='100%' src={`${import.meta.env.REACT_APP_BASE_API_URL}/${dataDetails?.listMedia?.[0]?.['url']}`} alt="ảnh ấn phẩm" />
       }
     } else {
       return <img style={{ borderRadius: '5px' }} width='100%' src={sachSimple} alt="ảnh ấn phẩm" />

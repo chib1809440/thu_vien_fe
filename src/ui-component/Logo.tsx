@@ -14,7 +14,7 @@ const Logo: FC<Props> = ({ onClick, variant, isInBox, title, size }) => {
     return (
         <Box onClick={onClick} sx={{ width: "auto", display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 1, py: 2 }}>
             <Box sx={{ bgcolor: "white", px: 2, py: 1, borderRadius: "32px" }}>
-                <img width={size === "small" ? 24 : 84} height={size === "small" ? 24 : 84} src={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/logo_tong_gdvn_2024.jpg`} alt='logo' />
+                <img width={size === "small" ? 24 : 84} height={size === "small" ? 24 : 84} src={`${import.meta.env.REACT_APP_BASE_API_FILE_URL}/default/logo_tong_gdvn_2024.jpg`} alt='logo' />
             </Box>
 
             {title &&

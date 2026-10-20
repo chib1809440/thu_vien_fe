@@ -119,7 +119,7 @@ const WordDetailPage2 = ({
                             >
                                 {publications?.path && (
                                     <Word
-                                        path={`${process.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
+                                        path={`${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${publications?.path}`}
                                         onSave={handleSave}
                                     />
                                 )}

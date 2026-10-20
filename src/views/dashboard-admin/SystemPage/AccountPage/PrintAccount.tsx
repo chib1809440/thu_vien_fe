@@ -51,7 +51,7 @@ const PrintAccount = forwardRef<HTMLDivElement, PrintAccountProps>(({ dataUsers 
                     >
                         <div style={{ width: "100%", height: "220px", position: "relative" }}>
                             <img
-                                src={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/bg-img.png`}
+                                src={`${import.meta.env.REACT_APP_BASE_API_FILE_URL}/default/bg-img.png`}
                                 alt="bg"
                                 style={{
                                     width: "100%",
@@ -155,7 +155,7 @@ const PrintAccount = forwardRef<HTMLDivElement, PrintAccountProps>(({ dataUsers 
                                     }}
                                 >
                                     <img
-                                        src={process.env.REACT_APP_BASE_API_FILE_URL + user?.avatar}
+                                        src={import.meta.env.REACT_APP_BASE_API_FILE_URL + user?.avatar}
                                         alt="Avatar"
                                         style={{ width: "100%", height: "100%", borderRadius: "8px", marginBottom: 5 }}
                                     />

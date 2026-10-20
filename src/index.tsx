@@ -14,6 +14,8 @@ import { persister, store } from './store';
 
 // style + assets
 import './assets/scss/style.scss';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 import ReactDOM from 'react-dom/client';
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import "react-datepicker/dist/react-datepicker.css";
@@ -22,7 +24,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import * as Sentry from "@sentry/react";
 import { BrowserTracing } from "@sentry/tracing";
 // Sentry.init({
-//     dsn: process.env.REACT_APP_DNS_SENTRY,
+//     dsn: import.meta.env.REACT_APP_DNS_SENTRY,
 //     integrations: [new BrowserTracing()],
 
 //     // Set tracesSampleRate to 1.0 to capture 100%

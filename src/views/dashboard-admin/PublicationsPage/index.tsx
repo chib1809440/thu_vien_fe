@@ -924,7 +924,7 @@ const PublicationsPage = () => {
                     icon: <IconFileDownload size={20} stroke={1.5} />,
                     component: (
                         <a
-                            href={`${process.env.REACT_APP_BASE_API_FILE_URL}/default/mau_them_nhieu_an_pham.xlsx`}
+                            href={`${import.meta.env.REACT_APP_BASE_API_FILE_URL}/default/mau_them_nhieu_an_pham.xlsx`}
                             style={{
                                 textDecoration: "none",
                                 display: "inline-flex",
@@ -1049,9 +1049,9 @@ const PublicationsPage = () => {
                     topicOptions={topicData?.data?.result || []}
                     imageUrl={
                         selectedEdit?.priviewImage
-                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.priviewImage}`
+                            ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.priviewImage}`
                             : selectedEdit?.path
-                                ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
+                                ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${selectedEdit.path}`
                                 : ""
                     }
                     isFetching={mutationAdd.isPending || mutationEdit.isPending}
@@ -1284,9 +1284,9 @@ const PublicationsPage = () => {
                                                                     id={item._id}
                                                                     photo={
                                                                         item?.priviewImage
-                                                                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
+                                                                            ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
                                                                             : item?.path
-                                                                                ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
+                                                                                ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
                                                                                 : ""
                                                                     }
                                                                     aspectRatio={"4/3"}
@@ -1307,9 +1307,9 @@ const PublicationsPage = () => {
                                                                         id={item._id}
                                                                         photo={
                                                                             item?.priviewImage
-                                                                                ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
+                                                                                ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
                                                                                 : item?.path
-                                                                                    ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
+                                                                                    ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
                                                                                     : ""
                                                                         }
                                                                         aspectRatio={"4/3"}
@@ -1337,9 +1337,9 @@ const PublicationsPage = () => {
                                                                             >
                                                                                 <img
                                                                                     src={item?.priviewImage
-                                                                                        ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
+                                                                                        ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${item.priviewImage}`
                                                                                         : item?.path
-                                                                                            ? `${process.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
+                                                                                            ? `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${item.path}`
                                                                                             : ""
                                                                                     }
                                                                                     alt="Uploaded"

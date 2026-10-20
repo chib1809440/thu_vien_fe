@@ -136,7 +136,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                 currentAudio.pause();
                 currentAudio.currentTime = 0;
             }
-            const newAudio = new Audio(`${process.env.REACT_APP_BASE_API_FILE_URL}/${audioUrl}`);
+            const newAudio = new Audio(`${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${audioUrl}`);
 
             currentAudioRef.current = newAudio;
 
@@ -164,7 +164,7 @@ const MenuAddVoice = forwardRef<MenuAddVoiceRef, Props>(
                 if (currentVoiceIndex < voices?.length) {
                     const voice = voices[currentVoiceIndex];
                     const newAudio = new Audio(
-                        `${process.env.REACT_APP_BASE_API_FILE_URL}/${voice.path}`
+                        `${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${voice.path}`
                     );
 
                     currentAudioRef.current = newAudio;

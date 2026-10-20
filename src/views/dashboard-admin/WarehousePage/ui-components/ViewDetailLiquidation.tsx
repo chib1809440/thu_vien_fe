@@ -349,7 +349,7 @@ const ViewDetailLiquidation: FC<Props> = ({ open, onClose, onSubmitConfirmSignat
                                 </Typography>
                                 <Box sx={{ mr: 2 }}>
                                     <a
-                                        href={`${process.env.REACT_APP_BASE_API_FILE_URL}/${liquidationData.fileSignature.path}`}
+                                        href={`${import.meta.env.REACT_APP_BASE_API_FILE_URL}/${liquidationData.fileSignature.path}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >

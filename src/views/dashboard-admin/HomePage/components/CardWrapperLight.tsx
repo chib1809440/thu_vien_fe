@@ -24,7 +24,7 @@ export default function CardHomeLight(props: {
                 return <img style={{ borderRadius: '5px' }} width='70px' height='auto' src={imageVodeo} alt="" />
             }
             if (lastChar === '.png' || lastChar === '.jpg' || lastChar === '.jpeg') {
-                return <img style={{ borderRadius: '5px' }} width='60px' height='auto' src={`${process.env.REACT_APP_BASE_API_URL}/${dataDetails?.listMedia[0]?.['url']}`} alt="" />
+                return <img style={{ borderRadius: '5px' }} width='60px' height='auto' src={`${import.meta.env.REACT_APP_BASE_API_URL}/${dataDetails?.listMedia[0]?.['url']}`} alt="" />
             }
         } else {
             return <img style={{ borderRadius: '5px' }} width='60px' height='auto' src={sachSimple} alt="" />

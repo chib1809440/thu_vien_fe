@@ -69,7 +69,7 @@ export default function TableSchool(props: {
                                                 {/* {row[0]?.nameContact} */}
                                                 {plusProduct(dataLibraryConnection[index])}
                                             </TableCell>
-                                            {/* <TableCell align="left"><img style={{ borderRadius: '5px' }} width='50px' height='auto' src={`${process.env.REACT_APP_BASE_API_URL}/${row[0]?.imageLogo}`} alt="Logo" /></TableCell> */}
+                                            {/* <TableCell align="left"><img style={{ borderRadius: '5px' }} width='50px' height='auto' src={`${import.meta.env.REACT_APP_BASE_API_URL}/${row[0]?.imageLogo}`} alt="Logo" /></TableCell> */}
                                             {/* <TableCell component="th" scope="row">{row[0]?.phoneContact}</TableCell> */}
                                             {/* <TableCell component="th" scope="row">{row[0]?.emailContact}</TableCell> */}
                                             {/* <TableCell component="th" scope="row">{row[0]?.urlContact}</TableCell> */}
